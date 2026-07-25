@@ -1123,9 +1123,10 @@ export function EditorialCarouselClient() {
 
   const toDataUrl = async (url: string): Promise<string> => {
     if (!url) return "";
-    if (url.startsWith("data:")) return url; // already data URL
+    if (url.startsWith("data:") || url.startsWith("blob:")) return url; // already local
     try {
-      const res = await fetch(url);
+      const targetUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+      const res = await fetch(targetUrl);
       const blob = await res.blob();
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -1190,7 +1191,7 @@ export function EditorialCarouselClient() {
       }
     }
 
-    // 2. Otherwise load in background and extract the frame
+    // 2. Otherwise load in background (proxied for CORS safety) and extract the frame
     return new Promise((resolve) => {
       const video = document.createElement("video");
       video.muted = true;
@@ -1202,8 +1203,9 @@ export function EditorialCarouselClient() {
       video.style.height = "1px";
       document.body.appendChild(video);
 
-      if (slide.featuredImage.mediaUrl.startsWith("http")) {
-        video.crossOrigin = "anonymous";
+      let videoSrc = slide.featuredImage.mediaUrl;
+      if (videoSrc.startsWith("http")) {
+        videoSrc = `/api/proxy-image?url=${encodeURIComponent(videoSrc)}`;
       }
       
       video.onloadedmetadata = () => {
@@ -1236,7 +1238,7 @@ export function EditorialCarouselClient() {
         resolve("");
       };
 
-      video.src = slide.featuredImage.mediaUrl;
+      video.src = videoSrc;
       video.load();
 
       // Set timeout of 4 seconds so we don't hang the export forever if the video fails to load
