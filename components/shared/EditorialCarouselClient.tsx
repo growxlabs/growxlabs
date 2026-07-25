@@ -1408,7 +1408,8 @@ export function EditorialCarouselClient() {
           let videoSrc = slide.featuredImage.mediaUrl;
           if (videoSrc.startsWith("http")) {
             try {
-              const res = await fetch(videoSrc);
+              const targetUrl = `/api/proxy-image?url=${encodeURIComponent(videoSrc)}`;
+              const res = await fetch(targetUrl);
               const blob = await res.blob();
               videoSrc = URL.createObjectURL(blob);
             } catch (err) {
