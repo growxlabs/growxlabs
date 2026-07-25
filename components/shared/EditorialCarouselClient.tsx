@@ -1121,6 +1121,51 @@ export function EditorialCarouselClient() {
     `;
   };
 
+  const toDataUrl = async (url: string): Promise<string> => {
+    if (!url) return "";
+    if (url.startsWith("data:")) return url; // already data URL
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.error("Failed to convert URL to data URL:", url, e);
+      return url; // fallback
+    }
+  };
+
+  const prepareSlideForExport = async (slide: Slide, idx: number): Promise<{ slide: Slide; videoFrameUrl?: string }> => {
+    const cloned = JSON.parse(JSON.stringify(slide)) as Slide;
+    
+    // 1. Get and convert video frame if video
+    let videoFrameDataUrl = "";
+    if (cloned.featuredImage.visible && cloned.featuredImage.mediaUrl && isVideo(cloned.featuredImage.mediaUrl)) {
+      const frameUrl = await getSlideVideoFrame(cloned, idx);
+      if (frameUrl) {
+        videoFrameDataUrl = await toDataUrl(frameUrl);
+      }
+    } else if (cloned.featuredImage.visible && cloned.featuredImage.mediaUrl) {
+      // Convert normal image to data URL
+      cloned.featuredImage.mediaUrl = await toDataUrl(cloned.featuredImage.mediaUrl);
+    }
+
+    // 2. Convert logo to data URL
+    if (cloned.logo.visible && cloned.logo.logoUrl) {
+      cloned.logo.logoUrl = await toDataUrl(cloned.logo.logoUrl);
+    }
+
+    // 3. Convert author avatar to data URL
+    if (cloned.author.visible && cloned.author.avatarUrl) {
+      cloned.author.avatarUrl = await toDataUrl(cloned.author.avatarUrl);
+    }
+
+    return { slide: cloned, videoFrameUrl: videoFrameDataUrl };
+  };
+
   const getSlideVideoFrame = async (slide: Slide, idx: number): Promise<string> => {
     if (!slide.featuredImage.visible || !slide.featuredImage.mediaUrl || !isVideo(slide.featuredImage.mediaUrl)) {
       return "";
@@ -1150,6 +1195,13 @@ export function EditorialCarouselClient() {
       const video = document.createElement("video");
       video.muted = true;
       video.playsInline = true;
+      video.style.position = "absolute";
+      video.style.opacity = "0";
+      video.style.pointerEvents = "none";
+      video.style.width = "1px";
+      video.style.height = "1px";
+      document.body.appendChild(video);
+
       if (slide.featuredImage.mediaUrl.startsWith("http")) {
         video.crossOrigin = "anonymous";
       }
@@ -1166,17 +1218,21 @@ export function EditorialCarouselClient() {
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL("image/png"));
+            const dataUrl = canvas.toDataURL("image/png");
+            try { document.body.removeChild(video); } catch (e) {}
+            resolve(dataUrl);
             return;
           }
         } catch (err) {
           console.error("Error drawing background video frame:", err);
         }
+        try { document.body.removeChild(video); } catch (e) {}
         resolve("");
       };
 
       video.onerror = () => {
         console.error("Error loading video in background for frame capture:", slide.featuredImage.mediaUrl);
+        try { document.body.removeChild(video); } catch (e) {}
         resolve("");
       };
 
@@ -1185,6 +1241,7 @@ export function EditorialCarouselClient() {
 
       // Set timeout of 4 seconds so we don't hang the export forever if the video fails to load
       setTimeout(() => {
+        try { document.body.removeChild(video); } catch (e) {}
         resolve("");
       }, 4000);
     });
@@ -1227,8 +1284,8 @@ export function EditorialCarouselClient() {
 
   const handleDownloadSlideSvg = async (idx: number) => {
     try {
-      const frameUrl = await getSlideVideoFrame(slides[idx], idx);
-      const svgStr = buildSvgString(slides[idx], idx, true, frameUrl); // Keep font styles inside SVG vector files
+      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+      const svgStr = buildSvgString(slide, idx, true, videoFrameUrl); // Keep font styles inside SVG vector files
       const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -1246,8 +1303,8 @@ export function EditorialCarouselClient() {
 
   const handleDownloadSlideRaster = async (idx: number, type: "png" | "jpeg") => {
     try {
-      const frameUrl = await getSlideVideoFrame(slides[idx], idx);
-      const svgStr = buildSvgString(slides[idx], idx, false, frameUrl); // Bypass CORS security policies by excluding @imports
+      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+      const svgStr = buildSvgString(slide, idx, false, videoFrameUrl); // Bypass CORS security policies by excluding @imports
       const dataUrl = await convertSvgToRaster(svgStr, type);
       const link = document.createElement("a");
       link.href = dataUrl;
@@ -1274,8 +1331,8 @@ export function EditorialCarouselClient() {
 
       for (let i = 0; i < slides.length; i++) {
         if (i > 0) doc.addPage();
-        const frameUrl = await getSlideVideoFrame(slides[i], i);
-        const svgStr = buildSvgString(slides[i], i, false, frameUrl); // Bypass CORS security policies
+        const { slide, videoFrameUrl } = await prepareSlideForExport(slides[i], i);
+        const svgStr = buildSvgString(slide, i, false, videoFrameUrl); // Bypass CORS security policies
         const dataUrl = await convertSvgToRaster(svgStr, "png");
         doc.addImage(dataUrl, "PNG", 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       }
