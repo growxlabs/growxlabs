@@ -18,7 +18,7 @@ export function SectionG() {
         {/* Centered Statement */}
         <div className="max-w-4xl text-center px-8">
           <h2 className="text-[clamp(1.6rem,3.2vw,2.5rem)] font-medium text-foreground tracking-tight leading-[1.35] font-sans">
-            AI-native software Company,<br />
+            India's AI-native software Company,<br />
             product studio and AI Engineering Lab
           </h2>
         </div>
