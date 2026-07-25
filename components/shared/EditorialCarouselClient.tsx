@@ -49,7 +49,7 @@ import { toast } from "sonner";
 
 const isVideo = (url?: string) => {
   if (!url) return false;
-  return url.match(/\.(mp4|webm|ogg|mov|m4v)($|\?)/i) !== null || url.startsWith("data:video/");
+  return url.match(/\.(mp4|webm|ogg|mov|m4v|mp1|mp2|mpeg|mpg|avi|mkv|flv|wmv|3gp)($|\?)/i) !== null || url.startsWith("data:video/");
 };
 
 const stripHtmlTags = (str?: string) => {
