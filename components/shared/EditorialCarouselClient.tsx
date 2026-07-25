@@ -521,16 +521,56 @@ export function EditorialCarouselClient() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    let localUrl = "";
     try {
-      const localUrl = URL.createObjectURL(file);
+      // 1. Create a local preview immediately for instant UI feedback
+      localUrl = URL.createObjectURL(file);
       updateSlideElement("featuredImage", { mediaUrl: localUrl });
-      toast.success("Successfully uploaded media file!");
     } catch (err) {
-      console.error("Error creating local object URL:", err);
-      toast.error("Failed to process uploaded file");
+      console.error("Local preview failed:", err);
+    }
+
+    const uploadToast = toast.loading("Saving media asset to database...");
+
+    try {
+      // 2. Upload file to server-side API
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error("Server responded with error status");
+      }
+
+      const data = await res.json();
+      if (!data.url) {
+        throw new Error("No URL returned from server");
+      }
+
+      // 3. Update the slide element with the persistent public URL from Supabase
+      updateSlideElement("featuredImage", { mediaUrl: data.url });
+      
+      // Clean up the local blob preview URL since we now have the permanent link
+      if (localUrl) {
+        try {
+          URL.revokeObjectURL(localUrl);
+        } catch (e) {
+          // Ignore revoke error
+        }
+      }
+
+      toast.success("Asset saved to database successfully!", { id: uploadToast });
+    } catch (err) {
+      console.error("Database upload failed:", err);
+      toast.error("Failed to store media in database, using local session preview.", { id: uploadToast });
     }
   };
 
@@ -1090,7 +1130,7 @@ export function EditorialCarouselClient() {
     if (idx === activeIndex) {
       try {
         const liveVideo = canvasRef.current?.querySelector("video") as HTMLVideoElement;
-        if (liveVideo && liveVideo.readyState >= 2) {
+        if (liveVideo) {
           const canvas = document.createElement("canvas");
           canvas.width = liveVideo.videoWidth || 1080;
           canvas.height = liveVideo.videoHeight || 1350;
@@ -1108,13 +1148,15 @@ export function EditorialCarouselClient() {
     // 2. Otherwise load in background and extract the frame
     return new Promise((resolve) => {
       const video = document.createElement("video");
-      video.src = slide.featuredImage.mediaUrl;
-      video.crossOrigin = "anonymous";
       video.muted = true;
       video.playsInline = true;
+      if (slide.featuredImage.mediaUrl.startsWith("http")) {
+        video.crossOrigin = "anonymous";
+      }
       
-      // Let's seek to 0.5s to get a valid, non-black frame
-      video.currentTime = 0.5;
+      video.onloadedmetadata = () => {
+        video.currentTime = Math.min(0.5, video.duration || 0);
+      };
 
       video.onseeked = () => {
         try {
@@ -1138,13 +1180,13 @@ export function EditorialCarouselClient() {
         resolve("");
       };
 
-      // Set timeout of 3 seconds so we don't hang the export forever if the video fails to load
-      const timeout = setTimeout(() => {
-        video.src = "";
-        resolve("");
-      }, 3000);
-
+      video.src = slide.featuredImage.mediaUrl;
       video.load();
+
+      // Set timeout of 4 seconds so we don't hang the export forever if the video fails to load
+      setTimeout(() => {
+        resolve("");
+      }, 4000);
     });
   };
 
@@ -1243,6 +1285,187 @@ export function EditorialCarouselClient() {
     } catch (e) {
       console.error(e);
       toast.error("Failed to export PDF file", { id: downloadToast });
+    }
+  };
+
+  const handleDownloadMp4 = async () => {
+    const videoToast = toast.loading("Compiling carousel deck into an MP4/WebM video...");
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = CANVAS_WIDTH;
+      canvas.height = CANVAS_HEIGHT;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        throw new Error("Could not initialize canvas recording context");
+      }
+
+      // Check supported MIME types for MediaRecorder
+      let options = { mimeType: "video/webm;codecs=vp9" };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: "video/webm;codecs=vp8" };
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: "video/webm" };
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: "video/mp4" };
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: "" };
+      }
+
+      const stream = canvas.captureStream(30); // 30 FPS
+      const chunks: Blob[] = [];
+      const recorder = new MediaRecorder(stream, options);
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
+      const recordedPromise = new Promise<Blob>((resolveRecorded, rejectRecorded) => {
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, { type: recorder.mimeType || "video/mp4" });
+          resolveRecorded(blob);
+        };
+        recorder.onerror = (e) => {
+          rejectRecorded(e);
+        };
+      });
+
+      recorder.start();
+
+      // Loop through slides
+      for (let i = 0; i < slides.length; i++) {
+        const slide = slides[i];
+        const isVideoAsset = slide.featuredImage.visible && slide.featuredImage.mediaUrl && isVideo(slide.featuredImage.mediaUrl);
+        
+        toast.loading(`Processing slide ${i + 1}/${slides.length}...`, { id: videoToast });
+
+        if (isVideoAsset) {
+          // 1. Video Slide processing
+          // First, create and load a hidden video element
+          const video = document.createElement("video");
+          video.src = slide.featuredImage.mediaUrl;
+          video.muted = true;
+          video.playsInline = true;
+          if (slide.featuredImage.mediaUrl.startsWith("http")) {
+            video.crossOrigin = "anonymous";
+          }
+
+          await new Promise<void>((resLoad) => {
+            video.onloadedmetadata = () => resLoad();
+            video.onerror = () => resLoad();
+            video.load();
+          });
+
+          // Rasterize static slide background (everything except the featured image)
+          const slideBg = JSON.parse(JSON.stringify(slide)) as Slide;
+          slideBg.featuredImage.visible = false; // hide featured image on background raster
+          const bgSvg = buildSvgString(slideBg, i, false);
+          const bgUrl = await convertSvgToRaster(bgSvg, "png");
+          const bgImg = new Image();
+          await new Promise((resBg) => { bgImg.onload = resBg; bgImg.src = bgUrl; });
+
+          // Determine playback duration
+          const duration = video.duration || 5; // default to 5 seconds
+          const totalFrames = Math.ceil(duration * 30);
+          
+          // Seek and play
+          video.currentTime = 0;
+          await video.play().catch(() => {});
+
+          // Draw frame-by-frame
+          for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            
+            // Draw background slide elements
+            ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Draw video frame with clipping and filters
+            ctx.save();
+            if (slide.featuredImage.brightness !== 100 || slide.featuredImage.contrast !== 100) {
+              ctx.filter = `brightness(${slide.featuredImage.brightness}%) contrast(${slide.featuredImage.contrast}%)`;
+            }
+
+            ctx.beginPath();
+            const fx = slide.featuredImage.x;
+            const fy = slide.featuredImage.y;
+            const fw = slide.featuredImage.width;
+            const fh = slide.featuredImage.height;
+            const r = slide.featuredImage.borderRadius;
+
+            try {
+              ctx.roundRect(fx, fy, fw, fh, r);
+            } catch (err) {
+              ctx.rect(fx, fy, fw, fh);
+            }
+            ctx.clip();
+
+            // Draw video element directly
+            ctx.drawImage(video, fx, fy, fw, fh);
+            ctx.restore();
+            ctx.filter = "none";
+
+            // Draw border if enabled
+            if (slide.featuredImage.borderWidth > 0) {
+              ctx.save();
+              ctx.strokeStyle = slide.featuredImage.borderColor;
+              ctx.lineWidth = slide.featuredImage.borderWidth;
+              ctx.beginPath();
+              try {
+                ctx.roundRect(fx, fy, fw, fh, r);
+              } catch (err) {
+                ctx.rect(fx, fy, fw, fh);
+              }
+              ctx.stroke();
+              ctx.restore();
+            }
+
+            // Sync frame delay (30 FPS -> 33ms)
+            await new Promise(r => setTimeout(r, 33));
+          }
+
+          video.pause();
+          video.src = ""; // clean up memory
+        } else {
+          // 2. Static Slide processing
+          // Rasterize full slide SVG (including image or empty placeholder)
+          const svgStr = buildSvgString(slide, i, false);
+          const dataUrl = await convertSvgToRaster(svgStr, "png");
+          const img = new Image();
+          await new Promise((resImg) => { img.onload = resImg; img.src = dataUrl; });
+
+          // Render static frame for 3.5 seconds (105 frames at 30 FPS)
+          const staticFrames = 105;
+          for (let frameIndex = 0; frameIndex < staticFrames; frameIndex++) {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            await new Promise(r => setTimeout(r, 33));
+          }
+        }
+      }
+
+      // Stop recording
+      recorder.stop();
+      toast.loading("Packaging video track...", { id: videoToast });
+
+      const finalBlob = await recordedPromise;
+      const downloadUrl = URL.createObjectURL(finalBlob);
+      
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-video.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
+
+      toast.success("Successfully exported carousel video!", { id: videoToast });
+    } catch (e: any) {
+      console.error("Video compile error:", e);
+      toast.error(`Video generation failed: ${e.message || "Unknown error"}`, { id: videoToast });
     }
   };
 
@@ -1385,9 +1608,16 @@ export function EditorialCarouselClient() {
 
           <button 
             onClick={handleDownloadPdf}
-            className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100"
+            className="px-4 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
           >
             <FileText size={12} /> Export PDF
+          </button>
+
+          <button 
+            onClick={handleDownloadMp4}
+            className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100 cursor-pointer"
+          >
+            <Play size={12} /> Export Video (MP4)
           </button>
         </div>
 
@@ -2068,6 +2298,12 @@ export function EditorialCarouselClient() {
                       className="w-full py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border-none dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700 cursor-pointer"
                     >
                       <FileText size={12} /> Download Full Deck (PDF)
+                    </button>
+                    <button
+                      onClick={handleDownloadMp4}
+                      className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border-none dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100 cursor-pointer"
+                    >
+                      <Play size={12} /> Download Deck (MP4 Video)
                     </button>
                   </div>
                 </div>
