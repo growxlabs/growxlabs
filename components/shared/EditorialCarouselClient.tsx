@@ -1403,18 +1403,10 @@ export function EditorialCarouselClient() {
         toast.loading(`Processing slide ${i + 1}/${slides.length}...`, { id: videoToast });
 
         if (isVideoAsset) {
-          // 1. Video Slide processing
-          // Convert video URL to a local Blob URL for instant local seeking
+          // Route video source through the local CORS proxy to bypass security blocks
           let videoSrc = slide.featuredImage.mediaUrl;
           if (videoSrc.startsWith("http")) {
-            try {
-              const targetUrl = `/api/proxy-image?url=${encodeURIComponent(videoSrc)}`;
-              const res = await fetch(targetUrl);
-              const blob = await res.blob();
-              videoSrc = URL.createObjectURL(blob);
-            } catch (err) {
-              console.warn("Failed to create local blob URL for video, using direct URL:", err);
-            }
+            videoSrc = `/api/proxy-image?url=${encodeURIComponent(videoSrc)}`;
           }
 
           // First, create and load a hidden video element
@@ -1430,9 +1422,7 @@ export function EditorialCarouselClient() {
           document.body.appendChild(video);
 
           video.src = videoSrc;
-          if (videoSrc.startsWith("http")) {
-            video.crossOrigin = "anonymous";
-          }
+          video.crossOrigin = "anonymous";
 
           await new Promise<void>((resLoad) => {
             video.onloadedmetadata = () => resLoad();
@@ -1519,9 +1509,6 @@ export function EditorialCarouselClient() {
           }
 
           try { document.body.removeChild(video); } catch (e) {}
-          if (videoSrc.startsWith("blob:") && videoSrc !== slide.featuredImage.mediaUrl) {
-            URL.revokeObjectURL(videoSrc);
-          }
         } else {
           // 2. Static Slide processing
           // Rasterize full slide SVG (including image or empty placeholder)
