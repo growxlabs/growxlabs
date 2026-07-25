@@ -1452,11 +1452,12 @@ export function EditorialCarouselClient() {
             await new Promise<void>((resSeek) => {
               const onSeeked = () => {
                 video.removeEventListener("seeked", onSeeked);
-                resSeek();
+                // Give the CPU/GPU 150ms buffer time to paint the decoded texture to the video element
+                setTimeout(resSeek, 150);
               };
               video.addEventListener("seeked", onSeeked);
               // Safe timeout in case seek fails/hangs
-              setTimeout(resSeek, 150);
+              setTimeout(resSeek, 400);
             });
 
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
