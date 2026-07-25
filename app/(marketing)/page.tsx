@@ -188,7 +188,7 @@ export default function Home() {
                       <span>[ CLIENT WORK ]</span>
                     </div>
                     <p className="text-white/70 text-[15px] leading-relaxed max-w-md font-sans">
-                      Discover high-performance systems, custom automation pipelines, and high-converting websites engineered for global brands.
+                      Discover custom software, autonomous AI agents, and secure integrations engineered for global brands.
                     </p>
                   </div>
                 </div>
