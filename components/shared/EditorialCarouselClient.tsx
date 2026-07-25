@@ -1402,10 +1402,23 @@ export function EditorialCarouselClient() {
 
         if (isVideoAsset) {
           // 1. Video Slide processing
+          // Convert video URL to a local Blob URL for instant local seeking
+          let videoSrc = slide.featuredImage.mediaUrl;
+          if (videoSrc.startsWith("http")) {
+            try {
+              const res = await fetch(videoSrc);
+              const blob = await res.blob();
+              videoSrc = URL.createObjectURL(blob);
+            } catch (err) {
+              console.warn("Failed to create local blob URL for video, using direct URL:", err);
+            }
+          }
+
           // First, create and load a hidden video element
           const video = document.createElement("video");
           video.muted = true;
           video.playsInline = true;
+          video.autoplay = false;
           video.style.position = "absolute";
           video.style.opacity = "0";
           video.style.pointerEvents = "none";
@@ -1413,8 +1426,8 @@ export function EditorialCarouselClient() {
           video.style.height = "1px";
           document.body.appendChild(video);
 
-          video.src = slide.featuredImage.mediaUrl;
-          if (slide.featuredImage.mediaUrl.startsWith("http")) {
+          video.src = videoSrc;
+          if (videoSrc.startsWith("http")) {
             video.crossOrigin = "anonymous";
           }
 
@@ -1437,8 +1450,6 @@ export function EditorialCarouselClient() {
           const duration = video.duration || 5; // default to 5 seconds
           const totalFrames = Math.ceil(duration * 15); // record at 15 FPS for faster rendering and lighter CPU/decoding loads
           
-          const frameDelay = 1000 / 15; // ms per frame
-
           // Draw frame-by-frame by seeking systematically to get exact matching decodes
           for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
             const seekTime = (frameIndex / 15);
@@ -1505,6 +1516,9 @@ export function EditorialCarouselClient() {
           }
 
           try { document.body.removeChild(video); } catch (e) {}
+          if (videoSrc.startsWith("blob:") && videoSrc !== slide.featuredImage.mediaUrl) {
+            URL.revokeObjectURL(videoSrc);
+          }
         } else {
           // 2. Static Slide processing
           // Rasterize full slide SVG (including image or empty placeholder)
@@ -1531,15 +1545,21 @@ export function EditorialCarouselClient() {
       const finalBlob = await recordedPromise;
       const downloadUrl = URL.createObjectURL(finalBlob);
       
+      const actualMime = recorder.mimeType || options.mimeType;
+      const fileExt = actualMime.includes("mp4") ? "mp4" : "webm";
+      
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-video.mp4`;
+      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-video.${fileExt}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(downloadUrl);
 
-      toast.success("Successfully exported carousel video!", { id: videoToast });
+      toast.success(`Successfully exported carousel video as .${fileExt}!`, { id: videoToast });
+      if (fileExt === "webm") {
+        toast.info("WebM is fully supported by LinkedIn & Instagram. To play it offline on legacy players, open the file inside Google Chrome.", { duration: 8000 });
+      }
     } catch (e: any) {
       console.error("Video compile error:", e);
       toast.error(`Video generation failed: ${e.message || "Unknown error"}`, { id: videoToast });
