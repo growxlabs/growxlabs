@@ -157,7 +157,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
   return {
     title: "Global Web Development & Automation Services | GrowXLabsTech",
-    description: "AI-powered websites, n8n automation workflows, WhatsApp integration, and AI chatbots for businesses globally. Trusted by restaurants, real estate agencies, and growing businesses worldwide.",
+    description: "AI-powered websites, n8n automation workflows, WhatsApp integration, and AI chatbots for businesses globally. Trusted by restaurants, real estate companies, and growing businesses worldwide.",
     alternates: {
       canonical: `https://growxlabs.tech/${locale}/services`,
       languages
@@ -181,7 +181,7 @@ export default function ServicesPage() {
           {
             "@type": "Service",
             "@id": "https://growxlabs.tech/services/web#service",
-            "name": "Web Engineering",
+            "name": "Web Platforms",
             "provider": { "@id": "https://growxlabs.tech/#organization" },
             "areaServed": "Global",
             "description": "High-performance websites with native AI integration."

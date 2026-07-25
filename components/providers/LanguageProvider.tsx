@@ -17,12 +17,8 @@ const enDictionary = {
     "subtitle": "World-class engineering for high-stakes digital products.",
     "items": [
       {
-        "title": "Web Engineering",
-        "desc": "High-performance, scalable web platforms built with Next.js and high-level architectural precision."
-      },
-      {
         "title": "WorkFlow Automation",
-        "desc": "Eliminate manual bottlenecks with n8n and AI-driven automation pipelines that work while you sleep."
+        "desc": "Eliminate manual bottlenecks with AI-driven automation pipelines that work while you sleep."
       },
       {
         "title": "AI Integration",

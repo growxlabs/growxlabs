@@ -19,7 +19,7 @@ export function SectionX() {
         {/* Centered Statement + CTA */}
         <div className="max-w-4xl text-center px-8 flex flex-col items-center gap-8">
           <h2 className="text-[clamp(1.6rem,3.2vw,2.5rem)] font-medium text-foreground tracking-tight leading-[1.35] font-sans">
-            We help legacy enterprises become AI-native.
+            We help legacy enterprises become <span className="whitespace-nowrap">AI-native.</span>
           </h2>
         </div>
 

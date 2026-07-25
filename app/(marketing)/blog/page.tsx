@@ -238,7 +238,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
       },
       {
         "@type": "Thing",
-        "name": "Web Engineering"
+        "name": "Web Platforms"
       }
     ]
   };

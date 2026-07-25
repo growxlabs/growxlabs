@@ -106,11 +106,6 @@ export default function Home() {
 
   const mainServices = [
     {
-      title: "Web Engineering",
-      description: "High-performance digital platforms that convert visitors into customers at scale.",
-      iconName: "code",
-    },
-    {
       title: "AI & Automation",
       description: "Custom AI workflows and automation systems that eliminate manual work and drive growth.",
       iconName: "settings",
