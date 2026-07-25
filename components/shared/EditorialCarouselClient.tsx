@@ -1404,9 +1404,16 @@ export function EditorialCarouselClient() {
           // 1. Video Slide processing
           // First, create and load a hidden video element
           const video = document.createElement("video");
-          video.src = slide.featuredImage.mediaUrl;
           video.muted = true;
           video.playsInline = true;
+          video.style.position = "absolute";
+          video.style.opacity = "0";
+          video.style.pointerEvents = "none";
+          video.style.width = "1px";
+          video.style.height = "1px";
+          document.body.appendChild(video);
+
+          video.src = slide.featuredImage.mediaUrl;
           if (slide.featuredImage.mediaUrl.startsWith("http")) {
             video.crossOrigin = "anonymous";
           }
@@ -1418,7 +1425,8 @@ export function EditorialCarouselClient() {
           });
 
           // Rasterize static slide background (everything except the featured image)
-          const slideBg = JSON.parse(JSON.stringify(slide)) as Slide;
+          const { slide: sanitizedSlide } = await prepareSlideForExport(slide, i);
+          const slideBg = JSON.parse(JSON.stringify(sanitizedSlide)) as Slide;
           slideBg.featuredImage.visible = false; // hide featured image on background raster
           const bgSvg = buildSvgString(slideBg, i, false);
           const bgUrl = await convertSvgToRaster(bgSvg, "png");
@@ -1427,14 +1435,26 @@ export function EditorialCarouselClient() {
 
           // Determine playback duration
           const duration = video.duration || 5; // default to 5 seconds
-          const totalFrames = Math.ceil(duration * 30);
+          const totalFrames = Math.ceil(duration * 15); // record at 15 FPS for faster rendering and lighter CPU/decoding loads
           
-          // Seek and play
-          video.currentTime = 0;
-          await video.play().catch(() => {});
+          const frameDelay = 1000 / 15; // ms per frame
 
-          // Draw frame-by-frame
+          // Draw frame-by-frame by seeking systematically to get exact matching decodes
           for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
+            const seekTime = (frameIndex / 15);
+            video.currentTime = seekTime;
+            
+            // Wait for seek operation to complete
+            await new Promise<void>((resSeek) => {
+              const onSeeked = () => {
+                video.removeEventListener("seeked", onSeeked);
+                resSeek();
+              };
+              video.addEventListener("seeked", onSeeked);
+              // Safe timeout in case seek fails/hangs
+              setTimeout(resSeek, 150);
+            });
+
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             
             // Draw background slide elements
@@ -1480,26 +1500,26 @@ export function EditorialCarouselClient() {
               ctx.restore();
             }
 
-            // Sync frame delay (30 FPS -> 33ms)
-            await new Promise(r => setTimeout(r, 33));
+            // Sync frame delay
+            await new Promise(r => setTimeout(r, 16));
           }
 
-          video.pause();
-          video.src = ""; // clean up memory
+          try { document.body.removeChild(video); } catch (e) {}
         } else {
           // 2. Static Slide processing
           // Rasterize full slide SVG (including image or empty placeholder)
-          const svgStr = buildSvgString(slide, i, false);
+          const { slide: sanitizedSlide } = await prepareSlideForExport(slide, i);
+          const svgStr = buildSvgString(sanitizedSlide, i, false);
           const dataUrl = await convertSvgToRaster(svgStr, "png");
           const img = new Image();
           await new Promise((resImg) => { img.onload = resImg; img.src = dataUrl; });
 
-          // Render static frame for 3.5 seconds (105 frames at 30 FPS)
-          const staticFrames = 105;
+          // Render static frame for 3.5 seconds (53 frames at 15 FPS)
+          const staticFrames = 53;
           for (let frameIndex = 0; frameIndex < staticFrames; frameIndex++) {
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            await new Promise(r => setTimeout(r, 33));
+            await new Promise(r => setTimeout(r, 16));
           }
         }
       }
