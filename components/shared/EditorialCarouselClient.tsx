@@ -524,15 +524,14 @@ export function EditorialCarouselClient() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result;
-      if (typeof result === "string") {
-        updateSlideElement("featuredImage", { mediaUrl: result });
-        toast.success("Successfully uploaded media file!");
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const localUrl = URL.createObjectURL(file);
+      updateSlideElement("featuredImage", { mediaUrl: localUrl });
+      toast.success("Successfully uploaded media file!");
+    } catch (err) {
+      console.error("Error creating local object URL:", err);
+      toast.error("Failed to process uploaded file");
+    }
   };
 
   // Initialize history
@@ -785,7 +784,7 @@ export function EditorialCarouselClient() {
   // EXPORT ENGINE
   // ==========================================
 
-  const buildSvgString = (slide: Slide, index: number, includeFonts = true) => {
+  const buildSvgString = (slide: Slide, index: number, includeFonts = true, videoFrameUrl?: string) => {
     const fontsMarkup = includeFonts ? DEFAULT_FONTS.map(f => 
       `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');`
     ).join("\n") : "";
@@ -849,7 +848,7 @@ export function EditorialCarouselClient() {
         ">
           ${el.mediaUrl ? (
             isVideoAsset ? `
-              <video src="${el.mediaUrl}" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
+              <img src="${videoFrameUrl || el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
             ` : `
               <img src="${el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
             `
@@ -1082,6 +1081,73 @@ export function EditorialCarouselClient() {
     `;
   };
 
+  const getSlideVideoFrame = async (slide: Slide, idx: number): Promise<string> => {
+    if (!slide.featuredImage.visible || !slide.featuredImage.mediaUrl || !isVideo(slide.featuredImage.mediaUrl)) {
+      return "";
+    }
+    
+    // 1. Try to capture from the live video element in the DOM if this is the active slide
+    if (idx === activeIndex) {
+      try {
+        const liveVideo = canvasRef.current?.querySelector("video") as HTMLVideoElement;
+        if (liveVideo && liveVideo.readyState >= 2) {
+          const canvas = document.createElement("canvas");
+          canvas.width = liveVideo.videoWidth || 1080;
+          canvas.height = liveVideo.videoHeight || 1350;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL("image/png");
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to capture live DOM video frame, falling back to background loading:", err);
+      }
+    }
+
+    // 2. Otherwise load in background and extract the frame
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.src = slide.featuredImage.mediaUrl;
+      video.crossOrigin = "anonymous";
+      video.muted = true;
+      video.playsInline = true;
+      
+      // Let's seek to 0.5s to get a valid, non-black frame
+      video.currentTime = 0.5;
+
+      video.onseeked = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 1080;
+          canvas.height = video.videoHeight || 1350;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/png"));
+            return;
+          }
+        } catch (err) {
+          console.error("Error drawing background video frame:", err);
+        }
+        resolve("");
+      };
+
+      video.onerror = () => {
+        console.error("Error loading video in background for frame capture:", slide.featuredImage.mediaUrl);
+        resolve("");
+      };
+
+      // Set timeout of 3 seconds so we don't hang the export forever if the video fails to load
+      const timeout = setTimeout(() => {
+        video.src = "";
+        resolve("");
+      }, 3000);
+
+      video.load();
+    });
+  };
+
   const convertSvgToRaster = async (svgString: string, type: "png" | "jpeg"): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
@@ -1117,9 +1183,10 @@ export function EditorialCarouselClient() {
     });
   };
 
-  const handleDownloadSlideSvg = (idx: number) => {
+  const handleDownloadSlideSvg = async (idx: number) => {
     try {
-      const svgStr = buildSvgString(slides[idx], idx, true); // Keep font styles inside SVG vector files
+      const frameUrl = await getSlideVideoFrame(slides[idx], idx);
+      const svgStr = buildSvgString(slides[idx], idx, true, frameUrl); // Keep font styles inside SVG vector files
       const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -1137,7 +1204,8 @@ export function EditorialCarouselClient() {
 
   const handleDownloadSlideRaster = async (idx: number, type: "png" | "jpeg") => {
     try {
-      const svgStr = buildSvgString(slides[idx], idx, false); // Bypass CORS security policies by excluding @imports
+      const frameUrl = await getSlideVideoFrame(slides[idx], idx);
+      const svgStr = buildSvgString(slides[idx], idx, false, frameUrl); // Bypass CORS security policies by excluding @imports
       const dataUrl = await convertSvgToRaster(svgStr, type);
       const link = document.createElement("a");
       link.href = dataUrl;
@@ -1164,7 +1232,8 @@ export function EditorialCarouselClient() {
 
       for (let i = 0; i < slides.length; i++) {
         if (i > 0) doc.addPage();
-        const svgStr = buildSvgString(slides[i], i, false); // Bypass CORS security policies
+        const frameUrl = await getSlideVideoFrame(slides[i], i);
+        const svgStr = buildSvgString(slides[i], i, false, frameUrl); // Bypass CORS security policies
         const dataUrl = await convertSvgToRaster(svgStr, "png");
         doc.addImage(dataUrl, "PNG", 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       }
@@ -1177,11 +1246,11 @@ export function EditorialCarouselClient() {
     }
   };
 
-  const handleDownloadAllSlidesSvg = () => {
-    slides.forEach((_, idx) => {
-      handleDownloadSlideSvg(idx);
-    });
-    toast.success(`Started downloading all ${slides.length} slides!`);
+  const handleDownloadAllSlidesSvg = async () => {
+    toast.success(`Exporting all ${slides.length} slides...`);
+    for (let idx = 0; idx < slides.length; idx++) {
+      await handleDownloadSlideSvg(idx);
+    }
   };
 
   // ==========================================
