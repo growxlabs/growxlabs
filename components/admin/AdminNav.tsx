@@ -56,7 +56,7 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "crm",
-    title: "CRM & Sales",
+    title: "Customer & Sales",
     icon: Database,
     items: [
       { name: "CRM Hub", href: "/admin/crm", icon: Database },
@@ -64,8 +64,8 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Contacts", href: "/admin/contacts", icon: Users },
       { name: "Deals Pipeline", href: "/admin/deals", icon: DollarSign },
       { name: "Leads", href: "/admin/leads", icon: Target },
-      { name: "Lead Scraper", href: "/admin/leads/scrape", icon: Zap },
-      { name: "Apollo Leads", href: "/admin/apollo", icon: Rocket },
+      { name: "Lead Research", href: "/admin/leads/scrape", icon: Zap },
+      { name: "Lead Enrichment", href: "/admin/apollo", icon: Rocket },
       { name: "Products", href: "/admin/products", icon: FileText },
       { name: "Quotations", href: "/admin/quotations", icon: FileText },
       { name: "Invoices", href: "/admin/invoices", icon: ClipboardList },
@@ -74,14 +74,14 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Client Accounts", href: "/admin/clients", icon: Users },
       { name: "Outreach", href: "/admin/outreach", icon: Inbox },
       { name: "GrowX Email", href: "/admin/growx-email", icon: Mail },
-      { name: "Pitch Deck Gen", href: "/admin/pitch-deck", icon: Presentation },
+      { name: "Presentation Builder", href: "/admin/pitch-deck", icon: Presentation },
       { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
       { name: "Workflows", href: "/admin/workflows", icon: Zap },
     ]
   },
   {
     id: "pm",
-    title: "Projects & Agile",
+    title: "Projects & Delivery",
     icon: Briefcase,
     items: [
       { name: "Projects", href: "/admin/pm/projects", icon: Briefcase },
@@ -89,7 +89,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Workload", href: "/admin/pm/workload", icon: Users },
       { name: "Timesheets", href: "/admin/pm/timesheets", icon: Clock },
       { name: "Bugs", href: "/admin/pm/bugs", icon: Bug },
-      { name: "PM Copilot", href: "/admin/pm/ai-copilot", icon: Sparkles },
+      { name: "Project Assistant", href: "/admin/pm/ai-copilot", icon: Sparkles },
     ]
   },
   {
@@ -97,7 +97,7 @@ const NAV_GROUPS: NavGroup[] = [
     title: "Finance & Accounts",
     icon: Wallet,
     items: [
-      { name: "Finance KPIs", href: "/admin/finance/dashboard", icon: BarChart3 },
+      { name: "Financial Overview", href: "/admin/finance/dashboard", icon: BarChart3 },
       { name: "Sales Invoices", href: "/admin/finance/invoices", icon: ClipboardList },
       { name: "Expenses", href: "/admin/finance/expenses", icon: Wallet },
       { name: "Ledger Accounts", href: "/admin/finance/accounts", icon: Database },
@@ -107,17 +107,17 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "hrms",
-    title: "Human Resources",
+    title: "People Operations",
     icon: Users,
     items: [
-      { name: "HR Dashboard", href: "/admin/hrms/dashboard", icon: BarChart3 },
+      { name: "People Overview", href: "/admin/hrms/dashboard", icon: BarChart3 },
       { name: "Employees", href: "/admin/hrms/employees", icon: Users },
       { name: "Recruitment", href: "/admin/hrms/recruitment", icon: UserPlus },
       { name: "Attendance", href: "/admin/hrms/attendance", icon: CalendarCheck },
       { name: "Leaves", href: "/admin/hrms/leaves", icon: CalendarOff },
       { name: "Payroll", href: "/admin/hrms/payroll", icon: Receipt },
-      { name: "AI Recruiter", href: "/admin/hrms/ai-recruiter", icon: Sparkles },
-      { name: "SDR Onboarding", href: "/admin/employee-onboarding", icon: UserCheck },
+      { name: "Recruiting Assistant", href: "/admin/hrms/ai-recruiter", icon: Sparkles },
+      { name: "Sales Team Onboarding", href: "/admin/employee-onboarding", icon: UserCheck },
     ]
   },
   {
@@ -141,15 +141,15 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "ai",
-    title: "AI Intelligence",
+    title: "Intelligent Tools",
     icon: Cpu,
     items: [
-      { name: "AI Command Center", href: "/admin/ai-platform", icon: Cpu },
+      { name: "Intelligent Workspace", href: "/admin/ai-platform", icon: Cpu },
     ]
   },
   {
     id: "academy",
-    title: "Academy & Orders",
+    title: "Learning & Commerce",
     icon: BookOpen,
     items: [
       { name: "Courses", href: "/admin/academy/courses", icon: BookOpen },
@@ -162,11 +162,11 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "admin",
-    title: "Platform Admin",
+    title: "Administration",
     icon: Settings,
     items: [
       { name: "Settings & Security", href: "/admin/settings", icon: Settings },
-      { name: "Team & RBAC", href: "/admin/team", icon: UserCog },
+      { name: "Team & Access", href: "/admin/team", icon: UserCog },
       { name: "Reports & Analytics", href: "/admin/reports", icon: BarChart3 },
     ]
   }
@@ -191,20 +191,29 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
   // Track open accordion sections
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     overview: true,
-    crm: true,
-    pm: true,
-    finance: true,
-    hrms: true,
-    marketing: true,
-    support: true,
-    ai: true,
-    academy: true,
-    admin: true,
+    crm: false,
+    pm: false,
+    finance: false,
+    hrms: false,
+    marketing: false,
+    support: false,
+    ai: false,
+    academy: false,
+    admin: false,
   });
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    const activeGroup = NAV_GROUPS.find(group =>
+      group.items.some(item => pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`)))
+    );
+    if (activeGroup) {
+      setOpenSections(prev => ({ ...prev, [activeGroup.id]: true }));
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (mounted && theme) {
@@ -288,7 +297,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
   };
 
   const renderLink = (item: { name: string; href: string; icon: any }, isMobile = false) => {
-    const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+    const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`));
     const Icon = item.icon;
 
     return (
@@ -296,6 +305,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         key={item.href}
         href={item.href}
         title={isCollapsed && !isMobile ? item.name : ""}
+        aria-current={isActive ? "page" : undefined}
         onClick={() => {
           if (isMobileOpen) onMobileToggle();
         }}
@@ -384,6 +394,8 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
               {/* Group Header */}
               <button
                 onClick={() => toggleSection(group.id)}
+                aria-expanded={isOpen}
+                aria-controls={`admin-nav-${group.id}`}
                 className={cn(
                   "w-full flex items-center justify-between h-7 px-2.5 rounded-md text-[10px] font-extrabold uppercase tracking-[0.15em] text-[#94A3B8] hover:text-[#0F172A] hover:bg-slate-50 transition-all cursor-pointer select-none",
                   isCollapsed && !isMobile ? "lg:hidden" : ""
@@ -398,7 +410,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
 
               {/* Group Items */}
               {(isOpen || (isCollapsed && !isMobile)) && (
-                <div className="space-y-0.5 pl-1">
+                <div id={`admin-nav-${group.id}`} className="space-y-0.5 pl-1">
                   {visibleItems.map(item => renderLink(item, isMobile))}
                 </div>
               )}
@@ -430,6 +442,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
               }}
               className="flex items-center justify-center w-7 h-7 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-md transition-all cursor-pointer"
               title={`Theme: ${theme}`}
+              aria-label={`Theme: ${theme}. Change theme`}
             >
               {theme === 'light' && <Sun size={13} />}
               {theme === 'dark' && <Moon size={13} />}

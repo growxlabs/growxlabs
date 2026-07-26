@@ -548,20 +548,20 @@ export default function AdminCRMPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-3 border-b border-[var(--border-subtle)] bg-transparent">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">CRM Dashboard</h1>
+              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Customer Management</h1>
               <span className="flex h-2.5 w-2.5 relative" title="Live Database Stream Connected">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
             </div>
-            <p className="text-[var(--text-muted)] text-xs">Manage workspace accounts, monitor pipeline value, and audit sales activities.</p>
+            <p className="text-[var(--text-muted)] text-xs">Manage customer accounts, monitor sales value, and review account activity.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end shrink-0">
             <Button onClick={() => setShowAddLead(true)} className="h-8 px-3 bg-[#0075de] hover:bg-[#005bab] text-white text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
               <Plus size={12} className="shrink-0" /> Add Lead
             </Button>
-            <Button onClick={() => setShowImport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
-              <Upload size={12} className="shrink-0" /> Import CSV
+              <Button onClick={() => setShowImport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
+              <Upload size={12} className="shrink-0" /> Import spreadsheet
             </Button>
             {isAdminOrCoAdmin ? (
               <Button onClick={() => setShowExport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
