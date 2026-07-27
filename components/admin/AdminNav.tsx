@@ -638,11 +638,11 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         </button>
       </aside>
 
-      {/* The page remains in place; this overlay makes the adjacent panel read as a popup. */}
+      {/* Invisible outside-click layer. It must not alter, blur, or dim the page. */}
       {desktopFlyout && (
         <button
           type="button"
-          className="hidden lg:block fixed inset-y-0 right-0 z-[130] cursor-default bg-slate-950/[0.06] backdrop-blur-[1px]"
+          className="hidden lg:block fixed inset-y-0 right-0 z-[130] cursor-default bg-transparent"
           style={{ left: isCollapsed ? 80 : 256 }}
           onClick={() => setDesktopFlyout(null)}
           aria-label="Close navigation popup"
