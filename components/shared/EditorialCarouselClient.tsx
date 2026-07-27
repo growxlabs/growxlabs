@@ -46,6 +46,7 @@ import {
   MousePointer
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 const isVideo = (url?: string) => {
   if (!url) return false;
@@ -470,6 +471,7 @@ const TEMPLATE_PRESETS = [
 ];
 
 export function EditorialCarouselClient() {
+  const { resolvedTheme, setTheme } = useTheme();
   const [slides, setSlides] = useState<Slide[]>([DEFAULT_SLIDE(0)]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedElement, setSelectedElement] = useState<ElementKey | null>(null);
@@ -482,6 +484,10 @@ export function EditorialCarouselClient() {
   const [showSafeArea, setShowSafeArea] = useState(true);
   const [showGuides, setShowGuides] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    setDarkMode(resolvedTheme === "dark");
+  }, [resolvedTheme]);
 
   // Left panel collapse settings
   const [leftTab, setLeftTab] = useState<"slides" | "templates" | "brand">("slides");
@@ -1719,7 +1725,7 @@ export function EditorialCarouselClient() {
           <div className="h-4 w-px bg-white/15 mx-2" />
           
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={() => setTheme(darkMode ? "light" : "dark")}
             className="p-2 hover:bg-white/10 rounded-md transition-all"
             title="Toggle Dark Mode"
           >
@@ -1973,7 +1979,7 @@ export function EditorialCarouselClient() {
             <button 
               onClick={() => setShowSafeArea(!showSafeArea)}
               className={`p-1.5 rounded-lg border transition-all ${
-                showSafeArea ? "bg-neutral-100 border-neutral-300 text-neutral-900" : "bg-transparent border-transparent text-neutral-400"
+                showSafeArea ? "bg-neutral-100 border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white" : "bg-transparent border-transparent text-neutral-400 dark:text-neutral-500"
               }`}
               title="Safe Area Grid (72px Left/Right, 60px Top, 70px Bottom)"
             >
@@ -1982,7 +1988,7 @@ export function EditorialCarouselClient() {
             <button 
               onClick={() => setShowGrid(!showGrid)}
               className={`p-1.5 rounded-lg border transition-all ${
-                showGrid ? "bg-neutral-100 border-neutral-300 text-neutral-900" : "bg-transparent border-transparent text-neutral-400"
+                showGrid ? "bg-neutral-100 border-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:border-neutral-600 dark:text-white" : "bg-transparent border-transparent text-neutral-400 dark:text-neutral-500"
               }`}
               title="Toggle Grid overlay"
             >
