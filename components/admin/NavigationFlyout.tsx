@@ -53,7 +53,7 @@ export function NavigationFlyout({
     <>
       <button
         type="button"
-        className="hidden lg:block fixed inset-y-0 right-0 z-[980] cursor-default bg-transparent"
+        className="fixed inset-y-0 right-0 z-[980] cursor-default bg-transparent"
         style={{ left: sidebarWidth }}
         onClick={() => onClose(true)}
         aria-label="Close navigation popup"
@@ -63,8 +63,8 @@ export function NavigationFlyout({
         role="dialog"
         aria-modal="false"
         aria-label={`${title} navigation`}
-        className="hidden lg:flex fixed z-[999] w-[340px] max-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_30px_90px_-28px_rgba(15,23,42,0.5)] ring-1 ring-black/[0.04] animate-in fade-in slide-in-from-left-3 duration-200 ease-out motion-reduce:animate-none motion-reduce:transition-none"
-        style={{ left, top }}
+        className="notion-theme fixed z-[999] flex w-[340px] max-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_30px_90px_-28px_rgba(15,23,42,0.5)] ring-1 ring-black/[0.04] animate-in fade-in slide-in-from-left-3 duration-200 ease-out motion-reduce:animate-none motion-reduce:transition-none"
+        style={{ left, top, display: "flex" }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
