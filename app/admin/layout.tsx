@@ -15,6 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const isEditorialStudio = currentPath?.includes("/admin/editorial-carousel");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -270,7 +271,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         "ml-0 pt-14 lg:pt-0"
       )}>
          {/* Internal Spacing — responsive padding */}
-         <div className="p-4 sm:p-6 lg:p-12 max-w-[1600px] w-full mx-auto space-y-6 sm:space-y-8 lg:space-y-10 print:p-0 print:m-0 print:space-y-0 print:max-w-none">
+         <div className={cn(
+           "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
+           isEditorialStudio
+             ? "h-[calc(100vh-3.5rem)] lg:h-screen max-w-none overflow-hidden"
+             : "p-4 sm:p-6 lg:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
+         )}>
             {children}
          </div>
       </main>

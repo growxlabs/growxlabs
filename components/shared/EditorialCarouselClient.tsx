@@ -1088,6 +1088,7 @@ export function EditorialCarouselClient() {
         viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}" 
         width="${CANVAS_WIDTH}" 
         height="${CANVAS_HEIGHT}" 
+        preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -1252,8 +1253,8 @@ export function EditorialCarouselClient() {
   const convertSvgToRaster = async (svgString: string, type: "png" | "jpeg"): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        const base64Svg = window.btoa(unescape(encodeURIComponent(svgString)));
-        const dataURL = `data:image/svg+xml;base64,${base64Svg}`;
+        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
@@ -1261,22 +1262,29 @@ export function EditorialCarouselClient() {
           canvas.height = CANVAS_HEIGHT;
           const ctx = canvas.getContext("2d");
           if (ctx) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
             if (type === "jpeg") {
               ctx.fillStyle = "#ffffff";
               ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
             ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            URL.revokeObjectURL(svgUrl);
             const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
             resolve(dataUrl);
           } else {
+            URL.revokeObjectURL(svgUrl);
             reject(new Error("Canvas context error"));
           }
         };
         img.onerror = (e) => {
+          URL.revokeObjectURL(svgUrl);
           console.error("Raster image decode error event:", e);
           reject(new Error("Image decoding failed"));
         };
-        img.src = dataURL;
+        img.width = CANVAS_WIDTH;
+        img.height = CANVAS_HEIGHT;
+        img.src = svgUrl;
       } catch (err) {
         console.error("Base64 string convert error:", err);
         reject(err);
@@ -1292,7 +1300,7 @@ export function EditorialCarouselClient() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}.svg`;
+      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.svg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1310,7 +1318,7 @@ export function EditorialCarouselClient() {
       const dataUrl = await convertSvgToRaster(svgStr, type);
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}.${type}`;
+      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1332,7 +1340,7 @@ export function EditorialCarouselClient() {
       });
 
       for (let i = 0; i < slides.length; i++) {
-        if (i > 0) doc.addPage();
+        if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "portrait");
         const { slide, videoFrameUrl } = await prepareSlideForExport(slides[i], i);
         const svgStr = buildSvgString(slide, i, false, videoFrameUrl); // Bypass CORS security policies
         const dataUrl = await convertSvgToRaster(svgStr, "png");
@@ -1340,7 +1348,7 @@ export function EditorialCarouselClient() {
       }
 
       doc.save(`${projectName.toLowerCase().replace(/\s+/g, "-")}-carousel.pdf`);
-      toast.success("Exported full carousel as PDF!", { id: downloadToast });
+      toast.success("Exported the full carousel at 1080 × 1350 per page.", { id: downloadToast });
     } catch (e) {
       console.error(e);
       toast.error("Failed to export PDF file", { id: downloadToast });
@@ -1617,12 +1625,12 @@ export function EditorialCarouselClient() {
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col bg-[#F5F5F7] text-neutral-900 font-sans transition-colors duration-200 ${darkMode ? "dark bg-neutral-950 text-white" : ""}`}>
+    <div className={`w-full h-full min-h-0 flex flex-col bg-[#e9eaec] text-neutral-900 font-sans overflow-hidden transition-colors duration-200 ${darkMode ? "dark bg-[#18181b] text-white" : ""}`}>
       
       {/* ==========================================
           TOP BAR (Figma/Canva inspired)
           ========================================== */}
-      <header className="h-14 border-b border-neutral-200/60 bg-white/90 backdrop-blur-md px-6 flex items-center justify-between shrink-0 z-50 dark:bg-neutral-900/90 dark:border-neutral-800">
+      <header className="h-14 border-b border-black bg-[#1f1f22] px-4 flex items-center justify-between shrink-0 z-50 text-white shadow-sm">
         
         {/* Left: Project title & status */}
         <div className="flex items-center gap-4">
@@ -1639,17 +1647,17 @@ export function EditorialCarouselClient() {
                 className="bg-transparent border-b border-neutral-900 text-sm font-bold focus:outline-none dark:border-white"
               />
             ) : (
-              <h1 
+              <h1
                 onDoubleClick={() => setIsEditingProjectName(true)}
-                className="text-sm font-bold text-neutral-900 hover:bg-neutral-100 px-2 py-1 rounded cursor-pointer transition-all dark:text-white dark:hover:bg-neutral-800"
+                className="text-sm font-semibold text-white hover:bg-white/10 px-2 py-1 rounded-md cursor-pointer transition-all"
               >
                 {projectName}
               </h1>
             )}
           </div>
-          <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800" />
-          <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Auto Saved
+          <div className="h-4 w-px bg-white/15" />
+          <span className="text-[10px] text-neutral-400 font-semibold tracking-wide flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" /> Editing
           </span>
         </div>
 
@@ -1658,7 +1666,7 @@ export function EditorialCarouselClient() {
           <button 
             onClick={handleUndo} 
             disabled={historyIndex <= 0}
-            className="p-2 hover:bg-neutral-100 rounded-xl transition-all disabled:opacity-30 dark:hover:bg-neutral-800"
+            className="p-2 hover:bg-white/10 rounded-md transition-all disabled:opacity-30"
             title="Undo"
           >
             <Undo size={14} />
@@ -1666,16 +1674,16 @@ export function EditorialCarouselClient() {
           <button 
             onClick={handleRedo} 
             disabled={historyIndex >= history.length - 1}
-            className="p-2 hover:bg-neutral-100 rounded-xl transition-all disabled:opacity-30 dark:hover:bg-neutral-800"
+            className="p-2 hover:bg-white/10 rounded-md transition-all disabled:opacity-30"
             title="Redo"
           >
             <Redo size={14} />
           </button>
-          <div className="h-4 w-px bg-neutral-200 mx-2 dark:bg-neutral-800" />
+          <div className="h-4 w-px bg-white/15 mx-2" />
           
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2 hover:bg-neutral-100 rounded-xl transition-all dark:hover:bg-neutral-800"
+            className="p-2 hover:bg-white/10 rounded-md transition-all"
             title="Toggle Dark Mode"
           >
             {darkMode ? "☀️" : "🌙"}
@@ -1689,21 +1697,21 @@ export function EditorialCarouselClient() {
               navigator.clipboard.writeText(window.location.href);
               toast.success("Project URL copied to clipboard!");
             }}
-            className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+            className="px-3 py-1.5 hover:bg-white/10 text-neutral-200 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 border border-white/10"
           >
             <Share2 size={12} /> Share
           </button>
 
           <button 
             onClick={handleDownloadPdf}
-            className="px-4 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+            className="px-3 py-1.5 hover:bg-white/10 text-neutral-200 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 border border-white/10"
           >
             <FileText size={12} /> Export PDF
           </button>
 
           <button 
             onClick={handleDownloadMp4}
-            className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border-none dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100 cursor-pointer"
+            className="px-4 py-1.5 bg-[#0d99ff] hover:bg-[#0b87e3] text-white rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 border-none cursor-pointer"
           >
             <Play size={12} /> Export Video (MP4)
           </button>
@@ -1719,7 +1727,7 @@ export function EditorialCarouselClient() {
         {/* ------------------------------------------
             LEFT SIDEBAR (300px)
             ------------------------------------------ */}
-        <aside className="w-[300px] border-r border-neutral-200/60 bg-white flex flex-col overflow-y-auto px-4 py-6 space-y-6 shrink-0 z-10 dark:bg-neutral-900 dark:border-neutral-800">
+        <aside className="w-[272px] border-r border-neutral-200 bg-white flex flex-col overflow-y-auto px-3 py-4 space-y-5 shrink-0 z-10 dark:bg-[#242427] dark:border-neutral-800">
           
           {/* Logo & Section Selector */}
           <div className="flex bg-neutral-100 p-1 rounded-xl dark:bg-neutral-800">
@@ -1891,10 +1899,19 @@ export function EditorialCarouselClient() {
         {/* ------------------------------------------
             CENTER VIEWPORT: FLOATING CANVAS
             ------------------------------------------ */}
-        <main className="flex-1 bg-[#F5F5F7] overflow-auto flex items-center justify-center p-8 relative dark:bg-neutral-950">
+        <main
+          className="flex-1 overflow-auto flex items-center justify-center px-8 py-20 relative dark:bg-[#18181b]"
+          style={{
+            backgroundColor: darkMode ? "#18181b" : "#e7e8ea",
+            backgroundImage: darkMode
+              ? "radial-gradient(circle, rgba(255,255,255,.075) 1px, transparent 1px)"
+              : "radial-gradient(circle, rgba(17,24,39,.13) 1px, transparent 1px)",
+            backgroundSize: "16px 16px"
+          }}
+        >
           
           {/* Floating Viewport Toolbar */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white/80 backdrop-blur-md px-3 py-1.5 border border-neutral-200/60 rounded-2xl shadow-sm z-30 dark:bg-neutral-900/80 dark:border-neutral-800">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-white px-2.5 py-1.5 border border-neutral-200 rounded-lg shadow-md z-30 dark:bg-[#2c2c2f] dark:border-neutral-700">
             <div className="flex bg-neutral-100 p-0.5 rounded-lg border border-neutral-200/40 dark:bg-neutral-800 dark:border-neutral-700">
               <button 
                 onClick={() => setEditorMode("fixed")}
@@ -1957,7 +1974,7 @@ export function EditorialCarouselClient() {
           {/* Floating Canvas Wrapper */}
           <div 
             ref={canvasRef}
-            className="bg-white shadow-[0_24px_50px_-12px_rgba(0,0,0,0.08)] relative select-none overflow-hidden shrink-0 transition-transform rounded-[24px] dark:border dark:border-neutral-800"
+            className="bg-white shadow-[0_22px_55px_-18px_rgba(0,0,0,0.32)] relative select-none overflow-hidden shrink-0 transition-transform rounded-[18px] ring-1 ring-black/10 dark:ring-white/10"
             style={{
               width: `${CANVAS_WIDTH * zoomScale}px`,
               height: `${CANVAS_HEIGHT * zoomScale}px`,
@@ -2247,7 +2264,7 @@ export function EditorialCarouselClient() {
         {/* ------------------------------------------
             RIGHT PANEL: THE INSPECTOR
             ------------------------------------------ */}
-        <aside className="w-[360px] border-l border-neutral-200/60 bg-white flex flex-col overflow-y-auto px-6 py-6 space-y-6 shrink-0 z-10 dark:bg-neutral-900 dark:border-neutral-800">
+        <aside className="w-[320px] border-l border-neutral-200 bg-white flex flex-col overflow-y-auto px-4 py-4 space-y-5 shrink-0 z-10 dark:bg-[#242427] dark:border-neutral-800">
           
           {/* Document configuration (rendered when nothing is selected) */}
           {!selectedElement && !isFooterSelected && (
@@ -2356,11 +2373,18 @@ export function EditorialCarouselClient() {
                 <div className="space-y-3 pt-4 border-t">
                   <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block pb-1">Export Deck</span>
                   <div className="flex flex-col gap-2">
+                    <div className="rounded-lg border border-[#0d99ff]/20 bg-[#0d99ff]/5 px-3 py-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#0d99ff]">Fixed export size</span>
+                        <span className="font-mono text-[11px] font-bold text-neutral-700 dark:text-neutral-200">1080 × 1350</span>
+                      </div>
+                      <p className="mt-1 text-[10px] leading-relaxed text-neutral-500">Every downloaded slide uses the Instagram portrait 4:5 format.</p>
+                    </div>
                     <button
                       onClick={() => handleDownloadSlideRaster(activeIndex, "png")}
-                      className="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border-none dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-100 cursor-pointer"
+                      className="w-full py-2.5 bg-[#0d99ff] hover:bg-[#0b87e3] text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 border-none cursor-pointer shadow-sm"
                     >
-                      <Download size={12} /> Download Slide (PNG)
+                      <Download size={12} /> Download PNG · 1080 × 1350
                     </button>
                     <button
                       onClick={() => handleDownloadSlideRaster(activeIndex, "jpeg")}
