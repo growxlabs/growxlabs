@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { Link, usePathname } from "@/navigation-client";
 import { cn } from "@/lib/utils";
+import { NavigationFlyout } from "@/components/admin/NavigationFlyout";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import {
@@ -189,7 +189,11 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
   const { theme, setTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
-  const [desktopFlyout, setDesktopFlyout] = useState<{ groupId: string; top: number } | null>(null);
+  const [desktopFlyout, setDesktopFlyout] = useState<{
+    groupId: string;
+    top: number;
+    trigger: HTMLElement | null;
+  } | null>(null);
   const flyoutCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track open accordion sections
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -224,15 +228,8 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
     }
   }, [mounted, theme]);
 
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setDesktopFlyout(null);
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-      if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
-    };
+  useEffect(() => () => {
+    if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
   }, []);
 
   const updateThemeClass = (newTheme: string) => {
@@ -318,12 +315,24 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
     if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
     const rect = target.getBoundingClientRect();
     const maxTop = Math.max(12, window.innerHeight - 520);
-    setDesktopFlyout({ groupId, top: Math.max(12, Math.min(rect.top - 8, maxTop)) });
+    setDesktopFlyout({
+      groupId,
+      top: Math.max(12, Math.min(rect.top - 8, maxTop)),
+      trigger: target,
+    });
   };
 
   const scheduleDesktopFlyoutClose = () => {
     if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
     flyoutCloseTimer.current = setTimeout(() => setDesktopFlyout(null), 220);
+  };
+
+  const closeDesktopFlyout = (restoreFocus = false) => {
+    const trigger = desktopFlyout?.trigger;
+    setDesktopFlyout(null);
+    if (restoreFocus && trigger) {
+      window.requestAnimationFrame(() => trigger.focus());
+    }
   };
 
   const renderLink = (
@@ -341,7 +350,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         title={isCollapsed && !isMobile ? item.name : ""}
         aria-current={isActive ? "page" : undefined}
         onClick={() => {
-          setDesktopFlyout(null);
+          closeDesktopFlyout(false);
           if (isMobileOpen) onMobileToggle();
         }}
         className={cn(
@@ -624,7 +633,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
       <aside 
         className={cn(
           "hidden lg:flex h-screen border-r border-slate-200 bg-white flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible",
-          isCollapsed ? "w-20" : "w-64"
+          isCollapsed ? "w-20" : "w-[272px]"
         )}
       >
         {renderNavContent(false)}
@@ -639,59 +648,33 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         </button>
       </aside>
 
-      {/* Portal keeps the popup completely outside the Admin flex layout. */}
-      {mounted && desktopFlyout && createPortal((() => {
+      {/* Portal flyout is rendered outside the Admin shell by NavigationFlyout. */}
+      {desktopFlyout && (() => {
         const group = NAV_GROUPS.find(item => item.id === desktopFlyout.groupId);
         if (!group) return null;
         const visibleItems = visibleItemsForGroup(group);
         if (visibleItems.length === 0) return null;
-        const GroupIcon = group.icon;
 
         return (
-          <>
-            <button
-              type="button"
-              className="hidden lg:block fixed inset-y-0 right-0 z-[130] cursor-default bg-transparent"
-              style={{ left: isCollapsed ? 80 : 256 }}
-              onClick={() => setDesktopFlyout(null)}
-              aria-label="Close navigation popup"
-            />
-            <section
-              id={`admin-nav-${group.id}`}
-              className="hidden lg:flex fixed z-[150] w-[304px] max-h-[72vh] flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_28px_80px_-24px_rgba(15,23,42,0.48)] ring-1 ring-black/[0.03]"
-              style={{ left: isCollapsed ? 88 : 264, top: desktopFlyout.top }}
-              onMouseEnter={() => {
-                if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
-              }}
-              onMouseLeave={scheduleDesktopFlyoutClose}
-              aria-label={`${group.title} navigation`}
-            >
-              <div className="flex items-center gap-3 border-b border-[var(--border-subtle)] px-3.5 py-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#0075de]/15 bg-[#0075de]/10 text-[#0075de]">
-                  <GroupIcon size={15} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-[13px] font-bold tracking-tight text-[var(--text-primary)]">{group.title}</h2>
-                  <p className="mt-0.5 text-[10px] font-medium text-[var(--text-muted)]">
-                    {visibleItems.length} {visibleItems.length === 1 ? "destination" : "destinations"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setDesktopFlyout(null)}
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
-                  aria-label="Close navigation panel"
-                >
-                  <X size={15} />
-                </button>
-              </div>
-
-              <div className="custom-scrollbar flex flex-col gap-1 overflow-y-auto p-2">
-                {visibleItems.map(item => renderLink(item, true, true))}
-              </div>
-            </section>
-          </>
+          <NavigationFlyout
+            open
+            mounted={mounted}
+            title={group.title}
+            destinationCount={visibleItems.length}
+            icon={group.icon}
+            left={isCollapsed ? 92 : 284}
+            top={desktopFlyout.top}
+            sidebarWidth={isCollapsed ? 80 : 272}
+            onClose={closeDesktopFlyout}
+            onMouseEnter={() => {
+              if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
+            }}
+            onMouseLeave={scheduleDesktopFlyoutClose}
+          >
+            {visibleItems.map(item => renderLink(item, true, true))}
+          </NavigationFlyout>
         );
-      })(), document.body)}
+      })()}
 
       {/* ═══ CHANGE PASSWORD MODAL ═══ */}
       {showPwModal && (
