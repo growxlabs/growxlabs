@@ -1022,7 +1022,7 @@ export function EditorialCarouselClient() {
           background: ${el.color};
           opacity: ${el.opacity};
           z-index: ${el.zIndex || 1};
-        " />
+        "></div>
       `;
     };
 
@@ -1046,7 +1046,7 @@ export function EditorialCarouselClient() {
           z-index: ${el.zIndex || 1};
         ">
           <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #cbd5e1;">
-            ${el.avatarUrl ? `<img src="${el.avatarUrl}" style="width:100%; height:100%; object-fit:cover;" />` : `<div style="width:100%; height:100%; background:#0075de;"/>`}
+            ${el.avatarUrl ? `<img src="${el.avatarUrl}" style="width:100%; height:100%; object-fit:cover;" />` : `<div style="width:100%; height:100%; background:#0075de;"></div>`}
           </div>
           <span>${el.name}</span>
         </div>
@@ -1313,9 +1313,46 @@ export function EditorialCarouselClient() {
 
   const handleDownloadSlideRaster = async (idx: number, type: "png" | "jpeg") => {
     try {
-      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
-      const svgStr = buildSvgString(slide, idx, false, videoFrameUrl); // Bypass CORS security policies by excluding @imports
-      const dataUrl = await convertSvgToRaster(svgStr, type);
+      const element = canvasRef.current;
+      if (!element || idx !== activeIndex) {
+        // Fallback to SVG rendering method if element not found or exporting a different slide
+        const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+        const svgStr = buildSvgString(slide, idx, false, videoFrameUrl); // Bypass CORS security policies by excluding @imports
+        const dataUrl = await convertSvgToRaster(svgStr, type);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`);
+        return;
+      }
+
+      // Use html2canvas for high-fidelity active slide rendering
+      const html2canvas = (await import("html2canvas")).default;
+      
+      // Temporary hide guides and safe area overlays
+      const safeArea = element.querySelector(".border-dashed") as HTMLElement;
+      const grid = element.querySelector(".opacity-\\[0\\.03\\]") as HTMLElement;
+      const safeAreaDisplay = safeArea ? safeArea.style.display : "";
+      const gridDisplay = grid ? grid.style.display : "";
+      
+      if (safeArea) safeArea.style.display = "none";
+      if (grid) grid.style.display = "none";
+
+      const canvas = await html2canvas(element, {
+        scale: 1 / zoomScale,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+      });
+
+      // Restore guides and safe area overlays
+      if (safeArea) safeArea.style.display = safeAreaDisplay;
+      if (grid) grid.style.display = gridDisplay;
+
+      const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
