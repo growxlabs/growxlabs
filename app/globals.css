@@ -1216,5 +1216,52 @@ html {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5) !important;
 }
 
+/* Force light mode styles on the editor canvas, regardless of app-shell dark mode */
+.dark .notion-theme .editor-canvas,
+.dark .notion-theme .editor-canvas * {
+  --text-primary: #000000 !important;
+  --text-secondary: #31302e !important;
+  --text-muted: #615d59 !important;
+  --foreground: #000000 !important;
+}
+
+.dark .notion-theme .editor-canvas .bg-white,
+.dark .notion-theme .editor-canvas.bg-white {
+  background-color: #ffffff !important;
+}
+
+.dark .notion-theme .editor-canvas .text-neutral-800 {
+  color: #1f2937 !important;
+}
+
+.dark .notion-theme .editor-canvas .text-neutral-700 {
+  color: #374151 !important;
+}
+
+.dark .notion-theme .editor-canvas .text-neutral-500 {
+  color: #6b7280 !important;
+}
+
+.dark .notion-theme .editor-canvas .text-black {
+  color: #000000 !important;
+}
+
+.dark .notion-theme .editor-canvas .bg-neutral-50\/50 {
+  background-color: rgba(249, 250, 251, 0.5) !important;
+}
+
+.dark .notion-theme .editor-canvas .border-neutral-100 {
+  border-color: #f3f4f6 !important;
+}
+
+.dark .notion-theme .editor-canvas .border-neutral-300 {
+  border-color: #d1d5db !important;
+}
+
+.dark .notion-theme .editor-canvas .bg-neutral-200 {
+  background-color: #e5e7eb !important;
+}
+
+
 
 

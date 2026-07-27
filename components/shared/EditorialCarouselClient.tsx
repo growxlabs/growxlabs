@@ -2011,7 +2011,7 @@ export function EditorialCarouselClient() {
           {/* Floating Canvas Wrapper */}
           <div 
             ref={canvasRef}
-            className="bg-white shadow-[0_22px_55px_-18px_rgba(0,0,0,0.32)] relative select-none overflow-hidden shrink-0 transition-transform rounded-[18px] ring-1 ring-black/10 dark:ring-white/10"
+            className="editor-canvas bg-white shadow-[0_22px_55px_-18px_rgba(0,0,0,0.32)] relative select-none overflow-hidden shrink-0 transition-transform rounded-[18px] ring-1 ring-black/10 dark:ring-white/10"
             style={{
               width: `${CANVAS_WIDTH * zoomScale}px`,
               height: `${CANVAS_HEIGHT * zoomScale}px`,
