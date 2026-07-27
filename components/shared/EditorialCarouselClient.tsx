@@ -1329,8 +1329,8 @@ export function EditorialCarouselClient() {
         return;
       }
 
-      // Use html2canvas for high-fidelity active slide rendering
-      const html2canvas = (await import("html2canvas")).default;
+      // Use html2canvas-pro for high-fidelity active slide rendering (supports Tailwind v4 oklch colors)
+      const html2canvas = (await import("html2canvas-pro")).default;
       
       // Temporary hide guides and safe area overlays
       const safeArea = element.querySelector(".border-dashed") as HTMLElement;
@@ -1344,7 +1344,7 @@ export function EditorialCarouselClient() {
       const canvas = await html2canvas(element, {
         scale: 1 / zoomScale,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: "#ffffff",
       });
 
