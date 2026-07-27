@@ -325,7 +325,11 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
     flyoutCloseTimer.current = setTimeout(() => setDesktopFlyout(null), 140);
   };
 
-  const renderLink = (item: { name: string; href: string; icon: any }, isMobile = false) => {
+  const renderLink = (
+    item: { name: string; href: string; icon: any },
+    isMobile = false,
+    isFlyout = false
+  ) => {
     const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`));
     const Icon = item.icon;
 
@@ -344,13 +348,16 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
           isActive
             ? "bg-[#0075de]/10 text-[#0075de] dark:text-blue-400 font-bold border-[#0075de]/20 shadow-sm"
             : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)]",
-          isCollapsed && !isMobile && "lg:justify-center lg:px-0"
+          isCollapsed && !isMobile && "lg:justify-center lg:px-0",
+          isFlyout && "h-9 rounded-lg px-3 !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] hover:bg-[var(--surface-2)]",
+          isFlyout && isActive && "!text-[#0075de] bg-[#0075de]/10 border-[#0075de]/15"
         )}
       >
         <Icon className={cn(
           "h-3.5 w-3.5 shrink-0 transition-colors",
           isActive ? "text-[#0075de] dark:text-blue-400" : "text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]",
-          (!isCollapsed || isMobile) && "mr-2.5"
+          (!isCollapsed || isMobile) && "mr-2.5",
+          isFlyout && "!text-current"
         )} />
 
         <span className={cn(
@@ -446,7 +453,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
                 aria-expanded={isMobile ? isOpen : desktopFlyout?.groupId === group.id}
                 aria-controls={`admin-nav-${group.id}`}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-lg font-extrabold uppercase text-[#8291A7] hover:text-[#0F172A] hover:bg-slate-50 transition-all cursor-pointer select-none dark:hover:text-white dark:hover:bg-white/5",
+                  "w-full flex items-center justify-between rounded-lg font-extrabold uppercase text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)] transition-all cursor-pointer select-none",
                   isMobile
                     ? "h-7 px-2.5 text-[10px] tracking-[0.15em]"
                     : "h-10 px-2.5 text-[10px] tracking-[0.12em]",
@@ -642,7 +649,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         return (
           <section
             id={`admin-nav-${group.id}`}
-            className="hidden lg:flex fixed z-[150] w-[320px] max-h-[76vh] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-[0_24px_70px_-24px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-[#14161a]/95"
+            className="hidden lg:flex fixed z-[150] w-[304px] max-h-[72vh] flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_22px_55px_-24px_rgba(15,23,42,0.42)]"
             style={{ left: isCollapsed ? 88 : 264, top: desktopFlyout.top }}
             onMouseEnter={() => {
               if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
@@ -650,30 +657,27 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
             onMouseLeave={scheduleDesktopFlyoutClose}
             aria-label={`${group.title} navigation`}
           >
-            <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-4 dark:border-white/10">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#0075de]/15 bg-[#0075de]/10 text-[#0075de]">
-                <GroupIcon size={17} />
+            <div className="flex items-center gap-3 border-b border-[var(--border-subtle)] px-3.5 py-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#0075de]/15 bg-[#0075de]/10 text-[#0075de]">
+                <GroupIcon size={15} />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="text-sm font-bold tracking-tight text-slate-950 dark:text-white">{group.title}</h2>
-                <p className="mt-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                  {visibleItems.length} workspace {visibleItems.length === 1 ? "tool" : "tools"}
+                <h2 className="text-[13px] font-bold tracking-tight text-[var(--text-primary)]">{group.title}</h2>
+                <p className="mt-0.5 text-[10px] font-medium text-[var(--text-muted)]">
+                  {visibleItems.length} {visibleItems.length === 1 ? "destination" : "destinations"}
                 </p>
               </div>
               <button
                 onClick={() => setDesktopFlyout(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
                 aria-label="Close navigation panel"
               >
                 <X size={15} />
               </button>
             </div>
 
-            <div className={cn(
-              "custom-scrollbar overflow-y-auto p-3",
-              visibleItems.length > 8 ? "grid grid-cols-2 gap-1.5" : "flex flex-col gap-1"
-            )}>
-              {visibleItems.map(item => renderLink(item, true))}
+            <div className="custom-scrollbar flex flex-col gap-1 overflow-y-auto p-2">
+              {visibleItems.map(item => renderLink(item, true, true))}
             </div>
           </section>
         );
