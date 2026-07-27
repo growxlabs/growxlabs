@@ -267,17 +267,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out bg-[var(--background)] z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
         // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
         isCollapsed
-          ? "lg:ml-20 lg:w-[calc(100vw-5rem)] lg:flex-none"
-          : "lg:ml-[272px] lg:w-[calc(100vw-272px)] lg:flex-none",
+          ? "md:ml-20 md:w-[calc(100vw-5rem)] lg:flex-none"
+          : "md:ml-[272px] md:w-[calc(100vw-272px)] lg:flex-none",
         // Mobile: no margin, add top padding for the mobile top bar
-        "ml-0 pt-14 lg:pt-0"
+        "ml-0 pt-14 md:pt-0"
       )}>
          {/* Internal Spacing — responsive padding */}
          <div className={cn(
            "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
            isEditorialStudio
-             ? "h-[calc(100vh-3.5rem)] lg:h-screen max-w-none overflow-hidden"
-             : "p-4 sm:p-6 lg:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
+             ? "h-[calc(100vh-3.5rem)] md:h-screen max-w-none overflow-hidden"
+             : "p-4 sm:p-6 md:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
          )}>
             {children}
          </div>
