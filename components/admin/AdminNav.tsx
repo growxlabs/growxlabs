@@ -322,7 +322,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
 
   const scheduleDesktopFlyoutClose = () => {
     if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
-    flyoutCloseTimer.current = setTimeout(() => setDesktopFlyout(null), 140);
+    flyoutCloseTimer.current = setTimeout(() => setDesktopFlyout(null), 220);
   };
 
   const renderLink = (
@@ -344,7 +344,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
           if (isMobileOpen) onMobileToggle();
         }}
         className={cn(
-          "flex items-center h-8 px-2.5 rounded-md transition-all duration-150 group relative border border-transparent text-xs",
+          "flex items-center h-9 px-2.5 rounded-lg transition-all duration-150 group relative border border-transparent text-[13px]",
           isActive
             ? "bg-[#0075de]/10 text-[#0075de] dark:text-blue-400 font-bold border-[#0075de]/20 shadow-sm"
             : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)]",
@@ -361,7 +361,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         )} />
 
         <span className={cn(
-          "font-medium tracking-tight whitespace-nowrap truncate",
+          "font-medium whitespace-nowrap truncate",
           isCollapsed && !isMobile ? "lg:hidden" : "block"
         )}>
           {item.name}
@@ -453,10 +453,10 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
                 aria-expanded={isMobile ? isOpen : desktopFlyout?.groupId === group.id}
                 aria-controls={`admin-nav-${group.id}`}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-lg font-extrabold uppercase text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)] transition-all cursor-pointer select-none",
+                  "w-full flex items-center justify-between rounded-lg font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-1)] transition-all cursor-pointer select-none",
                   isMobile
-                    ? "h-7 px-2.5 text-[10px] tracking-[0.15em]"
-                    : "h-10 px-2.5 text-[10px] tracking-[0.12em]",
+                    ? "h-9 px-2.5 text-[12px]"
+                    : "h-11 px-3 text-[12px]",
                   hasActiveItem && !isMobile && "bg-[#0075de]/7 text-[#0075de] dark:text-blue-400",
                   isCollapsed && !isMobile && "lg:justify-center lg:px-0"
                 )}
@@ -551,7 +551,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         >
           <KeyRound className={cn("h-3.5 w-3.5 shrink-0 transition-colors group-hover:text-[#0075de]", (!isCollapsed || isMobile) && "mr-2.5")} />
           <span className={cn(
-            "font-bold uppercase tracking-wider text-[10px]",
+            "font-semibold text-[12px]",
             isCollapsed && !isMobile ? "lg:hidden" : ""
           )}>Change Password</span>
         </button>
@@ -566,7 +566,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         >
           <LogOut className={cn("h-3.5 w-3.5 shrink-0 transition-colors group-hover:text-red-500", (!isCollapsed || isMobile) && "mr-2.5")} />
           <span className={cn(
-            "font-bold uppercase tracking-wider text-[10px]",
+            "font-semibold text-[12px]",
             isCollapsed && !isMobile ? "lg:hidden" : ""
           )}>Sign Out</span>
         </button>
@@ -638,6 +638,17 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         </button>
       </aside>
 
+      {/* The page remains in place; this overlay makes the adjacent panel read as a popup. */}
+      {desktopFlyout && (
+        <button
+          type="button"
+          className="hidden lg:block fixed inset-y-0 right-0 z-[130] cursor-default bg-slate-950/[0.06] backdrop-blur-[1px]"
+          style={{ left: isCollapsed ? 80 : 256 }}
+          onClick={() => setDesktopFlyout(null)}
+          aria-label="Close navigation popup"
+        />
+      )}
+
       {/* Desktop navigation flyout */}
       {desktopFlyout && (() => {
         const group = NAV_GROUPS.find(item => item.id === desktopFlyout.groupId);
@@ -649,7 +660,7 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
         return (
           <section
             id={`admin-nav-${group.id}`}
-            className="hidden lg:flex fixed z-[150] w-[304px] max-h-[72vh] flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_22px_55px_-24px_rgba(15,23,42,0.42)]"
+            className="hidden lg:flex fixed z-[150] w-[304px] max-h-[72vh] flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] shadow-[0_28px_80px_-24px_rgba(15,23,42,0.48)] ring-1 ring-black/[0.03]"
             style={{ left: isCollapsed ? 88 : 264, top: desktopFlyout.top }}
             onMouseEnter={() => {
               if (flyoutCloseTimer.current) clearTimeout(flyoutCloseTimer.current);
