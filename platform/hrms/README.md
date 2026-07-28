@@ -130,3 +130,30 @@ invalidated after acceptance, rejection, requested changes, withdrawal, or expir
 3. Reconcile counts and immutable history.
 4. Move consumers to `/api/v1/hrms`.
 5. Retire legacy writes only after acceptance and rollback windows have passed.
+
+## Release 04 attendance and leave
+
+Release 04 runs natively in Next.js route handlers and Supabase transactions. The
+`attendance` and `leave` schemas are separate domains and integrate only through
+their transactional outboxes. Clock events and leave-ledger entries are immutable;
+corrections and reversals are appended instead of rewriting history.
+
+Employee self-service is available at `/people/time-and-leave`, with leave submission
+at `/people/leave/request`. HR configuration visibility is at
+`/admin/attendance-leave`. The domain APIs are mounted at
+`/api/v1/hrms/attendance/*` and `/api/v1/hrms/leave/*`; these more-specific routes do
+not use the Release 01–03 gateway catch-all.
+
+Apply migrations `0005`, `0006`, and `0007` in order. Configure `CRON_SECRET` and
+`HRMS_SYSTEM_ACTOR_USER_ID` in Vercel. Vercel invokes bounded routes for daily
+attendance closeout, monthly accrual, and annual carry-forward. Repeated accrual and
+carry-forward invocations are safe because ledger idempotency keys are unique.
+Upstash Redis is optional and provides distributed punch rate limiting and fast
+duplicate suppression; the database remains the authoritative idempotency boundary.
+
+For legacy migration, stage source identifiers in
+`attendance.legacy_migration_items` and `leave.legacy_migration_items`, resolve every
+row to a canonical People employee, import in bounded batches, and compare source
+counts with rows marked `imported`. Rows marked `failed` retain the error and original
+metadata for repair and replay. Keep legacy writes enabled until counts, sampled
+balances, daily totals, and approval histories reconcile.

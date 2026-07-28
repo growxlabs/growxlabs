@@ -33,6 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     if (role === "IDENTITY_USER") {
       const requiredPermission =
+        pathname.startsWith("/admin/attendance-leave") ? "attendance.policy.view" :
         pathname.startsWith("/admin/hr-onboarding/manager") ? "onboarding.manager_task" :
         pathname.startsWith("/admin/hr-onboarding") ? "onboarding.hr_task" :
         pathname.startsWith("/admin/offers") ? "offer.view" :

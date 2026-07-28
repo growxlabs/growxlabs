@@ -1,0 +1,7 @@
+export type LeaveDay={date:string;durationType:"full_day"|"first_half"|"second_half"|"hours";hours?:number;isHoliday?:boolean;isWeeklyOff?:boolean};
+export type LeaveRule={weekendTreatment:"include"|"exclude";holidayTreatment:"include"|"exclude";sandwichEnabled:boolean;hourDayMinutes:number};
+export function resolveLeaveDays(days:LeaveDay[],rule:LeaveRule){return days.map(day=>{const quantity=day.durationType==="full_day"?1:day.durationType==="hours"?(day.hours||0)*60/rule.hourDayMinutes:.5;const excluded=(day.isHoliday&&rule.holidayTreatment==="exclude")||(day.isWeeklyOff&&rule.weekendTreatment==="exclude");return{...day,quantity,isWorkingDay:!day.isHoliday&&!day.isWeeklyOff,isHoliday:Boolean(day.isHoliday),isWeeklyOff:Boolean(day.isWeeklyOff),isChargeable:rule.sandwichEnabled?true:!excluded}})}
+export function totalLeaveQuantity(days:ReturnType<typeof resolveLeaveDays>){return days.reduce((sum,day)=>sum+(day.isChargeable?day.quantity:0),0)}
+export function ledgerBalance(entries:{quantity:number}[]){return entries.reduce((sum,entry)=>Math.round((sum+entry.quantity)*100)/100,0)}
+export function accrualAmount(annual:number,frequency:"monthly"|"quarterly"|"annual",monthsEligible=12){const periods=frequency==="monthly"?12:frequency==="quarterly"?4:1;return Math.round((annual/periods)*(monthsEligible/12)*100)/100}
+export function carryForward(balance:number,limit:number){return Math.max(0,Math.min(balance,limit))}

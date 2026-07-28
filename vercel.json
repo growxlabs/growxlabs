@@ -1,6 +1,20 @@
 {
   "cleanUrls": true,
   "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/hrms/attendance/close-days",
+      "schedule": "30 20 * * *"
+    },
+    {
+      "path": "/api/cron/hrms/leave/accrual",
+      "schedule": "5 0 1 * *"
+    },
+    {
+      "path": "/api/cron/hrms/leave/carry-forward",
+      "schedule": "15 0 1 1 *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
