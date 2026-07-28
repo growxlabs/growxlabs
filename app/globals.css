@@ -122,6 +122,53 @@ html.light .notion-theme {
   --text-secondary: #31302e;
   --text-muted: #615d59;
   --text-tertiary: #a39e98;
+
+  /* Figma-Quality Design Workspace Tokens */
+  --app-bg: #f6f5f4;
+  --panel-bg: #ffffff;
+  --panel-raised: #fbfbfb;
+  --surface-hover: #f3f3f2;
+  --surface-active: #eae9e8;
+  --brand: #1687f8;
+  --danger: #ef4444;
+
+  --topbar-height: 64px;
+  --icon-rail-width: 72px;
+  --left-panel-width: 292px;
+  --right-panel-width: 340px;
+
+  /* Inspector Design Tokens */
+  --inspector-width: 336px;
+  --inspector-bg: var(--panel-bg);
+  --inspector-surface: var(--panel-raised);
+  --inspector-surface-hover: var(--surface-hover);
+  --inspector-surface-active: var(--surface-active);
+  --inspector-text: var(--text-primary);
+  --inspector-text-secondary: var(--text-secondary);
+  --inspector-text-muted: var(--text-muted);
+  --inspector-border: rgba(0, 0, 0, 0.08);
+  --inspector-border-strong: rgba(0, 0, 0, 0.14);
+  --inspector-brand: var(--brand);
+  --inspector-danger: var(--danger);
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Radix Component Radii */
+  --radius-control: 8px;
+  --radius-button: 9px;
+  --radius-row: 9px;
+  --radius-card: 14px;
+  --radius-panel: 16px;
+  --radius-modal: 18px;
+  --radius-popover: 12px;
+  --radius-menu: 11px;
+  --radius-dialog: 16px;
 }
 
 /* ═══════════════════════════════════════════════════ */
@@ -159,6 +206,20 @@ html.dark .notion-theme,
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
   --text-tertiary: #525252;
+
+  /* Dark mode overrides for Figma-Quality Design Workspace Tokens */
+  --app-bg: #0e0f11;
+  --panel-bg: #111214;
+  --panel-raised: #17181b;
+  --surface-hover: #1d1f22;
+  --surface-active: #24262a;
+
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.09);
+
+  /* Dark Inspector Tokens */
+  --inspector-border: rgba(255, 255, 255, 0.065);
+  --inspector-border-strong: rgba(255, 255, 255, 0.11);
 }
 
 /* Notion Specific Layout Overrides */

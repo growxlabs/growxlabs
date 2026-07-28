@@ -157,3 +157,29 @@ row to a canonical People employee, import in bounded batches, and compare sourc
 counts with rows marked `imported`. Rows marked `failed` retain the error and original
 metadata for repair and replay. Keep legacy writes enabled until counts, sampled
 balances, daily totals, and approval histories reconcile.
+
+## Release 05 documents, assets, and learning
+
+Release 05 extends the existing `documents` schema and People service; it does not
+create a second document library or bypass `StorageProvider`. Assets and Learning are
+independent Go services on ports 8085 and 8086 with their own schemas, repositories,
+transactional services, permission checks, immutable histories, audit events, and
+outboxes. The gateway exposes them below `/v1/documents`, `/v1/assets`, and
+`/v1/learning`.
+
+Apply migrations `0008` through `0012` in order. Configure the service URLs and actor
+IDs in `.env.example`. Employee, manager, and HR workspaces are available under
+`/me/{documents,assets,learning}`, `/team/{documents,assets,learning}`, and
+`/hr/{documents,assets,learning}`.
+
+Vercel Cron runs bounded expiry, warranty, learning reminder, and outbox-dispatch
+batches. Domain outboxes are published through QStash to a signed worker endpoint,
+which calls the existing notification service through the gateway. The onboarding
+Release 05 worker consumes the existing `employee.activated` outbox event and creates
+document requests, asset requests, and course enrollments through domain APIs. The
+certificate worker creates a versioned HTML completion certificate using the People
+document API and therefore the configured `StorageProvider`; it never calls Supabase
+Storage directly.
+
+No Release 05 worker is a long-running server. Each worker processes a bounded batch
+and exits, so it can be invoked by QStash or a scheduled platform job.

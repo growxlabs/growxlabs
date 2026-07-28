@@ -13,6 +13,22 @@
     {
       "path": "/api/cron/hrms/leave/carry-forward",
       "schedule": "15 0 1 1 *"
+    },
+    {
+      "path": "/api/cron/hrms/documents/expiry",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/hrms/assets/warranty",
+      "schedule": "15 1 * * *"
+    },
+    {
+      "path": "/api/cron/hrms/learning/reminders",
+      "schedule": "30 1 * * *"
+    },
+    {
+      "path": "/api/cron/hrms/release05/outbox",
+      "schedule": "*/10 * * * *"
     }
   ],
   "headers": [

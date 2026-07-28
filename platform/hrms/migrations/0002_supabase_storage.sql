@@ -19,6 +19,7 @@ ON CONFLICT (id) DO UPDATE SET
   file_size_limit = EXCLUDED.file_size_limit,
   allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- Browser users never receive the service-role key. All signing and metadata
--- authorization happens in the People service through StorageProvider.
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- Supabase owns storage.objects and already enables RLS on it. Do not ALTER
+-- that managed table: hosted projects correctly reject ownership changes.
+-- Browser users never receive the service-role key; signing and metadata
+-- authorization happen in the People service through StorageProvider.

@@ -1,6 +1,6 @@
 import { calculateDailyAttendance } from "./engine";
 import {
-  attendance, decideRegularisation, eventsForDay, recordEvent, resolvePolicy,
+  attendance, people, decideRegularisation, eventsForDay, recordEvent, resolvePolicy,
   resolveShift, selfEmployee, submitRegularisation, summaries, unwrap, upsertSummary, validateGeofence,
 } from "./repository";
 import { errorResponse, HRMSError, jsonBody, requireHRMSContext, requirePermission } from "@/lib/hrms/shared/context";
