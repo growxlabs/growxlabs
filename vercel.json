@@ -28,7 +28,7 @@
     },
     {
       "path": "/api/cron/hrms/release05/outbox",
-      "schedule": "*/10 * * * *"
+      "schedule": "45 1 * * *"
     }
   ],
   "headers": [
