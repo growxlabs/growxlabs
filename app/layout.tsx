@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import { locales } from "@/navigation";
 import Script from "next/script";
 import { PHProvider } from "@/components/providers/PostHogProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
@@ -255,6 +256,7 @@ export default async function RootLayout({
         />
         <PHProvider>
           <AuthProvider>
+            <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true} disableTransitionOnChange>
               <GlobalBackground />
 
@@ -266,6 +268,7 @@ export default async function RootLayout({
               <WhatsAppWidget />
               <Toaster position="top-right" expand={false} richColors />
             </ThemeProvider>
+            </QueryProvider>
 
           </AuthProvider>
         </PHProvider>

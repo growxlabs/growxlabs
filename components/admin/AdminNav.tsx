@@ -12,7 +12,7 @@ import {
   Database, UserCog, Settings, Menu, X, KeyRound, Eye, EyeOff, Loader2, CheckCircle,
   Sun, Moon, Monitor, Building2, DollarSign, Briefcase, Clock, Bug, Wallet, Brain, UserPlus,
   CalendarCheck, CalendarOff, Receipt, Sparkles, Megaphone, LifeBuoy, Cpu, LogOut,
-  ChevronDown, ChevronRight, GraduationCap, Award, Mail, Presentation, UserCheck, Video
+  ChevronDown, ChevronRight, GraduationCap, Award, Mail, Presentation, UserCheck, Video, Layers3, FileSignature, ClipboardCheck
 } from "lucide-react";
 
 const InstagramNavIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -110,6 +110,17 @@ const NAV_GROUPS: NavGroup[] = [
     title: "People Operations",
     icon: Users,
     items: [
+      { name: "People Core (New)", href: "/admin/people", icon: ShieldCheck },
+      { name: "Departments (New)", href: "/admin/people/departments", icon: Building2 },
+      { name: "Designations (New)", href: "/admin/people/designations", icon: Layers3 },
+      { name: "My Team (New)", href: "/admin/people/team", icon: Users },
+      { name: "People Access (New)", href: "/admin/people/access", icon: KeyRound },
+      { name: "Recruiter Workspace (New)", href: "/admin/recruitment", icon: UserPlus },
+      { name: "Hiring Operations (New)", href: "/admin/recruitment/operations", icon: ClipboardList },
+      { name: "Hiring Manager (New)", href: "/admin/recruitment/manager", icon: Briefcase },
+      { name: "Offer Management (New)", href: "/admin/offers", icon: FileSignature },
+      { name: "HR Onboarding (New)", href: "/admin/hr-onboarding", icon: ClipboardCheck },
+      { name: "Manager Onboarding (New)", href: "/admin/hr-onboarding/manager", icon: UserCheck },
       { name: "People Overview", href: "/admin/hrms/dashboard", icon: BarChart3 },
       { name: "Employees", href: "/admin/hrms/employees", icon: Users },
       { name: "Recruitment", href: "/admin/hrms/recruitment", icon: UserPlus },

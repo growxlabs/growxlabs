@@ -2,7 +2,6 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -19,17 +18,43 @@ export const authOptions: AuthOptions = {
 
         const emailLower = credentials.email.toLowerCase().trim();
 
-        // 1. Try finding in 'users' table (Clients/Admins)
-        let { data: user, error } = await supabaseAdmin
+        // 1. New service-oriented Identity foundation.
+        let userData = null;
+        const identityURL = process.env.HRMS_GATEWAY_URL;
+        const organisationId = process.env.DEFAULT_ORGANISATION_ID;
+        if (identityURL && organisationId) {
+          try {
+            const identityResponse = await fetch(`${identityURL.replace(/\/$/, "")}/v1/identity/sessions`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "X-Request-Id": crypto.randomUUID() },
+              body: JSON.stringify({ email: emailLower, password: credentials.password, organisationId }),
+              cache: "no-store",
+            });
+            if (identityResponse.ok) {
+              const identity = await identityResponse.json();
+              userData = {
+                id: identity.id,
+                email: identity.email,
+                name: identity.name,
+                role: "IDENTITY_USER",
+                organisation_id: identity.organisationId,
+                permissions: identity.permissions || [],
+              };
+            }
+          } catch (identityError) {
+            console.error("Identity service login unavailable; checking legacy login.", identityError);
+          }
+        }
+
+        // 2. Legacy login remains available during gradual migration.
+        const { data: user, error } = await supabaseAdmin
           .from("users")
           .select("*")
           .eq("email", emailLower)
           .single();
 
         let isValid = false;
-        let userData = null;
-
-        if (user && !error) {
+        if (!userData && user && !error) {
           isValid = await bcrypt.compare(credentials.password, user.password);
           if (isValid) {
             userData = {
@@ -41,7 +66,7 @@ export const authOptions: AuthOptions = {
           }
         }
 
-        // 2. If not found or invalid in 'users', try 'team_members' table (CRM Agents)
+        // 3. If not found or invalid in 'users', try legacy team members.
         if (!userData) {
           const { data: member, error: memberError } = await supabaseAdmin
             .from("team_members")
@@ -80,11 +105,13 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
         token.id = user.id;
-        token.allowed_paths = (user as any).allowed_paths || [];
+        token.allowed_paths = user.allowed_paths || [];
+        token.organisation_id = user.organisation_id;
+        token.permissions = user.permissions || [];
       }
 
       // Block and invalidate co-admin sessions
@@ -100,7 +127,7 @@ export const authOptions: AuthOptions = {
 
       return token;
     },
-    async session({ session, token }: { session: any, token: JWT }) {
+    async session({ session, token }) {
       // Invalidate co-admin sessions
       if (
         token.role === "CO_ADMIN" ||
@@ -108,14 +135,21 @@ export const authOptions: AuthOptions = {
         session.user?.email === "coadmin@growxlabs.tech" ||
         session.user?.email === "coadmin-suspended@growxlabs.tech"
       ) {
-        session.user = null;
-        return null;
+        session.user.id = "";
+        session.user.role = "CLIENT";
+        session.user.email = null;
+        session.user.name = null;
+        session.user.permissions = [];
+        session.user.allowed_paths = [];
+        return session;
       }
 
       if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
-        (session.user as any).allowed_paths = (token as any).allowed_paths || [];
+        session.user.role = token.role;
+        session.user.id = token.id;
+        session.user.allowed_paths = token.allowed_paths || [];
+        session.user.organisation_id = token.organisation_id;
+        session.user.permissions = token.permissions || [];
       }
       return session;
     }

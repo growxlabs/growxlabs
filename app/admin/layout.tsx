@@ -26,11 +26,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     const role = (session?.user as any)?.role;
+    const permissions: string[] = (session?.user as any)?.permissions || [];
     const rawPathname = window.location.pathname;
     // Strip locale prefix (e.g., /en-IN/admin → /admin)
     const pathname = rawPathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?(?=\/admin)/, '');
 
-    if (role === "ADMIN" || role === "CO_ADMIN") {
+    if (role === "IDENTITY_USER") {
+      const requiredPermission =
+        pathname.startsWith("/admin/hr-onboarding/manager") ? "onboarding.manager_task" :
+        pathname.startsWith("/admin/hr-onboarding") ? "onboarding.hr_task" :
+        pathname.startsWith("/admin/offers") ? "offer.view" :
+        pathname.startsWith("/admin/recruitment/manager") ? "candidate.view" :
+        pathname.startsWith("/admin/recruitment") ? "candidate.view_all" :
+        pathname.startsWith("/admin/people/access") ? "organisation.manage" :
+        pathname.startsWith("/admin/people/departments") ? "department.manage" :
+        pathname.startsWith("/admin/people/designations") ? "designation.manage" :
+        pathname.startsWith("/admin/people/team") ? "manager.view_team" :
+        pathname.startsWith("/admin/people") ? "employee.view" : "";
+      if (requiredPermission && permissions.includes(requiredPermission)) {
+        setAuthorized(true);
+      } else {
+        setAuthorized(false);
+        router.replace("/people/me");
+      }
+    } else if (role === "ADMIN" || role === "CO_ADMIN") {
       setAuthorized(true);
     } else if (role === "crm_agent") {
       // Strict security override: CRM agents are never allowed to access team management or command-center
@@ -92,7 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } else {
       setAuthorized(false);
     }
-  }, [status, session, router]);
+  }, [status, session, router, currentPath]);
 
   // Close mobile drawer on route change
   useEffect(() => {
