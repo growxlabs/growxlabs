@@ -3,7 +3,7 @@ import { resolveCommandCenterContext } from "@/lib/command-center/context/comman
 import { ProcessMessageBodySchema, GetConversationQuerySchema } from "@/lib/command-center/validation/api.schemas";
 import { ConversationRepository } from "@/lib/command-center/conversations/conversation.repository";
 import { MessageRepository } from "@/lib/command-center/messages/message.repository";
-import { LegacyCommandProcessor } from "@/lib/command-center/command-processing-adapter";
+import { CommandOrchestrator } from "@/lib/command-center/orchestration/command-orchestrator";
 import { StreamWriter } from "@/lib/command-center/streaming/stream-writer";
 import { CommandCenterLogger } from "@/lib/command-center/logging/logger";
 
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       async start(controller) {
         const writer = new StreamWriter(controller);
         try {
-          await LegacyCommandProcessor.processStream(
+          await CommandOrchestrator.handleRequest(
             body.message,
             body.history,
             body.attachments,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
             writer
           );
         } catch (err: any) {
-          CommandCenterLogger.error("Streaming execution error", { error: err.message });
+          CommandCenterLogger.error("CommandOrchestrator streaming error", { error: err.message });
           writer.sendEvent("text_delta", { text: `\n\n[Error: ${err.message}]` });
           writer.sendEvent("done", {});
           writer.close();

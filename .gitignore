@@ -47,5 +47,9 @@ next-env.d.ts
 # scratch files
 /scratch
 
+# local Go verification caches
+/.go-cache
+/.go-mod
+
 # spiderman game / vite folder
 /public/spiderman/

@@ -1,0 +1,8 @@
+export const PLAN_VERSION = "gxl.execution-plan.v1" as const;
+export type PlanStepType = "model"|"tool"|"transform"|"decision"|"wait";
+export interface RetryPolicy{maxAttempts:number;initialDelayMs:number;maxDelayMs:number;backoffMultiplier:number;retryableCodes:string[]}
+export interface ExecutionPlanStep{id:string;index:number;name:string;description:string;type:PlanStepType;dependsOn:string[];toolId?:string;input:Record<string,unknown>;timeoutMs:number;retryPolicy:RetryPolicy;continueOnFailure:boolean;requiredPermissions:string[];expectedOutputSchema?:Record<string,unknown>;metadata?:Record<string,unknown>}
+export interface ExecutionPlan{id:string;version:typeof PLAN_VERSION;requestId:string;conversationId:string;organisationId:string;workspaceId:string;userId:string;agentId:string;capabilityId:string;skillId?:string;title:string;objective:string;status:"draft"|"validated"|"rejected";steps:ExecutionPlanStep[];createdAt:string;metadata?:Record<string,unknown>}
+export interface PlanningClarification{code:"PLANNING_CLARIFICATION_REQUIRED";questions:Array<{id:string;question:string;field:string;required:boolean}>}
+export interface TrustedPlanningContext{requestId:string;conversationId:string;organisationId:string;workspaceId:string;userId:string;agentId:string;capabilityId:string;skillId?:string;permissions:string[];allowedToolIds:string[];allowedCapabilityIds:string[];allowedSkillIds:string[];approvedActionIds:string[];explicitlyRequestedDestructive:boolean}
+export type PlanningResult={kind:"plan";plan:ExecutionPlan}|{kind:"clarification";clarification:PlanningClarification};

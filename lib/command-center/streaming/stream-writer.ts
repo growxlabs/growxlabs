@@ -6,6 +6,13 @@ export type SSEEventName =
   | "chart" 
   | "done"
   | "subagent_created"
+  | "plan_created"
+  | "run_created"
+  | "run_status"
+  | "step_started"
+  | "step_succeeded"
+  | "step_failed"
+  | "run_cancelled"
   | "error";
 
 export class StreamWriter {

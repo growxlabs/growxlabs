@@ -1,6 +1,11 @@
 {
   "cleanUrls": true,
   "framework": "nextjs",
+  "functions": {
+    "api/internal/**/*.go": {
+      "maxDuration": 60
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/hrms/attendance/close-days",
@@ -29,6 +34,14 @@
     {
       "path": "/api/cron/hrms/release05/outbox",
       "schedule": "45 1 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/expire-approvals",
+      "schedule": "5 2 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/process-audit-outbox",
+      "schedule": "20 2 * * *"
     }
   ],
   "headers": [

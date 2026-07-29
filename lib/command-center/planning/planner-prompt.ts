@@ -1,0 +1,2 @@
+import type {TrustedPlanningContext} from "./plan.types.ts";
+export function buildPlannerPrompt(request:string,context:TrustedPlanningContext):string{return JSON.stringify({contract:"gxl.execution-plan.v1",instruction:"Return only a minimal JSON execution plan. Never output SQL, shell commands, credentials, URLs, or expanded permissions.",request,authorised:{agentId:context.agentId,capabilityId:context.capabilityId,skillId:context.skillId,allowedToolIds:context.allowedToolIds,permissions:context.permissions},limits:{maxSteps:50,maxTimeoutMs:300000,maxAttempts:5}})}
