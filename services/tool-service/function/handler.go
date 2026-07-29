@@ -41,7 +41,7 @@ func Handler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	cloned := request.Clone(request.Context())
-	cloned.URL.Path = internalPath(request, "/api/internal/tools")
+	cloned.URL.Path = internalPath(request, "/api/private/tools")
 	handler.ServeHTTP(response, cloned)
 }
 

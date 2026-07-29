@@ -33,7 +33,7 @@ func Handler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	cloned := request.Clone(request.Context())
-	cloned.URL.Path = internalPath(request, "/api/internal/execution")
+	cloned.URL.Path = internalPath(request, "/api/private/execution")
 	handler.ServeHTTP(response, cloned)
 }
 

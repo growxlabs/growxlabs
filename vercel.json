@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "framework": "nextjs",
   "functions": {
-    "api/internal/**/*.go": {
+    "api/private/**/*.go": {
       "maxDuration": 60
     }
   },

@@ -51,7 +51,7 @@ func (a *LegacyNextJS) Execute(ctx context.Context, request contract.ToolExecuti
 		return nil, err
 	}
 	httpRequest, err := http.NewRequestWithContext(
-		ctx, http.MethodPost, a.baseURL+"/api/internal/v1/tool-executions",
+		ctx, http.MethodPost, a.baseURL+"/api/private/v1/tool-executions",
 		bytes.NewReader(body),
 	)
 	if err != nil {

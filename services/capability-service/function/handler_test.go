@@ -12,7 +12,7 @@ import (
 func TestHandlerRequiresPrivateGatewayAuthentication(t *testing.T) {
 	t.Setenv("EXECUTION_SERVICE_JWT_SECRET", "test-secret-at-least-thirty-two-bytes")
 	t.Setenv("APP_ENV", "test")
-	request := httptest.NewRequest(http.MethodPost, "/api/internal/capabilities/internal/v1/capabilities/resolve", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/private/capabilities/internal/v1/capabilities/resolve", nil)
 	response := httptest.NewRecorder()
 	Handler(response, request)
 	if response.Code != http.StatusUnauthorized {

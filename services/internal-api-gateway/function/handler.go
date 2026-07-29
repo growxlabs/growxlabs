@@ -31,7 +31,7 @@ var targets = []target{
 func Handler(response http.ResponseWriter, request *http.Request) {
 	path := request.Header.Get("X-GXL-Internal-Path")
 	if path == "" {
-		path = strings.TrimPrefix(request.URL.Path, "/api/internal/gateway")
+		path = strings.TrimPrefix(request.URL.Path, "/api/private/gateway")
 	}
 	if path == "/health" {
 		writeJSON(response, http.StatusOK, map[string]string{"status": "ok"})

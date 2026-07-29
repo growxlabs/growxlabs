@@ -311,9 +311,9 @@ func (w *Worker) execute(ctx context.Context, item job) (json.RawMessage, error)
 		}
 		w.logger.Warn("tool service unavailable; using Phase 1 compatibility adapter",
 			"request_id", item.requestID, "run_id", item.runID, "step_id", item.stepID)
-		return w.callWebAdapter(ctx, item, "/api/internal/v1/tool-executions")
+		return w.callWebAdapter(ctx, item, "/api/private/v1/tool-executions")
 	case "model":
-		return w.callWebAdapter(ctx, item, "/api/internal/v1/model-executions")
+		return w.callWebAdapter(ctx, item, "/api/private/v1/model-executions")
 	case "transform":
 		return executeTransform(item.step.Input)
 	case "decision":

@@ -8,20 +8,20 @@ Phase completion.
 
 | Component | Category | Production invocation |
 | --- | --- | --- |
-| Execution Engine HTTP API | Request/response | `/api/internal/execution` |
-| Tool Service | Request/response | `/api/internal/tools` |
-| Capability Service | Request/response | `/api/internal/capabilities` |
-| Skill Service | Request/response | `/api/internal/skills` |
-| Internal API Gateway | Request/response | `/api/internal/gateway` |
-| CRM Service | Request/response | `/api/internal/crm` |
-| Finance Service | Request/response | `/api/internal/finance` |
-| HR Service | Request/response | `/api/internal/hr` |
-| Project Service | Request/response | `/api/internal/projects` |
-| Marketing Service | Request/response | `/api/internal/marketing` |
-| Execution Worker | Persistent design converted to bounded invocation | `/api/internal/worker?limit=1` |
-| Task Scheduler | Persistent design converted to bounded invocation | `/api/internal/scheduler` |
+| Execution Engine HTTP API | Request/response | `/api/private/execution` |
+| Tool Service | Request/response | `/api/private/tools` |
+| Capability Service | Request/response | `/api/private/capabilities` |
+| Skill Service | Request/response | `/api/private/skills` |
+| Internal API Gateway | Request/response | `/api/private/gateway` |
+| CRM Service | Request/response | `/api/private/crm` |
+| Finance Service | Request/response | `/api/private/finance` |
+| HR Service | Request/response | `/api/private/hr` |
+| Project Service | Request/response | `/api/private/projects` |
+| Marketing Service | Request/response | `/api/private/marketing` |
+| Execution Worker | Persistent design converted to bounded invocation | `/api/private/worker?limit=1` |
+| Task Scheduler | Persistent design converted to bounded invocation | `/api/private/scheduler` |
 
-The twelve files under `api/internal` are thin Vercel Go Runtime entrypoints.
+The twelve files under `api/private` are thin Vercel Go Runtime entrypoints.
 They import the existing service packages; domain SQL, state machines,
 idempotency, leases, validation, and business contracts were not rewritten.
 
@@ -57,16 +57,16 @@ Browsers call only Next.js routes. Go endpoints require signed service
 authentication. Configure these as server-only variables:
 
 ```text
-EXECUTION_ENGINE_INTERNAL_URL=https://<deployment>/api/internal/execution
-INTERNAL_API_GATEWAY_URL=https://<deployment>/api/internal/gateway
-TOOL_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/tools
-CAPABILITY_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/capabilities
-SKILL_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/skills
-CRM_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/crm
-FINANCE_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/finance
-HR_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/hr
-PROJECT_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/projects
-MARKETING_SERVICE_INTERNAL_URL=https://<deployment>/api/internal/marketing
+EXECUTION_ENGINE_INTERNAL_URL=https://<deployment>/api/private/execution
+INTERNAL_API_GATEWAY_URL=https://<deployment>/api/private/gateway
+TOOL_SERVICE_INTERNAL_URL=https://<deployment>/api/private/tools
+CAPABILITY_SERVICE_INTERNAL_URL=https://<deployment>/api/private/capabilities
+SKILL_SERVICE_INTERNAL_URL=https://<deployment>/api/private/skills
+CRM_SERVICE_INTERNAL_URL=https://<deployment>/api/private/crm
+FINANCE_SERVICE_INTERNAL_URL=https://<deployment>/api/private/finance
+HR_SERVICE_INTERNAL_URL=https://<deployment>/api/private/hr
+PROJECT_SERVICE_INTERNAL_URL=https://<deployment>/api/private/projects
+MARKETING_SERVICE_INTERNAL_URL=https://<deployment>/api/private/marketing
 EXECUTION_SERVICE_JWT_SECRET=<server-only secret>
 APP_ENV=production
 DATABASE_URL=<Supabase pooler/serverless PostgreSQL URL>
