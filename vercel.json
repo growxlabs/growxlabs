@@ -2,10 +2,56 @@
   "cleanUrls": true,
   "framework": "nextjs",
   "functions": {
-    "api/private/**/*.go": {
+    "api/private/gateway/index.go": {
       "maxDuration": 60
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/private/capabilities/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/crm/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/execution/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/finance/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/hr/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/marketing/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/projects/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/scheduler/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/skills/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/tools/:path*",
+      "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/worker/:path*",
+      "destination": "/api/private/gateway"
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/hrms/attendance/close-days",
