@@ -8,7 +8,7 @@ export class ConversationContextFormatter {
   };
 
   static formatHistory(
-    historyInput: any[] = [],
+    historyInput: unknown[] = [],
     budget: TokenBudgetConfig = this.DEFAULT_BUDGET
   ): FormattedMessageHistory {
     if (!historyInput || historyInput.length === 0) {
@@ -21,8 +21,9 @@ export class ConversationContextFormatter {
     const formatted: Array<{ role: "user" | "model" | "assistant"; text: string }> = [];
     let isTruncated = historyInput.length > budget.maxMessageCount;
 
-    for (const msg of recent) {
-      const text = msg.text || "";
+    for (const value of recent) {
+      const msg = value && typeof value === "object" ? value as Record<string, unknown> : {};
+      const text = typeof msg.text === "string" ? msg.text : "";
       const estimatedTokens = Math.ceil(text.length / 4);
 
       if (totalTokens + estimatedTokens > budget.maxEstimatedTokens) {

@@ -26,20 +26,32 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type app struct{ db *pgxpool.Pool; peopleURL, serviceActor string; encryptionKey [32]byte; client *http.Client }
-type actor struct{ UserID, OrganisationID, RequestID, IP string; Permissions map[string]bool }
+type app struct {
+	db                      *pgxpool.Pool
+	peopleURL, serviceActor string
+	encryptionKey           [32]byte
+	client                  *http.Client
+}
+type actor struct {
+	UserID, OrganisationID, RequestID, IP string
+	Permissions                           map[string]bool
+}
 type offerVersionInput struct {
 	Title, JoiningDate, DepartmentID, DesignationID, ManagerEmployeeID, EmploymentType, WorkLocation, SalaryCurrency, ChangeSummary string
-	SalaryAmount *float64
-	Benefits any
-	ProbationDays, NoticePeriodDays *int
-	Terms any
+	SalaryAmount                                                                                                                    *float64
+	Benefits                                                                                                                        any
+	ProbationDays, NoticePeriodDays                                                                                                 *int
+	Terms                                                                                                                           any
 }
 
 func main() {
-	db, err := pgxpool.New(context.Background(), mustEnv("DATABASE_URL")); if err != nil { log.Fatal(err) }
+	db, err := pgxpool.New(context.Background(), mustEnv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer db.Close()
-	a := &app{db: db, peopleURL: strings.TrimRight(env("PEOPLE_SERVICE_URL","http://localhost:8081"),"/"), serviceActor: mustEnv("ONBOARDING_SERVICE_ACTOR_ID"), encryptionKey:sha256.Sum256([]byte(mustEnv("ONBOARDING_ENCRYPTION_KEY"))), client:&http.Client{Timeout:30*time.Second}}; mux := http.NewServeMux()
+	a := &app{db: db, peopleURL: strings.TrimRight(env("PEOPLE_SERVICE_URL", "http://localhost:8081"), "/"), serviceActor: mustEnv("ONBOARDING_SERVICE_ACTOR_ID"), encryptionKey: sha256.Sum256([]byte(mustEnv("ONBOARDING_ENCRYPTION_KEY"))), client: &http.Client{Timeout: 30 * time.Second}}
+	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /public/offers/{token}", a.publicOffer)
 	mux.HandleFunc("POST /public/offers/{token}/respond", a.respondOffer)
@@ -50,7 +62,7 @@ func main() {
 	mux.HandleFunc("GET /offers/{id}", a.authorize("offer.view", a.getOffer))
 	mux.HandleFunc("POST /offers/{id}/versions", a.authorize("offer.create", a.reviseOffer))
 	mux.HandleFunc("POST /offers/{id}/submit", a.authorize("offer.create", a.submitOffer))
-	mux.HandleFunc("POST /offers/{id}/approve", a.authorizeAny([]string{"offer.approve_manager","offer.approve_hr"}, a.approveOffer))
+	mux.HandleFunc("POST /offers/{id}/approve", a.authorizeAny([]string{"offer.approve_manager", "offer.approve_hr"}, a.approveOffer))
 	mux.HandleFunc("POST /offers/{id}/send", a.authorize("offer.send", a.sendOffer))
 	mux.HandleFunc("POST /offers/{id}/withdraw", a.authorize("offer.withdraw", a.withdrawOffer))
 	mux.HandleFunc("GET /templates", a.authorize("onboarding.view", a.listTemplates))
@@ -58,66 +70,919 @@ func main() {
 	mux.HandleFunc("GET /instances", a.authorize("onboarding.view", a.listInstances))
 	mux.HandleFunc("GET /instances/me", a.authorize("onboarding.employee_task", a.myInstance))
 	mux.HandleFunc("GET /instances/{id}", a.authorize("onboarding.view", a.getInstance))
-	mux.HandleFunc("POST /tasks/{id}/submit", a.authorizeAny([]string{"onboarding.employee_task","onboarding.hr_task","onboarding.manager_task","onboarding.it_task"}, a.submitTask))
+	mux.HandleFunc("POST /tasks/{id}/submit", a.authorizeAny([]string{"onboarding.employee_task", "onboarding.hr_task", "onboarding.manager_task", "onboarding.it_task"}, a.submitTask))
 	mux.HandleFunc("POST /tasks/{id}/document-upload-url", a.authorize("onboarding.employee_task", a.taskDocumentUpload))
-	mux.HandleFunc("POST /tasks/{id}/complete", a.authorizeAny([]string{"onboarding.employee_task","onboarding.hr_task","onboarding.manager_task","onboarding.it_task"}, a.completeTask))
+	mux.HandleFunc("POST /tasks/{id}/complete", a.authorizeAny([]string{"onboarding.employee_task", "onboarding.hr_task", "onboarding.manager_task", "onboarding.it_task"}, a.completeTask))
 	mux.HandleFunc("POST /instances/{id}/identity-verifications", a.authorize("onboarding.employee_task", a.addVerification))
 	mux.HandleFunc("POST /instances/{id}/sensitive-information", a.authorize("onboarding.employee_task", a.saveSensitiveInformation))
 	mux.HandleFunc("POST /identity-verifications/{id}/decision", a.authorize("onboarding.verify_identity", a.decideVerification))
 	mux.HandleFunc("GET /instances/{id}/timeline", a.authorize("onboarding.view", a.timeline))
-	server := &http.Server{Addr: env("ONBOARDING_SERVICE_ADDR", ":8084"), Handler: jsonContent(mux), ReadHeaderTimeout: 5*time.Second, ReadTimeout: 15*time.Second, WriteTimeout: 30*time.Second}
-	log.Printf("onboarding service listening on %s", server.Addr); log.Fatal(server.ListenAndServe())
+	server := &http.Server{Addr: env("ONBOARDING_SERVICE_ADDR", ":8084"), Handler: jsonContent(mux), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second}
+	log.Printf("onboarding service listening on %s", server.Addr)
+	log.Fatal(server.ListenAndServe())
 }
 
-func (a *app) health(w http.ResponseWriter, r *http.Request) { if err:=a.db.Ping(r.Context()); err!=nil { problem(w,503,"database_unavailable",err.Error()); return }; writeJSON(w,200,map[string]string{"status":"ok","service":"onboarding"}) }
-func (a *app) authorize(permission string, next func(http.ResponseWriter,*http.Request,actor)) http.HandlerFunc { return a.authorizeAny([]string{permission},next) }
-func (a *app) authorizeAny(permissions []string, next func(http.ResponseWriter,*http.Request,actor)) http.HandlerFunc {
-	return func(w http.ResponseWriter,r *http.Request){ ac,err:=actorFrom(r); if err!=nil { problem(w,401,"unauthenticated",err.Error()); return }; for _,p:=range permissions { if ac.Permissions[p] { next(w,r,ac); return } }; problem(w,403,"forbidden","required permission is missing") }
+func (a *app) health(w http.ResponseWriter, r *http.Request) {
+	if err := a.db.Ping(r.Context()); err != nil {
+		problem(w, 503, "database_unavailable", err.Error())
+		return
+	}
+	writeJSON(w, 200, map[string]string{"status": "ok", "service": "onboarding"})
+}
+func (a *app) authorize(permission string, next func(http.ResponseWriter, *http.Request, actor)) http.HandlerFunc {
+	return a.authorizeAny([]string{permission}, next)
+}
+func (a *app) authorizeAny(permissions []string, next func(http.ResponseWriter, *http.Request, actor)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ac, err := actorFrom(r)
+		if err != nil {
+			problem(w, 401, "unauthenticated", err.Error())
+			return
+		}
+		for _, p := range permissions {
+			if ac.Permissions[p] {
+				next(w, r, ac)
+				return
+			}
+		}
+		problem(w, 403, "forbidden", "required permission is missing")
+	}
 }
 
-func (a *app) listOfferTemplates(w http.ResponseWriter,r *http.Request,ac actor){ rows,err:=a.db.Query(r.Context(),`SELECT id,name,department_id AS "departmentId",designation_id AS "designationId",default_terms AS "defaultTerms",document_templates AS "documentTemplates",probation_days AS "probationDays",notice_period_days AS "noticePeriodDays",version FROM onboarding.offer_templates WHERE organisation_id=$1 AND deleted_at IS NULL ORDER BY name`,ac.OrganisationID); if err!=nil{dbProblem(w,err);return};defer rows.Close();writeRows(w,rows)}
-func (a *app) createOfferTemplate(w http.ResponseWriter,r *http.Request,ac actor){ var in struct{Name,DepartmentID,DesignationID string;DefaultTerms,DocumentTemplates any;ProbationDays,NoticePeriodDays *int};if !decode(w,r,&in){return};if strings.TrimSpace(in.Name)==""{problem(w,422,"validation_error","name is required");return};var id string;err:=a.db.QueryRow(r.Context(),`INSERT INTO onboarding.offer_templates(organisation_id,name,department_id,designation_id,default_terms,document_templates,probation_days,notice_period_days,created_by) VALUES($1,$2,nullif($3,'')::uuid,nullif($4,'')::uuid,$5,$6,$7,$8,$9) RETURNING id`,ac.OrganisationID,in.Name,in.DepartmentID,in.DesignationID,defaultJSON(in.DefaultTerms,map[string]any{}),defaultJSON(in.DocumentTemplates,map[string]any{}),in.ProbationDays,in.NoticePeriodDays,ac.UserID).Scan(&id);if err!=nil{dbProblem(w,err);return};writeJSON(w,201,map[string]string{"id":id})}
-func (a *app) listOffers(w http.ResponseWriter,r *http.Request,ac actor){_,err:=a.db.Exec(r.Context(),`UPDATE onboarding.offers SET status='expired',public_token_hash=NULL,updated_at=now() WHERE organisation_id=$1 AND status='sent' AND expires_at<=now()`,ac.OrganisationID);if err!=nil{dbProblem(w,err);return};rows,err:=a.db.Query(r.Context(),`SELECT o.id,o.application_id AS "applicationId",o.candidate_id AS "candidateId",concat_ws(' ',c.first_name,c.last_name) candidate,o.status,o.current_version AS "currentVersion",v.title,v.joining_date AS "joiningDate",v.salary_amount AS "salaryAmount",v.salary_currency AS "salaryCurrency",o.expires_at AS "expiresAt",o.updated_at AS "updatedAt" FROM onboarding.offers o JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version WHERE o.organisation_id=$1 ORDER BY o.updated_at DESC`,ac.OrganisationID);if err!=nil{dbProblem(w,err);return};defer rows.Close();writeRows(w,rows)}
-func (a *app) createOffer(w http.ResponseWriter,r *http.Request,ac actor){var in struct{ApplicationID,TemplateID string;ExpiresAt *time.Time;Version offerVersionInput};if !decode(w,r,&in){return};if in.ApplicationID==""||in.Version.Title==""||in.Version.JoiningDate==""||in.Version.EmploymentType==""{problem(w,422,"validation_error","application and offer employment terms are required");return};tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var offerID,versionID string;err=tx.QueryRow(r.Context(),`INSERT INTO onboarding.offers(organisation_id,application_id,candidate_id,template_id,expires_at,created_by) SELECT $1,a.id,a.candidate_id,nullif($3,'')::uuid,$4,$5 FROM recruitment.job_applications a WHERE a.id=$2 AND a.organisation_id=$1 AND a.status='active' RETURNING id`,ac.OrganisationID,in.ApplicationID,in.TemplateID,in.ExpiresAt,ac.UserID).Scan(&offerID);if err!=nil{dbProblem(w,err);return};versionID,err=a.insertVersion(r.Context(),tx,ac,offerID,1,in.Version);if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,offerID,"offer",offerID,"offer.created",map[string]any{"versionId":versionID});err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};writeJSON(w,201,map[string]string{"id":offerID,"versionId":versionID})}
-func (a *app) insertVersion(ctx context.Context,tx pgx.Tx,ac actor,offerID string,version int,in offerVersionInput)(string,error){var id string;err:=tx.QueryRow(ctx,`INSERT INTO onboarding.offer_versions(organisation_id,offer_id,version,title,joining_date,department_id,designation_id,manager_employee_id,employment_type,work_location,salary_amount,salary_currency,benefits,probation_days,notice_period_days,terms,change_summary,created_by) VALUES($1,$2,$3,$4,$5,nullif($6,'')::uuid,nullif($7,'')::uuid,nullif($8,'')::uuid,$9,$10,$11,nullif($12,''),$13,$14,$15,$16,$17,$18) RETURNING id`,ac.OrganisationID,offerID,version,in.Title,in.JoiningDate,in.DepartmentID,in.DesignationID,in.ManagerEmployeeID,in.EmploymentType,in.WorkLocation,in.SalaryAmount,in.SalaryCurrency,defaultJSON(in.Benefits,[]any{}),in.ProbationDays,in.NoticePeriodDays,defaultJSON(in.Terms,map[string]any{}),in.ChangeSummary,ac.UserID).Scan(&id);return id,err}
-func (a *app) reviseOffer(w http.ResponseWriter,r *http.Request,ac actor){var in offerVersionInput;if !decode(w,r,&in){return};tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var version int;err=tx.QueryRow(r.Context(),`UPDATE onboarding.offers SET current_version=current_version+1,status='draft',updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status IN ('draft','changes_requested') RETURNING current_version`,r.PathValue("id"),ac.OrganisationID).Scan(&version);if err!=nil{dbProblem(w,err);return};versionID,err:=a.insertVersion(r.Context(),tx,ac,r.PathValue("id"),version,in);if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`DELETE FROM onboarding.offer_approvals WHERE offer_id=$1 AND status='pending'`,r.PathValue("id"));if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,r.PathValue("id"),"offer",r.PathValue("id"),"offer.revised",map[string]any{"version":version});err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};writeJSON(w,201,map[string]string{"versionId":versionID})}
-func (a *app) getOffer(w http.ResponseWriter,r *http.Request,ac actor){var raw []byte;err:=a.db.QueryRow(r.Context(),`SELECT jsonb_build_object('id',o.id,'applicationId',o.application_id,'candidateId',o.candidate_id,'status',o.status,'currentVersion',o.current_version,'expiresAt',o.expires_at,'versions',(SELECT jsonb_agg(to_jsonb(v) ORDER BY v.version DESC) FROM onboarding.offer_versions v WHERE v.offer_id=o.id),'approvals',(SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY x.sequence),'[]') FROM onboarding.offer_approvals x WHERE x.offer_id=o.id),'documents',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.id,'kind',d.kind,'documentId',d.document_id)),'[]') FROM onboarding.offer_documents d WHERE d.offer_id=o.id)) FROM onboarding.offers o WHERE o.id=$1 AND o.organisation_id=$2`,r.PathValue("id"),ac.OrganisationID).Scan(&raw);if err!=nil{dbProblem(w,err);return};_,_=w.Write(raw)}
-func (a *app) submitOffer(w http.ResponseWriter,r *http.Request,ac actor){tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var versionID string;err=tx.QueryRow(r.Context(),`UPDATE onboarding.offers SET status='pending_approval',updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status='draft' RETURNING (SELECT id FROM onboarding.offer_versions WHERE offer_id=$1 AND version=current_version)`,r.PathValue("id"),ac.OrganisationID).Scan(&versionID);if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO onboarding.offer_approvals(organisation_id,offer_id,offer_version_id,step_key,sequence) VALUES($1,$2,$3,'hiring_manager',1),($1,$2,$3,'hr_manager',2)`,ac.OrganisationID,r.PathValue("id"),versionID);if err!=nil{dbProblem(w,err);return};var definitionID,workflowVersionID,workflowInstanceID string;err=tx.QueryRow(r.Context(),`INSERT INTO workflow.definitions(organisation_id,key,name) VALUES($1,'offer-approval','Offer Approval') ON CONFLICT(organisation_id,key) DO UPDATE SET name=excluded.name RETURNING id`,ac.OrganisationID).Scan(&definitionID);if err!=nil{dbProblem(w,err);return};err=tx.QueryRow(r.Context(),`SELECT id FROM workflow.versions WHERE definition_id=$1 AND published_at IS NOT NULL ORDER BY version DESC LIMIT 1`,definitionID).Scan(&workflowVersionID);if errors.Is(err,pgx.ErrNoRows){err=tx.QueryRow(r.Context(),`INSERT INTO workflow.versions(organisation_id,definition_id,version,specification,published_at) VALUES($1,$2,1,$3,now()) RETURNING id`,ac.OrganisationID,definitionID,map[string]any{"states":[]string{"pending_manager","pending_hr","approved","rejected"}}).Scan(&workflowVersionID);if err==nil{_,err=tx.Exec(r.Context(),`INSERT INTO workflow.transitions(organisation_id,version_id,from_state,to_state) VALUES($1,$2,'pending_manager','pending_hr'),($1,$2,'pending_manager','rejected'),($1,$2,'pending_hr','approved'),($1,$2,'pending_hr','rejected')`,ac.OrganisationID,workflowVersionID)}};if err!=nil{dbProblem(w,err);return};err=tx.QueryRow(r.Context(),`INSERT INTO workflow.instances(organisation_id,version_id,entity_type,entity_id,state) VALUES($1,$2,'offer',$3,'pending_manager') RETURNING id`,ac.OrganisationID,workflowVersionID,r.PathValue("id")).Scan(&workflowInstanceID);if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO workflow.history(organisation_id,instance_id,to_state,actor_user_id,payload) VALUES($1,$2,'pending_manager',$3,$4)`,ac.OrganisationID,workflowInstanceID,ac.UserID,map[string]any{"offerVersionId":versionID});if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`UPDATE onboarding.offers SET workflow_instance_id=$2 WHERE id=$1`,r.PathValue("id"),workflowInstanceID);if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,r.PathValue("id"),"offer",r.PathValue("id"),"offer.submitted",map[string]string{"workflowInstanceId":workflowInstanceID});err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};w.WriteHeader(204)}
-func (a *app) approveOffer(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Decision,Comment string};if !decode(w,r,&in){return};if in.Decision!="approved"&&in.Decision!="rejected"{problem(w,422,"validation_error","decision must be approved or rejected");return};tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());step:="hiring_manager";permission:="offer.approve_manager";var firstStatus string;err=tx.QueryRow(r.Context(),`SELECT status FROM onboarding.offer_approvals WHERE offer_id=$1 AND organisation_id=$2 AND step_key='hiring_manager' FOR UPDATE`,r.PathValue("id"),ac.OrganisationID).Scan(&firstStatus);if err!=nil{dbProblem(w,err);return};if firstStatus=="approved"{step="hr_manager";permission="offer.approve_hr"};if !ac.Permissions[permission]{problem(w,403,"forbidden","approval permission missing");return};tag,err:=tx.Exec(r.Context(),`UPDATE onboarding.offer_approvals SET status=$4,approver_user_id=$3,comment=$5,decided_at=now() WHERE offer_id=$1 AND organisation_id=$2 AND step_key=$6 AND status='pending'`,r.PathValue("id"),ac.OrganisationID,ac.UserID,in.Decision,in.Comment,step);if err!=nil||tag.RowsAffected()!=1{problem(w,409,"invalid_state","approval step is not pending");return};status:="pending_approval";if in.Decision=="rejected"{status="draft"}else if step=="hr_manager"{status="approved"};_,err=tx.Exec(r.Context(),`UPDATE onboarding.offers SET status=$3::onboarding.offer_status,updated_at=now() WHERE id=$1 AND organisation_id=$2`,r.PathValue("id"),ac.OrganisationID,status);if err!=nil{dbProblem(w,err);return};var workflowID,fromState string;err=tx.QueryRow(r.Context(),`SELECT workflow_instance_id,state FROM onboarding.offers o JOIN workflow.instances i ON i.id=o.workflow_instance_id WHERE o.id=$1`,r.PathValue("id")).Scan(&workflowID,&fromState);if err!=nil{dbProblem(w,err);return};toState:="pending_hr";if in.Decision=="rejected"{toState="rejected"}else if step=="hr_manager"{toState="approved"};_,err=tx.Exec(r.Context(),`UPDATE workflow.instances SET state=$2,completed_at=CASE WHEN $2 IN ('approved','rejected') THEN now() END WHERE id=$1`,workflowID,toState);if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO workflow.history(organisation_id,instance_id,from_state,to_state,actor_user_id,payload) VALUES($1,$2,$3,$4,$5,$6)`,ac.OrganisationID,workflowID,fromState,toState,ac.UserID,map[string]string{"comment":in.Comment});if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,r.PathValue("id"),"offer",r.PathValue("id"),"offer."+in.Decision,map[string]string{"step":step});err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};w.WriteHeader(204)}
-func (a *app) sendOffer(w http.ResponseWriter,r *http.Request,ac actor){if err:=a.generateOfferDocuments(r.Context(),ac,r.PathValue("id"));err!=nil{problem(w,502,"document_generation_failed",err.Error());return};token:=randomToken();sum:=sha256.Sum256([]byte(token));tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var candidateID string;err=tx.QueryRow(r.Context(),`UPDATE onboarding.offers SET status='sent',sent_at=now(),public_token_hash=$3,updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status='approved' AND (expires_at IS NULL OR expires_at>now()) RETURNING candidate_id`,r.PathValue("id"),ac.OrganisationID,hex.EncodeToString(sum[:] )).Scan(&candidateID);if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,r.PathValue("id"),"offer",r.PathValue("id"),"offer.sent",map[string]string{"candidateId":candidateID});err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,'offer.sent',$2)`,ac.OrganisationID,map[string]any{"offerId":r.PathValue("id"),"candidateId":candidateID,"publicPath":"/offers/"+token});if err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};writeJSON(w,200,map[string]string{"offerToken":token,"publicPath":"/offers/"+token})}
-func(a *app)generateOfferDocuments(ctx context.Context,ac actor,offerID string)error{var versionID,title,candidate,joiningDate,salaryCurrency string;var salary *float64;err:=a.db.QueryRow(ctx,`SELECT v.id,v.title,concat_ws(' ',c.first_name,c.last_name),v.joining_date::text,v.salary_amount,coalesce(v.salary_currency,'INR') FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.id=$1 AND o.organisation_id=$2 AND o.status='approved'`,offerID,ac.OrganisationID).Scan(&versionID,&title,&candidate,&joiningDate,&salary,&salaryCurrency);if err!=nil{return err};kinds:=[]string{"offer_letter","compensation_summary","nda","employment_agreement"};for _,kind:=range kinds{var exists bool;if err=a.db.QueryRow(ctx,`SELECT EXISTS(SELECT 1 FROM onboarding.offer_documents WHERE offer_version_id=$1 AND kind=$2)`,versionID,kind).Scan(&exists);err!=nil{return err};if exists{continue};content:=[]byte(fmt.Sprintf("<!doctype html><html><body><h1>%s</h1><p>Candidate: %s</p><p>Role: %s</p><p>Joining date: %s</p><p>Compensation: %s %v</p><p>This document was generated from immutable offer version data.</p></body></html>",html.EscapeString(strings.ReplaceAll(kind,"_"," ")),html.EscapeString(candidate),html.EscapeString(title),joiningDate,salaryCurrency,salary));checksum:=sha256.Sum256(content);payload,_:=json.Marshal(map[string]any{"ownerEntityType":"offer","ownerEntityId":offerID,"name":kind+".html","contentType":"text/html","sizeBytes":len(content),"checksumSHA256":hex.EncodeToString(checksum[:])});request,requestErr:=http.NewRequestWithContext(ctx,http.MethodPost,a.peopleURL+"/documents/upload-url",bytes.NewReader(payload));if requestErr!=nil{return requestErr};request.Header.Set("Content-Type","application/json");request.Header.Set("X-Actor-Id",a.serviceActor);request.Header.Set("X-Organisation-Id",ac.OrganisationID);request.Header.Set("X-Request-Id",ac.RequestID);request.Header.Set("X-Permissions","employee.edit");response,requestErr:=a.client.Do(request);if requestErr!=nil{return requestErr};body,readErr:=io.ReadAll(io.LimitReader(response.Body,1<<20));response.Body.Close();if readErr!=nil{return readErr};if response.StatusCode>=300{return fmt.Errorf("document service returned %d",response.StatusCode)};var signed struct{DocumentID,UploadURL,Method string;Headers map[string]string};if err=json.Unmarshal(body,&signed);err!=nil{return err};upload,requestErr:=http.NewRequestWithContext(ctx,signed.Method,signed.UploadURL,bytes.NewReader(content));if requestErr!=nil{return requestErr};for key,value:=range signed.Headers{upload.Header.Set(key,value)};uploadResponse,requestErr:=a.client.Do(upload);if requestErr!=nil{return requestErr};io.Copy(io.Discard,uploadResponse.Body);uploadResponse.Body.Close();if uploadResponse.StatusCode>=300{return fmt.Errorf("storage upload returned %d",uploadResponse.StatusCode)};_,err=a.db.Exec(ctx,`INSERT INTO onboarding.offer_documents(organisation_id,offer_id,offer_version_id,document_id,kind) VALUES($1,$2,$3,$4,$5)`,ac.OrganisationID,offerID,versionID,signed.DocumentID,kind);if err!=nil{return err}};return nil}
-func (a *app) withdrawOffer(w http.ResponseWriter,r *http.Request,ac actor){tag,err:=a.db.Exec(r.Context(),`UPDATE onboarding.offers SET status='withdrawn',withdrawn_at=now(),public_token_hash=NULL,updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status IN ('approved','sent')`,r.PathValue("id"),ac.OrganisationID);if err!=nil{dbProblem(w,err);return};if tag.RowsAffected()!=1{problem(w,409,"invalid_state","offer cannot be withdrawn");return};w.WriteHeader(204)}
+func (a *app) listOfferTemplates(w http.ResponseWriter, r *http.Request, ac actor) {
+	rows, err := a.db.Query(r.Context(), `SELECT id,name,department_id AS "departmentId",designation_id AS "designationId",default_terms AS "defaultTerms",document_templates AS "documentTemplates",probation_days AS "probationDays",notice_period_days AS "noticePeriodDays",version FROM onboarding.offer_templates WHERE organisation_id=$1 AND deleted_at IS NULL ORDER BY name`, ac.OrganisationID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer rows.Close()
+	writeRows(w, rows)
+}
+func (a *app) createOfferTemplate(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct {
+		Name, DepartmentID, DesignationID string
+		DefaultTerms, DocumentTemplates   any
+		ProbationDays, NoticePeriodDays   *int
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	if strings.TrimSpace(in.Name) == "" {
+		problem(w, 422, "validation_error", "name is required")
+		return
+	}
+	var id string
+	err := a.db.QueryRow(r.Context(), `INSERT INTO onboarding.offer_templates(organisation_id,name,department_id,designation_id,default_terms,document_templates,probation_days,notice_period_days,created_by) VALUES($1,$2,nullif($3,'')::uuid,nullif($4,'')::uuid,$5,$6,$7,$8,$9) RETURNING id`, ac.OrganisationID, in.Name, in.DepartmentID, in.DesignationID, defaultJSON(in.DefaultTerms, map[string]any{}), defaultJSON(in.DocumentTemplates, map[string]any{}), in.ProbationDays, in.NoticePeriodDays, ac.UserID).Scan(&id)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, map[string]string{"id": id})
+}
+func (a *app) listOffers(w http.ResponseWriter, r *http.Request, ac actor) {
+	_, err := a.db.Exec(r.Context(), `UPDATE onboarding.offers SET status='expired',public_token_hash=NULL,updated_at=now() WHERE organisation_id=$1 AND status='sent' AND expires_at<=now()`, ac.OrganisationID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	rows, err := a.db.Query(r.Context(), `SELECT o.id,o.application_id AS "applicationId",o.candidate_id AS "candidateId",concat_ws(' ',c.first_name,c.last_name) candidate,o.status,o.current_version AS "currentVersion",v.title,v.joining_date AS "joiningDate",v.salary_amount AS "salaryAmount",v.salary_currency AS "salaryCurrency",o.expires_at AS "expiresAt",o.updated_at AS "updatedAt" FROM onboarding.offers o JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version WHERE o.organisation_id=$1 ORDER BY o.updated_at DESC`, ac.OrganisationID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer rows.Close()
+	writeRows(w, rows)
+}
+func (a *app) createOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct {
+		ApplicationID, TemplateID string
+		ExpiresAt                 *time.Time
+		Version                   offerVersionInput
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.ApplicationID == "" || in.Version.Title == "" || in.Version.JoiningDate == "" || in.Version.EmploymentType == "" {
+		problem(w, 422, "validation_error", "application and offer employment terms are required")
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var offerID, versionID string
+	err = tx.QueryRow(r.Context(), `INSERT INTO onboarding.offers(organisation_id,application_id,candidate_id,template_id,expires_at,created_by) SELECT $1,a.id,a.candidate_id,nullif($3,'')::uuid,$4,$5 FROM recruitment.job_applications a WHERE a.id=$2 AND a.organisation_id=$1 AND a.status='active' RETURNING id`, ac.OrganisationID, in.ApplicationID, in.TemplateID, in.ExpiresAt, ac.UserID).Scan(&offerID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	versionID, err = a.insertVersion(r.Context(), tx, ac, offerID, 1, in.Version)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, offerID, "offer", offerID, "offer.created", map[string]any{"versionId": versionID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, map[string]string{"id": offerID, "versionId": versionID})
+}
+func (a *app) insertVersion(ctx context.Context, tx pgx.Tx, ac actor, offerID string, version int, in offerVersionInput) (string, error) {
+	var id string
+	err := tx.QueryRow(ctx, `INSERT INTO onboarding.offer_versions(organisation_id,offer_id,version,title,joining_date,department_id,designation_id,manager_employee_id,employment_type,work_location,salary_amount,salary_currency,benefits,probation_days,notice_period_days,terms,change_summary,created_by) VALUES($1,$2,$3,$4,$5,nullif($6,'')::uuid,nullif($7,'')::uuid,nullif($8,'')::uuid,$9,$10,$11,nullif($12,''),$13,$14,$15,$16,$17,$18) RETURNING id`, ac.OrganisationID, offerID, version, in.Title, in.JoiningDate, in.DepartmentID, in.DesignationID, in.ManagerEmployeeID, in.EmploymentType, in.WorkLocation, in.SalaryAmount, in.SalaryCurrency, defaultJSON(in.Benefits, []any{}), in.ProbationDays, in.NoticePeriodDays, defaultJSON(in.Terms, map[string]any{}), in.ChangeSummary, ac.UserID).Scan(&id)
+	return id, err
+}
+func (a *app) reviseOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in offerVersionInput
+	if !decode(w, r, &in) {
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var version int
+	err = tx.QueryRow(r.Context(), `UPDATE onboarding.offers SET current_version=current_version+1,status='draft',updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status IN ('draft','changes_requested') RETURNING current_version`, r.PathValue("id"), ac.OrganisationID).Scan(&version)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	versionID, err := a.insertVersion(r.Context(), tx, ac, r.PathValue("id"), version, in)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `DELETE FROM onboarding.offer_approvals WHERE offer_id=$1 AND status='pending'`, r.PathValue("id"))
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, r.PathValue("id"), "offer", r.PathValue("id"), "offer.revised", map[string]any{"version": version}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, map[string]string{"versionId": versionID})
+}
+func (a *app) getOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	var raw []byte
+	err := a.db.QueryRow(r.Context(), `SELECT jsonb_build_object('id',o.id,'applicationId',o.application_id,'candidateId',o.candidate_id,'status',o.status,'currentVersion',o.current_version,'expiresAt',o.expires_at,'versions',(SELECT jsonb_agg(to_jsonb(v) ORDER BY v.version DESC) FROM onboarding.offer_versions v WHERE v.offer_id=o.id),'approvals',(SELECT coalesce(jsonb_agg(to_jsonb(x) ORDER BY x.sequence),'[]') FROM onboarding.offer_approvals x WHERE x.offer_id=o.id),'documents',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',d.id,'kind',d.kind,'documentId',d.document_id)),'[]') FROM onboarding.offer_documents d WHERE d.offer_id=o.id)) FROM onboarding.offers o WHERE o.id=$1 AND o.organisation_id=$2`, r.PathValue("id"), ac.OrganisationID).Scan(&raw)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, _ = w.Write(raw)
+}
+func (a *app) submitOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var versionID string
+	err = tx.QueryRow(r.Context(), `UPDATE onboarding.offers SET status='pending_approval',updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status='draft' RETURNING (SELECT id FROM onboarding.offer_versions WHERE offer_id=$1 AND version=current_version)`, r.PathValue("id"), ac.OrganisationID).Scan(&versionID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO onboarding.offer_approvals(organisation_id,offer_id,offer_version_id,step_key,sequence) VALUES($1,$2,$3,'hiring_manager',1),($1,$2,$3,'hr_manager',2)`, ac.OrganisationID, r.PathValue("id"), versionID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	var definitionID, workflowVersionID, workflowInstanceID string
+	err = tx.QueryRow(r.Context(), `INSERT INTO workflow.definitions(organisation_id,key,name) VALUES($1,'offer-approval','Offer Approval') ON CONFLICT(organisation_id,key) DO UPDATE SET name=excluded.name RETURNING id`, ac.OrganisationID).Scan(&definitionID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	err = tx.QueryRow(r.Context(), `SELECT id FROM workflow.versions WHERE definition_id=$1 AND published_at IS NOT NULL ORDER BY version DESC LIMIT 1`, definitionID).Scan(&workflowVersionID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		err = tx.QueryRow(r.Context(), `INSERT INTO workflow.versions(organisation_id,definition_id,version,specification,published_at) VALUES($1,$2,1,$3,now()) RETURNING id`, ac.OrganisationID, definitionID, map[string]any{"states": []string{"pending_manager", "pending_hr", "approved", "rejected"}}).Scan(&workflowVersionID)
+		if err == nil {
+			_, err = tx.Exec(r.Context(), `INSERT INTO workflow.transitions(organisation_id,version_id,from_state,to_state) VALUES($1,$2,'pending_manager','pending_hr'),($1,$2,'pending_manager','rejected'),($1,$2,'pending_hr','approved'),($1,$2,'pending_hr','rejected')`, ac.OrganisationID, workflowVersionID)
+		}
+	}
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	err = tx.QueryRow(r.Context(), `INSERT INTO workflow.instances(organisation_id,version_id,entity_type,entity_id,state) VALUES($1,$2,'offer',$3,'pending_manager') RETURNING id`, ac.OrganisationID, workflowVersionID, r.PathValue("id")).Scan(&workflowInstanceID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO workflow.history(organisation_id,instance_id,to_state,actor_user_id,payload) VALUES($1,$2,'pending_manager',$3,$4)`, ac.OrganisationID, workflowInstanceID, ac.UserID, map[string]any{"offerVersionId": versionID})
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `UPDATE onboarding.offers SET workflow_instance_id=$2 WHERE id=$1`, r.PathValue("id"), workflowInstanceID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, r.PathValue("id"), "offer", r.PathValue("id"), "offer.submitted", map[string]string{"workflowInstanceId": workflowInstanceID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) approveOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Decision, Comment string }
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.Decision != "approved" && in.Decision != "rejected" {
+		problem(w, 422, "validation_error", "decision must be approved or rejected")
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	step := "hiring_manager"
+	permission := "offer.approve_manager"
+	var firstStatus string
+	err = tx.QueryRow(r.Context(), `SELECT status FROM onboarding.offer_approvals WHERE offer_id=$1 AND organisation_id=$2 AND step_key='hiring_manager' FOR UPDATE`, r.PathValue("id"), ac.OrganisationID).Scan(&firstStatus)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if firstStatus == "approved" {
+		step = "hr_manager"
+		permission = "offer.approve_hr"
+	}
+	if !ac.Permissions[permission] {
+		problem(w, 403, "forbidden", "approval permission missing")
+		return
+	}
+	tag, err := tx.Exec(r.Context(), `UPDATE onboarding.offer_approvals SET status=$4,approver_user_id=$3,comment=$5,decided_at=now() WHERE offer_id=$1 AND organisation_id=$2 AND step_key=$6 AND status='pending'`, r.PathValue("id"), ac.OrganisationID, ac.UserID, in.Decision, in.Comment, step)
+	if err != nil || tag.RowsAffected() != 1 {
+		problem(w, 409, "invalid_state", "approval step is not pending")
+		return
+	}
+	status := "pending_approval"
+	if in.Decision == "rejected" {
+		status = "draft"
+	} else if step == "hr_manager" {
+		status = "approved"
+	}
+	_, err = tx.Exec(r.Context(), `UPDATE onboarding.offers SET status=$3::onboarding.offer_status,updated_at=now() WHERE id=$1 AND organisation_id=$2`, r.PathValue("id"), ac.OrganisationID, status)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	var workflowID, fromState string
+	err = tx.QueryRow(r.Context(), `SELECT workflow_instance_id,state FROM onboarding.offers o JOIN workflow.instances i ON i.id=o.workflow_instance_id WHERE o.id=$1`, r.PathValue("id")).Scan(&workflowID, &fromState)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	toState := "pending_hr"
+	if in.Decision == "rejected" {
+		toState = "rejected"
+	} else if step == "hr_manager" {
+		toState = "approved"
+	}
+	_, err = tx.Exec(r.Context(), `UPDATE workflow.instances SET state=$2,completed_at=CASE WHEN $2 IN ('approved','rejected') THEN now() END WHERE id=$1`, workflowID, toState)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO workflow.history(organisation_id,instance_id,from_state,to_state,actor_user_id,payload) VALUES($1,$2,$3,$4,$5,$6)`, ac.OrganisationID, workflowID, fromState, toState, ac.UserID, map[string]string{"comment": in.Comment})
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, r.PathValue("id"), "offer", r.PathValue("id"), "offer."+in.Decision, map[string]string{"step": step}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) sendOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	if err := a.generateOfferDocuments(r.Context(), ac, r.PathValue("id")); err != nil {
+		problem(w, 502, "document_generation_failed", err.Error())
+		return
+	}
+	token := randomToken()
+	sum := sha256.Sum256([]byte(token))
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var candidateID string
+	err = tx.QueryRow(r.Context(), `UPDATE onboarding.offers SET status='sent',sent_at=now(),public_token_hash=$3,updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status='approved' AND (expires_at IS NULL OR expires_at>now()) RETURNING candidate_id`, r.PathValue("id"), ac.OrganisationID, hex.EncodeToString(sum[:])).Scan(&candidateID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, r.PathValue("id"), "offer", r.PathValue("id"), "offer.sent", map[string]string{"candidateId": candidateID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,'offer.sent',$2)`, ac.OrganisationID, map[string]any{"offerId": r.PathValue("id"), "candidateId": candidateID, "publicPath": "/offers/" + token})
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 200, map[string]string{"offerToken": token, "publicPath": "/offers/" + token})
+}
+func (a *app) generateOfferDocuments(ctx context.Context, ac actor, offerID string) error {
+	var versionID, title, candidate, joiningDate, salaryCurrency string
+	var salary *float64
+	err := a.db.QueryRow(ctx, `SELECT v.id,v.title,concat_ws(' ',c.first_name,c.last_name),v.joining_date::text,v.salary_amount,coalesce(v.salary_currency,'INR') FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.id=$1 AND o.organisation_id=$2 AND o.status='approved'`, offerID, ac.OrganisationID).Scan(&versionID, &title, &candidate, &joiningDate, &salary, &salaryCurrency)
+	if err != nil {
+		return err
+	}
+	kinds := []string{"offer_letter", "compensation_summary", "nda", "employment_agreement"}
+	for _, kind := range kinds {
+		var exists bool
+		if err = a.db.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM onboarding.offer_documents WHERE offer_version_id=$1 AND kind=$2)`, versionID, kind).Scan(&exists); err != nil {
+			return err
+		}
+		if exists {
+			continue
+		}
+		content := []byte(fmt.Sprintf("<!doctype html><html><body><h1>%s</h1><p>Candidate: %s</p><p>Role: %s</p><p>Joining date: %s</p><p>Compensation: %s %v</p><p>This document was generated from immutable offer version data.</p></body></html>", html.EscapeString(strings.ReplaceAll(kind, "_", " ")), html.EscapeString(candidate), html.EscapeString(title), joiningDate, salaryCurrency, salary))
+		checksum := sha256.Sum256(content)
+		payload, _ := json.Marshal(map[string]any{"ownerEntityType": "offer", "ownerEntityId": offerID, "name": kind + ".html", "contentType": "text/html", "sizeBytes": len(content), "checksumSHA256": hex.EncodeToString(checksum[:])})
+		request, requestErr := http.NewRequestWithContext(ctx, http.MethodPost, a.peopleURL+"/documents/upload-url", bytes.NewReader(payload))
+		if requestErr != nil {
+			return requestErr
+		}
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("X-Actor-Id", a.serviceActor)
+		request.Header.Set("X-Organisation-Id", ac.OrganisationID)
+		request.Header.Set("X-Request-Id", ac.RequestID)
+		request.Header.Set("X-Permissions", "employee.edit")
+		response, requestErr := a.client.Do(request)
+		if requestErr != nil {
+			return requestErr
+		}
+		body, readErr := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+		response.Body.Close()
+		if readErr != nil {
+			return readErr
+		}
+		if response.StatusCode >= 300 {
+			return fmt.Errorf("document service returned %d", response.StatusCode)
+		}
+		var signed struct {
+			DocumentID, UploadURL, Method string
+			Headers                       map[string]string
+		}
+		if err = json.Unmarshal(body, &signed); err != nil {
+			return err
+		}
+		upload, requestErr := http.NewRequestWithContext(ctx, signed.Method, signed.UploadURL, bytes.NewReader(content))
+		if requestErr != nil {
+			return requestErr
+		}
+		for key, value := range signed.Headers {
+			upload.Header.Set(key, value)
+		}
+		uploadResponse, requestErr := a.client.Do(upload)
+		if requestErr != nil {
+			return requestErr
+		}
+		io.Copy(io.Discard, uploadResponse.Body)
+		uploadResponse.Body.Close()
+		if uploadResponse.StatusCode >= 300 {
+			return fmt.Errorf("storage upload returned %d", uploadResponse.StatusCode)
+		}
+		_, err = a.db.Exec(ctx, `INSERT INTO onboarding.offer_documents(organisation_id,offer_id,offer_version_id,document_id,kind) VALUES($1,$2,$3,$4,$5)`, ac.OrganisationID, offerID, versionID, signed.DocumentID, kind)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (a *app) withdrawOffer(w http.ResponseWriter, r *http.Request, ac actor) {
+	tag, err := a.db.Exec(r.Context(), `UPDATE onboarding.offers SET status='withdrawn',withdrawn_at=now(),public_token_hash=NULL,updated_at=now() WHERE id=$1 AND organisation_id=$2 AND status IN ('approved','sent')`, r.PathValue("id"), ac.OrganisationID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if tag.RowsAffected() != 1 {
+		problem(w, 409, "invalid_state", "offer cannot be withdrawn")
+		return
+	}
+	w.WriteHeader(204)
+}
 
-func (a *app) publicOffer(w http.ResponseWriter,r *http.Request){sum:=sha256.Sum256([]byte(r.PathValue("token")));var raw []byte;err:=a.db.QueryRow(r.Context(),`SELECT jsonb_build_object('id',o.id,'status',CASE WHEN o.expires_at<=now() THEN 'expired' ELSE o.status END,'expiresAt',o.expires_at,'candidate',concat_ws(' ',c.first_name,c.last_name),'title',v.title,'joiningDate',v.joining_date,'employmentType',v.employment_type,'workLocation',v.work_location,'salaryAmount',v.salary_amount,'salaryCurrency',v.salary_currency,'benefits',v.benefits,'probationDays',v.probation_days,'noticePeriodDays',v.notice_period_days,'terms',v.terms) FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.public_token_hash=$1 AND o.status='sent'`,hex.EncodeToString(sum[:])).Scan(&raw);if err!=nil{dbProblem(w,err);return};_,_=w.Write(raw)}
-func (a *app) respondOffer(w http.ResponseWriter,r *http.Request){var in struct{Response,Comment string};if !decode(w,r,&in){return};if in.Response!="accepted"&&in.Response!="rejected"&&in.Response!="changes_requested"{problem(w,422,"validation_error","invalid response");return};sum:=sha256.Sum256([]byte(r.PathValue("token")));tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var offerID,versionID,orgID string;err=tx.QueryRow(r.Context(),`SELECT o.id,v.id,o.organisation_id FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version WHERE o.public_token_hash=$1 AND o.status='sent' AND (o.expires_at IS NULL OR o.expires_at>now()) FOR UPDATE`,hex.EncodeToString(sum[:])).Scan(&offerID,&versionID,&orgID);if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO onboarding.offer_responses(organisation_id,offer_id,offer_version_id,response,comment,ip_address,user_agent) VALUES($1,$2,$3,$4,$5,nullif($6,'')::inet,$7)`,orgID,offerID,versionID,in.Response,in.Comment,clientIP(r),r.UserAgent());if err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`UPDATE onboarding.offers SET status=$2::onboarding.offer_status,accepted_at=CASE WHEN $2='accepted' THEN now() END,rejected_at=CASE WHEN $2='rejected' THEN now() END,public_token_hash=NULL,updated_at=now() WHERE id=$1`,offerID,in.Response);if err!=nil{dbProblem(w,err);return};if in.Response=="accepted"{_,err=tx.Exec(r.Context(),`INSERT INTO onboarding.conversion_jobs(organisation_id,offer_id) VALUES($1,$2) ON CONFLICT(offer_id) DO NOTHING`,orgID,offerID);if err!=nil{dbProblem(w,err);return}};requestID:="00000000-0000-0000-0000-000000000003";if err=a.activityAudit(r.Context(),tx,actor{OrganisationID:orgID,RequestID:requestID,IP:clientIP(r)},offerID,"offer",offerID,"offer."+in.Response,map[string]string{"comment":in.Comment});err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,$2,$3)`,orgID,"offer."+in.Response,map[string]any{"offerId":offerID,"comment":in.Comment});if err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};writeJSON(w,200,map[string]string{"status":in.Response})}
+func (a *app) publicOffer(w http.ResponseWriter, r *http.Request) {
+	sum := sha256.Sum256([]byte(r.PathValue("token")))
+	var raw []byte
+	err := a.db.QueryRow(r.Context(), `SELECT jsonb_build_object('id',o.id,'status',CASE WHEN o.expires_at<=now() THEN 'expired' ELSE o.status END,'expiresAt',o.expires_at,'candidate',concat_ws(' ',c.first_name,c.last_name),'title',v.title,'joiningDate',v.joining_date,'employmentType',v.employment_type,'workLocation',v.work_location,'salaryAmount',v.salary_amount,'salaryCurrency',v.salary_currency,'benefits',v.benefits,'probationDays',v.probation_days,'noticePeriodDays',v.notice_period_days,'terms',v.terms) FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.public_token_hash=$1 AND o.status='sent'`, hex.EncodeToString(sum[:])).Scan(&raw)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, _ = w.Write(raw)
+}
+func (a *app) respondOffer(w http.ResponseWriter, r *http.Request) {
+	var in struct{ Response, Comment string }
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.Response != "accepted" && in.Response != "rejected" && in.Response != "changes_requested" {
+		problem(w, 422, "validation_error", "invalid response")
+		return
+	}
+	sum := sha256.Sum256([]byte(r.PathValue("token")))
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var offerID, versionID, orgID string
+	err = tx.QueryRow(r.Context(), `SELECT o.id,v.id,o.organisation_id FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version WHERE o.public_token_hash=$1 AND o.status='sent' AND (o.expires_at IS NULL OR o.expires_at>now()) FOR UPDATE`, hex.EncodeToString(sum[:])).Scan(&offerID, &versionID, &orgID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO onboarding.offer_responses(organisation_id,offer_id,offer_version_id,response,comment,ip_address,user_agent) VALUES($1,$2,$3,$4,$5,nullif($6,'')::inet,$7)`, orgID, offerID, versionID, in.Response, in.Comment, clientIP(r), r.UserAgent())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `UPDATE onboarding.offers SET status=$2::onboarding.offer_status,accepted_at=CASE WHEN $2='accepted' THEN now() END,rejected_at=CASE WHEN $2='rejected' THEN now() END,public_token_hash=NULL,updated_at=now() WHERE id=$1`, offerID, in.Response)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if in.Response == "accepted" {
+		_, err = tx.Exec(r.Context(), `INSERT INTO onboarding.conversion_jobs(organisation_id,offer_id) VALUES($1,$2) ON CONFLICT(offer_id) DO NOTHING`, orgID, offerID)
+		if err != nil {
+			dbProblem(w, err)
+			return
+		}
+	}
+	requestID := "00000000-0000-0000-0000-000000000003"
+	if err = a.activityAudit(r.Context(), tx, actor{OrganisationID: orgID, RequestID: requestID, IP: clientIP(r)}, offerID, "offer", offerID, "offer."+in.Response, map[string]string{"comment": in.Comment}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,$2,$3)`, orgID, "offer."+in.Response, map[string]any{"offerId": offerID, "comment": in.Comment})
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 200, map[string]string{"status": in.Response})
+}
 
-func (a *app) listTemplates(w http.ResponseWriter,r *http.Request,ac actor){rows,err:=a.db.Query(r.Context(),`SELECT t.id,t.name,t.department_id AS "departmentId",t.version,count(x.id) AS "taskCount" FROM onboarding.templates t LEFT JOIN onboarding.template_tasks x ON x.template_id=t.id WHERE t.organisation_id=$1 AND t.deleted_at IS NULL GROUP BY t.id ORDER BY t.name`,ac.OrganisationID);if err!=nil{dbProblem(w,err);return};defer rows.Close();writeRows(w,rows)}
-func (a *app) createTemplate(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Name,DepartmentID string;Tasks []struct{Key,Title,Description,AssigneeType,TaskType string;DueOffsetDays int;Required bool;Configuration any;DependsOn []string}};if !decode(w,r,&in){return};if in.Name==""||len(in.Tasks)==0{problem(w,422,"validation_error","name and tasks are required");return};tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var id string;err=tx.QueryRow(r.Context(),`INSERT INTO onboarding.templates(organisation_id,name,department_id,created_by) VALUES($1,$2,nullif($3,'')::uuid,$4) RETURNING id`,ac.OrganisationID,in.Name,in.DepartmentID,ac.UserID).Scan(&id);if err!=nil{dbProblem(w,err);return};ids:=map[string]string{};for index,t:=range in.Tasks{var taskID string;err=tx.QueryRow(r.Context(),`INSERT INTO onboarding.template_tasks(organisation_id,template_id,task_key,title,description,assignee_type,task_type,due_offset_days,required,configuration,position) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,ac.OrganisationID,id,t.Key,t.Title,t.Description,t.AssigneeType,t.TaskType,t.DueOffsetDays,t.Required,defaultJSON(t.Configuration,map[string]any{}),index+1).Scan(&taskID);if err!=nil{dbProblem(w,err);return};ids[t.Key]=taskID};for _,t:=range in.Tasks{for _,dependency:=range t.DependsOn{if ids[dependency]==""{problem(w,422,"invalid_dependency","unknown task dependency");return};_,err=tx.Exec(r.Context(),`INSERT INTO onboarding.template_task_dependencies(task_id,depends_on_task_id) VALUES($1,$2)`,ids[t.Key],ids[dependency]);if err!=nil{dbProblem(w,err);return}}};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};writeJSON(w,201,map[string]string{"id":id})}
-func (a *app) listInstances(w http.ResponseWriter,r *http.Request,ac actor){scope:=r.URL.Query().Get("scope");canSeeAll:=ac.Permissions["onboarding.manage"]||ac.Permissions["onboarding.hr_task"];rows,err:=a.db.Query(r.Context(),`SELECT i.id,i.employee_id AS "employeeId",concat_ws(' ',c.first_name,c.last_name) employee,i.status,i.target_start_date AS "targetStartDate",count(t.id) FILTER(WHERE t.required) AS total,count(t.id) FILTER(WHERE t.required AND t.status IN ('completed','waived')) AS completed,count(t.id) FILTER(WHERE t.due_at<now() AND t.status NOT IN ('completed','waived')) AS overdue FROM onboarding.instances i JOIN recruitment.candidate_profiles c ON c.id=i.candidate_id LEFT JOIN onboarding.tasks t ON t.instance_id=i.id WHERE i.organisation_id=$1 AND ($2='' OR t.assignee_type=$2) AND ($3 OR i.user_id=$4 OR EXISTS(SELECT 1 FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=i.employee_id AND er.valid_to IS NULL AND manager.user_id=$4) OR EXISTS(SELECT 1 FROM onboarding.tasks mine WHERE mine.instance_id=i.id AND mine.assignee_user_id=$4)) GROUP BY i.id,c.id ORDER BY i.target_start_date`,ac.OrganisationID,scope,canSeeAll,ac.UserID);if err!=nil{dbProblem(w,err);return};defer rows.Close();writeRows(w,rows)}
-func (a *app) myInstance(w http.ResponseWriter,r *http.Request,ac actor){var id string;err:=a.db.QueryRow(r.Context(),`SELECT id FROM onboarding.instances WHERE organisation_id=$1 AND user_id=$2 AND status<>'cancelled' ORDER BY started_at DESC LIMIT 1`,ac.OrganisationID,ac.UserID).Scan(&id);if err!=nil{dbProblem(w,err);return};r.SetPathValue("id",id);a.getInstance(w,r,ac)}
-func (a *app) getInstance(w http.ResponseWriter,r *http.Request,ac actor){var raw []byte;canSeeAll:=ac.Permissions["onboarding.manage"]||ac.Permissions["onboarding.hr_task"];err:=a.db.QueryRow(r.Context(),`SELECT jsonb_build_object('id',i.id,'employeeId',i.employee_id,'userId',i.user_id,'status',i.status,'targetStartDate',i.target_start_date,'tasks',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',t.id,'key',t.task_key,'title',t.title,'description',t.description,'assigneeType',t.assignee_type,'taskType',t.task_type,'status',CASE WHEN EXISTS(SELECT 1 FROM onboarding.task_dependencies d JOIN onboarding.tasks p ON p.id=d.depends_on_task_id WHERE d.task_id=t.id AND p.status NOT IN ('completed','waived')) THEN 'blocked' ELSE t.status::text END,'required',t.required,'dueAt',t.due_at,'submittedData',t.submitted_data) ORDER BY t.due_at,t.id),'[]') FROM onboarding.tasks t WHERE t.instance_id=i.id),'verifications',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',v.id,'documentType',v.document_type,'documentId',v.document_id,'status',v.status,'notes',v.verification_notes)),'[]') FROM onboarding.identity_verifications v WHERE v.instance_id=i.id)) FROM onboarding.instances i WHERE i.id=$1 AND i.organisation_id=$2 AND ($3 OR i.user_id=$4 OR EXISTS(SELECT 1 FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=i.employee_id AND er.valid_to IS NULL AND manager.user_id=$4) OR EXISTS(SELECT 1 FROM onboarding.tasks t WHERE t.instance_id=i.id AND t.assignee_user_id=$4))`,r.PathValue("id"),ac.OrganisationID,canSeeAll,ac.UserID).Scan(&raw);if err!=nil{dbProblem(w,err);return};_,_=w.Write(raw)}
-func (a *app) submitTask(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Data any};if !decode(w,r,&in){return};tag,err:=a.db.Exec(r.Context(),`UPDATE onboarding.tasks t SET status='submitted',submitted_data=$3,version=version+1 WHERE t.id=$1 AND t.organisation_id=$2 AND t.status IN ('pending','in_progress','rejected') AND NOT EXISTS(SELECT 1 FROM onboarding.task_dependencies d JOIN onboarding.tasks p ON p.id=d.depends_on_task_id WHERE d.task_id=t.id AND p.status NOT IN ('completed','waived'))`,r.PathValue("id"),ac.OrganisationID,defaultJSON(in.Data,map[string]any{}));if err!=nil{dbProblem(w,err);return};if tag.RowsAffected()!=1{problem(w,409,"blocked_or_closed","task dependencies are incomplete or task is closed");return};w.WriteHeader(204)}
-func(a *app)taskDocumentUpload(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Name,ContentType,ChecksumSHA256 string;SizeBytes int64};if !decode(w,r,&in){return};var instanceID string;err:=a.db.QueryRow(r.Context(),`SELECT t.instance_id FROM onboarding.tasks t JOIN onboarding.instances i ON i.id=t.instance_id WHERE t.id=$1 AND t.organisation_id=$2 AND i.user_id=$3 AND t.task_type='document_upload'`,r.PathValue("id"),ac.OrganisationID,ac.UserID).Scan(&instanceID);if err!=nil{dbProblem(w,err);return};payload,_:=json.Marshal(map[string]any{"ownerEntityType":"onboarding_instance","ownerEntityId":instanceID,"name":in.Name,"contentType":in.ContentType,"sizeBytes":in.SizeBytes,"checksumSHA256":in.ChecksumSHA256});request,err:=http.NewRequestWithContext(r.Context(),http.MethodPost,a.peopleURL+"/documents/upload-url",bytes.NewReader(payload));if err!=nil{problem(w,500,"request_error",err.Error());return};request.Header.Set("Content-Type","application/json");request.Header.Set("X-Actor-Id",a.serviceActor);request.Header.Set("X-Organisation-Id",ac.OrganisationID);request.Header.Set("X-Request-Id",ac.RequestID);request.Header.Set("X-Permissions","employee.edit");response,err:=a.client.Do(request);if err!=nil{problem(w,502,"document_service_error",err.Error());return};defer response.Body.Close();var body map[string]any;if err=json.NewDecoder(response.Body).Decode(&body);err!=nil{problem(w,502,"document_service_error",err.Error());return};if response.StatusCode>=300{problem(w,response.StatusCode,"document_service_error","upload URL could not be created");return};documentID,_:=body["documentId"].(string);_,err=a.db.Exec(r.Context(),`INSERT INTO onboarding.task_documents(organisation_id,task_id,document_id,added_by) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`,ac.OrganisationID,r.PathValue("id"),documentID,ac.UserID);if err!=nil{dbProblem(w,err);return};writeJSON(w,201,body)}
-func (a *app) completeTask(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Decision string};if !decode(w,r,&in){return};if in.Decision==""{in.Decision="completed"};if in.Decision!="completed"&&in.Decision!="rejected"&&in.Decision!="waived"{problem(w,422,"validation_error","invalid task decision");return};tx,err:=a.db.Begin(r.Context());if err!=nil{dbProblem(w,err);return};defer tx.Rollback(r.Context());var instanceID,assigneeType string;err=tx.QueryRow(r.Context(),`UPDATE onboarding.tasks SET status=$3::onboarding.task_status,completed_by=CASE WHEN $3 IN ('completed','waived') THEN $4::uuid END,completed_at=CASE WHEN $3 IN ('completed','waived') THEN now() END,version=version+1 WHERE id=$1 AND organisation_id=$2 AND status NOT IN ('completed','waived') RETURNING instance_id,assignee_type`,r.PathValue("id"),ac.OrganisationID,in.Decision,ac.UserID).Scan(&instanceID,&assigneeType);if err!=nil{dbProblem(w,err);return};permission:="onboarding."+assigneeType+"_task";if !ac.Permissions[permission]&&!ac.Permissions["onboarding.manage"]{problem(w,403,"forbidden","task assignment does not match actor");return};_,err=tx.Exec(r.Context(),`UPDATE onboarding.instances SET status=CASE WHEN NOT EXISTS(SELECT 1 FROM onboarding.tasks WHERE instance_id=$1 AND required AND status NOT IN ('completed','waived')) THEN 'completed'::onboarding.instance_status ELSE 'in_progress'::onboarding.instance_status END,completed_at=CASE WHEN NOT EXISTS(SELECT 1 FROM onboarding.tasks WHERE instance_id=$1 AND required AND status NOT IN ('completed','waived')) THEN now() ELSE NULL END,version=version+1 WHERE id=$1`,instanceID);if err!=nil{dbProblem(w,err);return};if err=a.activityAudit(r.Context(),tx,ac,"","onboarding_task",r.PathValue("id"),"onboarding.task_"+in.Decision,map[string]string{"instanceId":instanceID});err!=nil{dbProblem(w,err);return};_,err=tx.Exec(r.Context(),`INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,$2,$3)`,ac.OrganisationID,"onboarding.task_"+in.Decision,map[string]any{"instanceId":instanceID,"taskId":r.PathValue("id"),"assigneeType":assigneeType});if err!=nil{dbProblem(w,err);return};if err=tx.Commit(r.Context());err!=nil{dbProblem(w,err);return};w.WriteHeader(204)}
-func (a *app) addVerification(w http.ResponseWriter,r *http.Request,ac actor){var in struct{DocumentType,DocumentID,IdentifierCiphertext string};if !decode(w,r,&in){return};var id string;err:=a.db.QueryRow(r.Context(),`INSERT INTO onboarding.identity_verifications(organisation_id,instance_id,document_type,document_id,identifier_ciphertext) SELECT $1,i.id,$3,nullif($4,'')::uuid,nullif($5,'') FROM onboarding.instances i WHERE i.id=$2 AND i.organisation_id=$1 AND i.user_id=$6 ON CONFLICT(instance_id,document_type) DO UPDATE SET document_id=excluded.document_id,identifier_ciphertext=excluded.identifier_ciphertext,status='pending',verified_by=NULL,verified_at=NULL RETURNING id`,ac.OrganisationID,r.PathValue("id"),in.DocumentType,in.DocumentID,in.IdentifierCiphertext,ac.UserID).Scan(&id);if err!=nil{dbProblem(w,err);return};writeJSON(w,201,map[string]string{"id":id})}
-func(a *app)saveSensitiveInformation(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Kind string;Payload any};if !decode(w,r,&in){return};plaintext,err:=json.Marshal(in.Payload);if err!=nil{problem(w,422,"validation_error",err.Error());return};block,err:=aes.NewCipher(a.encryptionKey[:]);if err!=nil{problem(w,500,"encryption_error",err.Error());return};gcm,err:=cipher.NewGCM(block);if err!=nil{problem(w,500,"encryption_error",err.Error());return};nonce:=make([]byte,gcm.NonceSize());if _,err=rand.Read(nonce);err!=nil{problem(w,500,"encryption_error",err.Error());return};ciphertext:=gcm.Seal(nonce,nonce,plaintext,[]byte(ac.OrganisationID+":"+r.PathValue("id")+":"+in.Kind));encoded:=base64.RawStdEncoding.EncodeToString(ciphertext);tag,err:=a.db.Exec(r.Context(),`INSERT INTO onboarding.sensitive_information(organisation_id,instance_id,kind,encrypted_payload,encryption_key_version,submitted_by) SELECT $1,i.id,$3,$4,'release-03-v1',$5 FROM onboarding.instances i WHERE i.id=$2 AND i.organisation_id=$1 AND i.user_id=$5 ON CONFLICT(instance_id,kind) DO UPDATE SET encrypted_payload=excluded.encrypted_payload,encryption_key_version=excluded.encryption_key_version,submitted_by=excluded.submitted_by,updated_at=now()`,ac.OrganisationID,r.PathValue("id"),in.Kind,encoded,ac.UserID);if err!=nil{dbProblem(w,err);return};if tag.RowsAffected()!=1{problem(w,404,"not_found","onboarding instance not found");return};w.WriteHeader(204)}
-func (a *app) decideVerification(w http.ResponseWriter,r *http.Request,ac actor){var in struct{Decision,Notes string};if !decode(w,r,&in){return};if in.Decision!="verified"&&in.Decision!="rejected"{problem(w,422,"validation_error","decision must be verified or rejected");return};tag,err:=a.db.Exec(r.Context(),`UPDATE onboarding.identity_verifications SET status=$3::onboarding.verification_status,verification_notes=$4,verified_by=$5,verified_at=now() WHERE id=$1 AND organisation_id=$2 AND status='pending'`,r.PathValue("id"),ac.OrganisationID,in.Decision,in.Notes,ac.UserID);if err!=nil{dbProblem(w,err);return};if tag.RowsAffected()!=1{problem(w,409,"invalid_state","verification is not pending");return};w.WriteHeader(204)}
-func (a *app) timeline(w http.ResponseWriter,r *http.Request,ac actor){rows,err:=a.db.Query(r.Context(),`SELECT id,action,entity_type AS "entityType",entity_id AS "entityId",actor_user_id AS "actorUserId",payload,occurred_at AS "occurredAt" FROM onboarding.activities WHERE organisation_id=$1 AND instance_id=$2 ORDER BY occurred_at DESC`,ac.OrganisationID,r.PathValue("id"));if err!=nil{dbProblem(w,err);return};defer rows.Close();writeRows(w,rows)}
+func (a *app) listTemplates(w http.ResponseWriter, r *http.Request, ac actor) {
+	rows, err := a.db.Query(r.Context(), `SELECT t.id,t.name,t.department_id AS "departmentId",t.version,count(x.id) AS "taskCount" FROM onboarding.templates t LEFT JOIN onboarding.template_tasks x ON x.template_id=t.id WHERE t.organisation_id=$1 AND t.deleted_at IS NULL GROUP BY t.id ORDER BY t.name`, ac.OrganisationID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer rows.Close()
+	writeRows(w, rows)
+}
+func (a *app) createTemplate(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct {
+		Name, DepartmentID string
+		Tasks              []struct {
+			Key, Title, Description, AssigneeType, TaskType string
+			DueOffsetDays                                   int
+			Required                                        bool
+			Configuration                                   any
+			DependsOn                                       []string
+		}
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.Name == "" || len(in.Tasks) == 0 {
+		problem(w, 422, "validation_error", "name and tasks are required")
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var id string
+	err = tx.QueryRow(r.Context(), `INSERT INTO onboarding.templates(organisation_id,name,department_id,created_by) VALUES($1,$2,nullif($3,'')::uuid,$4) RETURNING id`, ac.OrganisationID, in.Name, in.DepartmentID, ac.UserID).Scan(&id)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	ids := map[string]string{}
+	for index, t := range in.Tasks {
+		var taskID string
+		err = tx.QueryRow(r.Context(), `INSERT INTO onboarding.template_tasks(organisation_id,template_id,task_key,title,description,assignee_type,task_type,due_offset_days,required,configuration,position) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`, ac.OrganisationID, id, t.Key, t.Title, t.Description, t.AssigneeType, t.TaskType, t.DueOffsetDays, t.Required, defaultJSON(t.Configuration, map[string]any{}), index+1).Scan(&taskID)
+		if err != nil {
+			dbProblem(w, err)
+			return
+		}
+		ids[t.Key] = taskID
+	}
+	for _, t := range in.Tasks {
+		for _, dependency := range t.DependsOn {
+			if ids[dependency] == "" {
+				problem(w, 422, "invalid_dependency", "unknown task dependency")
+				return
+			}
+			_, err = tx.Exec(r.Context(), `INSERT INTO onboarding.template_task_dependencies(task_id,depends_on_task_id) VALUES($1,$2)`, ids[t.Key], ids[dependency])
+			if err != nil {
+				dbProblem(w, err)
+				return
+			}
+		}
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, map[string]string{"id": id})
+}
+func (a *app) listInstances(w http.ResponseWriter, r *http.Request, ac actor) {
+	scope := r.URL.Query().Get("scope")
+	canSeeAll := ac.Permissions["onboarding.manage"] || ac.Permissions["onboarding.hr_task"]
+	rows, err := a.db.Query(r.Context(), `SELECT i.id,i.employee_id AS "employeeId",concat_ws(' ',c.first_name,c.last_name) employee,i.status,i.target_start_date AS "targetStartDate",count(t.id) FILTER(WHERE t.required) AS total,count(t.id) FILTER(WHERE t.required AND t.status IN ('completed','waived')) AS completed,count(t.id) FILTER(WHERE t.due_at<now() AND t.status NOT IN ('completed','waived')) AS overdue FROM onboarding.instances i JOIN recruitment.candidate_profiles c ON c.id=i.candidate_id LEFT JOIN onboarding.tasks t ON t.instance_id=i.id WHERE i.organisation_id=$1 AND ($2='' OR t.assignee_type=$2) AND ($3 OR i.user_id=$4 OR EXISTS(SELECT 1 FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=i.employee_id AND er.valid_to IS NULL AND manager.user_id=$4) OR EXISTS(SELECT 1 FROM onboarding.tasks mine WHERE mine.instance_id=i.id AND mine.assignee_user_id=$4)) GROUP BY i.id,c.id ORDER BY i.target_start_date`, ac.OrganisationID, scope, canSeeAll, ac.UserID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer rows.Close()
+	writeRows(w, rows)
+}
+func (a *app) myInstance(w http.ResponseWriter, r *http.Request, ac actor) {
+	var id string
+	err := a.db.QueryRow(r.Context(), `SELECT id FROM onboarding.instances WHERE organisation_id=$1 AND user_id=$2 AND status<>'cancelled' ORDER BY started_at DESC LIMIT 1`, ac.OrganisationID, ac.UserID).Scan(&id)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	r.SetPathValue("id", id)
+	a.getInstance(w, r, ac)
+}
+func (a *app) getInstance(w http.ResponseWriter, r *http.Request, ac actor) {
+	var raw []byte
+	canSeeAll := ac.Permissions["onboarding.manage"] || ac.Permissions["onboarding.hr_task"]
+	err := a.db.QueryRow(r.Context(), `SELECT jsonb_build_object('id',i.id,'employeeId',i.employee_id,'userId',i.user_id,'status',i.status,'targetStartDate',i.target_start_date,'tasks',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',t.id,'key',t.task_key,'title',t.title,'description',t.description,'assigneeType',t.assignee_type,'taskType',t.task_type,'status',CASE WHEN EXISTS(SELECT 1 FROM onboarding.task_dependencies d JOIN onboarding.tasks p ON p.id=d.depends_on_task_id WHERE d.task_id=t.id AND p.status NOT IN ('completed','waived')) THEN 'blocked' ELSE t.status::text END,'required',t.required,'dueAt',t.due_at,'submittedData',t.submitted_data) ORDER BY t.due_at,t.id),'[]') FROM onboarding.tasks t WHERE t.instance_id=i.id),'verifications',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',v.id,'documentType',v.document_type,'documentId',v.document_id,'status',v.status,'notes',v.verification_notes)),'[]') FROM onboarding.identity_verifications v WHERE v.instance_id=i.id)) FROM onboarding.instances i WHERE i.id=$1 AND i.organisation_id=$2 AND ($3 OR i.user_id=$4 OR EXISTS(SELECT 1 FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=i.employee_id AND er.valid_to IS NULL AND manager.user_id=$4) OR EXISTS(SELECT 1 FROM onboarding.tasks t WHERE t.instance_id=i.id AND t.assignee_user_id=$4))`, r.PathValue("id"), ac.OrganisationID, canSeeAll, ac.UserID).Scan(&raw)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, _ = w.Write(raw)
+}
+func (a *app) submitTask(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Data any }
+	if !decode(w, r, &in) {
+		return
+	}
+	tag, err := a.db.Exec(r.Context(), `UPDATE onboarding.tasks t SET status='submitted',submitted_data=$3,version=version+1 WHERE t.id=$1 AND t.organisation_id=$2 AND t.status IN ('pending','in_progress','rejected') AND NOT EXISTS(SELECT 1 FROM onboarding.task_dependencies d JOIN onboarding.tasks p ON p.id=d.depends_on_task_id WHERE d.task_id=t.id AND p.status NOT IN ('completed','waived'))`, r.PathValue("id"), ac.OrganisationID, defaultJSON(in.Data, map[string]any{}))
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if tag.RowsAffected() != 1 {
+		problem(w, 409, "blocked_or_closed", "task dependencies are incomplete or task is closed")
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) taskDocumentUpload(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct {
+		Name, ContentType, ChecksumSHA256 string
+		SizeBytes                         int64
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	var instanceID string
+	err := a.db.QueryRow(r.Context(), `SELECT t.instance_id FROM onboarding.tasks t JOIN onboarding.instances i ON i.id=t.instance_id WHERE t.id=$1 AND t.organisation_id=$2 AND i.user_id=$3 AND t.task_type='document_upload'`, r.PathValue("id"), ac.OrganisationID, ac.UserID).Scan(&instanceID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	payload, _ := json.Marshal(map[string]any{"ownerEntityType": "onboarding_instance", "ownerEntityId": instanceID, "name": in.Name, "contentType": in.ContentType, "sizeBytes": in.SizeBytes, "checksumSHA256": in.ChecksumSHA256})
+	request, err := http.NewRequestWithContext(r.Context(), http.MethodPost, a.peopleURL+"/documents/upload-url", bytes.NewReader(payload))
+	if err != nil {
+		problem(w, 500, "request_error", err.Error())
+		return
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-Actor-Id", a.serviceActor)
+	request.Header.Set("X-Organisation-Id", ac.OrganisationID)
+	request.Header.Set("X-Request-Id", ac.RequestID)
+	request.Header.Set("X-Permissions", "employee.edit")
+	response, err := a.client.Do(request)
+	if err != nil {
+		problem(w, 502, "document_service_error", err.Error())
+		return
+	}
+	defer response.Body.Close()
+	var body map[string]any
+	if err = json.NewDecoder(response.Body).Decode(&body); err != nil {
+		problem(w, 502, "document_service_error", err.Error())
+		return
+	}
+	if response.StatusCode >= 300 {
+		problem(w, response.StatusCode, "document_service_error", "upload URL could not be created")
+		return
+	}
+	documentID, _ := body["documentId"].(string)
+	_, err = a.db.Exec(r.Context(), `INSERT INTO onboarding.task_documents(organisation_id,task_id,document_id,added_by) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING`, ac.OrganisationID, r.PathValue("id"), documentID, ac.UserID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, body)
+}
+func (a *app) completeTask(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Decision string }
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.Decision == "" {
+		in.Decision = "completed"
+	}
+	if in.Decision != "completed" && in.Decision != "rejected" && in.Decision != "waived" {
+		problem(w, 422, "validation_error", "invalid task decision")
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var instanceID, assigneeType string
+	err = tx.QueryRow(r.Context(), `UPDATE onboarding.tasks SET status=$3::onboarding.task_status,completed_by=CASE WHEN $3 IN ('completed','waived') THEN $4::uuid END,completed_at=CASE WHEN $3 IN ('completed','waived') THEN now() END,version=version+1 WHERE id=$1 AND organisation_id=$2 AND status NOT IN ('completed','waived') RETURNING instance_id,assignee_type`, r.PathValue("id"), ac.OrganisationID, in.Decision, ac.UserID).Scan(&instanceID, &assigneeType)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	permission := "onboarding." + assigneeType + "_task"
+	if !ac.Permissions[permission] && !ac.Permissions["onboarding.manage"] {
+		problem(w, 403, "forbidden", "task assignment does not match actor")
+		return
+	}
+	_, err = tx.Exec(r.Context(), `UPDATE onboarding.instances SET status=CASE WHEN NOT EXISTS(SELECT 1 FROM onboarding.tasks WHERE instance_id=$1 AND required AND status NOT IN ('completed','waived')) THEN 'completed'::onboarding.instance_status ELSE 'in_progress'::onboarding.instance_status END,completed_at=CASE WHEN NOT EXISTS(SELECT 1 FROM onboarding.tasks WHERE instance_id=$1 AND required AND status NOT IN ('completed','waived')) THEN now() ELSE NULL END,version=version+1 WHERE id=$1`, instanceID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.activityAudit(r.Context(), tx, ac, "", "onboarding_task", r.PathValue("id"), "onboarding.task_"+in.Decision, map[string]string{"instanceId": instanceID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,$2,$3)`, ac.OrganisationID, "onboarding.task_"+in.Decision, map[string]any{"instanceId": instanceID, "taskId": r.PathValue("id"), "assigneeType": assigneeType})
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) addVerification(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ DocumentType, DocumentID, IdentifierCiphertext string }
+	if !decode(w, r, &in) {
+		return
+	}
+	var id string
+	err := a.db.QueryRow(r.Context(), `INSERT INTO onboarding.identity_verifications(organisation_id,instance_id,document_type,document_id,identifier_ciphertext) SELECT $1,i.id,$3,nullif($4,'')::uuid,nullif($5,'') FROM onboarding.instances i WHERE i.id=$2 AND i.organisation_id=$1 AND i.user_id=$6 ON CONFLICT(instance_id,document_type) DO UPDATE SET document_id=excluded.document_id,identifier_ciphertext=excluded.identifier_ciphertext,status='pending',verified_by=NULL,verified_at=NULL RETURNING id`, ac.OrganisationID, r.PathValue("id"), in.DocumentType, in.DocumentID, in.IdentifierCiphertext, ac.UserID).Scan(&id)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 201, map[string]string{"id": id})
+}
+func (a *app) saveSensitiveInformation(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct {
+		Kind    string
+		Payload any
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	plaintext, err := json.Marshal(in.Payload)
+	if err != nil {
+		problem(w, 422, "validation_error", err.Error())
+		return
+	}
+	block, err := aes.NewCipher(a.encryptionKey[:])
+	if err != nil {
+		problem(w, 500, "encryption_error", err.Error())
+		return
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		problem(w, 500, "encryption_error", err.Error())
+		return
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = rand.Read(nonce); err != nil {
+		problem(w, 500, "encryption_error", err.Error())
+		return
+	}
+	ciphertext := gcm.Seal(nonce, nonce, plaintext, []byte(ac.OrganisationID+":"+r.PathValue("id")+":"+in.Kind))
+	encoded := base64.RawStdEncoding.EncodeToString(ciphertext)
+	tag, err := a.db.Exec(r.Context(), `INSERT INTO onboarding.sensitive_information(organisation_id,instance_id,kind,encrypted_payload,encryption_key_version,submitted_by) SELECT $1,i.id,$3,$4,'release-03-v1',$5 FROM onboarding.instances i WHERE i.id=$2 AND i.organisation_id=$1 AND i.user_id=$5 ON CONFLICT(instance_id,kind) DO UPDATE SET encrypted_payload=excluded.encrypted_payload,encryption_key_version=excluded.encryption_key_version,submitted_by=excluded.submitted_by,updated_at=now()`, ac.OrganisationID, r.PathValue("id"), in.Kind, encoded, ac.UserID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if tag.RowsAffected() != 1 {
+		problem(w, 404, "not_found", "onboarding instance not found")
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) decideVerification(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Decision, Notes string }
+	if !decode(w, r, &in) {
+		return
+	}
+	if in.Decision != "verified" && in.Decision != "rejected" {
+		problem(w, 422, "validation_error", "decision must be verified or rejected")
+		return
+	}
+	tag, err := a.db.Exec(r.Context(), `UPDATE onboarding.identity_verifications SET status=$3::onboarding.verification_status,verification_notes=$4,verified_by=$5,verified_at=now() WHERE id=$1 AND organisation_id=$2 AND status='pending'`, r.PathValue("id"), ac.OrganisationID, in.Decision, in.Notes, ac.UserID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if tag.RowsAffected() != 1 {
+		problem(w, 409, "invalid_state", "verification is not pending")
+		return
+	}
+	w.WriteHeader(204)
+}
+func (a *app) timeline(w http.ResponseWriter, r *http.Request, ac actor) {
+	rows, err := a.db.Query(r.Context(), `SELECT id,action,entity_type AS "entityType",entity_id AS "entityId",actor_user_id AS "actorUserId",payload,occurred_at AS "occurredAt" FROM onboarding.activities WHERE organisation_id=$1 AND instance_id=$2 ORDER BY occurred_at DESC`, ac.OrganisationID, r.PathValue("id"))
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer rows.Close()
+	writeRows(w, rows)
+}
 
-func (a *app) activityAudit(ctx context.Context,tx pgx.Tx,ac actor,offerID,entityType,entityID,action string,payload any)error{var offer any;if offerID!=""{offer=offerID};_,err:=tx.Exec(ctx,`INSERT INTO onboarding.activities(organisation_id,offer_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,ac.OrganisationID,offer,entityType,entityID,action,nullable(ac.UserID),defaultJSON(payload,map[string]any{}),ac.RequestID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,ip_address,request_id) VALUES($1,$2,$3,$4,$5,$6,nullif($7,'')::inet,$8)`,ac.OrganisationID,nullable(ac.UserID),entityType,entityID,action,defaultJSON(payload,map[string]any{}),ac.IP,ac.RequestID);return err}
-func actorFrom(r *http.Request)(actor,error){ac:=actor{UserID:r.Header.Get("X-Actor-Id"),OrganisationID:r.Header.Get("X-Organisation-Id"),RequestID:requestID(r),Permissions:map[string]bool{}};ac.IP=clientIP(r);for _,p:=range strings.Split(r.Header.Get("X-Permissions"),","){if p=strings.TrimSpace(p);p!=""{ac.Permissions[p]=true}};if ac.UserID==""||ac.OrganisationID==""{return ac,errors.New("actor and organisation context are required")};return ac,nil}
-func clientIP(r *http.Request)string{if host,_,err:=net.SplitHostPort(r.RemoteAddr);err==nil{return host};return ""}
-func requestID(r *http.Request)string{if v:=r.Header.Get("X-Request-Id");v!=""{return v};return "00000000-0000-0000-0000-000000000001"}
-func randomToken()string{raw:=make([]byte,32);_,_=rand.Read(raw);return hex.EncodeToString(raw)}
-func nullable(v string)any{if v==""{return nil};return v}
-func defaultJSON(v, fallback any)any{if v==nil{return fallback};return v}
-func decode(w http.ResponseWriter,r *http.Request,v any)bool{r.Body=http.MaxBytesReader(w,r.Body,2<<20);decoder:=json.NewDecoder(r.Body);decoder.DisallowUnknownFields();if err:=decoder.Decode(v);err!=nil{problem(w,400,"invalid_json",err.Error());return false};return true}
-func jsonContent(next http.Handler)http.Handler{return http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){w.Header().Set("Content-Type","application/json");next.ServeHTTP(w,r)})}
-func writeJSON(w http.ResponseWriter,status int,v any){w.WriteHeader(status);_=json.NewEncoder(w).Encode(v)}
-func problem(w http.ResponseWriter,status int,code,detail string){writeJSON(w,status,map[string]any{"error":code,"detail":detail,"status":status})}
-func dbProblem(w http.ResponseWriter,err error){if errors.Is(err,pgx.ErrNoRows){problem(w,404,"not_found","record not found");return};log.Printf("database error: %v",err);problem(w,500,"database_error","request could not be completed")}
-func rowsToMaps(rows pgx.Rows)([]map[string]any,error){fields:=rows.FieldDescriptions();items:=[]map[string]any{};for rows.Next(){values,err:=rows.Values();if err!=nil{return nil,err};item:=map[string]any{};for i,field:=range fields{item[string(field.Name)]=values[i]};items=append(items,item)};return items,rows.Err()}
-func writeRows(w http.ResponseWriter,rows pgx.Rows){items,err:=rowsToMaps(rows);if err!=nil{dbProblem(w,err);return};writeJSON(w,200,map[string]any{"items":items})}
-func env(k,f string)string{if v:=os.Getenv(k);v!=""{return v};return f}
-func mustEnv(k string)string{v:=os.Getenv(k);if v==""{log.Fatalf("%s is required",k)};return v}
+func (a *app) activityAudit(ctx context.Context, tx pgx.Tx, ac actor, offerID, entityType, entityID, action string, payload any) error {
+	var offer any
+	if offerID != "" {
+		offer = offerID
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO onboarding.activities(organisation_id,offer_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, ac.OrganisationID, offer, entityType, entityID, action, nullable(ac.UserID), defaultJSON(payload, map[string]any{}), ac.RequestID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,ip_address,request_id) VALUES($1,$2,$3,$4,$5,$6,nullif($7,'')::inet,$8)`, ac.OrganisationID, nullable(ac.UserID), entityType, entityID, action, defaultJSON(payload, map[string]any{}), ac.IP, ac.RequestID)
+	return err
+}
+func actorFrom(r *http.Request) (actor, error) {
+	ac := actor{UserID: r.Header.Get("X-Actor-Id"), OrganisationID: r.Header.Get("X-Organisation-Id"), RequestID: requestID(r), Permissions: map[string]bool{}}
+	ac.IP = clientIP(r)
+	for _, p := range strings.Split(r.Header.Get("X-Permissions"), ",") {
+		if p = strings.TrimSpace(p); p != "" {
+			ac.Permissions[p] = true
+		}
+	}
+	if ac.UserID == "" || ac.OrganisationID == "" {
+		return ac, errors.New("actor and organisation context are required")
+	}
+	return ac, nil
+}
+func clientIP(r *http.Request) string {
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		return host
+	}
+	return ""
+}
+func requestID(r *http.Request) string {
+	if v := r.Header.Get("X-Request-Id"); v != "" {
+		return v
+	}
+	return "00000000-0000-0000-0000-000000000001"
+}
+func randomToken() string {
+	raw := make([]byte, 32)
+	_, _ = rand.Read(raw)
+	return hex.EncodeToString(raw)
+}
+func nullable(v string) any {
+	if v == "" {
+		return nil
+	}
+	return v
+}
+func defaultJSON(v, fallback any) any {
+	if v == nil {
+		return fallback
+	}
+	return v
+}
+func decode(w http.ResponseWriter, r *http.Request, v any) bool {
+	r.Body = http.MaxBytesReader(w, r.Body, 2<<20)
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(v); err != nil {
+		problem(w, 400, "invalid_json", err.Error())
+		return false
+	}
+	return true
+}
+func jsonContent(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
+}
+func writeJSON(w http.ResponseWriter, status int, v any) {
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(v)
+}
+func problem(w http.ResponseWriter, status int, code, detail string) {
+	writeJSON(w, status, map[string]any{"error": code, "detail": detail, "status": status})
+}
+func dbProblem(w http.ResponseWriter, err error) {
+	if errors.Is(err, pgx.ErrNoRows) {
+		problem(w, 404, "not_found", "record not found")
+		return
+	}
+	log.Printf("database error: %v", err)
+	problem(w, 500, "database_error", "request could not be completed")
+}
+func rowsToMaps(rows pgx.Rows) ([]map[string]any, error) {
+	fields := rows.FieldDescriptions()
+	items := []map[string]any{}
+	for rows.Next() {
+		values, err := rows.Values()
+		if err != nil {
+			return nil, err
+		}
+		item := map[string]any{}
+		for i, field := range fields {
+			item[string(field.Name)] = values[i]
+		}
+		items = append(items, item)
+	}
+	return items, rows.Err()
+}
+func writeRows(w http.ResponseWriter, rows pgx.Rows) {
+	items, err := rowsToMaps(rows)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	writeJSON(w, 200, map[string]any{"items": items})
+}
+func env(k, f string) string {
+	if v := os.Getenv(k); v != "" {
+		return v
+	}
+	return f
+}
+func mustEnv(k string) string {
+	v := os.Getenv(k)
+	if v == "" {
+		log.Fatalf("%s is required", k)
+	}
+	return v
+}
+
 var _ = strconv.Itoa

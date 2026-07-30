@@ -1326,3 +1326,31 @@ html {
 
 
 
+.gxl-command-center {
+  --gxl-space-1: 0.25rem;
+  --gxl-space-2: 0.5rem;
+  --gxl-space-3: 0.75rem;
+  --gxl-space-4: 1rem;
+  --gxl-radius-sm: 0.375rem;
+  --gxl-radius-md: 0.5rem;
+  --gxl-radius-lg: 0.75rem;
+  --gxl-elevation-flyout: 0 20px 50px rgb(15 23 42 / 0.18);
+  --gxl-motion-fast: 140ms;
+  font-size: 1rem;
+}
+
+.gxl-command-center :where(button, a, textarea, input):focus-visible {
+  outline: 2px solid #0877d1;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gxl-command-center *,
+  .gxl-command-center *::before,
+  .gxl-command-center *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

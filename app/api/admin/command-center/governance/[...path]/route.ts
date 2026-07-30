@@ -2,6 +2,9 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { GovernanceClient } from "@/lib/command-center/governance/governance-client";
+import { CommandCenterError, errorResponse, requestIdFrom } from "@/lib/command-center/production/errors";
+import { enforceRateLimit, rateLimitHeaders } from "@/lib/command-center/production/rate-limit";
+import { isSameOrigin } from "@/lib/command-center/security/origin";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -21,21 +24,31 @@ interface GovernanceRouteContext {
 }
 
 async function handle(request: Request, context: GovernanceRouteContext) {
+  const requestId = requestIdFrom(request);
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return Response.json({ error: "unauthenticated" }, { status: 401 });
+  if (!session?.user?.id) return errorResponse(new CommandCenterError("AUTHENTICATION_REQUIRED"), requestId);
   const organisationId = session.user.organisation_id ?? process.env.DEFAULT_ORGANISATION_ID;
   const workspaceId = process.env.DEFAULT_WORKSPACE_ID;
   if (!organisationId || !workspaceId) {
-    return Response.json({ error: "trusted_scope_unavailable" }, { status: 503 });
+    return errorResponse(new CommandCenterError("TENANT_SCOPE_INVALID"), requestId);
   }
   const key = (await context.params).path.join("/");
   const route = routes[key];
-  if (!route) return Response.json({ error: "route_not_found" }, { status: 404 });
-  if (!route.methods.has(request.method)) return Response.json({ error: "method_not_allowed" }, { status: 405 });
-  if (request.method !== "GET" && !sameOrigin(request)) {
-    return Response.json({ error: "csrf_validation_failed" }, { status: 403 });
+  if (!route) return errorResponse(new CommandCenterError("RESOURCE_NOT_FOUND"), requestId);
+  if (!route.methods.has(request.method)) return errorResponse(new CommandCenterError("VALIDATION_FAILED", { status: 405 }), requestId);
+  if (request.method !== "GET" && !isSameOrigin(request.headers.get("origin"), request.headers.get("x-forwarded-host") ?? request.headers.get("host"))) {
+    return errorResponse(new CommandCenterError("PERMISSION_DENIED"), requestId);
   }
-  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  let rateLimit;
+  try {
+    rateLimit = await enforceRateLimit(request.method === "GET" ? "governance.read" : "governance.mutate", request, {
+      organizationId: organisationId,
+      workspaceId,
+      userId: session.user.id,
+    });
+  } catch (error) {
+    return errorResponse(error, requestId);
+  }
   const body = request.method === "GET" ? undefined : await boundedJSON(request);
   if (body instanceof Response) return body;
   try {
@@ -48,17 +61,16 @@ async function handle(request: Request, context: GovernanceRouteContext) {
     );
     return new Response(upstream.body, {
       status: upstream.status,
-      headers: { "Content-Type": upstream.headers.get("content-type") ?? "application/json", "X-Request-ID": requestId },
+      headers: {
+        "Content-Type": upstream.headers.get("content-type") ?? "application/json",
+        "Cache-Control": "private, no-store",
+        "X-Request-ID": requestId,
+        ...rateLimitHeaders(rateLimit),
+      },
     });
   } catch {
-    return Response.json({ error: "governance_unavailable", requestId }, { status: 503 });
+    return errorResponse(new CommandCenterError("DEPENDENCY_UNAVAILABLE"), requestId);
   }
-}
-
-function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  return new URL(origin).host === new URL(request.url).host;
 }
 
 async function boundedJSON(request: Request): Promise<unknown | Response> {

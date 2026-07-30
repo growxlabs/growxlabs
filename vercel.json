@@ -88,6 +88,30 @@
     {
       "path": "/api/cron/command-center/process-audit-outbox",
       "schedule": "20 2 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/process-events",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/process-notifications",
+      "schedule": "40 2 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/compact-memory",
+      "schedule": "50 2 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/expire-memory",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/clean-artifacts",
+      "schedule": "10 3 * * *"
+    },
+    {
+      "path": "/api/cron/command-center/recover-execution",
+      "schedule": "20 3 * * *"
     }
   ],
   "headers": [

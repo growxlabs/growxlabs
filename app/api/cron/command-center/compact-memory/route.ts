@@ -1,18 +1,9 @@
-import { NextResponse } from "next/server";
+import { runBoundedCron } from "@/lib/command-center/production/cron-runtime";
+import { compactMemory } from "@/lib/command-center/production/background-jobs";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
-export async function GET(req: Request) {
-  const authHeader = req.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ success: false, error: "UNAUTHORIZED_CRON" }, { status: 401 });
-  }
-
-  // Bounded conversation compaction job
-  return NextResponse.json({
-    success: true,
-    job: "compact-memory",
-    compactedCount: 0,
-    timestamp: new Date().toISOString()
-  });
+export function GET(req: Request) {
+  return runBoundedCron(req, "compact-memory", compactMemory);
 }

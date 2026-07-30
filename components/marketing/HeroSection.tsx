@@ -9,19 +9,19 @@ import { FlickerText } from "@/components/marketing/FlickerText";
  * spaced text "GROW X LABS TECH" for maximum high-end readability.
  */
 export function HeroSection() {
-  const brandName = "GROW X LABS";
+  const brandName = "GrowX Labs";
   
   // Custom neon flicker-in delays to mimic a high-fidelity retro studio load
   const flickerDelays = [
     1.02, // G
-    0.48, // R
-    1.38, // O
-    0.72, // W
+    0.48, // r
+    1.38, // o
+    0.72, // w
     1.15, // X
     0.35, // L
-    0.95, // A
-    0.58, // B
-    1.25  // S
+    0.95, // a
+    0.58, // b
+    1.25  // s
   ];
 
   return (
@@ -71,7 +71,8 @@ export function HeroSection() {
         <div className="w-full flex justify-center items-end select-none pointer-events-none z-0 translate-y-[3%] overflow-visible">
           <h1
             id="hero-studio-heading-desktop"
-            className="font-sans font-black select-none tracking-[-0.05em] text-foreground leading-[0.8] text-[14.8vw] uppercase whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
+            className="font-sans font-black select-none tracking-[-0.05em] text-foreground leading-[0.8] whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
+            style={{ fontSize: "14.2vw" }}
           >
             <FlickerText text={brandName} delays={flickerDelays} />
           </h1>

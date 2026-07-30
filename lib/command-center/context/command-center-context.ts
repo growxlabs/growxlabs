@@ -1,3 +1,8 @@
+import "server-only";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 export interface CommandCenterContext {
   userId: string;
   organizationId: string;
@@ -11,30 +16,41 @@ export interface ResolveContextOptions {
   req?: Request;
   customOrgId?: string;
   customWorkspaceId?: string;
+  customUserId?: string;
+  customPermissions?: string[];
+  internalServiceAuthenticated?: boolean;
 }
 
-export async function resolveCommandCenterContext(
-  options: ResolveContextOptions = {}
-): Promise<CommandCenterContext> {
-  const requestId = "req_" + Math.random().toString(36).substring(2, 11);
+const ADMIN_PERMISSIONS = [
+  "leads:read", "leads:write", "proposals:read", "proposals:write",
+  "invoices:read", "invoices:write", "projects:read", "projects:write",
+  "users:read", "blogs:read", "blogs:dispatch",
+  "governance.approvals.read", "governance.approvals.decide",
+  "governance.policies.read", "governance.policies.manage", "governance.audit.read",
+];
 
-  // Default internal enterprise context scope
-  // In production, this extracts and validates cookie/JWT session claims
-  const context: CommandCenterContext = {
-    userId: "usr_admin_gxl",
-    organizationId: options.customOrgId || "org_growxlabs",
-    workspaceId: options.customWorkspaceId || "ws_main",
-    role: "admin",
-    permissions: [
-      "leads:read", "leads:write",
-      "proposals:read", "proposals:write",
-      "invoices:read", "invoices:write",
-      "projects:read", "projects:write",
-      "users:read",
-      "blogs:read", "blogs:dispatch"
-    ],
-    requestId
-  };
-
-  return context;
+export async function resolveCommandCenterContext(options: ResolveContextOptions = {}): Promise<CommandCenterContext> {
+  const requestId = options.req?.headers.get("x-request-id") ?? crypto.randomUUID();
+  if (options.customOrgId || options.customWorkspaceId || options.customUserId) {
+    if (!options.internalServiceAuthenticated || !options.req?.headers.get("authorization")?.startsWith("Bearer ") || !options.customOrgId || !options.customWorkspaceId || !options.customUserId) {
+      throw new Error("Authenticated internal scope is required.");
+    }
+    return {
+      userId: options.customUserId,
+      organizationId: options.customOrgId,
+      workspaceId: options.customWorkspaceId,
+      role: "employee",
+      permissions: [...new Set(options.customPermissions ?? [])],
+      requestId,
+    };
+  }
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Authentication is required.");
+  const organizationId = session.user.organisation_id ?? process.env.DEFAULT_ORGANISATION_ID;
+  const workspaceId = process.env.DEFAULT_WORKSPACE_ID;
+  if (!organizationId || !workspaceId) throw new Error("Trusted organisation and workspace configuration is required.");
+  const rawRole = session.user.role.toUpperCase();
+  const role: CommandCenterContext["role"] = rawRole === "ADMIN" || rawRole === "CO_ADMIN" ? "admin" : rawRole.includes("MANAGER") ? "manager" : rawRole === "CLIENT" ? "client" : "employee";
+  const permissions = role === "admin" ? [...new Set([...ADMIN_PERMISSIONS, ...(session.user.permissions ?? [])])] : [...new Set(session.user.permissions ?? [])];
+  return { userId: session.user.id, organizationId, workspaceId, role, permissions, requestId };
 }

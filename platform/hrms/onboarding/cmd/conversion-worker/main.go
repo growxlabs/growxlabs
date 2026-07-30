@@ -17,27 +17,286 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type worker struct{db *pgxpool.Pool;peopleURL,identityURL,actorID,defaultRoleID string;client *http.Client}
-type job struct{ID,OrganisationID,OfferID,Step string;EmployeeID,UserID *string}
-type conversion struct{CandidateID,FirstName,LastName,Email,JoiningDate,DepartmentID,DesignationID,ManagerID,EmploymentType,WorkLocation string;ProbationDays int}
-
-func main(){ctx:=context.Background();db,err:=pgxpool.New(ctx,mustEnv("DATABASE_URL"));if err!=nil{log.Fatal(err)};defer db.Close();w:=&worker{db:db,peopleURL:strings.TrimRight(env("PEOPLE_SERVICE_URL","http://localhost:8081"),"/"),identityURL:strings.TrimRight(env("IDENTITY_SERVICE_URL","http://localhost:8082"),"/"),actorID:mustEnv("ONBOARDING_SERVICE_ACTOR_ID"),defaultRoleID:os.Getenv("ONBOARDING_EMPLOYEE_ROLE_ID"),client:&http.Client{Timeout:30*time.Second}};ticker:=time.NewTicker(3*time.Second);defer ticker.Stop();log.Print("candidate conversion worker started");for{select{case<-ctx.Done():return;case<-ticker.C:if err=w.runOne(ctx);err!=nil{log.Printf("conversion error: %v",err)}}}}
-func(w *worker)runOne(ctx context.Context)error{tx,err:=w.db.Begin(ctx);if err!=nil{return err};defer tx.Rollback(ctx);var j job;err=tx.QueryRow(ctx,`SELECT id,organisation_id,offer_id,step,employee_id,user_id FROM onboarding.conversion_jobs WHERE status IN('pending','retry') AND attempts<10 AND available_at<=now() ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1`).Scan(&j.ID,&j.OrganisationID,&j.OfferID,&j.Step,&j.EmployeeID,&j.UserID);if errors.Is(err,pgx.ErrNoRows){return nil};if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE onboarding.conversion_jobs SET status='processing',attempts=attempts+1,updated_at=now() WHERE id=$1`,j.ID);if err!=nil{return err};if err=tx.Commit(ctx);err!=nil{return err}
-	var c conversion;err=w.db.QueryRow(ctx,`SELECT o.candidate_id,c.first_name,c.last_name,c.email,v.joining_date::text,coalesce(v.department_id::text,''),coalesce(v.designation_id::text,''),coalesce(v.manager_employee_id::text,''),v.employment_type,coalesce(v.work_location,''),coalesce(v.probation_days,0) FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.id=$1 AND o.organisation_id=$2 AND o.status='accepted'`,j.OfferID,j.OrganisationID).Scan(&c.CandidateID,&c.FirstName,&c.LastName,&c.Email,&c.JoiningDate,&c.DepartmentID,&c.DesignationID,&c.ManagerID,&c.EmploymentType,&c.WorkLocation,&c.ProbationDays);if err!=nil{return w.fail(ctx,j.ID,err)}
-	if j.UserID==nil {userID,token,callErr:=w.invite(ctx,j,c);if callErr!=nil{return w.fail(ctx,j.ID,callErr)};j.UserID=&userID;_,err=w.db.Exec(ctx,`UPDATE onboarding.conversion_jobs SET user_id=$2,invitation_token_encrypted=$3,step='create_employee',status='retry',available_at=now(),updated_at=now() WHERE id=$1`,j.ID,userID,token);if err!=nil{return err};return nil}
-	if j.EmployeeID==nil {employeeID,callErr:=w.createEmployee(ctx,j,c,*j.UserID);if callErr!=nil{return w.fail(ctx,j.ID,callErr)};j.EmployeeID=&employeeID;_,err=w.db.Exec(ctx,`UPDATE onboarding.conversion_jobs SET employee_id=$2,step='instantiate_onboarding',status='retry',available_at=now(),updated_at=now() WHERE id=$1`,j.ID,employeeID);if err!=nil{return err};return nil}
-	return w.instantiate(ctx,j,c)
+type worker struct {
+	db                                             *pgxpool.Pool
+	peopleURL, identityURL, actorID, defaultRoleID string
+	client                                         *http.Client
 }
-func(w *worker)invite(ctx context.Context,j job,c conversion)(string,string,error){roles:=[]string{};if w.defaultRoleID!=""{roles=append(roles,w.defaultRoleID)};payload:=map[string]any{"email":c.Email,"displayName":strings.TrimSpace(c.FirstName+" "+c.LastName),"roleIds":roles};var result struct{UserID,InvitationToken string};if err:=w.post(ctx,w.identityURL+"/invitations",j.OrganisationID,payload,&result);err!=nil{return "","",err};return result.UserID,result.InvitationToken,nil}
-func(w *worker)createEmployee(ctx context.Context,j job,c conversion,userID string)(string,error){employeeNumber:="GX-"+strings.ToUpper(strings.ReplaceAll(j.OfferID[:8],"-",""));payload:=map[string]any{"employeeNumber":employeeNumber,"firstName":c.FirstName,"lastName":c.LastName,"userId":userID,"joiningDate":c.JoiningDate,"employmentType":c.EmploymentType,"departmentId":nullable(c.DepartmentID),"designationId":nullable(c.DesignationID),"managerEmployeeId":nullable(c.ManagerID),"workLocation":nullable(c.WorkLocation),"status":"probation"};var result struct{ID string `json:"id"`};if err:=w.post(ctx,w.peopleURL+"/employees",j.OrganisationID,payload,&result);err!=nil{return "",err};return result.ID,nil}
-func(w *worker)instantiate(ctx context.Context,j job,c conversion)error{tx,err:=w.db.Begin(ctx);if err!=nil{return err};defer tx.Rollback(ctx);var templateID *string;_ = tx.QueryRow(ctx,`SELECT id FROM onboarding.templates WHERE organisation_id=$1 AND deleted_at IS NULL AND (department_id=nullif($2,'')::uuid OR department_id IS NULL) ORDER BY department_id NULLS LAST LIMIT 1`,j.OrganisationID,c.DepartmentID).Scan(&templateID);var instanceID string;err=tx.QueryRow(ctx,`INSERT INTO onboarding.instances(organisation_id,offer_id,candidate_id,employee_id,user_id,template_id,status,target_start_date) VALUES($1,$2,$3,$4,$5,$6,'in_progress',$7) ON CONFLICT(offer_id) DO UPDATE SET employee_id=excluded.employee_id,user_id=excluded.user_id RETURNING id`,j.OrganisationID,j.OfferID,c.CandidateID,*j.EmployeeID,*j.UserID,templateID,c.JoiningDate).Scan(&instanceID);if err!=nil{return err};if templateID!=nil{_,err=tx.Exec(ctx,`INSERT INTO onboarding.tasks(organisation_id,instance_id,template_task_id,task_key,title,description,assignee_type,assignee_user_id,task_type,status,required,due_at,configuration) SELECT $1,$2,t.id,t.task_key,t.title,t.description,t.assignee_type,CASE WHEN t.assignee_type='employee' THEN $3::uuid END,t.task_type,'pending',t.required,$4::date+(t.due_offset_days||' days')::interval,t.configuration FROM onboarding.template_tasks t WHERE t.template_id=$5 ON CONFLICT(instance_id,task_key) DO NOTHING`,j.OrganisationID,instanceID,*j.UserID,c.JoiningDate,*templateID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO onboarding.task_dependencies(task_id,depends_on_task_id) SELECT task.id,dependency.id FROM onboarding.template_task_dependencies d JOIN onboarding.template_tasks tt ON tt.id=d.task_id JOIN onboarding.template_tasks td ON td.id=d.depends_on_task_id JOIN onboarding.tasks task ON task.instance_id=$1 AND task.template_task_id=tt.id JOIN onboarding.tasks dependency ON dependency.instance_id=$1 AND dependency.template_task_id=td.id ON CONFLICT DO NOTHING`,instanceID);if err!=nil{return err}}
-	if templateID==nil{defaults:=[]struct{key,title,assignee,kind string;offset int}{{"upload_identity","Upload identity document","employee","document_upload",-7},{"bank_details","Provide banking details","employee","information",-5},{"emergency_contact","Add emergency contact","employee","information",-5},{"verify_documents","Verify required documents","hr","document_verification",-3},{"confirm_joining","Confirm joining","hr","checklist",0},{"assign_buddy","Assign onboarding buddy","manager","checklist",-2},{"first_month_goals","Define first month goals","manager","checklist",1},{"email_account","Create email account","it","checklist",-2},{"laptop_request","Prepare laptop","it","asset_request",-3},{"accept_policies","Accept company policies","employee","checklist",0},{"setup_mfa","Set up MFA","employee","checklist",0},{"welcome_meeting","Welcome meeting","manager","checklist",0}};ids:=map[string]string{};for _,task:=range defaults{var taskID string;var assignee any;if task.assignee=="employee"{assignee=*j.UserID};err=tx.QueryRow(ctx,`INSERT INTO onboarding.tasks(organisation_id,instance_id,task_key,title,assignee_type,assignee_user_id,task_type,status,required,due_at) VALUES($1,$2,$3,$4,$5,$6,$7,'pending',true,$8::date+($9||' days')::interval) RETURNING id`,j.OrganisationID,instanceID,task.key,task.title,task.assignee,assignee,task.kind,c.JoiningDate,task.offset).Scan(&taskID);if err!=nil{return err};ids[task.key]=taskID};for _,pair:=range[][2]string{{"verify_documents","upload_identity"},{"email_account","verify_documents"},{"setup_mfa","email_account"}}{_,err=tx.Exec(ctx,`INSERT INTO onboarding.task_dependencies(task_id,depends_on_task_id) VALUES($1,$2)`,ids[pair[0]],ids[pair[1]]);if err!=nil{return err}}}
-	if c.ProbationDays>0{_,err=tx.Exec(ctx,`INSERT INTO onboarding.probations(organisation_id,instance_id,employee_id,manager_employee_id,start_date,end_date,review_date) VALUES($1,$2,$3,nullif($4,'')::uuid,$5::date,$5::date+$6,$5::date+$6-7) ON CONFLICT(instance_id) DO NOTHING`,j.OrganisationID,instanceID,*j.EmployeeID,c.ManagerID,c.JoiningDate,c.ProbationDays);if err!=nil{return err}}
-	for _,asset:=range []string{"laptop","id_card"}{_,err=tx.Exec(ctx,`INSERT INTO onboarding.asset_requests(organisation_id,instance_id,asset_type) VALUES($1,$2,$3)`,j.OrganisationID,instanceID,asset);if err!=nil{return err}}
-	for _,training:=range []struct{key,title string}{{"security","Security Training"},{"policies","Company Policies"},{"conduct","Code of Conduct"},{"department","Department Training"}}{_,err=tx.Exec(ctx,`INSERT INTO onboarding.training_assignments(organisation_id,instance_id,training_key,title,due_at) VALUES($1,$2,$3,$4,$5::date+14) ON CONFLICT(instance_id,training_key) DO NOTHING`,j.OrganisationID,instanceID,training.key,training.title,c.JoiningDate);if err!=nil{return err}}
-	if err=w.enqueueNotification(ctx,tx,j.OrganisationID,*j.UserID,"onboarding.started",map[string]any{"instanceId":instanceID,"joiningDate":c.JoiningDate});err!=nil{return err};rows,err:=tx.Query(ctx,`SELECT DISTINCT recipient FROM (SELECT manager.user_id recipient FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=$1 AND er.valid_to IS NULL UNION SELECT ur.user_id FROM identity.user_roles ur JOIN identity.role_permissions rp ON rp.role_id=ur.role_id JOIN identity.permissions p ON p.id=rp.permission_id WHERE ur.organisation_id=$2 AND p.key IN ('onboarding.hr_task','onboarding.it_task')) recipients WHERE recipient IS NOT NULL`,*j.EmployeeID,j.OrganisationID);if err!=nil{return err};var recipients []string;for rows.Next(){var recipient string;if err=rows.Scan(&recipient);err!=nil{rows.Close();return err};recipients=append(recipients,recipient)};rows.Close();for _,recipient:=range recipients{if err=w.enqueueNotification(ctx,tx,j.OrganisationID,recipient,"onboarding.task_assigned",map[string]any{"instanceId":instanceID,"employeeId":*j.EmployeeID});err!=nil{return err}}
-	requestID:="00000000-0000-0000-0000-000000000003";payload:=map[string]any{"employeeId":*j.EmployeeID,"userId":*j.UserID};_,err=tx.Exec(ctx,`INSERT INTO onboarding.activities(organisation_id,offer_id,instance_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,'employee',$4,'candidate.converted',$5,$6,$7)`,j.OrganisationID,j.OfferID,instanceID,*j.EmployeeID,w.actorID,payload,requestID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,request_id) VALUES($1,$2,'employee',$3,'candidate.converted',$4,$5)`,j.OrganisationID,w.actorID,*j.EmployeeID,payload,requestID);if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE onboarding.conversion_jobs SET status='completed',step='completed',onboarding_instance_id=$2,completed_at=now(),last_error=NULL,updated_at=now() WHERE id=$1`,j.ID,instanceID);if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE recruitment.job_applications SET status='hired',version=version+1,updated_at=now() WHERE id=(SELECT application_id FROM onboarding.offers WHERE id=$1)`,j.OfferID);if err!=nil{return err};return tx.Commit(ctx)}
-func(w *worker)post(ctx context.Context,url,org string,payload any,out any)error{body,_:=json.Marshal(payload);request,err:=http.NewRequestWithContext(ctx,http.MethodPost,url,bytes.NewReader(body));if err!=nil{return err};request.Header.Set("Content-Type","application/json");request.Header.Set("X-Actor-Id",w.actorID);request.Header.Set("X-Organisation-Id",org);request.Header.Set("X-Request-Id","00000000-0000-0000-0000-000000000003");request.Header.Set("X-Permissions","employee.edit,organisation.manage");response,err:=w.client.Do(request);if err!=nil{return err};defer response.Body.Close();data,err:=io.ReadAll(io.LimitReader(response.Body,1<<20));if err!=nil{return err};if response.StatusCode>=300{return fmt.Errorf("service returned %d: %s",response.StatusCode,string(data))};return json.Unmarshal(data,out)}
-func(w *worker)enqueueNotification(ctx context.Context,tx pgx.Tx,org,user,template string,payload any)error{var notificationID string;err:=tx.QueryRow(ctx,`INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES($1,$2,$3,$4) RETURNING id`,org,user,template,payload).Scan(&notificationID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO notifications.deliveries(organisation_id,notification_id,channel,status) VALUES($1,$2,'email','pending'),($1,$2,'in_app','pending')`,org,notificationID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,'notification.created',$2)`,org,map[string]string{"notificationId":notificationID});return err}
-func(w *worker)fail(ctx context.Context,id string,cause error)error{_,err:=w.db.Exec(ctx,`UPDATE onboarding.conversion_jobs SET status=CASE WHEN attempts>=10 THEN 'failed' ELSE 'retry' END,last_error=$2,available_at=now()+(interval '1 minute'*greatest(attempts,1)),updated_at=now() WHERE id=$1`,id,cause.Error());if err!=nil{return err};return cause}
-func nullable(v string)any{if v==""{return nil};return v};func env(k,f string)string{if v:=os.Getenv(k);v!=""{return v};return f};func mustEnv(k string)string{v:=os.Getenv(k);if v==""{log.Fatalf("%s is required",k)};return v}
+type job struct {
+	ID, OrganisationID, OfferID, Step string
+	EmployeeID, UserID                *string
+}
+type conversion struct {
+	CandidateID, FirstName, LastName, Email, JoiningDate, DepartmentID, DesignationID, ManagerID, EmploymentType, WorkLocation string
+	ProbationDays                                                                                                              int
+}
+
+func main() {
+	ctx := context.Background()
+	db, err := pgxpool.New(ctx, mustEnv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	w := &worker{db: db, peopleURL: strings.TrimRight(env("PEOPLE_SERVICE_URL", "http://localhost:8081"), "/"), identityURL: strings.TrimRight(env("IDENTITY_SERVICE_URL", "http://localhost:8082"), "/"), actorID: mustEnv("ONBOARDING_SERVICE_ACTOR_ID"), defaultRoleID: os.Getenv("ONBOARDING_EMPLOYEE_ROLE_ID"), client: &http.Client{Timeout: 30 * time.Second}}
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	log.Print("candidate conversion worker started")
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if err = w.runOne(ctx); err != nil {
+				log.Printf("conversion error: %v", err)
+			}
+		}
+	}
+}
+func (w *worker) runOne(ctx context.Context) error {
+	tx, err := w.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	var j job
+	err = tx.QueryRow(ctx, `SELECT id,organisation_id,offer_id,step,employee_id,user_id FROM onboarding.conversion_jobs WHERE status IN('pending','retry') AND attempts<10 AND available_at<=now() ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1`).Scan(&j.ID, &j.OrganisationID, &j.OfferID, &j.Step, &j.EmployeeID, &j.UserID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE onboarding.conversion_jobs SET status='processing',attempts=attempts+1,updated_at=now() WHERE id=$1`, j.ID)
+	if err != nil {
+		return err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return err
+	}
+	var c conversion
+	err = w.db.QueryRow(ctx, `SELECT o.candidate_id,c.first_name,c.last_name,c.email,v.joining_date::text,coalesce(v.department_id::text,''),coalesce(v.designation_id::text,''),coalesce(v.manager_employee_id::text,''),v.employment_type,coalesce(v.work_location,''),coalesce(v.probation_days,0) FROM onboarding.offers o JOIN onboarding.offer_versions v ON v.offer_id=o.id AND v.version=o.current_version JOIN recruitment.candidate_profiles c ON c.id=o.candidate_id WHERE o.id=$1 AND o.organisation_id=$2 AND o.status='accepted'`, j.OfferID, j.OrganisationID).Scan(&c.CandidateID, &c.FirstName, &c.LastName, &c.Email, &c.JoiningDate, &c.DepartmentID, &c.DesignationID, &c.ManagerID, &c.EmploymentType, &c.WorkLocation, &c.ProbationDays)
+	if err != nil {
+		return w.fail(ctx, j.ID, err)
+	}
+	if j.UserID == nil {
+		userID, token, callErr := w.invite(ctx, j, c)
+		if callErr != nil {
+			return w.fail(ctx, j.ID, callErr)
+		}
+		j.UserID = &userID
+		_, err = w.db.Exec(ctx, `UPDATE onboarding.conversion_jobs SET user_id=$2,invitation_token_encrypted=$3,step='create_employee',status='retry',available_at=now(),updated_at=now() WHERE id=$1`, j.ID, userID, token)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	if j.EmployeeID == nil {
+		employeeID, callErr := w.createEmployee(ctx, j, c, *j.UserID)
+		if callErr != nil {
+			return w.fail(ctx, j.ID, callErr)
+		}
+		j.EmployeeID = &employeeID
+		_, err = w.db.Exec(ctx, `UPDATE onboarding.conversion_jobs SET employee_id=$2,step='instantiate_onboarding',status='retry',available_at=now(),updated_at=now() WHERE id=$1`, j.ID, employeeID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return w.instantiate(ctx, j, c)
+}
+func (w *worker) invite(ctx context.Context, j job, c conversion) (string, string, error) {
+	roles := []string{}
+	if w.defaultRoleID != "" {
+		roles = append(roles, w.defaultRoleID)
+	}
+	payload := map[string]any{"email": c.Email, "displayName": strings.TrimSpace(c.FirstName + " " + c.LastName), "roleIds": roles}
+	var result struct{ UserID, InvitationToken string }
+	if err := w.post(ctx, w.identityURL+"/invitations", j.OrganisationID, payload, &result); err != nil {
+		return "", "", err
+	}
+	return result.UserID, result.InvitationToken, nil
+}
+func (w *worker) createEmployee(ctx context.Context, j job, c conversion, userID string) (string, error) {
+	employeeNumber := "GX-" + strings.ToUpper(strings.ReplaceAll(j.OfferID[:8], "-", ""))
+	payload := map[string]any{"employeeNumber": employeeNumber, "firstName": c.FirstName, "lastName": c.LastName, "userId": userID, "joiningDate": c.JoiningDate, "employmentType": c.EmploymentType, "departmentId": nullable(c.DepartmentID), "designationId": nullable(c.DesignationID), "managerEmployeeId": nullable(c.ManagerID), "workLocation": nullable(c.WorkLocation), "status": "probation"}
+	var result struct {
+		ID string `json:"id"`
+	}
+	if err := w.post(ctx, w.peopleURL+"/employees", j.OrganisationID, payload, &result); err != nil {
+		return "", err
+	}
+	return result.ID, nil
+}
+func (w *worker) instantiate(ctx context.Context, j job, c conversion) error {
+	tx, err := w.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	var templateID *string
+	_ = tx.QueryRow(ctx, `SELECT id FROM onboarding.templates WHERE organisation_id=$1 AND deleted_at IS NULL AND (department_id=nullif($2,'')::uuid OR department_id IS NULL) ORDER BY department_id NULLS LAST LIMIT 1`, j.OrganisationID, c.DepartmentID).Scan(&templateID)
+	var instanceID string
+	err = tx.QueryRow(ctx, `INSERT INTO onboarding.instances(organisation_id,offer_id,candidate_id,employee_id,user_id,template_id,status,target_start_date) VALUES($1,$2,$3,$4,$5,$6,'in_progress',$7) ON CONFLICT(offer_id) DO UPDATE SET employee_id=excluded.employee_id,user_id=excluded.user_id RETURNING id`, j.OrganisationID, j.OfferID, c.CandidateID, *j.EmployeeID, *j.UserID, templateID, c.JoiningDate).Scan(&instanceID)
+	if err != nil {
+		return err
+	}
+	if templateID != nil {
+		_, err = tx.Exec(ctx, `INSERT INTO onboarding.tasks(organisation_id,instance_id,template_task_id,task_key,title,description,assignee_type,assignee_user_id,task_type,status,required,due_at,configuration) SELECT $1,$2,t.id,t.task_key,t.title,t.description,t.assignee_type,CASE WHEN t.assignee_type='employee' THEN $3::uuid END,t.task_type,'pending',t.required,$4::date+(t.due_offset_days||' days')::interval,t.configuration FROM onboarding.template_tasks t WHERE t.template_id=$5 ON CONFLICT(instance_id,task_key) DO NOTHING`, j.OrganisationID, instanceID, *j.UserID, c.JoiningDate, *templateID)
+		if err != nil {
+			return err
+		}
+		_, err = tx.Exec(ctx, `INSERT INTO onboarding.task_dependencies(task_id,depends_on_task_id) SELECT task.id,dependency.id FROM onboarding.template_task_dependencies d JOIN onboarding.template_tasks tt ON tt.id=d.task_id JOIN onboarding.template_tasks td ON td.id=d.depends_on_task_id JOIN onboarding.tasks task ON task.instance_id=$1 AND task.template_task_id=tt.id JOIN onboarding.tasks dependency ON dependency.instance_id=$1 AND dependency.template_task_id=td.id ON CONFLICT DO NOTHING`, instanceID)
+		if err != nil {
+			return err
+		}
+	}
+	if templateID == nil {
+		defaults := []struct {
+			key, title, assignee, kind string
+			offset                     int
+		}{{"upload_identity", "Upload identity document", "employee", "document_upload", -7}, {"bank_details", "Provide banking details", "employee", "information", -5}, {"emergency_contact", "Add emergency contact", "employee", "information", -5}, {"verify_documents", "Verify required documents", "hr", "document_verification", -3}, {"confirm_joining", "Confirm joining", "hr", "checklist", 0}, {"assign_buddy", "Assign onboarding buddy", "manager", "checklist", -2}, {"first_month_goals", "Define first month goals", "manager", "checklist", 1}, {"email_account", "Create email account", "it", "checklist", -2}, {"laptop_request", "Prepare laptop", "it", "asset_request", -3}, {"accept_policies", "Accept company policies", "employee", "checklist", 0}, {"setup_mfa", "Set up MFA", "employee", "checklist", 0}, {"welcome_meeting", "Welcome meeting", "manager", "checklist", 0}}
+		ids := map[string]string{}
+		for _, task := range defaults {
+			var taskID string
+			var assignee any
+			if task.assignee == "employee" {
+				assignee = *j.UserID
+			}
+			err = tx.QueryRow(ctx, `INSERT INTO onboarding.tasks(organisation_id,instance_id,task_key,title,assignee_type,assignee_user_id,task_type,status,required,due_at) VALUES($1,$2,$3,$4,$5,$6,$7,'pending',true,$8::date+($9||' days')::interval) RETURNING id`, j.OrganisationID, instanceID, task.key, task.title, task.assignee, assignee, task.kind, c.JoiningDate, task.offset).Scan(&taskID)
+			if err != nil {
+				return err
+			}
+			ids[task.key] = taskID
+		}
+		for _, pair := range [][2]string{{"verify_documents", "upload_identity"}, {"email_account", "verify_documents"}, {"setup_mfa", "email_account"}} {
+			_, err = tx.Exec(ctx, `INSERT INTO onboarding.task_dependencies(task_id,depends_on_task_id) VALUES($1,$2)`, ids[pair[0]], ids[pair[1]])
+			if err != nil {
+				return err
+			}
+		}
+	}
+	if c.ProbationDays > 0 {
+		_, err = tx.Exec(ctx, `INSERT INTO onboarding.probations(organisation_id,instance_id,employee_id,manager_employee_id,start_date,end_date,review_date) VALUES($1,$2,$3,nullif($4,'')::uuid,$5::date,$5::date+$6,$5::date+$6-7) ON CONFLICT(instance_id) DO NOTHING`, j.OrganisationID, instanceID, *j.EmployeeID, c.ManagerID, c.JoiningDate, c.ProbationDays)
+		if err != nil {
+			return err
+		}
+	}
+	for _, asset := range []string{"laptop", "id_card"} {
+		_, err = tx.Exec(ctx, `INSERT INTO onboarding.asset_requests(organisation_id,instance_id,asset_type) VALUES($1,$2,$3)`, j.OrganisationID, instanceID, asset)
+		if err != nil {
+			return err
+		}
+	}
+	for _, training := range []struct{ key, title string }{{"security", "Security Training"}, {"policies", "Company Policies"}, {"conduct", "Code of Conduct"}, {"department", "Department Training"}} {
+		_, err = tx.Exec(ctx, `INSERT INTO onboarding.training_assignments(organisation_id,instance_id,training_key,title,due_at) VALUES($1,$2,$3,$4,$5::date+14) ON CONFLICT(instance_id,training_key) DO NOTHING`, j.OrganisationID, instanceID, training.key, training.title, c.JoiningDate)
+		if err != nil {
+			return err
+		}
+	}
+	if err = w.enqueueNotification(ctx, tx, j.OrganisationID, *j.UserID, "onboarding.started", map[string]any{"instanceId": instanceID, "joiningDate": c.JoiningDate}); err != nil {
+		return err
+	}
+	rows, err := tx.Query(ctx, `SELECT DISTINCT recipient FROM (SELECT manager.user_id recipient FROM people.employment_records er JOIN people.employees manager ON manager.id=er.manager_employee_id WHERE er.employee_id=$1 AND er.valid_to IS NULL UNION SELECT ur.user_id FROM identity.user_roles ur JOIN identity.role_permissions rp ON rp.role_id=ur.role_id JOIN identity.permissions p ON p.id=rp.permission_id WHERE ur.organisation_id=$2 AND p.key IN ('onboarding.hr_task','onboarding.it_task')) recipients WHERE recipient IS NOT NULL`, *j.EmployeeID, j.OrganisationID)
+	if err != nil {
+		return err
+	}
+	var recipients []string
+	for rows.Next() {
+		var recipient string
+		if err = rows.Scan(&recipient); err != nil {
+			rows.Close()
+			return err
+		}
+		recipients = append(recipients, recipient)
+	}
+	rows.Close()
+	for _, recipient := range recipients {
+		if err = w.enqueueNotification(ctx, tx, j.OrganisationID, recipient, "onboarding.task_assigned", map[string]any{"instanceId": instanceID, "employeeId": *j.EmployeeID}); err != nil {
+			return err
+		}
+	}
+	requestID := "00000000-0000-0000-0000-000000000003"
+	payload := map[string]any{"employeeId": *j.EmployeeID, "userId": *j.UserID}
+	_, err = tx.Exec(ctx, `INSERT INTO onboarding.activities(organisation_id,offer_id,instance_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,'employee',$4,'candidate.converted',$5,$6,$7)`, j.OrganisationID, j.OfferID, instanceID, *j.EmployeeID, w.actorID, payload, requestID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,request_id) VALUES($1,$2,'employee',$3,'candidate.converted',$4,$5)`, j.OrganisationID, w.actorID, *j.EmployeeID, payload, requestID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE onboarding.conversion_jobs SET status='completed',step='completed',onboarding_instance_id=$2,completed_at=now(),last_error=NULL,updated_at=now() WHERE id=$1`, j.ID, instanceID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE recruitment.job_applications SET status='hired',version=version+1,updated_at=now() WHERE id=(SELECT application_id FROM onboarding.offers WHERE id=$1)`, j.OfferID)
+	if err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+func (w *worker) post(ctx context.Context, url, org string, payload any, out any) error {
+	body, _ := json.Marshal(payload)
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("X-Actor-Id", w.actorID)
+	request.Header.Set("X-Organisation-Id", org)
+	request.Header.Set("X-Request-Id", "00000000-0000-0000-0000-000000000003")
+	request.Header.Set("X-Permissions", "employee.edit,organisation.manage")
+	response, err := w.client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	data, err := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+	if err != nil {
+		return err
+	}
+	if response.StatusCode >= 300 {
+		return fmt.Errorf("service returned %d: %s", response.StatusCode, string(data))
+	}
+	return json.Unmarshal(data, out)
+}
+func (w *worker) enqueueNotification(ctx context.Context, tx pgx.Tx, org, user, template string, payload any) error {
+	var notificationID string
+	err := tx.QueryRow(ctx, `INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES($1,$2,$3,$4) RETURNING id`, org, user, template, payload).Scan(&notificationID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO notifications.deliveries(organisation_id,notification_id,channel,status) VALUES($1,$2,'email','pending'),($1,$2,'in_app','pending')`, org, notificationID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,'notification.created',$2)`, org, map[string]string{"notificationId": notificationID})
+	return err
+}
+func (w *worker) fail(ctx context.Context, id string, cause error) error {
+	_, err := w.db.Exec(ctx, `UPDATE onboarding.conversion_jobs SET status=CASE WHEN attempts>=10 THEN 'failed' ELSE 'retry' END,last_error=$2,available_at=now()+(interval '1 minute'*greatest(attempts,1)),updated_at=now() WHERE id=$1`, id, cause.Error())
+	if err != nil {
+		return err
+	}
+	return cause
+}
+func nullable(v string) any {
+	if v == "" {
+		return nil
+	}
+	return v
+}
+func env(k, f string) string {
+	if v := os.Getenv(k); v != "" {
+		return v
+	}
+	return f
+}
+func mustEnv(k string) string {
+	v := os.Getenv(k)
+	if v == "" {
+		log.Fatalf("%s is required", k)
+	}
+	return v
+}

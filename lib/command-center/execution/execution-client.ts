@@ -2,6 +2,7 @@ import "server-only";
 
 import { signServiceJWT } from "./service-jwt";
 import type { ExecutionPlan } from "../planning/plan.types";
+import { fetchWithResilience } from "../production/resilience";
 
 export interface ExecutionRun {
   id: string;
@@ -159,7 +160,7 @@ export class ExecutionClient {
     );
     let response: Response;
     try {
-      response = await fetch(this.baseURL, {
+      response = await fetchWithResilience(this.baseURL, {
         ...init,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -169,6 +170,12 @@ export class ExecutionClient {
           ...init.headers,
         },
         cache: "no-store",
+      }, {
+        operation: `execution-engine:${init.method ?? "GET"}`,
+        requestId,
+        timeoutMs: 10_000,
+        totalDeadlineMs: 25_000,
+        maxAttempts: 3,
       });
     } catch (error) {
       throw new ExecutionServiceError(

@@ -20,15 +20,272 @@ import (
 	"rsc.io/pdf"
 )
 
-type worker struct{db *pgxpool.Pool;peopleURL,actorID,geminiKey,model string;client *http.Client}
-type job struct{ID,OrganisationID,CandidateID,ApplicationID,DocumentID,ContentType string}
-type analysis struct{Summary string `json:"summary"`;Skills []string `json:"skills"`;YearsOfExperience float64 `json:"yearsOfExperience"`;PrimaryTechnologies []string `json:"primaryTechnologies"`;Highlights []string `json:"highlights"`;Concerns []string `json:"concerns"`;MatchScore float64 `json:"matchScore"`}
-func main(){ctx:=context.Background();db,err:=pgxpool.New(ctx,mustEnv("DATABASE_URL"));if err!=nil{log.Fatal(err)};defer db.Close();w:=&worker{db:db,peopleURL:strings.TrimRight(env("PEOPLE_SERVICE_URL","http://localhost:8081"),"/"),actorID:mustEnv("RECRUITMENT_SERVICE_ACTOR_ID"),geminiKey:mustEnv("GEMINI_API_KEY"),model:env("RECRUITMENT_AI_MODEL","gemini-2.5-flash"),client:&http.Client{Timeout:45*time.Second}};ticker:=time.NewTicker(3*time.Second);defer ticker.Stop();log.Print("recruitment AI worker started");for{select{case<-ctx.Done():return;case<-ticker.C:if err=w.runOne(ctx);err!=nil{log.Printf("AI processing error: %v",err)}}}}
-func(w *worker)runOne(ctx context.Context)error{tx,err:=w.db.Begin(ctx);if err!=nil{return err};defer tx.Rollback(ctx);var j job;err=tx.QueryRow(ctx,`SELECT q.id,q.organisation_id,q.candidate_id,q.application_id,q.document_id,v.content_type FROM recruitment.resume_processing_jobs q JOIN documents.documents d ON d.id=q.document_id JOIN LATERAL(SELECT content_type FROM documents.versions WHERE document_id=d.id ORDER BY version DESC LIMIT 1)v ON true WHERE q.status IN('pending','failed') AND q.attempts<5 AND q.available_at<=now() ORDER BY q.created_at FOR UPDATE SKIP LOCKED LIMIT 1`).Scan(&j.ID,&j.OrganisationID,&j.CandidateID,&j.ApplicationID,&j.DocumentID,&j.ContentType);if errors.Is(err,pgx.ErrNoRows){return nil};if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE recruitment.resume_processing_jobs SET status='processing',attempts=attempts+1 WHERE id=$1`,j.ID);if err!=nil{return err};if err=tx.Commit(ctx);err!=nil{return err}
-	data,err:=w.download(ctx,j);if err!=nil{return w.fail(ctx,j.ID,err)};text,err:=extract(data,j.ContentType);if err!=nil{return w.fail(ctx,j.ID,err)};if len(text)>60000{text=text[:60000]};var jobTitle string;var skills []string;var requirements []byte;err=w.db.QueryRow(ctx,`SELECT x.title,x.skills,x.requirements FROM recruitment.job_applications a JOIN recruitment.jobs x ON x.id=a.job_id WHERE a.id=$1`,j.ApplicationID).Scan(&jobTitle,&skills,&requirements);if err!=nil{return w.fail(ctx,j.ID,err)};result,raw,err:=w.analyze(ctx,text,jobTitle,skills,string(requirements));if err!=nil{return w.fail(ctx,j.ID,err)}
-	tx,err=w.db.Begin(ctx);if err!=nil{return err};defer tx.Rollback(ctx);var resultID string;err=tx.QueryRow(ctx,`INSERT INTO recruitment.candidate_ai_results(organisation_id,candidate_id,application_id,document_id,model,prompt_version,summary,extracted_skills,years_of_experience,primary_technologies,highlights,concerns,match_score,raw_result) VALUES($1,$2,$3,$4,$5,'release-02-v1',$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`,j.OrganisationID,j.CandidateID,j.ApplicationID,j.DocumentID,w.model,result.Summary,result.Skills,result.YearsOfExperience,result.PrimaryTechnologies,result.Highlights,result.Concerns,result.MatchScore,raw).Scan(&resultID);if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE recruitment.candidate_profiles SET professional_summary=$2,skills=$3,years_of_experience=$4,version=version+1,updated_at=now() WHERE id=$1`,j.CandidateID,result.Summary,result.Skills,result.YearsOfExperience);if err!=nil{return err};_,err=tx.Exec(ctx,`UPDATE recruitment.resume_processing_jobs SET status='completed',extracted_text=$2,completed_at=now(),last_error=NULL WHERE id=$1`,j.ID,text);if err!=nil{return err};requestID:="00000000-0000-0000-0000-000000000002";payload:=map[string]any{"matchScore":result.MatchScore,"model":w.model};_,err=tx.Exec(ctx,`INSERT INTO recruitment.activities(organisation_id,candidate_id,application_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,'candidate_ai_result',$4,'candidate.ai_scored',$5,$6,$7)`,j.OrganisationID,j.CandidateID,j.ApplicationID,resultID,w.actorID,payload,requestID);if err!=nil{return err};_,err=tx.Exec(ctx,`INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,request_id) VALUES($1,$2,'candidate_ai_result',$3,'candidate.ai_scored',$4,$5)`,j.OrganisationID,w.actorID,resultID,payload,requestID);if err!=nil{return err};return tx.Commit(ctx)}
-func(w *worker)download(ctx context.Context,j job)([]byte,error){request,err:=http.NewRequestWithContext(ctx,http.MethodPost,w.peopleURL+"/documents/"+j.DocumentID+"/download-url",nil);if err!=nil{return nil,err};request.Header.Set("X-Actor-Id",w.actorID);request.Header.Set("X-Organisation-Id",j.OrganisationID);request.Header.Set("X-Request-Id","00000000-0000-0000-0000-000000000002");request.Header.Set("X-Permissions","employee.view");response,err:=w.client.Do(request);if err!=nil{return nil,err};defer response.Body.Close();if response.StatusCode>=300{return nil,fmt.Errorf("document service returned %d",response.StatusCode)};var signed struct{DownloadURL string `json:"downloadUrl"`};if err=json.NewDecoder(response.Body).Decode(&signed);err!=nil{return nil,err};download,err:=w.client.Get(signed.DownloadURL);if err!=nil{return nil,err};defer download.Body.Close();if download.StatusCode>=300{return nil,fmt.Errorf("storage returned %d",download.StatusCode)};return io.ReadAll(io.LimitReader(download.Body,25<<20))}
-func extract(data []byte,contentType string)(string,error){switch{case strings.Contains(contentType,"pdf"):reader,err:=pdf.NewReader(bytes.NewReader(data),int64(len(data)));if err!=nil{return "",err};var out strings.Builder;for index:=1;index<=reader.NumPage();index++{page:=reader.Page(index);if page.V.IsNull(){continue};content:=page.Content();for _,item:=range content.Text{out.WriteString(item.S);out.WriteByte(' ')}};return out.String(),nil;case strings.Contains(contentType,"wordprocessingml"):archive,err:=zip.NewReader(bytes.NewReader(data),int64(len(data)));if err!=nil{return "",err};for _,file:=range archive.File{if file.Name!="word/document.xml"{continue};source,openErr:=file.Open();if openErr!=nil{return "",openErr};defer source.Close();decoder:=xml.NewDecoder(source);var out strings.Builder;for{token,tokenErr:=decoder.Token();if errors.Is(tokenErr,io.EOF){break};if tokenErr!=nil{return "",tokenErr};if chars,ok:=token.(xml.CharData);ok{out.Write(chars);out.WriteByte(' ')}};return out.String(),nil};return "",errors.New("DOCX document body not found");default:return string(data),nil}}
-func(w *worker)analyze(ctx context.Context,resume,jobTitle string,skills []string,requirements string)(analysis,map[string]any,error){prompt:=fmt.Sprintf("Return only strict JSON with keys summary, skills, yearsOfExperience, primaryTechnologies, highlights, concerns, matchScore. Score fairly from 0-100 and do not infer protected attributes. Job: %s. Required skills: %s. Requirements: %s. Resume: %s",jobTitle,strings.Join(skills,", "),requirements,resume);payload,_:=json.Marshal(map[string]any{"contents":[]any{map[string]any{"parts":[]any{map[string]string{"text":prompt}}}},"generationConfig":map[string]any{"responseMimeType":"application/json","temperature":0.1}});endpoint:="https://generativelanguage.googleapis.com/v1beta/models/"+w.model+":generateContent?key="+w.geminiKey;request,err:=http.NewRequestWithContext(ctx,http.MethodPost,endpoint,bytes.NewReader(payload));if err!=nil{return analysis{},nil,err};request.Header.Set("Content-Type","application/json");response,err:=w.client.Do(request);if err!=nil{return analysis{},nil,err};defer response.Body.Close();body,err:=io.ReadAll(io.LimitReader(response.Body,1<<20));if err!=nil{return analysis{},nil,err};if response.StatusCode>=300{return analysis{},nil,fmt.Errorf("AI provider returned %d",response.StatusCode)};var envelope struct{Candidates []struct{Content struct{Parts []struct{Text string `json:"text"`} `json:"parts"`} `json:"content"`} `json:"candidates"`};if err=json.Unmarshal(body,&envelope);err!=nil||len(envelope.Candidates)==0||len(envelope.Candidates[0].Content.Parts)==0{return analysis{},nil,errors.New("AI provider returned no analysis")};text:=strings.TrimSpace(envelope.Candidates[0].Content.Parts[0].Text);text=strings.TrimPrefix(strings.TrimSuffix(text,"```"),"```json");var result analysis;if err=json.Unmarshal([]byte(text),&result);err!=nil{return analysis{},nil,err};if result.MatchScore<0{result.MatchScore=0};if result.MatchScore>100{result.MatchScore=100};var raw map[string]any;_ = json.Unmarshal(body,&raw);return result,raw,nil}
-func(w *worker)fail(ctx context.Context,id string,cause error)error{_,err:=w.db.Exec(ctx,`UPDATE recruitment.resume_processing_jobs SET status='failed',last_error=$2,available_at=now()+(interval '1 minute'*greatest(attempts,1)) WHERE id=$1`,id,cause.Error());if err!=nil{return err};return cause}
-func env(k,f string)string{if value:=os.Getenv(k);value!=""{return value};return f};func mustEnv(k string)string{value:=os.Getenv(k);if value==""{log.Fatalf("%s is required",k)};return value}
+type worker struct {
+	db                                   *pgxpool.Pool
+	peopleURL, actorID, geminiKey, model string
+	client                               *http.Client
+}
+type job struct{ ID, OrganisationID, CandidateID, ApplicationID, DocumentID, ContentType string }
+type analysis struct {
+	Summary             string   `json:"summary"`
+	Skills              []string `json:"skills"`
+	YearsOfExperience   float64  `json:"yearsOfExperience"`
+	PrimaryTechnologies []string `json:"primaryTechnologies"`
+	Highlights          []string `json:"highlights"`
+	Concerns            []string `json:"concerns"`
+	MatchScore          float64  `json:"matchScore"`
+}
+
+func main() {
+	ctx := context.Background()
+	db, err := pgxpool.New(ctx, mustEnv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	w := &worker{db: db, peopleURL: strings.TrimRight(env("PEOPLE_SERVICE_URL", "http://localhost:8081"), "/"), actorID: mustEnv("RECRUITMENT_SERVICE_ACTOR_ID"), geminiKey: mustEnv("GEMINI_API_KEY"), model: env("RECRUITMENT_AI_MODEL", "gemini-2.5-flash"), client: &http.Client{Timeout: 45 * time.Second}}
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	log.Print("recruitment AI worker started")
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if err = w.runOne(ctx); err != nil {
+				log.Printf("AI processing error: %v", err)
+			}
+		}
+	}
+}
+func (w *worker) runOne(ctx context.Context) error {
+	tx, err := w.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	var j job
+	err = tx.QueryRow(ctx, `SELECT q.id,q.organisation_id,q.candidate_id,q.application_id,q.document_id,v.content_type FROM recruitment.resume_processing_jobs q JOIN documents.documents d ON d.id=q.document_id JOIN LATERAL(SELECT content_type FROM documents.versions WHERE document_id=d.id ORDER BY version DESC LIMIT 1)v ON true WHERE q.status IN('pending','failed') AND q.attempts<5 AND q.available_at<=now() ORDER BY q.created_at FOR UPDATE SKIP LOCKED LIMIT 1`).Scan(&j.ID, &j.OrganisationID, &j.CandidateID, &j.ApplicationID, &j.DocumentID, &j.ContentType)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE recruitment.resume_processing_jobs SET status='processing',attempts=attempts+1 WHERE id=$1`, j.ID)
+	if err != nil {
+		return err
+	}
+	if err = tx.Commit(ctx); err != nil {
+		return err
+	}
+	data, err := w.download(ctx, j)
+	if err != nil {
+		return w.fail(ctx, j.ID, err)
+	}
+	text, err := extract(data, j.ContentType)
+	if err != nil {
+		return w.fail(ctx, j.ID, err)
+	}
+	if len(text) > 60000 {
+		text = text[:60000]
+	}
+	var jobTitle string
+	var skills []string
+	var requirements []byte
+	err = w.db.QueryRow(ctx, `SELECT x.title,x.skills,x.requirements FROM recruitment.job_applications a JOIN recruitment.jobs x ON x.id=a.job_id WHERE a.id=$1`, j.ApplicationID).Scan(&jobTitle, &skills, &requirements)
+	if err != nil {
+		return w.fail(ctx, j.ID, err)
+	}
+	result, raw, err := w.analyze(ctx, text, jobTitle, skills, string(requirements))
+	if err != nil {
+		return w.fail(ctx, j.ID, err)
+	}
+	tx, err = w.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	var resultID string
+	err = tx.QueryRow(ctx, `INSERT INTO recruitment.candidate_ai_results(organisation_id,candidate_id,application_id,document_id,model,prompt_version,summary,extracted_skills,years_of_experience,primary_technologies,highlights,concerns,match_score,raw_result) VALUES($1,$2,$3,$4,$5,'release-02-v1',$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`, j.OrganisationID, j.CandidateID, j.ApplicationID, j.DocumentID, w.model, result.Summary, result.Skills, result.YearsOfExperience, result.PrimaryTechnologies, result.Highlights, result.Concerns, result.MatchScore, raw).Scan(&resultID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE recruitment.candidate_profiles SET professional_summary=$2,skills=$3,years_of_experience=$4,version=version+1,updated_at=now() WHERE id=$1`, j.CandidateID, result.Summary, result.Skills, result.YearsOfExperience)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `UPDATE recruitment.resume_processing_jobs SET status='completed',extracted_text=$2,completed_at=now(),last_error=NULL WHERE id=$1`, j.ID, text)
+	if err != nil {
+		return err
+	}
+	requestID := "00000000-0000-0000-0000-000000000002"
+	payload := map[string]any{"matchScore": result.MatchScore, "model": w.model}
+	_, err = tx.Exec(ctx, `INSERT INTO recruitment.activities(organisation_id,candidate_id,application_id,entity_type,entity_id,action,actor_user_id,payload,request_id) VALUES($1,$2,$3,'candidate_ai_result',$4,'candidate.ai_scored',$5,$6,$7)`, j.OrganisationID, j.CandidateID, j.ApplicationID, resultID, w.actorID, payload, requestID)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec(ctx, `INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,request_id) VALUES($1,$2,'candidate_ai_result',$3,'candidate.ai_scored',$4,$5)`, j.OrganisationID, w.actorID, resultID, payload, requestID)
+	if err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+func (w *worker) download(ctx context.Context, j job) ([]byte, error) {
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, w.peopleURL+"/documents/"+j.DocumentID+"/download-url", nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("X-Actor-Id", w.actorID)
+	request.Header.Set("X-Organisation-Id", j.OrganisationID)
+	request.Header.Set("X-Request-Id", "00000000-0000-0000-0000-000000000002")
+	request.Header.Set("X-Permissions", "employee.view")
+	response, err := w.client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	if response.StatusCode >= 300 {
+		return nil, fmt.Errorf("document service returned %d", response.StatusCode)
+	}
+	var signed struct {
+		DownloadURL string `json:"downloadUrl"`
+	}
+	if err = json.NewDecoder(response.Body).Decode(&signed); err != nil {
+		return nil, err
+	}
+	download, err := w.client.Get(signed.DownloadURL)
+	if err != nil {
+		return nil, err
+	}
+	defer download.Body.Close()
+	if download.StatusCode >= 300 {
+		return nil, fmt.Errorf("storage returned %d", download.StatusCode)
+	}
+	return io.ReadAll(io.LimitReader(download.Body, 25<<20))
+}
+func extract(data []byte, contentType string) (string, error) {
+	switch {
+	case strings.Contains(contentType, "pdf"):
+		reader, err := pdf.NewReader(bytes.NewReader(data), int64(len(data)))
+		if err != nil {
+			return "", err
+		}
+		var out strings.Builder
+		for index := 1; index <= reader.NumPage(); index++ {
+			page := reader.Page(index)
+			if page.V.IsNull() {
+				continue
+			}
+			content := page.Content()
+			for _, item := range content.Text {
+				out.WriteString(item.S)
+				out.WriteByte(' ')
+			}
+		}
+		return out.String(), nil
+	case strings.Contains(contentType, "wordprocessingml"):
+		archive, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+		if err != nil {
+			return "", err
+		}
+		for _, file := range archive.File {
+			if file.Name != "word/document.xml" {
+				continue
+			}
+			source, openErr := file.Open()
+			if openErr != nil {
+				return "", openErr
+			}
+			defer source.Close()
+			decoder := xml.NewDecoder(source)
+			var out strings.Builder
+			for {
+				token, tokenErr := decoder.Token()
+				if errors.Is(tokenErr, io.EOF) {
+					break
+				}
+				if tokenErr != nil {
+					return "", tokenErr
+				}
+				if chars, ok := token.(xml.CharData); ok {
+					out.Write(chars)
+					out.WriteByte(' ')
+				}
+			}
+			return out.String(), nil
+		}
+		return "", errors.New("DOCX document body not found")
+	default:
+		return string(data), nil
+	}
+}
+func (w *worker) analyze(ctx context.Context, resume, jobTitle string, skills []string, requirements string) (analysis, map[string]any, error) {
+	prompt := fmt.Sprintf("Return only strict JSON with keys summary, skills, yearsOfExperience, primaryTechnologies, highlights, concerns, matchScore. Score fairly from 0-100 and do not infer protected attributes. Job: %s. Required skills: %s. Requirements: %s. Resume: %s", jobTitle, strings.Join(skills, ", "), requirements, resume)
+	payload, _ := json.Marshal(map[string]any{"contents": []any{map[string]any{"parts": []any{map[string]string{"text": prompt}}}}, "generationConfig": map[string]any{"responseMimeType": "application/json", "temperature": 0.1}})
+	endpoint := "https://generativelanguage.googleapis.com/v1beta/models/" + w.model + ":generateContent?key=" + w.geminiKey
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(payload))
+	if err != nil {
+		return analysis{}, nil, err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	response, err := w.client.Do(request)
+	if err != nil {
+		return analysis{}, nil, err
+	}
+	defer response.Body.Close()
+	body, err := io.ReadAll(io.LimitReader(response.Body, 1<<20))
+	if err != nil {
+		return analysis{}, nil, err
+	}
+	if response.StatusCode >= 300 {
+		return analysis{}, nil, fmt.Errorf("AI provider returned %d", response.StatusCode)
+	}
+	var envelope struct {
+		Candidates []struct {
+			Content struct {
+				Parts []struct {
+					Text string `json:"text"`
+				} `json:"parts"`
+			} `json:"content"`
+		} `json:"candidates"`
+	}
+	if err = json.Unmarshal(body, &envelope); err != nil || len(envelope.Candidates) == 0 || len(envelope.Candidates[0].Content.Parts) == 0 {
+		return analysis{}, nil, errors.New("AI provider returned no analysis")
+	}
+	text := strings.TrimSpace(envelope.Candidates[0].Content.Parts[0].Text)
+	text = strings.TrimPrefix(strings.TrimSuffix(text, "```"), "```json")
+	var result analysis
+	if err = json.Unmarshal([]byte(text), &result); err != nil {
+		return analysis{}, nil, err
+	}
+	if result.MatchScore < 0 {
+		result.MatchScore = 0
+	}
+	if result.MatchScore > 100 {
+		result.MatchScore = 100
+	}
+	var raw map[string]any
+	_ = json.Unmarshal(body, &raw)
+	return result, raw, nil
+}
+func (w *worker) fail(ctx context.Context, id string, cause error) error {
+	_, err := w.db.Exec(ctx, `UPDATE recruitment.resume_processing_jobs SET status='failed',last_error=$2,available_at=now()+(interval '1 minute'*greatest(attempts,1)) WHERE id=$1`, id, cause.Error())
+	if err != nil {
+		return err
+	}
+	return cause
+}
+func env(k, f string) string {
+	if value := os.Getenv(k); value != "" {
+		return value
+	}
+	return f
+}
+func mustEnv(k string) string {
+	value := os.Getenv(k)
+	if value == "" {
+		log.Fatalf("%s is required", k)
+	}
+	return value
+}

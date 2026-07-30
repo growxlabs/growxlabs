@@ -16,6 +16,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const isEditorialStudio = currentPath?.includes("/admin/editorial-carousel");
+  const isCommandCenter = currentPath?.startsWith("/admin/command-center") ?? false;
+  const isCommandCenterWorkspace = currentPath === "/admin/command-center";
 
   useEffect(() => {
     if (status === "loading") return;
@@ -273,29 +275,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="notion-theme min-h-screen w-full max-w-full overflow-x-hidden bg-[var(--background)] text-[var(--text-primary)] flex relative print:bg-white print:text-black print:block print:overflow-visible">
       {/* PERSISTENT SIDEBAR */}
-      <div className="print:hidden">
+      {!isCommandCenter && <div className="print:hidden">
         <AdminNav
           isCollapsed={isCollapsed}
           onToggle={() => setIsCollapsed(!isCollapsed)}
           isMobileOpen={isMobileOpen}
           onMobileToggle={() => setIsMobileOpen(!isMobileOpen)}
         />
-      </div>
+      </div>}
       
       {/* SCROLLABLE MAIN CONTENT AREA */}
       <main className={cn(
         "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out bg-[var(--background)] z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
         // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
-        isCollapsed
+        isCommandCenter
+          ? "md:ml-0 md:w-full"
+          : isCollapsed
           ? "md:ml-20 md:w-[calc(100vw-5rem)] lg:flex-none"
           : "md:ml-[272px] md:w-[calc(100vw-272px)] lg:flex-none",
         // Mobile: no margin, add top padding for the mobile top bar
-        "ml-0 pt-14 md:pt-0"
+        isCommandCenter ? "ml-0 pt-0" : "ml-0 pt-14 md:pt-0"
       )}>
          {/* Internal Spacing — responsive padding */}
          <div className={cn(
            "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
-           isEditorialStudio
+           isEditorialStudio || isCommandCenterWorkspace
              ? "h-[calc(100vh-3.5rem)] md:h-screen max-w-none overflow-hidden"
              : "p-4 sm:p-6 md:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
          )}>

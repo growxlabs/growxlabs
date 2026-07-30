@@ -8,8 +8,8 @@ import { ToolRegistry } from "../tools/registry/tool-registry";
 export class ContextBuilder {
   static buildContext(
     commandContext: CommandCenterContext,
-    historyInput: any[] = [],
-    attachmentsInput: any[] = []
+    historyInput: unknown[] = [],
+    attachmentsInput: unknown[] = []
   ): AIContextPayload {
     const candidateTools = ToolRegistry.listNames();
     const allowedToolNames = AuthorisedContextFilter.filterAllowedTools(commandContext, candidateTools);

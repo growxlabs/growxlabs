@@ -1,19 +1,20 @@
 import "server-only";
 
 import { GovernanceClient } from "./governance-client";
+import { CommandCenterError } from "../production/errors";
+import { runBoundedCron } from "../production/cron-runtime";
 
 export async function runGovernanceCron(request: Request, path: string): Promise<Response> {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
-    return Response.json({ error: "cron_forbidden" }, { status: 403 });
-  }
-  const requestId = request.headers.get("x-vercel-id") ?? crypto.randomUUID();
-  const organisationId = process.env.DEFAULT_ORGANISATION_ID;
-  const workspaceId = process.env.DEFAULT_WORKSPACE_ID;
-  if (!organisationId || !workspaceId) {
-    return Response.json({ error: "cron_scope_unavailable", requestId }, { status: 503 });
-  }
-  try {
+  const job = path.endsWith("expire-approvals") ? "expire-approvals" : "process-audit-outbox";
+  return runBoundedCron(request, job, async () => {
+    const requestId = request.headers.get("x-vercel-id") ?? crypto.randomUUID();
+    const organisationId = process.env.DEFAULT_ORGANISATION_ID;
+    const workspaceId = process.env.DEFAULT_WORKSPACE_ID;
+    if (!organisationId || !workspaceId) {
+      throw new CommandCenterError("TENANT_SCOPE_INVALID", {
+        message: "The trusted Cron scope is unavailable.",
+      });
+    }
     const upstream = await new GovernanceClient().request(
       path,
       "POST",
@@ -22,11 +23,18 @@ export async function runGovernanceCron(request: Request, path: string): Promise
       new URLSearchParams({ limit: "100" }),
       true,
     );
-    return new Response(upstream.body, {
-      status: upstream.status,
-      headers: { "Content-Type": "application/json", "X-Request-ID": requestId },
-    });
-  } catch {
-    return Response.json({ error: "governance_unavailable", requestId }, { status: 503 });
-  }
+    if (!upstream.ok) {
+      throw new CommandCenterError("DEPENDENCY_UNAVAILABLE", {
+        message: "Governance processing is temporarily unavailable.",
+        retryable: upstream.status >= 500,
+      });
+    }
+    const result = await upstream.json() as Record<string, unknown>;
+    return {
+      processed: typeof result.processed === "number" ? result.processed : 0,
+      succeeded: typeof result.succeeded === "number" ? result.succeeded : 0,
+      failed: typeof result.failed === "number" ? result.failed : 0,
+      checkpoint: typeof result.checkpoint === "string" ? result.checkpoint : null,
+    };
+  });
 }

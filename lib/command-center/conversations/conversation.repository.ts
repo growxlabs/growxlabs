@@ -1,11 +1,14 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { ConversationContract } from "@/types/commandCenterContracts";
+import { CommandCenterError } from "../production/errors";
 
 export class ConversationRepository {
-  static async listRecent(limit = 20): Promise<ConversationContract[]> {
+  static async listRecent(organizationId: string, workspaceId: string, limit = 20): Promise<ConversationContract[]> {
     const { data, error } = await supabaseAdmin
       .from("command_center_conversations")
       .select("*")
+      .eq("organization_id", organizationId)
+      .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false })
       .limit(limit);
 
@@ -19,11 +22,13 @@ export class ConversationRepository {
     }));
   }
 
-  static async findById(id: string): Promise<ConversationContract | null> {
+  static async findById(id: string, organizationId: string, workspaceId: string): Promise<ConversationContract | null> {
     const { data, error } = await supabaseAdmin
       .from("command_center_conversations")
       .select("*")
       .eq("id", id)
+      .eq("organization_id", organizationId)
+      .eq("workspace_id", workspaceId)
       .single();
 
     if (error || !data) return null;
@@ -36,12 +41,13 @@ export class ConversationRepository {
     };
   }
 
-  static async create(id: string, title: string, orgId = "default", wsId = "default"): Promise<ConversationContract> {
+  static async create(id: string, title: string, orgId: string, wsId: string): Promise<ConversationContract> {
+    if (!orgId || !wsId) throw new CommandCenterError("TENANT_SCOPE_INVALID");
     const { data, error } = await supabaseAdmin
       .from("command_center_conversations")
       .insert({
         id,
-        title,
+        title: title.slice(0, 200),
         organization_id: orgId,
         workspace_id: wsId,
         created_at: new Date().toISOString()
@@ -49,10 +55,13 @@ export class ConversationRepository {
       .select()
       .single();
 
-    if (error) {
-      console.warn("Could not persist conversation header:", error.message);
-      return { id, title, organizationId: orgId, workspaceId: wsId, createdAt: new Date().toISOString() };
+    if (error?.code === "23505") {
+      const existing = await this.findById(id, orgId, wsId);
+      if (existing) return existing;
+      throw new CommandCenterError("TENANT_SCOPE_INVALID");
     }
+    if (error) throw new CommandCenterError("DATABASE_FAILURE", { cause: error });
+    if (data.organization_id !== orgId || data.workspace_id !== wsId) throw new CommandCenterError("TENANT_SCOPE_INVALID");
 
     return {
       id: data.id,

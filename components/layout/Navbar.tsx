@@ -145,26 +145,34 @@ export function Navbar() {
               })()}
             </div>
 
-            {/* Right: Bordered Contact Button with Hover Fill Effect */}
+            {/* Right: Bordered Contact Button with Liquid Water Fill Effect */}
             <div className="flex items-center justify-end w-1/4 md:w-1/4 lg:w-1/4 gap-3">
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/contact");
                 const isExternal = resolvedHref.startsWith("http") && isMounted;
-                const contactBtnClass = "font-semibold px-3 sm:px-5 text-xs sm:text-sm rounded-md border border-[#C0F0FB] text-[#C0F0FB] bg-transparent hover:bg-[#C0F0FB] hover:text-black transition-all duration-300 shadow-sm";
+                const contactButtonContent = (
+                  <span className="group relative inline-flex items-center justify-center font-bold px-4 sm:px-5 py-2 text-xs sm:text-sm rounded-md border border-[#C0F0FB] text-[#C0F0FB] overflow-hidden transition-colors duration-300 shadow-sm cursor-pointer">
+                    {/* Liquid / Water Fill Layer */}
+                    <span 
+                      className="absolute inset-0 w-full h-full bg-[#C0F0FB] translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-t-[50%] pointer-events-none"
+                      style={{ transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)" }}
+                    />
+                    <span className="relative z-10 transition-colors duration-300 group-hover:text-black">
+                      Contact
+                    </span>
+                  </span>
+                );
+
                 if (isExternal) {
                   return (
                     <a href={resolvedHref}>
-                      <Button size="sm" className={contactBtnClass} variant="ghost">
-                        Contact
-                      </Button>
+                      {contactButtonContent}
                     </a>
                   );
                 }
                 return (
                   <Link href="/contact">
-                    <Button size="sm" className={contactBtnClass} variant="ghost">
-                      Contact
-                    </Button>
+                    {contactButtonContent}
                   </Link>
                 );
               })()}

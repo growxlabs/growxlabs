@@ -13,6 +13,13 @@ export type SSEEventName =
   | "step_succeeded"
   | "step_failed"
   | "run_cancelled"
+  | "artifact_generating"
+  | "artifact_ready"
+  | "artifact_failed"
+  | "clarification_required"
+  | "notification_created"
+  | "approval_required"
+  | "approval_resolved"
   | "error";
 
 export class StreamWriter {

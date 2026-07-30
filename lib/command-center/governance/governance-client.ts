@@ -1,6 +1,7 @@
 import "server-only";
 
 import { signServiceJWT } from "@/lib/command-center/execution/service-jwt";
+import { fetchWithResilience } from "@/lib/command-center/production/resilience";
 
 export interface GovernanceScope {
   organisationId: string;
@@ -40,7 +41,7 @@ export class GovernanceClient {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 50_000);
     try {
-      return await fetch(gateway, {
+      return await fetchWithResilience(gateway, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,6 +57,12 @@ export class GovernanceClient {
         body: body === undefined ? undefined : JSON.stringify(body),
         cache: "no-store",
         signal: controller.signal,
+      }, {
+        operation: `governance:${method}:${path}`,
+        requestId: scope.requestId,
+        timeoutMs: 15_000,
+        totalDeadlineMs: 45_000,
+        maxAttempts: 3,
       });
     } finally {
       clearTimeout(timeout);

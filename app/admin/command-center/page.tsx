@@ -11,7 +11,7 @@ export async function generateMetadata() {
 export default async function CommandCenterPage() {
   return (
     /* Full-bleed: break out of admin layout padding */
-    <div className="-m-4 sm:-m-6 lg:-m-12 h-[calc(100vh-3.5rem)] lg:h-screen overflow-hidden">
+    <div className="gxl-command-center h-dvh overflow-hidden">
       <InteractiveWorkspace />
     </div>
   );

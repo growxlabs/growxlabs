@@ -8,20 +8,21 @@ export class AttachmentContextValidator {
     "text/plain"
   ];
 
-  static sanitize(attachmentsInput: any[] = []): Array<{ name: string; type: string; base64?: string }> {
-    if (!attachmentsInput || !Array.isArray(attachmentsInput)) return [];
+  static sanitize(attachmentsInput: unknown[] = []): Array<{ name: string; type: string; base64?: string }> {
+    if (!Array.isArray(attachmentsInput)) return [];
 
     return attachmentsInput
-      .filter(att => att && att.name && (att.base64 || att.url))
+      .map((value) => value && typeof value === "object" ? value as Record<string, unknown> : null)
+      .filter((att): att is Record<string, unknown> => Boolean(att && typeof att.name === "string" && (typeof att.base64 === "string" || typeof att.url === "string")))
       .filter(att => {
-        const mime = att.type || "image/png";
+        const mime = typeof att.type === "string" ? att.type : "image/png";
         return this.ALLOWED_MIME_TYPES.includes(mime.toLowerCase());
       })
       .slice(0, 5) // Max 5 attachments
       .map(att => ({
-        name: att.name,
-        type: att.type || "image/png",
-        base64: att.base64
+        name: String(att.name).slice(0, 255),
+        type: typeof att.type === "string" ? att.type : "image/png",
+        base64: typeof att.base64 === "string" ? att.base64 : undefined,
       }));
   }
 }

@@ -1,8 +1,12 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { MessageContract } from "@/types/commandCenterContracts";
+import { ConversationRepository } from "../conversations/conversation.repository";
+import { CommandCenterError } from "../production/errors";
 
 export class MessageRepository {
-  static async listByConversationId(conversationId: string): Promise<MessageContract[]> {
+  static async listByConversationId(conversationId: string, organizationId: string, workspaceId: string): Promise<MessageContract[]> {
+    const conversation = await ConversationRepository.findById(conversationId, organizationId, workspaceId);
+    if (!conversation) return [];
     const { data, error } = await supabaseAdmin
       .from("command_center_messages")
       .select("*")
@@ -25,12 +29,16 @@ export class MessageRepository {
 
   static async createMessage(msg: {
     conversationId: string;
+    organizationId: string;
+    workspaceId: string;
     sender: "user" | "gxl";
     text: string;
-    toolCalls?: any;
-    proposal?: any;
-    chart?: any;
+    toolCalls?: unknown;
+    proposal?: unknown;
+    chart?: unknown;
   }): Promise<void> {
+    const conversation = await ConversationRepository.findById(msg.conversationId, msg.organizationId, msg.workspaceId);
+    if (!conversation) throw new CommandCenterError("TENANT_SCOPE_INVALID");
     const { error } = await supabaseAdmin
       .from("command_center_messages")
       .insert({
@@ -42,8 +50,6 @@ export class MessageRepository {
         chart: msg.chart || null
       });
 
-    if (error) {
-      console.warn("Could not persist message in DB:", error.message);
-    }
+    if (error) throw new CommandCenterError("DATABASE_FAILURE", { cause: error });
   }
 }

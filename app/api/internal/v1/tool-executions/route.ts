@@ -5,10 +5,14 @@ import { verifyServiceJWT } from "@/lib/command-center/execution/service-jwt";
 import { WorkerExecutionRequestSchema } from "@/lib/command-center/execution/worker-request.schema";
 import { authoriseWorkerRequest } from "@/lib/command-center/execution/authorise-worker-request";
 import { resolveCommandCenterContext } from "@/lib/command-center/context/command-center-context";
+import { CommandCenterError, errorResponse, requestIdFrom } from "@/lib/command-center/production/errors";
+import { enforceRateLimit, rateLimitHeaders } from "@/lib/command-center/production/rate-limit";
+import { withConcurrencyLimit } from "@/lib/command-center/production/concurrency";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request): Promise<Response> {
+  const requestId = requestIdFrom(request);
   try {
     authenticate(request);
     const execution = WorkerExecutionRequestSchema.parse(await request.json());
@@ -17,6 +21,9 @@ export async function POST(request: Request): Promise<Response> {
       req: request,
       customOrgId: execution.organisationId,
       customWorkspaceId: execution.workspaceId,
+      customUserId: execution.userId,
+      customPermissions: execution.requiredPermissions,
+      internalServiceAuthenticated: true,
     });
     if (
       authoritativeContext.userId !== execution.userId ||
@@ -30,10 +37,12 @@ export async function POST(request: Request): Promise<Response> {
       throw new Error("Authoritative user scope or permissions do not match.");
     }
     if (!execution.toolId || !ToolRegistry.has(execution.toolId)) {
-      return errorResponse(400, "UNKNOWN_TOOL", "Registered tool is required.");
+      throw new CommandCenterError("VALIDATION_FAILED", { message: "Registered tool is required." });
     }
-    const result = await ToolRegistry.executeTool(
-      execution.toolId,
+    const toolId = execution.toolId;
+    const rateLimit = await enforceRateLimit("tool.execute", request, authoritativeContext);
+    const result = await withConcurrencyLimit("tool.execute", 8, () => withTimeout(ToolRegistry.executeTool(
+      toolId,
       execution.input,
       {
         commandContext: {
@@ -42,14 +51,10 @@ export async function POST(request: Request): Promise<Response> {
         },
         baseUrl: new URL(request.url).origin,
       },
-    );
-    return NextResponse.json({ result });
+    ), 30_000));
+    return NextResponse.json({ result }, { headers: { ...rateLimitHeaders(rateLimit), "X-Request-ID": requestId } });
   } catch (error) {
-    return errorResponse(
-      403,
-      "EXECUTION_REJECTED",
-      error instanceof Error ? error.message : "Execution was rejected.",
-    );
+    return errorResponse(error, requestId);
   }
 }
 
@@ -76,6 +81,17 @@ function authenticate(request: Request): void {
   if (!authenticated) throw new Error("Service identity is not permitted.");
 }
 
-function errorResponse(status: number, code: string, message: string): Response {
-  return NextResponse.json({ error: { code, message } }, { status });
+async function withTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+  if (timeoutMs <= 0) throw new CommandCenterError("TIMEOUT", { retryable: false });
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new CommandCenterError("TIMEOUT", { retryable: true })), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
 }

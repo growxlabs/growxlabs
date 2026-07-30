@@ -6,10 +6,14 @@ import { verifyServiceJWT } from "@/lib/command-center/execution/service-jwt";
 import { WorkerExecutionRequestSchema } from "@/lib/command-center/execution/worker-request.schema";
 import { authoriseWorkerRequest } from "@/lib/command-center/execution/authorise-worker-request";
 import { resolveCommandCenterContext } from "@/lib/command-center/context/command-center-context";
+import { CommandCenterError, errorResponse, requestIdFrom } from "@/lib/command-center/production/errors";
+import { enforceRateLimit, rateLimitHeaders } from "@/lib/command-center/production/rate-limit";
+import { withConcurrencyLimit } from "@/lib/command-center/production/concurrency";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request): Promise<Response> {
+  const requestId = requestIdFrom(request);
   try {
     authenticate(request);
     const execution = WorkerExecutionRequestSchema.parse(await request.json());
@@ -18,6 +22,9 @@ export async function POST(request: Request): Promise<Response> {
       req: request,
       customOrgId: execution.organisationId,
       customWorkspaceId: execution.workspaceId,
+      customUserId: execution.userId,
+      customPermissions: execution.requiredPermissions,
+      internalServiceAuthenticated: true,
     });
     if (
       authoritativeContext.userId !== execution.userId ||
@@ -28,32 +35,30 @@ export async function POST(request: Request): Promise<Response> {
     ) {
       throw new Error("Authoritative user scope or permissions do not match.");
     }
+    const rateLimit = await enforceRateLimit("model.execute", request, authoritativeContext);
     const prompt = modelPrompt(execution.input);
     if (GeminiProvider.isConfigured()) {
-      const response = await GeminiProvider.getModel().generateContent(prompt);
+      const response = await withConcurrencyLimit("model.execute", 4, () =>
+        withTimeout(GeminiProvider.getModel().generateContent(prompt), 30_000));
       return NextResponse.json({
         result: { text: response.response.text(), provider: "gemini" },
-      });
+      }, { headers: { ...rateLimitHeaders(rateLimit), "X-Request-ID": requestId } });
     }
     if (OpenRouterProvider.isConfigured()) {
-      const response = await OpenRouterProvider.getClient().chat.completions.create({
+      const response = await withConcurrencyLimit("model.execute", 4, () => withTimeout(OpenRouterProvider.getClient().chat.completions.create({
         model: "anthropic/claude-3.5-sonnet",
         messages: [{ role: "user", content: prompt }],
-      });
+      }), 30_000));
       return NextResponse.json({
         result: {
           text: response.choices[0]?.message.content ?? "",
           provider: "openrouter",
         },
-      });
+      }, { headers: { ...rateLimitHeaders(rateLimit), "X-Request-ID": requestId } });
     }
-    return errorResponse(503, "MODEL_UNAVAILABLE", "No model provider is configured.");
+    throw new CommandCenterError("MODEL_FAILURE", { message: "No model provider is configured.", retryable: false });
   } catch (error) {
-    return errorResponse(
-      403,
-      "EXECUTION_REJECTED",
-      error instanceof Error ? error.message : "Execution was rejected.",
-    );
+    return errorResponse(error, requestId);
   }
 }
 
@@ -79,6 +84,16 @@ function authenticate(request: Request): void {
   });
 }
 
-function errorResponse(status: number, code: string, message: string): Response {
-  return NextResponse.json({ error: { code, message } }, { status });
+async function withTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new CommandCenterError("TIMEOUT", { retryable: true })), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
 }

@@ -53,11 +53,18 @@ export class LegacyCommandProcessor {
     });
 
     // Ensure conversation header exists
-    await ConversationRepository.create(conversationId, message.slice(0, 40));
+    await ConversationRepository.create(
+      conversationId,
+      message.slice(0, 40),
+      commandContext.organizationId,
+      commandContext.workspaceId,
+    );
 
     // Save User message
     await MessageRepository.createMessage({
       conversationId,
+      organizationId: commandContext.organizationId,
+      workspaceId: commandContext.workspaceId,
       sender: "user",
       text: message
     });
@@ -179,6 +186,8 @@ export class LegacyCommandProcessor {
 
         await MessageRepository.createMessage({
           conversationId,
+          organizationId: commandContext.organizationId,
+          workspaceId: commandContext.workspaceId,
           sender: "gxl",
           text: accumulatedText,
           toolCalls: executedToolCalls,
@@ -308,6 +317,8 @@ export class LegacyCommandProcessor {
 
         await MessageRepository.createMessage({
           conversationId,
+          organizationId: commandContext.organizationId,
+          workspaceId: commandContext.workspaceId,
           sender: "gxl",
           text: accumulatedText,
           toolCalls: executedToolCalls,
