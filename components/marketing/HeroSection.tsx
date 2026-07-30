@@ -9,7 +9,7 @@ import { FlickerText } from "@/components/marketing/FlickerText";
  * spaced text "GROW X LABS TECH" for maximum high-end readability.
  */
 export function HeroSection() {
-  const brandName = "GROW X LABS TECH";
+  const brandName = "GROW X LABS";
   
   // Custom neon flicker-in delays to mimic a high-fidelity retro studio load
   const flickerDelays = [
@@ -21,15 +21,9 @@ export function HeroSection() {
     0.35, // L
     0.95, // A
     0.58, // B
-    1.25, // S
-    0.88, // T
-    1.52, // E
-    0.65, // C
-    1.10  // H
+    1.25  // S
   ];
 
-
-  
   return (
     <>
       {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
@@ -77,7 +71,7 @@ export function HeroSection() {
         <div className="w-full flex justify-center items-end select-none pointer-events-none z-0 translate-y-[3%] overflow-visible">
           <h1
             id="hero-studio-heading-desktop"
-            className="font-sans font-black select-none tracking-[-0.06em] text-foreground leading-[0.8] text-[10.2vw] uppercase whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
+            className="font-sans font-black select-none tracking-[-0.05em] text-foreground leading-[0.8] text-[14.8vw] uppercase whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
           >
             <FlickerText text={brandName} delays={flickerDelays} />
           </h1>
@@ -134,7 +128,7 @@ export function HeroSection() {
               id="hero-studio-heading-mobile"
               className="font-sans rotate-[-90deg] whitespace-nowrap text-foreground font-black select-none tracking-[-0.04em] leading-none"
               style={{
-                fontSize: "clamp(1.8rem, 6.8vh, 3.4rem)",
+                fontSize: "clamp(2.2rem, 8vh, 4.2rem)",
               }}
             >
               <FlickerText text={brandName} delays={flickerDelays} />
