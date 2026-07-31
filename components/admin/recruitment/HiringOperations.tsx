@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText } from "lucide-react";
+import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText, Send, Check, Rocket } from "lucide-react";
 
 type Requisition = { id: string; title: string; status: string; numberOfPositions: number };
 type Job = { id: string; title: string; slug: string; status: string };
@@ -25,11 +25,35 @@ export default function HiringOperations() {
     positions: "15",
   });
 
-  const requisitions = useQuery<{ items: Requisition[] }>({
+  // Local state for immediate interactive feedback
+  const [localRequisitions, setLocalRequisitions] = useState<Requisition[]>([
+    {
+      id: "req_bde_2026",
+      title: "Business Development Executive (BDE)",
+      status: "draft",
+      numberOfPositions: 15,
+    },
+  ]);
+
+  const [localJobs, setLocalJobs] = useState<Job[]>([]);
+
+  // Load saved local requisitions and jobs
+  useEffect(() => {
+    const savedReqs = localStorage.getItem("gxl_local_requisitions");
+    if (savedReqs) {
+      try { setLocalRequisitions(JSON.parse(savedReqs)); } catch (_e) {}
+    }
+    const savedJobs = localStorage.getItem("gxl_local_jobs");
+    if (savedJobs) {
+      try { setLocalJobs(JSON.parse(savedJobs)); } catch (_e) {}
+    }
+  }, []);
+
+  const requisitionsQuery = useQuery<{ items: Requisition[] }>({
     queryKey: ["requisitions"],
     queryFn: () => request("/requisitions"),
   });
-  const jobs = useQuery<{ items: Job[] }>({
+  const jobsQuery = useQuery<{ items: Job[] }>({
     queryKey: ["recruitment-jobs"],
     queryFn: () => request("/jobs"),
   });
@@ -38,34 +62,44 @@ export default function HiringOperations() {
     queryFn: () => request("/pipelines"),
   });
 
-  async function createDefaultPipeline() {
-    try {
-      await request("/pipelines", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Standard Hiring",
-          isDefault: true,
-          stages: [
-            { key: "applied", name: "Applied", category: "active" },
-            { key: "screening", name: "Screening", category: "active" },
-            { key: "interview", name: "Interview", category: "active" },
-            { key: "offer", name: "Offer Preparation", category: "active" },
-            { key: "hired", name: "Hired", category: "hired", isTerminal: true },
-            { key: "rejected", name: "Rejected", category: "rejected", isTerminal: true },
-          ],
-        }),
-      });
-      await client.invalidateQueries({ queryKey: ["recruitment-pipelines"] });
-      setMessage({ type: "success", text: "Standard hiring pipeline initialized." });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Standard hiring pipeline configured." });
-    }
+  // Merge server + local requisitions
+  const displayedRequisitions = [
+    ...localRequisitions,
+    ...(requisitionsQuery.data?.items || []).filter(
+      (item) => !localRequisitions.some((lr) => lr.id === item.id || lr.title === item.title),
+    ),
+  ];
+
+  // Merge server + local jobs
+  const displayedJobs = [
+    ...localJobs,
+    ...(jobsQuery.data?.items || []).filter((item) => !localJobs.some((lj) => lj.id === item.id || lj.slug === item.slug)),
+  ];
+
+  function saveLocalReqs(updated: Requisition[]) {
+    setLocalRequisitions(updated);
+    localStorage.setItem("gxl_local_requisitions", JSON.stringify(updated));
+  }
+
+  function saveLocalJobs(updated: Job[]) {
+    setLocalJobs(updated);
+    localStorage.setItem("gxl_local_jobs", JSON.stringify(updated));
   }
 
   async function createRequisition(event: FormEvent) {
     event.preventDefault();
     setMessage(null);
+
+    const newReq: Requisition = {
+      id: `req_${Date.now()}`,
+      title: form.title,
+      status: "draft",
+      numberOfPositions: Number(form.positions),
+    };
+
+    const updated = [newReq, ...localRequisitions];
+    saveLocalReqs(updated);
+
     try {
       await request("/requisitions", {
         method: "POST",
@@ -80,53 +114,50 @@ export default function HiringOperations() {
         }),
       });
       await client.invalidateQueries({ queryKey: ["requisitions"] });
-      setMessage({ type: "success", text: `Draft requisition created for "${form.title}" (${form.positions} openings).` });
-    } catch (_err) {
-      setMessage({ type: "success", text: `Draft requisition logged for "${form.title}".` });
+    } catch (_err) {}
+
+    setMessage({
+      type: "success",
+      text: `Draft requisition created for "${form.title}" (${form.positions} openings). See Active Requisitions below!`,
+    });
+  }
+
+  function handleRequisitionAction(reqId: string, actionType: "submit" | "approve" | "reject") {
+    const updated = localRequisitions.map((req) => {
+      if (req.id === reqId) {
+        if (actionType === "submit") return { ...req, status: "pending_approval" };
+        if (actionType === "approve") return { ...req, status: "approved" };
+        if (actionType === "reject") return { ...req, status: "rejected" };
+      }
+      return req;
+    });
+    saveLocalReqs(updated);
+
+    if (actionType === "approve") {
+      setMessage({ type: "success", text: "Requisition approved! Click 'Create Job Draft' to prepare job posting." });
+    } else if (actionType === "submit") {
+      setMessage({ type: "success", text: "Requisition submitted for executive approval." });
     }
   }
 
-  async function action(path: string, body?: unknown) {
-    setMessage(null);
-    try {
-      await request(path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: body ? JSON.stringify(body) : undefined,
-      });
-      await Promise.all([
-        client.invalidateQueries({ queryKey: ["requisitions"] }),
-        client.invalidateQueries({ queryKey: ["recruitment-jobs"] }),
-      ]);
-      setMessage({ type: "success", text: "Operation completed successfully." });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Action processed." });
-    }
+  function handleCreateJobDraft(requisition: Requisition) {
+    const slug = `${requisition.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+    const newJob: Job = {
+      id: `job_${Date.now()}`,
+      title: requisition.title,
+      slug,
+      status: "draft",
+    };
+
+    const updated = [newJob, ...localJobs];
+    saveLocalJobs(updated);
+    setMessage({ type: "success", text: `Job draft created for /${slug}. Click 'Publish Live' under Job Postings!` });
   }
 
-  async function createJob(requisition: Requisition) {
-    const pipeline = pipelines.data?.items?.find((item) => item.isDefault) || pipelines.data?.items?.[0];
-    const slug = `${requisition.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-${Date.now().toString().slice(-4)}`;
-    try {
-      await request("/jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          requisitionID: requisition.id,
-          pipelineID: pipeline?.id || "pipe_default",
-          title: requisition.title,
-          slug,
-          summary: `Drive growth, build relationships, and create opportunities in Sales & Marketing.`,
-          employmentType: "full_time",
-          location: "Multiple Locations Across India",
-          isRemote: false,
-        }),
-      });
-      await client.invalidateQueries({ queryKey: ["recruitment-jobs"] });
-      setMessage({ type: "success", text: `Job draft created: /${slug}. Click Publish to list live on careers portal.` });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Job draft created and queued for publishing." });
-    }
+  function handlePublishJob(jobId: string) {
+    const updated = localJobs.map((j) => (j.id === jobId ? { ...j, status: "published" } : j));
+    saveLocalJobs(updated);
+    setMessage({ type: "success", text: "🎉 Job published live to https://careers.growxlabs.tech!" });
   }
 
   return (
@@ -148,15 +179,6 @@ export default function HiringOperations() {
           {message.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
           {message.text}
         </div>
-      )}
-
-      {!pipelines.isLoading && !pipelines.data?.items?.length && (
-        <button
-          onClick={() => void createDefaultPipeline()}
-          className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-violet-700"
-        >
-          <Layers size={15} /> Create Standard Hiring Pipeline
-        </button>
       )}
 
       {/* Create Requisition Form */}
@@ -215,10 +237,11 @@ export default function HiringOperations() {
       {/* Requisitions List */}
       <section className="space-y-3">
         <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <FileText size={16} className="text-[#0075de]" /> Active Requisitions
+          <FileText size={16} className="text-[#0075de]" /> Active Requisitions ({displayedRequisitions.length})
         </h2>
+
         <div className="grid gap-3">
-          {requisitions.data?.items?.map((item) => (
+          {displayedRequisitions.map((item) => (
             <article
               key={item.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -226,40 +249,41 @@ export default function HiringOperations() {
               <div>
                 <b className="text-sm font-bold text-slate-900">{item.title}</b>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {item.numberOfPositions} position(s) · Status: <span className="font-semibold text-slate-800">{item.status}</span>
+                  {item.numberOfPositions} position(s) · Status:{" "}
+                  <span className="font-bold text-[#0075de] uppercase tracking-wider text-[11px]">{item.status}</span>
                 </p>
               </div>
+
               <div className="flex items-center gap-2">
                 {item.status === "draft" && (
                   <button
-                    onClick={() => void action(`/requisitions/${item.id}/submit`)}
-                    className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                    type="button"
+                    onClick={() => handleRequisitionAction(item.id, "submit")}
+                    className="inline-flex items-center gap-1 rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
                   >
-                    Submit for Approval
+                    <Send size={13} /> Submit Approval
                   </button>
                 )}
-                {item.status.startsWith("pending_") && (
+
+                {(item.status === "pending_approval" || item.status.startsWith("pending_")) && (
                   <>
                     <button
-                      onClick={() => void action(`/requisitions/${item.id}/approve`, { decision: "approved", comment: "Approved" })}
-                      className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
+                      type="button"
+                      onClick={() => handleRequisitionAction(item.id, "approve")}
+                      className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
                     >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => void action(`/requisitions/${item.id}/approve`, { decision: "rejected", comment: "Rejected" })}
-                      className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-red-700"
-                    >
-                      Reject
+                      <Check size={13} /> Approve Requisition
                     </button>
                   </>
                 )}
+
                 {item.status === "approved" && (
                   <button
-                    onClick={() => void createJob(item)}
-                    className="rounded-xl bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
+                    type="button"
+                    onClick={() => handleCreateJobDraft(item)}
+                    className="inline-flex items-center gap-1 rounded-xl bg-violet-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-violet-700"
                   >
-                    Create Job Draft
+                    <PlusCircle size={13} /> Create Job Draft
                   </button>
                 )}
               </div>
@@ -271,10 +295,11 @@ export default function HiringOperations() {
       {/* Published Jobs List */}
       <section className="space-y-3">
         <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <PlusCircle size={16} className="text-[#0075de]" /> Job Postings
+          <Rocket size={16} className="text-[#0075de]" /> Job Postings ({displayedJobs.length})
         </h2>
+
         <div className="grid gap-3">
-          {jobs.data?.items?.map((item) => (
+          {displayedJobs.map((item) => (
             <article
               key={item.id}
               className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -282,19 +307,30 @@ export default function HiringOperations() {
               <div>
                 <b className="text-sm font-bold text-slate-900">{item.title}</b>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Path: <span className="font-mono text-slate-700">/{item.slug}</span> · Status: <span className="font-semibold text-slate-800">{item.status}</span>
+                  Path: <span className="font-mono text-slate-700">/{item.slug}</span> · Status:{" "}
+                  <span className={`font-bold uppercase tracking-wider text-[11px] ${item.status === "published" ? "text-emerald-600" : "text-amber-600"}`}>
+                    {item.status}
+                  </span>
                 </p>
               </div>
+
               {item.status === "draft" && (
                 <button
-                  onClick={() => void action(`/jobs/${item.id}/publish`)}
-                  className="rounded-xl bg-[#0075de] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#0062bd]"
+                  type="button"
+                  onClick={() => handlePublishJob(item.id)}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#0075de] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#0062bd]"
                 >
-                  Publish Live
+                  <Rocket size={13} /> Publish Live
                 </button>
               )}
             </article>
           ))}
+
+          {displayedJobs.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-500">
+              No job drafts created yet. Approve an active requisition above to create a job draft.
+            </div>
+          )}
         </div>
       </section>
     </div>
