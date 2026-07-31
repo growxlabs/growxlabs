@@ -117,6 +117,7 @@ function getToolTitle(toolName: string, summary?: string): string {
     case "generate_proposal": return "Generating client proposal SOW";
     case "get_blog_posts_stats": return "Analyzing blog and newsletter telemetry";
     case "query_wish_game_data": return "Retrieving game telemetry statistics";
+    case "search_web": return "Researching web & live market data";
     default: return toolName.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
   }
 }
@@ -128,7 +129,7 @@ function formatTime(value: string) {
 
 /**
  * Clean Markdown Renderer:
- * Parses headers, bold text, bullet lists (* and -), inline code/tool calls, and HTML tables without raw asterisks or slashes.
+ * Parses headers (##, ###, ####), bold text, bullet lists (* and -), inline code/tool calls, and HTML tables without raw asterisks or slashes.
  */
 function renderMarkdown(text: string) {
   const lines = text.split("\n");
@@ -153,15 +154,21 @@ function renderMarkdown(text: string) {
     }
 
     // Headers
-    if (trimmed.startsWith("### ")) {
+    if (trimmed.startsWith("#### ")) {
       elements.push(
-        <h3 key={index} className="mt-3 text-base font-extrabold text-slate-900 border-b border-slate-100 pb-1">
+        <h4 key={index} className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-700">
+          {formatInlineMarkdown(trimmed.replace("#### ", ""))}
+        </h4>
+      );
+    } else if (trimmed.startsWith("### ")) {
+      elements.push(
+        <h3 key={index} className="mt-3 text-sm font-extrabold text-slate-900 border-b border-slate-100 pb-1">
           {formatInlineMarkdown(trimmed.replace("### ", ""))}
         </h3>
       );
     } else if (trimmed.startsWith("## ")) {
       elements.push(
-        <h2 key={index} className="mt-4 text-lg font-extrabold text-slate-900 border-b border-slate-200 pb-1.5">
+        <h2 key={index} className="mt-4 text-base font-extrabold text-slate-900 border-b border-slate-200 pb-1.5">
           {formatInlineMarkdown(trimmed.replace("## ", ""))}
         </h2>
       );
