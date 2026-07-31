@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS recruitment.candidate_profiles (
     candidate_id VARCHAR(128) NOT NULL,
     organisation_id VARCHAR(128) NOT NULL DEFAULT 'org_default',
     current_company VARCHAR(255),
-    current_role VARCHAR(255),
+    "current_role" VARCHAR(255),
     experience_years NUMERIC(4, 1) DEFAULT 0.0,
     notice_period_days INT DEFAULT 0,
     current_salary NUMERIC(12, 2) DEFAULT 0.0,
