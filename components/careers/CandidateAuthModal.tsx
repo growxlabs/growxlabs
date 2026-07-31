@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Sparkles, X, CheckCircle } from "lucide-react";
+import { Building2, X, CheckCircle } from "lucide-react";
 
 interface CandidateAuthModalProps {
   isOpen: boolean;
@@ -72,7 +72,7 @@ export function CandidateAuthModal({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0075de]">
-            <Sparkles size={14} /> GrowXLabs Candidate Auth
+            <Building2 size={14} /> GrowXLabs Candidate Auth
           </div>
           <button
             onClick={onClose}

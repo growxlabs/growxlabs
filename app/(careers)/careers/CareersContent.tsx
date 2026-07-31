@@ -10,7 +10,6 @@ import {
   Search,
   UploadCloud,
   User,
-  Sparkles,
   CheckCircle2,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
