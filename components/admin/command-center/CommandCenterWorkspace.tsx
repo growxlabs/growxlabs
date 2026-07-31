@@ -24,6 +24,7 @@ export function CommandCenterWorkspace() {
   const [unread, setUnread] = useState(0);
   const [lastSubmission, setLastSubmission] = useState<{ text: string; attachments: ComposerAttachment[] } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const activeRunRef = useRef<string | null>(null);
 
   const closeFlyout = useCallback(() => setFlyout(false), []);
 
@@ -229,6 +230,30 @@ export function CommandCenterWorkspace() {
         try { localStorage.setItem(`gxl_cc_msgs_${conversationId}`, JSON.stringify(updated)); } catch (_e) {}
         return updated;
       });
+    } else if (event === "artifact_generating") {
+      addActivity("Generating artifact", "working", safeString(value.name, "Preparing a downloadable file."));
+    } else if (event === "artifact_ready") {
+      addActivity("Artifact ready", "complete", safeString(value.name, "A signed download is available."));
+      setFlyoutMode("artifacts");
+    } else if (event === "artifact_failed") {
+      addActivity("Artifact failed", "failed", "The file could not be generated safely.");
+    } else if (event === "clarification_required") {
+      setMessages((items) => items.map((item) => item.id === agentMessageId ? { ...item, kind: "clarification", text: safeString(value.message, item.text || "More information is required.") } : item));
+      setAgentState("waiting"); setAgentSummary("Waiting for your answer");
+    } else if (event === "notification_created") {
+      setUnread((count) => count + 1);
+    } else if (event === "run_status") {
+      const status = safeString(value.status);
+      if (status === "succeeded") { activeRunRef.current = null; setAgentState("complete"); setAgentSummary("Completed"); }
+      else if (status === "failed" || status === "cancelled") { activeRunRef.current = null; setAgentState("failed"); setAgentSummary(status === "cancelled" ? "Cancelled" : "Needs attention"); }
+      else { setAgentState("waiting"); setAgentSummary(status === "waiting" ? "Waiting" : "Executing"); }
+      addActivity("Run status updated", status === "failed" || status === "cancelled" ? "failed" : status === "succeeded" ? "complete" : "working", status || "Execution details are available.");
+    } else if (event === "run_created" || event === "plan_created" || event === "step_started") {
+      addActivity(activityLabel(event), "working", safeString(value.title, safeString(value.status, "Execution details are available.")));
+    } else if (event === "step_succeeded" || event === "done") {
+      if (event === "step_succeeded") addActivity("Execution step completed", "complete");
+    } else if (event === "step_failed" || event === "error") {
+      addActivity("Execution needs attention", "failed", safeString(value.message, "A recoverable execution error occurred."));
     }
   }
 
@@ -287,4 +312,8 @@ function toMessage(value: unknown, conversationId: string): CommandMessage | nul
 function safeToolLabel(name: string) {
   const labels: Record<string, string> = { query_leads: "Looking up customer data", search_web: "Researching sources", generate_proposal: "Preparing proposal", get_company_stats: "Reviewing company metrics", get_admin_invoices: "Reviewing invoices" };
   return labels[name] ?? "Using authorised tool";
+}
+
+function activityLabel(event: string) {
+  return event === "plan_created" ? "Plan prepared" : event === "run_created" ? "Execution started" : event === "step_started" ? "Execution step started" : "Run status updated";
 }
