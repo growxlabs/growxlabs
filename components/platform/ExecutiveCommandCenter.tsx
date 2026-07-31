@@ -1,28 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Sparkles, Activity, TrendingUp, AlertTriangle, ShieldCheck, PieChart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Activity, Sparkles } from "lucide-react";
+
+import { hrmsApi } from "@/lib/hrms/query/api-client";
+import { hrmsCachePolicy, hrmsQueryKeys } from "@/lib/hrms/query/keys";
+
+type ExecutiveSummary = {
+  org_health_score: number;
+  attrition_forecast: string;
+  hiring_velocity: string;
+  payroll_cost_delta: string;
+  productivity_trend: string;
+  executive_rec: string;
+};
 
 export function ExecutiveCommandCenter() {
-  const [summary, setSummary] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/v1/hrms/platform/ai/executive-summary")
-      .then((res) => res.json())
-      .then((data) => setSummary(data))
-      .catch(() => {
-        setSummary({
-          org_health_score: 94.8,
-          attrition_forecast: "Low (2.1% quarterly expected)",
-          hiring_velocity: "On Track (91% positions filled in SLA)",
-          payroll_cost_delta: "+1.8% vs Q4 forecast (within budget)",
-          productivity_trend: "Optimal (+6.4% YoY output per headcount)",
-          executive_rec: "Approve Q2 engineering headcount expansion in London & Bangalore hubs."
-        });
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const summaryQuery = useQuery({
+    queryKey: hrmsQueryKeys.platform.detail("executive-summary"),
+    queryFn: ({ signal }) => hrmsApi<ExecutiveSummary>("platform/ai/executive-summary", {}, signal),
+    staleTime: hrmsCachePolicy.medium,
+  });
+  const summary = summaryQuery.data;
 
   return (
     <div className="space-y-6">
@@ -36,8 +35,12 @@ export function ExecutiveCommandCenter() {
         </p>
       </div>
 
-      {loading ? (
+      {summaryQuery.isPending ? (
         <div className="p-8 text-center text-xs text-muted-foreground">Loading Executive Intelligence Summary...</div>
+      ) : summaryQuery.isError ? (
+        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/5 p-5 text-xs text-red-300">
+          Executive intelligence is temporarily unavailable. No synthetic summary has been substituted.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-6 rounded-xl border border-emerald-500/20 bg-card space-y-2">

@@ -183,3 +183,18 @@ Storage directly.
 
 No Release 05 worker is a long-running server. Each worker processes a bounded batch
 and exits, so it can be invoked by QStash or a scheduled platform job.
+
+## Releases 05–10 final architecture revision
+
+The final cross-release architecture audit is documented in
+`docs/hrms-release-05-10-final-architecture-audit.md`. Existing migrations keep
+their immutable historical numbers even where later product naming changed.
+After applying `0001` through `0017`, apply
+`0018_release_05_10_architecture_revision.sql`.
+
+Migration `0018` adds the shared outbox, idempotency, saved-view, background-job,
+dashboard, common metadata, and missing enterprise-domain foundations. It is
+additive and does not by itself mark Releases 05–10 complete. Performance,
+Payroll, Workforce, and Enterprise Platform still require their prototype
+in-memory repositories and `cmd/server` business logic to be replaced with
+PostgreSQL-backed Clean Architecture packages before production acceptance.
