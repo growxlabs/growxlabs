@@ -7,7 +7,7 @@ import { CommandComposer } from "./CommandComposer";
 import { CommandSidebar } from "./CommandSidebar";
 import { ContextFlyout } from "./ContextFlyout";
 import { MessageThread } from "./MessageThread";
-import type { ActivityItem, AgentCapability, AgentState, CommandMessage, ComposerAttachment, ConversationSummary, ExecutionWidget as ExecWidget, FlyoutModeExtended, TimelineStep, ToolActivity, WidgetType } from "./command-center.types";
+import type { ActivityItem, AgentState, CommandMessage, ComposerAttachment, ConversationSummary, FlyoutMode, ToolActivity } from "./command-center.types";
 import { consumeSSEChunk, record, safeString } from "./sse";
 import { cn } from "@/lib/utils";
 
@@ -21,10 +21,7 @@ export function CommandCenterWorkspace() {
   const [busy, setBusy] = useState(false);
   const [sidebar, setSidebar] = useState(true);
   const [flyout, setFlyout] = useState(false);
-  const [flyoutMode, setFlyoutMode] = useState<FlyoutModeExtended>("activity");
-  const [timeline, setTimeline] = useState<TimelineStep[]>([]);
-  const [widgets, setWidgets] = useState<ExecWidget[]>([]);
-  const [capabilities, setCapabilities] = useState<AgentCapability[]>([]);
+  const [flyoutMode, setFlyoutMode] = useState<FlyoutMode>("activity");
   const [unread, setUnread] = useState(0);
   const [lastSubmission, setLastSubmission] = useState<{ text: string; attachments: ComposerAttachment[] } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -219,11 +216,6 @@ export function CommandCenterWorkspace() {
         return updated;
       });
       addActivity(safeToolLabel(name), "working", "Using an authorised tool. Sensitive inputs are hidden.");
-
-      // Agentic UX: add timeline step + execution widget
-      setTimeline((steps) => [...steps, { id: tool.id, label: safeToolLabel(name), status: "running" as const, startedAt: new Date().toISOString(), toolName: name }]);
-      const widgetType = toolToWidgetType(name);
-      setWidgets((items) => [...items, { id: tool.id, type: widgetType, title: safeToolLabel(name), status: "active" as const, data: {}, createdAt: new Date().toISOString() }]);
     } else if (event === "tool_result") {
       const name = safeString(value.name);
       setMessages((items) => {
@@ -239,10 +231,6 @@ export function CommandCenterWorkspace() {
         try { localStorage.setItem(`gxl_cc_msgs_${conversationId}`, JSON.stringify(updated)); } catch (_e) {}
         return updated;
       });
-
-      // Agentic UX: complete timeline step + widget
-      setTimeline((steps) => steps.map((s) => s.toolName === name && s.status === "running" ? { ...s, status: "complete" as const, completedAt: new Date().toISOString(), durationMs: s.startedAt ? Date.now() - new Date(s.startedAt).getTime() : undefined } : s));
-      setWidgets((items) => items.map((w) => w.id === name || (w.title === safeToolLabel(name) && w.status === "active") ? { ...w, status: "complete" as const, data: { ...(w.data || {}), result: value.result }, completedAt: new Date().toISOString() } : w));
     } else if (event === "artifact_generating") {
       addActivity("Generating artifact", "working", safeString(value.name, "Preparing a downloadable file."));
     } else if (event === "artifact_ready") {
@@ -263,20 +251,8 @@ export function CommandCenterWorkspace() {
       addActivity("Run status updated", status === "failed" || status === "cancelled" ? "failed" : status === "succeeded" ? "complete" : "working", status || "Execution details are available.");
     } else if (event === "run_created" || event === "plan_created" || event === "step_started") {
       addActivity(activityLabel(event), "working", safeString(value.title, safeString(value.status, "Execution details are available.")));
-      // Agentic UX: populate capabilities from plan/run events
-      if (event === "plan_created") {
-        const steps = Array.isArray(value.steps) ? value.steps : [];
-        setCapabilities(steps.map((s: unknown) => { const step = record(s); return { id: safeString(step.id, crypto.randomUUID()), name: safeString(step.name, "Step"), status: "waiting" as const, startedAt: new Date().toISOString() }; }));
-      } else if (event === "step_started") {
-        const stepId = safeString(value.stepId, safeString(value.id));
-        if (stepId) setCapabilities((items) => items.map((c) => c.id === stepId ? { ...c, status: "running" as const } : c));
-      }
     } else if (event === "step_succeeded" || event === "done") {
-      if (event === "step_succeeded") {
-        addActivity("Execution step completed", "complete");
-        const stepId = safeString(value.stepId, safeString(value.id));
-        if (stepId) setCapabilities((items) => items.map((c) => c.id === stepId ? { ...c, status: "complete" as const, durationMs: c.startedAt ? Date.now() - new Date(c.startedAt).getTime() : undefined } : c));
-      }
+      if (event === "step_succeeded") addActivity("Execution step completed", "complete");
     } else if (event === "step_failed" || event === "error") {
       addActivity("Execution needs attention", "failed", safeString(value.message, "A recoverable execution error occurred."));
     }
@@ -335,7 +311,7 @@ export function CommandCenterWorkspace() {
         <CommandComposer busy={busy} canRetry={Boolean(lastSubmission)} onSubmit={submit} onStop={stop} onRetry={() => { if (lastSubmission) void submit(lastSubmission.text, lastSubmission.attachments); }} />
       </section>
 
-      <ContextFlyout open={flyout} mode={flyoutMode} activity={activity} onClose={closeFlyout} onMode={setFlyoutMode} onUnreadChange={setUnread} capabilities={capabilities} executionWidgets={widgets} timeline={timeline} />
+      <ContextFlyout open={flyout} mode={flyoutMode} activity={activity} onClose={closeFlyout} onMode={setFlyoutMode} onUnreadChange={setUnread} />
     </div>
   );
 }
@@ -356,13 +332,6 @@ function toMessage(value: unknown, conversationId: string): CommandMessage | nul
 function safeToolLabel(name: string) {
   const labels: Record<string, string> = { query_leads: "Looking up customer data", search_web: "Researching sources", generate_proposal: "Preparing proposal", get_company_stats: "Reviewing company metrics", get_admin_invoices: "Reviewing invoices" };
   return labels[name] ?? "Using authorised tool";
-}
-
-function toolToWidgetType(name: string): WidgetType {
-  if (name.includes("lead") || name.includes("stats") || name.includes("user") || name.includes("agreement") || name.includes("invoice") || name.includes("project")) return "crm";
-  if (name.includes("search") || name.includes("subagent")) return "search";
-  if (name.includes("proposal") || name.includes("blog")) return "files";
-  return "terminal";
 }
 
 function activityLabel(event: string) {

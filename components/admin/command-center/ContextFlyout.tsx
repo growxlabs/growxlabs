@@ -3,10 +3,9 @@
 import { AlertCircle, Bell, Brain, CheckCircle2, Download, FileText, Loader2, ShieldCheck, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { ActivityItem, FlyoutMode, AgentCapability, ExecutionWidget, FlyoutModeExtended, TimelineStep } from "./command-center.types";
+import type { ActivityItem, FlyoutMode } from "./command-center.types";
 import { record, safeString } from "./sse";
 import { useDialogFocus } from "./useDialogFocus";
-import "./transitions.css";
 
 interface SafeItem {
   id: string;
@@ -26,12 +25,9 @@ const config: Record<Exclude<FlyoutMode, "activity">, { endpoint: string; key: s
   notifications: { endpoint: "/api/admin/command-center/notifications", key: "notifications" },
 };
 
-export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadChange, capabilities = [], executionWidgets = [], timeline = [] }: {
-  open: boolean; mode: FlyoutModeExtended; activity: ActivityItem[]; onClose: () => void;
-  onMode: (mode: FlyoutModeExtended) => void; onUnreadChange: (count: number) => void;
-  capabilities?: AgentCapability[];
-  executionWidgets?: ExecutionWidget[];
-  timeline?: TimelineStep[];
+export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadChange }: {
+  open: boolean; mode: FlyoutMode; activity: ActivityItem[]; onClose: () => void;
+  onMode: (mode: FlyoutMode) => void; onUnreadChange: (count: number) => void;
 }) {
   const [items, setItems] = useState<SafeItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,11 +39,11 @@ export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadC
   const panelRef = useRef<HTMLElement>(null);
 
   const load = useCallback(async () => {
-    if (mode === "activity" || mode === "capabilities" || mode === "widgets" || mode === "reasoning" || mode === "metrics") return;
+    if (mode === "activity") return;
     setLoading(true);
     setError("");
     try {
-      const source = config[mode as keyof typeof config];
+      const source = config[mode];
       const response = await fetch(source.endpoint, { cache: "no-store" });
       if (!response.ok) {
         setItems([]);
@@ -124,8 +120,8 @@ export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadC
       {/* Header */}
       <header className="flex h-14 items-center justify-between border-b border-slate-200 px-3.5 dark:border-slate-800">
         <nav className="flex gap-1 overflow-x-auto py-1" aria-label="Details view tabs">
-          {(["activity", "approvals", "artifacts", "memory", "notifications", "capabilities", "widgets", "reasoning", "metrics"] as const).map((tab) => (
-            <button key={tab} onClick={() => onMode(tab as FlyoutModeExtended)} className={cn("rounded-lg px-2 py-1 text-[11px] font-bold capitalize transition whitespace-nowrap", mode === tab ? "bg-blue-50 text-[#0075de] dark:bg-slate-800 dark:text-blue-400 border border-blue-100" : "text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900")}>
+          {(["activity", "approvals", "artifacts", "memory", "notifications"] as const).map((tab) => (
+            <button key={tab} onClick={() => onMode(tab)} className={cn("rounded-lg px-2 py-1 text-[11px] font-bold capitalize transition", mode === tab ? "bg-blue-50 text-[#0075de] dark:bg-slate-800 dark:text-blue-400 border border-blue-100" : "text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900")}>
               {tab}
             </button>
           ))}
@@ -139,96 +135,6 @@ export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadC
       <div className="flex-1 overflow-y-auto p-4">
         {loading ? (
           <div className="flex h-40 items-center justify-center text-slate-400"><Loader2 size={20} className="animate-spin" /></div>
-        ) : mode === "capabilities" ? (
-          <div className="space-y-3">
-            {capabilities.map((cap) => (
-               <div key={cap.id} className="cc-capability-row flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex items-center gap-2">
-                     <span className={cn("size-2 rounded-full", cap.status === "complete" ? "bg-emerald-500" : cap.status === "running" ? "bg-blue-500 animate-pulse" : cap.status === "error" ? "bg-red-500" : "bg-amber-500")} />
-                     <b className="text-xs font-bold text-slate-900 dark:text-white">{cap.name}</b>
-                     {cap.durationMs !== undefined && <span className="cc-status-badge ml-auto text-[10px] text-slate-500">{cap.durationMs}ms</span>}
-                  </div>
-                  {cap.dependencies && cap.dependencies.length > 0 && (
-                     <div className="text-[10px] text-slate-500">
-                        Deps: {cap.dependencies.join(", ")}
-                     </div>
-                  )}
-               </div>
-            ))}
-            {!capabilities.length && <p className="py-12 text-center text-xs text-slate-400">No capabilities available.</p>}
-          </div>
-        ) : mode === "widgets" ? (
-          <div className="space-y-3">
-             {executionWidgets.map((widget) => (
-               <div key={widget.id} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                 <div className="flex items-center gap-2 mb-2">
-                   <FileText size={14} className="text-slate-500" />
-                   <b className="text-xs font-bold text-slate-900 dark:text-white">{widget.title}</b>
-                   <span className="cc-status-badge ml-auto text-[10px] capitalize">{widget.status}</span>
-                 </div>
-                 <div className="text-[10px] text-slate-500 truncate">
-                    {Object.keys(widget.data).length > 0 ? JSON.stringify(widget.data).slice(0, 100) + '…' : 'No data yet'}
-                 </div>
-               </div>
-             ))}
-             {!executionWidgets.length && <p className="py-12 text-center text-xs text-slate-400">No active widgets.</p>}
-          </div>
-        ) : mode === "reasoning" ? (
-          <div className="space-y-4 text-xs">
-            <section className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
-              <h3 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1"><Brain size={14}/> Intent Analysis</h3>
-              <p className="text-slate-600 dark:text-slate-400">{timeline.find(t => t.label.toLowerCase().includes('planning'))?.detail || 'Intent analysis derived from user instruction.'}</p>
-            </section>
-            <section className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
-              <h3 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1"><Loader2 size={14}/> Capability Routing</h3>
-              <p className="text-slate-600 dark:text-slate-400">{timeline.filter(t => t.toolName).map(t => t.label).join(' → ') || 'No routing information available.'}</p>
-            </section>
-            <section className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
-               <h3 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1"><CheckCircle2 size={14}/> Model Selection</h3>
-               <p className="text-slate-600 dark:text-slate-400">{timeline.length > 0 ? `${timeline.filter(t => t.status === 'complete').length} of ${timeline.length} steps completed` : 'No model selection info.'}</p>
-            </section>
-          </div>
-        ) : mode === "metrics" ? (
-          <div className="space-y-4">
-             {(() => {
-               const toolCalls = timeline.filter(t => t.toolName);
-               const successCount = toolCalls.filter(t => t.status === 'complete').length;
-               const successRate = toolCalls.length ? Math.round((successCount / toolCalls.length) * 100) : 0;
-               const times = toolCalls.map(t => t.durationMs || 0).filter(d => d > 0);
-               const avgTime = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
-               return (
-                 <>
-                   <div className="grid grid-cols-2 gap-2">
-                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
-                       <div className="text-[10px] text-slate-500 mb-1">Total Tools</div>
-                       <div className="text-lg font-bold text-slate-900 dark:text-white">{toolCalls.length}</div>
-                     </div>
-                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
-                       <div className="text-[10px] text-slate-500 mb-1">Success Rate</div>
-                       <div className="text-lg font-bold text-slate-900 dark:text-white">{successRate}%</div>
-                     </div>
-                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-900/50 col-span-2">
-                       <div className="text-[10px] text-slate-500 mb-1">Average Response Time</div>
-                       <div className="text-lg font-bold text-slate-900 dark:text-white">{avgTime}ms</div>
-                     </div>
-                   </div>
-                   {toolCalls.length > 0 && (
-                     <div className="mt-4">
-                       <h3 className="text-xs font-bold text-slate-900 dark:text-white mb-2">Tool Timing</h3>
-                       <div className="space-y-2">
-                         {toolCalls.map(t => (
-                           <div key={t.id} className="flex items-center justify-between text-[10px] border-b border-slate-100 dark:border-slate-800 pb-1">
-                             <span className="text-slate-600 dark:text-slate-400">{t.label}</span>
-                             <span className="font-mono text-slate-500">{t.durationMs || 0}ms</span>
-                           </div>
-                         ))}
-                       </div>
-                     </div>
-                   )}
-                 </>
-               )
-             })()}
-          </div>
         ) : mode === "activity" ? (
           <div className="space-y-3">
             {activity.map((act) => (
@@ -271,7 +177,7 @@ export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadC
   );
 }
 
-function mapItem(mode: FlyoutModeExtended, raw: unknown): SafeItem | null {
+function mapItem(mode: FlyoutMode, raw: unknown): SafeItem | null {
   const item = record(raw);
   if (!item) return null;
   return {

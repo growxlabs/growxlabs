@@ -4,7 +4,6 @@ import { AlertTriangle, Bot, Check, CheckCircle2, Clipboard, FileText, Loader2, 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { CommandMessage } from "./command-center.types";
-import { ExecutionTimeline } from "./ExecutionTimeline";
 
 export function MessageThread({ messages, busy, onSuggestion }: { messages: CommandMessage[]; busy: boolean; onSuggestion: (text: string) => void }) {
   if (!messages.length) return (
