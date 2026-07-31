@@ -17,7 +17,13 @@ export function proxy(request: NextRequest) {
   // 1. Subdomain routing for careers.growxlabs.tech
   const isCareersSubdomain = hostname.startsWith("careers.growxlabs.tech") || hostname.startsWith("careers.localhost");
   if (isCareersSubdomain) {
-    if (!pathname.startsWith("/careers") && !pathname.startsWith("/api") && !pathname.startsWith("/_next")) {
+    if (
+      !pathname.startsWith("/careers") &&
+      !pathname.startsWith("/api") &&
+      !pathname.startsWith("/_next") &&
+      !pathname.startsWith("/login") &&
+      !pathname.startsWith("/auth")
+    ) {
       const cleanPath = `/careers${pathname === "/" ? "" : pathname}`;
       const rewriteUrl = new URL(cleanPath + search, request.url);
       return secureResponse(NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } }), requestId);

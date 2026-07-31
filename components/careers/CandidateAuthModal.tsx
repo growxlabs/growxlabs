@@ -29,10 +29,13 @@ export function CandidateAuthModal({
   async function handleGoogleSignIn() {
     setLoading(true);
     try {
-      // Trigger NextAuth Google provider sign in
-      const result = await signIn("google", { redirect: false });
-      if (result?.error) {
-        // Fallback to simulated candidate Google OAuth payload for dev/local testing
+      // Trigger NextAuth Google provider sign in returning to careers portal
+      const result = await signIn("google", {
+        callbackUrl: typeof window !== "undefined" ? window.location.href : "/careers",
+        redirect: false,
+      });
+      if (result?.error || !result?.ok) {
+        // Show candidate Google profile verification form
         setShowSimulatedAuth(true);
       }
     } catch (_err) {
