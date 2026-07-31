@@ -6,7 +6,8 @@ import {
   MapPin, Network, Plus, Search, ShieldCheck, SlidersHorizontal, Users, X,
 } from "lucide-react";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { peopleQueryKeys } from "@/lib/people/api";
 
 type Employee = {
   id: string; employeeNumber: string; name: string; email: string; department: string;
@@ -19,6 +20,7 @@ type DirectoryResponse={items:Employee[];page:number;pageSize:number;total:numbe
 function initials(name: string) { return name.split(" ").map((part) => part[0]).slice(0,2).join(""); }
 
 export default function PeopleDirectory() {
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("All departments");
   const [page,setPage]=useState(1);
@@ -29,12 +31,20 @@ export default function PeopleDirectory() {
   const [events,setEvents]=useState<EmployeeEvent[]>([]);
   const [uploading,setUploading]=useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [createError, setCreateError] = useState("");
   const [form, setForm] = useState({employeeNumber:"",firstName:"",lastName:"",joiningDate:"",employmentType:"Full-time",workLocation:"",status:"active"});
+  const employeeFilters = { query, department, page };
   const {data:directory,isLoading:loading,isError:serviceOffline,refetch:refetchEmployees}=useQuery<DirectoryResponse>({
-    queryKey:["people-directory",query,department,page],
-    queryFn:async()=>{const parameters=new URLSearchParams({page:String(page),pageSize:"20"});if(query)parameters.set("q",query);if(department!=="All departments")parameters.set("department",department);const response=await fetch(`/api/v1/hrms/people/employees?${parameters}`);const data=await response.json();if(!response.ok)throw new Error(data.detail||data.error);return data},
+    queryKey:peopleQueryKeys.employees(employeeFilters),
+    queryFn:async()=>{const parameters=new URLSearchParams({page:String(page),pageSize:"20"});if(query)parameters.set("q",query);if(department!=="All departments")parameters.set("department",department);const response=await fetch(`/api/v1/hrms/people/employees?${parameters}`);const data=await response.json();if(!response.ok){const error=data?.error;throw new Error(typeof error==="object"?error.message:data.detail||error||"Employees could not be loaded.")}return data},
+    staleTime:30_000,
+    retry:2,
+    refetchOnWindowFocus:false,
+  });
+  const createMutation=useMutation({
+    mutationFn:async()=>{const response=await fetch("/api/v1/hrms/people/employees",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});const data=await response.json();if(!response.ok){const error=data?.error;throw new Error(typeof error==="object"?error.message:data.detail||error||"Unable to create employee")}return data},
+    onSuccess:async()=>{await queryClient.invalidateQueries({queryKey:["people","employees"]});setCreateOpen(false);setForm({employeeNumber:"",firstName:"",lastName:"",joiningDate:"",employmentType:"Full-time",workLocation:"",status:"active"});setCreateError("")},
+    onError:(error)=>setCreateError(error instanceof Error?error.message:"Unable to create employee"),
   });
   const employees=directory?.items||[];
 
@@ -51,13 +61,7 @@ export default function PeopleDirectory() {
   ],[]);
   const table=useReactTable({data:visible,columns,getCoreRowModel:getCoreRowModel()});
   async function createEmployee(event: React.FormEvent) {
-    event.preventDefault(); setSaving(true); setCreateError("");
-    try {
-      const response=await fetch("/api/v1/hrms/people/employees",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(form)});
-      const data=await response.json(); if(!response.ok)throw new Error(data.detail||data.error);
-      setCreateOpen(false); setForm({employeeNumber:"",firstName:"",lastName:"",joiningDate:"",employmentType:"Full-time",workLocation:"",status:"active"});
-      await refetchEmployees();
-    } catch(e){setCreateError(e instanceof Error?e.message:"Unable to create employee")} finally{setSaving(false)}
+    event.preventDefault(); setCreateError(""); createMutation.mutate();
   }
   async function loadDocuments(employeeId:string){
     setDocumentsLoading(true);
@@ -94,7 +98,7 @@ export default function PeopleDirectory() {
 
       {serviceOffline && (
         <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-[11px] text-amber-700 dark:text-amber-300">
-          <CircleAlert size={15}/><span><b>People service unavailable.</b> Check the gateway and organisation context, then retry.</span>
+          <CircleAlert size={15}/><span className="flex-1"><b>Employees could not be loaded.</b> Check the service connection and try again.</span><button onClick={()=>refetchEmployees()} className="rounded-lg border border-amber-500/30 px-3 py-1.5 font-bold">Retry</button>
         </div>
       )}
 
@@ -165,7 +169,7 @@ export default function PeopleDirectory() {
             <label className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Employment type<select value={form.employmentType} onChange={e=>setForm({...form,employmentType:e.target.value})} className="mt-1.5 h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] px-3 text-xs normal-case tracking-normal"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Intern</option></select></label>
             <label className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Work location<input value={form.workLocation} onChange={e=>setForm({...form,workLocation:e.target.value})} className="mt-1.5 h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] px-3 text-xs normal-case tracking-normal text-[var(--text-primary)]"/></label>
           </div>
-          <button disabled={saving} className="mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#0075de] text-xs font-bold text-white disabled:opacity-50">{saving&&<span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"/>}Create employee</button>
+          <button disabled={createMutation.isPending} className="mt-6 inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[#0075de] text-xs font-bold text-white disabled:opacity-50">{createMutation.isPending&&<span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"/>}{createMutation.isPending?"Creating…":"Create employee"}</button>
         </form>
       </div>}
     </div>

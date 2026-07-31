@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -73,6 +74,8 @@ func main() {
 	}
 	a := &app{db: db, storage: storage}
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", a.health)
+	mux.HandleFunc("GET /ready", a.health)
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /organisations", a.authorize("organisation.manage", a.listOrganisations))
 	mux.HandleFunc("POST /organisations", a.authorize("organisation.manage", a.createOrganisation))
@@ -88,11 +91,15 @@ func main() {
 	mux.HandleFunc("GET /me/team", a.authorize("manager.view_team", a.team))
 	mux.HandleFunc("GET /departments", a.authorize("employee.view", a.listDepartments))
 	mux.HandleFunc("POST /departments", a.authorize("department.manage", a.createDepartment))
+	mux.HandleFunc("GET /departments/{id}", a.authorize("employee.view", a.getDepartment))
 	mux.HandleFunc("PATCH /departments/{id}", a.authorize("department.manage", a.updateDepartment))
+	mux.HandleFunc("PATCH /departments/{id}/status", a.authorize("department.manage", a.updateDepartmentStatus))
 	mux.HandleFunc("DELETE /departments/{id}", a.authorize("department.manage", a.deleteDepartment))
 	mux.HandleFunc("GET /designations", a.authorize("employee.view", a.listDesignations))
 	mux.HandleFunc("POST /designations", a.authorize("designation.manage", a.createDesignation))
+	mux.HandleFunc("GET /designations/{id}", a.authorize("employee.view", a.getDesignation))
 	mux.HandleFunc("PATCH /designations/{id}", a.authorize("designation.manage", a.updateDesignation))
+	mux.HandleFunc("PATCH /designations/{id}/status", a.authorize("designation.manage", a.updateDesignationStatus))
 	mux.HandleFunc("DELETE /designations/{id}", a.authorize("designation.manage", a.deleteDesignation))
 	mux.HandleFunc("POST /documents/upload-url", a.authorizeAny([]string{"documents.upload_self", "documents.manage", "employee.edit"}, a.createDocumentUpload))
 	mux.HandleFunc("GET /documents", a.authorizeAny([]string{"documents.view_self", "documents.manage", "employee.view"}, a.listDocuments))
@@ -435,6 +442,18 @@ func (a *app) audit(ctx context.Context, tx pgx.Tx, ac actor, entity, id, action
 		VALUES($1,$2,$3,$4,$5,$6,$7,nullif($8,'')::inet,$9)`, ac.OrganisationID, ac.UserID, entity, id, action, previous, next, ac.IP, ac.RequestID)
 	return err
 }
+func (a *app) outbox(ctx context.Context, tx pgx.Tx, ac actor, topic, entityID string, data any) error {
+	payload := map[string]any{
+		"entity_id": entityID,
+		"organisation_id": ac.OrganisationID,
+		"actor_user_id": ac.UserID,
+		"request_id": ac.RequestID,
+		"data": data,
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO notifications.outbox(organisation_id,topic,payload) VALUES($1,$2,$3)`,
+		ac.OrganisationID, topic, payload)
+	return err
+}
 
 func (a *app) employeeHistory(w http.ResponseWriter, r *http.Request, ac actor) {
 	a.eventRows(w, r, ac, `SELECT id,event_type,previous_value,new_value,effective_at,recorded_at,actor_user_id,request_id FROM people.employee_history WHERE employee_id=$1 AND organisation_id=$2 ORDER BY recorded_at DESC`)
@@ -543,7 +562,11 @@ func (a *app) team(w http.ResponseWriter, r *http.Request, ac actor) {
 }
 
 func (a *app) listDepartments(w http.ResponseWriter, r *http.Request, ac actor) {
-	rows, err := a.db.Query(r.Context(), `SELECT id,name,code,parent_id,head_employee_id,annual_budget,status,version FROM people.departments WHERE organisation_id=$1 AND deleted_at IS NULL ORDER BY name`, ac.OrganisationID)
+	status := strings.TrimSpace(r.URL.Query().Get("status"))
+	q := "%" + strings.TrimSpace(r.URL.Query().Get("q")) + "%"
+	rows, err := a.db.Query(r.Context(), `SELECT id,organisation_id,name,code,description,parent_id,head_employee_id,annual_budget,status,version,created_at,updated_at
+		FROM people.departments WHERE organisation_id=$1 AND deleted_at IS NULL
+		AND ($2='' OR status::text=$2) AND ($3='%%' OR name ILIKE $3 OR code ILIKE $3) ORDER BY name`, ac.OrganisationID, status, q)
 	if err != nil {
 		dbProblem(w, err)
 		return
@@ -551,11 +574,15 @@ func (a *app) listDepartments(w http.ResponseWriter, r *http.Request, ac actor) 
 	defer rows.Close()
 	writeRows(w, rows)
 }
+func (a *app) getDepartment(w http.ResponseWriter, r *http.Request, ac actor) {
+	a.getReference(w, r, ac, "people.departments")
+}
 func (a *app) createDepartment(w http.ResponseWriter, r *http.Request, ac actor) {
 	var in departmentInput
 	if !decode(w, r, &in) {
 		return
 	}
+	in.Name, in.Code = strings.TrimSpace(in.Name), strings.ToUpper(strings.TrimSpace(in.Code))
 	if in.Name == "" || in.Code == "" {
 		problem(w, 422, "validation_error", "name and code are required")
 		return
@@ -566,7 +593,11 @@ func (a *app) createDepartment(w http.ResponseWriter, r *http.Request, ac actor)
 	a.createReference(w, r, ac, "department", `INSERT INTO people.departments(organisation_id,name,code,description,parent_id,head_employee_id,annual_budget,status) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, in.Name, in.Code, in.Description, in.ParentID, in.HeadEmployeeID, in.AnnualBudget, in.Status)
 }
 func (a *app) listDesignations(w http.ResponseWriter, r *http.Request, ac actor) {
-	rows, err := a.db.Query(r.Context(), `SELECT id,name,code,department_id,parent_id,level,salary_band_min,salary_band_max,status,version FROM people.designations WHERE organisation_id=$1 AND deleted_at IS NULL ORDER BY level,name`, ac.OrganisationID)
+	status := strings.TrimSpace(r.URL.Query().Get("status"))
+	q := "%" + strings.TrimSpace(r.URL.Query().Get("q")) + "%"
+	rows, err := a.db.Query(r.Context(), `SELECT id,organisation_id,name,code,department_id,parent_id,level,salary_band_min,salary_band_max,status,version
+		FROM people.designations WHERE organisation_id=$1 AND deleted_at IS NULL
+		AND ($2='' OR status::text=$2) AND ($3='%%' OR name ILIKE $3 OR code ILIKE $3) ORDER BY level,name`, ac.OrganisationID, status, q)
 	if err != nil {
 		dbProblem(w, err)
 		return
@@ -574,11 +605,15 @@ func (a *app) listDesignations(w http.ResponseWriter, r *http.Request, ac actor)
 	defer rows.Close()
 	writeRows(w, rows)
 }
+func (a *app) getDesignation(w http.ResponseWriter, r *http.Request, ac actor) {
+	a.getReference(w, r, ac, "people.designations")
+}
 func (a *app) createDesignation(w http.ResponseWriter, r *http.Request, ac actor) {
 	var in designationInput
 	if !decode(w, r, &in) {
 		return
 	}
+	in.Name, in.Code = strings.TrimSpace(in.Name), strings.ToUpper(strings.TrimSpace(in.Code))
 	if in.Name == "" || in.Code == "" {
 		problem(w, 422, "validation_error", "name and code are required")
 		return
@@ -595,12 +630,82 @@ func (a *app) updateDepartment(w http.ResponseWriter, r *http.Request, ac actor)
 	}
 	a.updateReference(w, r, ac, "department", "people.departments", in.Name, in.Code, in.Status)
 }
+func (a *app) updateDepartmentStatus(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Status string `json:"status"` }
+	if !decode(w, r, &in) {
+		return
+	}
+	a.updateReferenceStatus(w, r, ac, "department", "people.departments", in.Status)
+}
 func (a *app) updateDesignation(w http.ResponseWriter, r *http.Request, ac actor) {
 	var in designationInput
 	if !decode(w, r, &in) {
 		return
 	}
 	a.updateReference(w, r, ac, "designation", "people.designations", in.Name, in.Code, in.Status)
+}
+func (a *app) updateDesignationStatus(w http.ResponseWriter, r *http.Request, ac actor) {
+	var in struct{ Status string `json:"status"` }
+	if !decode(w, r, &in) {
+		return
+	}
+	a.updateReferenceStatus(w, r, ac, "designation", "people.designations", in.Status)
+}
+func (a *app) getReference(w http.ResponseWriter, r *http.Request, ac actor, table string) {
+	query := `SELECT row_to_json(record) FROM (SELECT * FROM ` + table + ` WHERE id=$1 AND organisation_id=$2 AND deleted_at IS NULL) record`
+	var raw json.RawMessage
+	if err := a.db.QueryRow(r.Context(), query, r.PathValue("id"), ac.OrganisationID).Scan(&raw); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(raw)
+}
+func (a *app) updateReferenceStatus(w http.ResponseWriter, r *http.Request, ac actor, entity, table, status string) {
+	if status != "active" && status != "inactive" && status != "archived" {
+		problem(w, 422, "validation_error", "status must be active, inactive or archived")
+		return
+	}
+	expected, _ := strconv.Atoi(strings.Trim(r.Header.Get("If-Match"), "\""))
+	if expected < 1 {
+		problem(w, 428, "version_required", "If-Match version is required")
+		return
+	}
+	tx, err := a.db.Begin(r.Context())
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	defer tx.Rollback(r.Context())
+	var before, after json.RawMessage
+	if err = tx.QueryRow(r.Context(), `SELECT row_to_json(t) FROM (SELECT id,status,version FROM `+table+` WHERE id=$1 AND organisation_id=$2 AND deleted_at IS NULL FOR UPDATE)t`, r.PathValue("id"), ac.OrganisationID).Scan(&before); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.QueryRow(r.Context(), `UPDATE `+table+` AS target SET status=$4::people.record_status,version=target.version+1,updated_at=now()
+		WHERE target.id=$1 AND target.organisation_id=$2 AND target.version=$3 AND target.deleted_at IS NULL RETURNING row_to_json(target)`,
+		r.PathValue("id"), ac.OrganisationID, expected, status).Scan(&after); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			problem(w, 409, "version_conflict", "record was changed; refresh and retry")
+			return
+		}
+		dbProblem(w, err)
+		return
+	}
+	if err = a.audit(r.Context(), tx, ac, entity, r.PathValue("id"), entity+".status_changed", before, after); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.outbox(r.Context(), tx, ac, "people."+entity+".status_changed.v1", r.PathValue("id"), after); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = tx.Commit(r.Context()); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(after)
 }
 func (a *app) updateReference(w http.ResponseWriter, r *http.Request, ac actor, entity, table, name, code, status string) {
 	expected, _ := strconv.Atoi(strings.Trim(r.Header.Get("If-Match"), "\""))
@@ -679,8 +784,11 @@ func (a *app) createReference(w http.ResponseWriter, r *http.Request, ac actor, 
 		dbProblem(w, err)
 		return
 	}
-	_, err = tx.Exec(r.Context(), `INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,ip_address,request_id) VALUES($1,$2,$3,$4,$5,$6,nullif($7,'')::inet,$8)`, ac.OrganisationID, ac.UserID, entity, id, entity+".created", args, ac.IP, ac.RequestID)
-	if err != nil {
+	if err = a.audit(r.Context(), tx, ac, entity, id, entity+".created", nil, args); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.outbox(r.Context(), tx, ac, "people."+entity+".created.v1", id, map[string]any{"id": id}); err != nil {
 		dbProblem(w, err)
 		return
 	}
@@ -688,7 +796,14 @@ func (a *app) createReference(w http.ResponseWriter, r *http.Request, ac actor, 
 		dbProblem(w, err)
 		return
 	}
-	writeJSON(w, 201, map[string]string{"id": id})
+	table := "people." + entity + "s"
+	var created json.RawMessage
+	if err = a.db.QueryRow(r.Context(), `SELECT row_to_json(record) FROM (SELECT * FROM `+table+` WHERE id=$1 AND organisation_id=$2) record`, id, ac.OrganisationID).Scan(&created); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	_, _ = w.Write(created)
 }
 
 func actorFrom(r *http.Request) (actor, error) {
@@ -725,11 +840,21 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	_ = json.NewEncoder(w).Encode(v)
 }
 func problem(w http.ResponseWriter, status int, code, detail string) {
-	writeJSON(w, status, map[string]any{"error": code, "detail": detail, "status": status})
+	requestID := w.Header().Get("X-Request-Id")
+	writeJSON(w, status, map[string]any{
+		"error": map[string]string{"code": strings.ToUpper(code), "message": detail, "request_id": requestID},
+		"detail": detail,
+		"status": status,
+	})
 }
 func dbProblem(w http.ResponseWriter, err error) {
 	if errors.Is(err, pgx.ErrNoRows) {
 		problem(w, 404, "not_found", "record not found")
+		return
+	}
+	var pgError *pgconn.PgError
+	if errors.As(err, &pgError) && pgError.Code == "23505" {
+		problem(w, 409, "duplicate_code", "A record with this code already exists in the organisation.")
 		return
 	}
 	log.Printf("database error: %v", err)

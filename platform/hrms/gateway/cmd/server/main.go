@@ -30,7 +30,7 @@ type limiter struct {
 }
 
 func main() {
-	people := mustURL(env("PEOPLE_SERVICE_URL", "http://localhost:8081"))
+	people := mustURL(serviceURL("PEOPLE_SERVICE_URL", "http://localhost:8081"))
 	identity := mustURL(env("IDENTITY_SERVICE_URL", "http://localhost:8082"))
 	recruitment := mustURL(env("RECRUITMENT_SERVICE_URL", "http://localhost:8083"))
 	onboarding := mustURL(env("ONBOARDING_SERVICE_URL", "http://localhost:8084"))
@@ -42,6 +42,8 @@ func main() {
 	platform := mustURL(env("PLATFORM_SERVICE_URL", "http://localhost:8090"))
 	rateLimit := &limiter{hits: map[string][]time.Time{}, limit: 120, window: time.Minute, redisURL: strings.TrimRight(os.Getenv("UPSTASH_REDIS_REST_URL"), "/"), redisToken: os.Getenv("UPSTASH_REDIS_REST_TOKEN"), client: &http.Client{Timeout: 2 * time.Second}}
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte(`{"status":"ok","service":"hrms-gateway"}`)) })
+	mux.HandleFunc("GET /ready", func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte(`{"status":"ok","service":"hrms-gateway"}`)) })
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte("ok")) })
 	mux.Handle("/v1/people/", secured(proxy(people, "/v1/people")))
 	mux.Handle("/v1/identity/invitations/", proxy(identity, "/v1/identity"))
@@ -143,6 +145,15 @@ func proxy(target *url.URL, prefix string) http.Handler {
 			r.URL.Path = "/"
 		}
 	}
+	p.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		log.Printf("request_id=%s route=%s upstream=%s error=%v", r.Header.Get("X-Request-Id"), r.URL.Path, target.Host, err)
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-Request-Id", r.Header.Get("X-Request-Id"))
+		w.WriteHeader(http.StatusBadGateway)
+		_ = json.NewEncoder(w).Encode(map[string]any{"error": map[string]string{
+			"code": "PEOPLE_SERVICE_UNAVAILABLE", "message": "The downstream HRMS service is unavailable.", "request_id": r.Header.Get("X-Request-Id"),
+		}})
+	}
 	return p
 }
 
@@ -182,6 +193,15 @@ func env(k, fallback string) string {
 		return v
 	}
 	return fallback
+}
+func serviceURL(key, developmentFallback string) string {
+	if value := strings.TrimSpace(os.Getenv(key)); value != "" {
+		return value
+	}
+	if strings.EqualFold(os.Getenv("APP_ENV"), "production") {
+		log.Fatalf("%s is required in production", key)
+	}
+	return developmentFallback
 }
 func mustURL(v string) *url.URL {
 	u, err := url.Parse(v)

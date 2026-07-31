@@ -114,9 +114,9 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.role = user.role || (account?.provider === "google" ? "CANDIDATE" : "USER");
         token.id = user.id || token.sub || `cand_${Date.now()}`;
-        token.allowed_paths = (user as any).allowed_paths || [];
-        token.organisation_id = (user as any).organisation_id || process.env.DEFAULT_ORGANISATION_ID || "org_default";
-        token.permissions = (user as any).permissions || [];
+        token.allowed_paths = user.allowed_paths || [];
+        token.organisation_id = user.organisation_id || process.env.DEFAULT_ORGANISATION_ID;
+        token.permissions = user.permissions || [];
       }
 
       // Block and invalidate co-admin sessions
