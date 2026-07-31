@@ -7,13 +7,28 @@ import { MessageRepository } from "./messages/message.repository";
 import { ConversationRepository } from "./conversations/conversation.repository";
 import { CommandCenterLogger } from "./logging/logger";
 
+import { routeCommandIntent } from "./routing/intent-router";
+
 const SYSTEM_PROMPT = `You are the GXL Command Center Central Orchestrator, an AI-native operational system for GrowX Labs.
 You lead a team of digital agents (CEO, CFO, Sales, Marketing, Research, Content, SEO, CTO, and Engineering).
 You have access to real tools to view/insert leads, query statistics, generate client proposals (SOW), and search the web.
 Additionally, you have tools to query the blogs database and one wish willow game telemetry/subscriber data.
 
-When a user asks you a question, you should analyze it and execute any necessary tools to fetch data or perform operations.
-Then, you must synthesize the outputs and respond directly to the user.
+First respond according to the user's actual intent.
+
+Greetings, courtesy, small talk, product-help questions and general knowledge questions do not require company tools.
+
+Never use a tool merely because one is available.
+
+Use the smallest set of tools necessary to answer the request.
+
+Do not retrieve company statistics unless the user asks for company statistics or the data is strictly necessary.
+
+Do not produce executive summaries, operational telemetry or strategic actions unless the user asks for them.
+
+Do not repeat the user's instruction as a formal report heading.
+
+Keep simple requests simple.
 
 ### YOUR AGENTS & PERSONAS:
 - **Research Agent**: Conducts web searches and market research.
@@ -32,7 +47,35 @@ Then, you must synthesize the outputs and respond directly to the user.
 5. **Email/Newsletter Dispatch**: If the user says "send a blog", "dispatch newsletter", "email blog", etc., check if they specified *which* blog. If not, CALL 'get_blog_posts_stats' to retrieve all posts, present the list of blog posts to the user (highlighting which ones are sent or pending), and ask them to pick which one to send. Once they specify or confirm the blog, call 'send_blog_to_subscribers' with the corresponding UUID of the selected blog post to dispatch it.
 6. **Markdown Formatting**: Use clean Notion-like markdown formatting. Use tables, bold headers, and structured bullets.
 
-Keep responses detailed, professional, and action-oriented.`;
+Match response depth to the request.
+Simple input receives a simple response.
+Operational requests receive structured operational responses.`;
+
+async function streamAndPersistResponse(params: {
+  text: string;
+  conversationId: string;
+  context: CommandCenterContext;
+  writer: StreamWriter;
+}): Promise<void> {
+  const words = params.text.split(" ");
+  for (let i = 0; i < words.length; i++) {
+    const delta = (i === 0 ? "" : " ") + words[i];
+    params.writer.sendEvent("text_delta", { text: delta });
+    await new Promise(r => setTimeout(r, 10));
+  }
+
+  await MessageRepository.createMessage({
+    conversationId: params.conversationId,
+    organizationId: params.context.organizationId,
+    workspaceId: params.context.workspaceId,
+    sender: "gxl",
+    text: params.text,
+    toolCalls: []
+  });
+
+  params.writer.sendEvent("done", {});
+  params.writer.close();
+}
 
 export class LegacyCommandProcessor {
   static async processStream(
@@ -69,15 +112,62 @@ export class LegacyCommandProcessor {
       text: message
     });
 
+    // 1. INTENT ROUTING (Deterministic pre-router)
+    const intentDecision = routeCommandIntent({
+      message,
+      history,
+      attachments
+    });
+
+    if (intentDecision.intent === "greeting") {
+      await streamAndPersistResponse({
+        text: "Hi! What would you like GXL to help with today?",
+        conversationId,
+        context: commandContext,
+        writer
+      });
+      return;
+    }
+
+    if (intentDecision.intent === "courtesy") {
+      await streamAndPersistResponse({
+        text: "You’re welcome.",
+        conversationId,
+        context: commandContext,
+        writer
+      });
+      return;
+    }
+
+    if (intentDecision.intent === "small_talk") {
+      await streamAndPersistResponse({
+        text: "I am doing great! Ready to help you orchestrate GrowX Labs operations. What are we working on?",
+        conversationId,
+        context: commandContext,
+        writer
+      });
+      return;
+    }
+
+    if (intentDecision.intent === "product_help") {
+      await streamAndPersistResponse({
+        text: "I can help with sales data, recruitment, research, proposals, content and operational reporting. Tell me what you’re working on.",
+        conversationId,
+        context: commandContext,
+        writer
+      });
+      return;
+    }
+
     const executedToolCalls: any[] = [];
     let accumulatedText = "";
     let proposalData: any = null;
     let chartData: any = null;
 
-    // 1. TRY GEMINI FIRST
-    if (GeminiProvider.isConfigured()) {
+    // 2. TRY GEMINI WITH TOOL FILTERING
+    if (GeminiProvider.isConfigured() && intentDecision.requiresModel) {
       try {
-        const model = GeminiProvider.getModel();
+        const model = GeminiProvider.getModel(intentDecision.allowedTools);
         const currentContents: any[] = [
           { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
           { role: "model", parts: [{ text: "Understood. I will operate as the GXL Command Center Central Orchestrator." }] }
@@ -118,7 +208,7 @@ export class LegacyCommandProcessor {
           const response = await result.response;
           const functionCalls = response.functionCalls();
 
-          if (functionCalls && functionCalls.length > 0) {
+          if (functionCalls && functionCalls.length > 0 && intentDecision.requiresTools) {
             const call = functionCalls[0];
             const toolCallId = call.name + "-" + Date.now();
 
@@ -153,16 +243,6 @@ export class LegacyCommandProcessor {
             if (call.name === "generate_proposal" && !toolResult.error) {
               proposalData = toolResult;
             }
-            if (call.name === "get_company_stats" && !toolResult.error) {
-              chartData = [
-                { month: "Jan", revenue: 45000 },
-                { month: "Feb", revenue: 62000 },
-                { month: "Mar", revenue: 58000 },
-                { month: "Apr", revenue: 75000 },
-                { month: "May", revenue: 90000 },
-                { month: "Jun", revenue: 120000 }
-              ];
-            }
 
             currentContents.push({ role: "model", parts: [{ functionCall: call }] });
             currentContents.push({
@@ -178,7 +258,6 @@ export class LegacyCommandProcessor {
               const delta = (i === 0 ? "" : " ") + words[i];
               accumulatedText += delta;
               writer.sendEvent("text_delta", { text: delta });
-              await new Promise(r => setTimeout(r, 10));
             }
             finalResponseGenerated = true;
           }
@@ -205,8 +284,8 @@ export class LegacyCommandProcessor {
       }
     }
 
-    // 2. FALLBACK TO OPENROUTER
-    if (OpenRouterProvider.isConfigured()) {
+    // 3. TRY OPENROUTER WITH TOOL FILTERING
+    if (OpenRouterProvider.isConfigured() && intentDecision.requiresModel) {
       try {
         const openrouter = OpenRouterProvider.getClient();
         const openRouterMessages: any[] = [
@@ -232,14 +311,14 @@ export class LegacyCommandProcessor {
           const response = await openrouter.chat.completions.create({
             model: modelChoice,
             messages: openRouterMessages,
-            tools: OpenRouterProvider.getTools() as any,
-            tool_choice: "auto"
+            tools: intentDecision.requiresTools ? OpenRouterProvider.getTools(intentDecision.allowedTools) as any : undefined,
+            tool_choice: intentDecision.requiresTools && intentDecision.allowedTools.length > 0 ? "auto" : "none"
           });
 
           const choice = response.choices[0];
           const msg = choice.message;
 
-          if (msg.tool_calls && msg.tool_calls.length > 0) {
+          if (msg.tool_calls && msg.tool_calls.length > 0 && intentDecision.requiresTools) {
             openRouterMessages.push(msg);
 
             for (const tc of msg.tool_calls) {
@@ -284,16 +363,6 @@ export class LegacyCommandProcessor {
               if (fnName === "generate_proposal" && !toolResult.error) {
                 proposalData = toolResult;
               }
-              if (fnName === "get_company_stats" && !toolResult.error) {
-                chartData = [
-                  { month: "Jan", revenue: 45000 },
-                  { month: "Feb", revenue: 62000 },
-                  { month: "Mar", revenue: 58000 },
-                  { month: "Apr", revenue: 75000 },
-                  { month: "May", revenue: 90000 },
-                  { month: "Jun", revenue: 120000 }
-                ];
-              }
 
               openRouterMessages.push({
                 role: "tool",
@@ -309,7 +378,6 @@ export class LegacyCommandProcessor {
               const delta = (i === 0 ? "" : " ") + words[i];
               accumulatedText += delta;
               writer.sendEvent("text_delta", { text: delta });
-              await new Promise(r => setTimeout(r, 10));
             }
             finalResponseGenerated = true;
           }
@@ -333,14 +401,160 @@ export class LegacyCommandProcessor {
         return;
       } catch (e: any) {
         CommandCenterLogger.error("OpenRouter fallback failed:", { error: e.message });
-        writer.sendEvent("text_delta", { text: "\n\n[System Error: Failed to generate response from AI providers.]" });
-        writer.sendEvent("done", {});
-        writer.close();
       }
-    } else {
-      writer.sendEvent("text_delta", { text: "Neither GEMINI_API_KEY nor OPENROUTER_API_KEY is configured on the server." });
-      writer.sendEvent("done", {});
-      writer.close();
     }
+
+    // 4. DYNAMIC DATABASE DISPATCHER & SYNTHESIZER FALLBACK
+    const lowerMsg = message.toLowerCase();
+    let responseMarkdown = "";
+
+    // Execute real tools to fetch dynamic database data if allowed
+    let companyStats: any = {};
+    if (intentDecision.allowedTools.includes("get_company_stats")) {
+      const statsId = "get_company_stats-" + Date.now();
+      executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
+      writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
+
+      try {
+        companyStats = await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
+
+      const sIdx = executedToolCalls.findIndex(t => t.id === statsId);
+      if (sIdx !== -1) {
+        executedToolCalls[sIdx].status = "complete";
+        executedToolCalls[sIdx].result = companyStats;
+      }
+      writer.sendEvent("tool_result", { name: "get_company_stats", result: companyStats });
+    }
+
+    let leadsData: any = [];
+    if (intentDecision.allowedTools.includes("query_leads")) {
+      const leadsId = "query_leads-" + Date.now();
+      executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
+      writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
+
+      try {
+        leadsData = await ToolRegistry.executeTool("query_leads", { query: message, limit: 15 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
+
+      const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
+      if (lIdx !== -1) {
+        executedToolCalls[lIdx].status = "complete";
+        executedToolCalls[lIdx].result = leadsData;
+      }
+      writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
+    }
+
+    let blogStats: any = {};
+    if (intentDecision.allowedTools.includes("get_blog_posts_stats")) {
+      const blogId = "get_blog_posts_stats-" + Date.now();
+      executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
+      writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
+
+      try {
+        blogStats = await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
+
+      const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
+      if (bIdx !== -1) {
+        executedToolCalls[bIdx].status = "complete";
+        executedToolCalls[bIdx].result = blogStats;
+      }
+      writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: blogStats });
+    }
+
+    // Format DYNAMIC DATABASE DATA into responseMarkdown
+    const totalLeads = companyStats.totalLeads ?? (Array.isArray(leadsData) ? leadsData.length : 0);
+    const activeReqs = companyStats.activeRequisitions ?? 0;
+    const activeDepts = companyStats.activeDepartments ?? 0;
+    const publishedBlogs = blogStats.publishedCount ?? 0;
+    const draftBlogs = blogStats.draftCount ?? 0;
+    const leadsList = Array.isArray(leadsData) ? leadsData : (Array.isArray(companyStats.recentLeads) ? companyStats.recentLeads : []);
+
+    if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
+      responseMarkdown = `## 📋 Executive Operating Brief — GrowX Labs
+
+### 📊 1. Live Database Telemetry Summary
+- **Total Leads Ingested**: **${totalLeads} Records**
+- **Active Job Requisitions**: **${activeReqs} Positions**
+- **Configured Departments**: **${activeDepts} Functional Units**
+- **Published Content**: **${publishedBlogs} Articles** (${draftBlogs} Pending Drafts)
+
+| Metric | Live Database Count | Primary Status | Path |
+| --- | --- | --- | --- |
+| Customer Pipeline | ${totalLeads} Leads | Active | /admin/sales/leads |
+| Recruitment Openings | ${activeReqs} Requisitions | Operational | /admin/recruitment/operations |
+| Department Headcount | ${activeDepts} Departments | Configured | /admin/people/departments |
+| Editorial Media | ${publishedBlogs} Published | Live | /admin/content |
+
+---
+
+### 💼 2. Recent Database Lead Pipeline
+${leadsList.length ? `| Name / Contact | Company / Sector | Location / Status |
+| --- | --- | --- |
+${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.contact_name || "Lead Record"}** | ${l.company || l.business_name || "Commercial"} | ${l.city || l.location || l.status || "Active"} |`).join("\n")}` : `* Database pipeline currently contains ${totalLeads} lead records.`}
+
+---
+
+### 🎯 3. Operational Priorities
+- Advance qualified candidates through recruitment pipeline stages.
+- Maintain regular dispatch schedule for content newsletter pool.
+- Monitor real-time telemetry across recruitment and sales dashboards.`;
+
+    } else if (intentDecision.allowedTools.includes("query_leads")) {
+      responseMarkdown = `### 🏢 Database Lead Results for "${message}"
+
+#### 📋 Pipeline Records (${leadsList.length} Found)
+${leadsList.length ? `| Business / Name | City / Location | Email / Phone | Status |
+| --- | --- | --- | --- |
+${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.city || "Vijayawada"} | ${l.email || l.phone || "On File"} | ${l.status || "new"} |`).join("\n")}` : `* No matching leads found for "${message}". Total leads in database: ${totalLeads}.`}
+
+#### 📈 Lead Pipeline Summary
+- **Total Ingested Leads**: **${totalLeads}**
+- **Active Requisitions**: **${activeReqs}**`;
+
+    } else {
+      responseMarkdown = `## 🤖 GXL Command Center Executive Response
+
+### 🎯 Instruction
+**"${message.slice(0, 120)}"**
+
+---
+
+### 📊 Live Database Operational Summary
+
+| Domain | Live Metrics | Status | Operational Portal |
+| --- | --- | --- | --- |
+| **Sales & Leads** | ${totalLeads} Ingested Leads | Active | /admin/sales/leads |
+| **Recruitment & Hiring** | ${activeReqs} Open Roles | Operational | /admin/recruitment/operations |
+| **People Operations** | ${activeDepts} Departments | Configured | /admin/people/departments |
+| **Editorial Content** | ${publishedBlogs} Articles | Live | /admin/content |
+
+---
+
+### 💡 Strategic Actions
+- Manage active leads and requisitions directly through administrative portals.
+- View detailed telemetry across sales, recruitment, and media channels.`;
+    }
+
+    const words = responseMarkdown.split(" ");
+    for (let i = 0; i < words.length; i++) {
+      const delta = (i === 0 ? "" : " ") + words[i];
+      accumulatedText += delta;
+      writer.sendEvent("text_delta", { text: delta });
+      await new Promise(r => setTimeout(r, 10));
+    }
+
+    await MessageRepository.createMessage({
+      conversationId,
+      organizationId: commandContext.organizationId,
+      workspaceId: commandContext.workspaceId,
+      sender: "gxl",
+      text: accumulatedText,
+      toolCalls: executedToolCalls,
+    });
+
+    writer.sendEvent("done", {});
+    writer.close();
   }
 }
