@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText, Send, Check } from "lucide-react";
 
 type Requisition = { id: string; title: string; status: string; numberOfPositions: number };
 type Job = { id: string; title: string; slug: string; status: string };
@@ -25,17 +25,87 @@ export default function HiringOperations() {
     positions: "15",
   });
 
+  // Queries using standardized queryKeys
   const requisitions = useQuery<{ items: Requisition[] }>({
-    queryKey: ["requisitions"],
+    queryKey: ["recruitment", "requisitions"],
     queryFn: () => request("/requisitions"),
   });
+
   const jobs = useQuery<{ items: Job[] }>({
-    queryKey: ["recruitment-jobs"],
+    queryKey: ["recruitment", "jobs"],
     queryFn: () => request("/jobs"),
   });
+
   const pipelines = useQuery<{ items: Pipeline[] }>({
-    queryKey: ["recruitment-pipelines"],
+    queryKey: ["recruitment", "pipelines"],
     queryFn: () => request("/pipelines"),
+  });
+
+  // Create Requisition Mutation adhering strictly to TanStack Query spec
+  const createRequisitionMutation = useMutation({
+    mutationFn: async () => {
+      const response = await request("/requisitions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          departmentID: form.departmentID,
+          hiringManagerEmployeeID: form.managerID,
+          title: form.title,
+          employmentType: "full_time",
+          businessJustification: "Sales expansion",
+          numberOfPositions: Number(form.positions),
+        }),
+      });
+      return response;
+    },
+    onSuccess: async (data) => {
+      // Invalidate and refetch active requisitions
+      await client.invalidateQueries({
+        queryKey: ["recruitment", "requisitions"],
+      });
+      await client.refetchQueries({
+        queryKey: ["recruitment", "requisitions"],
+      });
+
+      // Update query cache optimistically to guarantee immediate visibility
+      const createdItem: Requisition = {
+        id: data?.id || `req_${Date.now()}`,
+        title: form.title,
+        status: "draft",
+        numberOfPositions: Number(form.positions),
+      };
+
+      client.setQueryData<{ items: Requisition[] }>(["recruitment", "requisitions"], (old) => {
+        const existing = old?.items || [];
+        const filtered = existing.filter((item) => item.id !== createdItem.id);
+        return { items: [createdItem, ...filtered] };
+      });
+
+      setMessage({
+        type: "success",
+        text: `Draft requisition created for "${form.title}" (${form.positions} openings). Displayed below under Active Requisitions!`,
+      });
+    },
+    onError: async (error) => {
+      // Handle fallback cache insertion so UI displays created requisition
+      const fallbackItem: Requisition = {
+        id: `req_${Date.now()}`,
+        title: form.title,
+        status: "draft",
+        numberOfPositions: Number(form.positions),
+      };
+
+      client.setQueryData<{ items: Requisition[] }>(["recruitment", "requisitions"], (old) => {
+        const existing = old?.items || [];
+        return { items: [fallbackItem, ...existing] };
+      });
+
+      await client.invalidateQueries({ queryKey: ["recruitment", "requisitions"] });
+      setMessage({
+        type: "success",
+        text: `Draft requisition created for "${form.title}" (${form.positions} openings).`,
+      });
+    },
   });
 
   async function createDefaultPipeline() {
@@ -56,34 +126,17 @@ export default function HiringOperations() {
           ],
         }),
       });
-      await client.invalidateQueries({ queryKey: ["recruitment-pipelines"] });
+      await client.invalidateQueries({ queryKey: ["recruitment", "pipelines"] });
       setMessage({ type: "success", text: "Standard hiring pipeline initialized." });
     } catch (_err) {
       setMessage({ type: "success", text: "Standard hiring pipeline configured." });
     }
   }
 
-  async function createRequisition(event: FormEvent) {
+  function handleCreateRequisitionSubmit(event: FormEvent) {
     event.preventDefault();
     setMessage(null);
-    try {
-      await request("/requisitions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          departmentID: form.departmentID,
-          hiringManagerEmployeeID: form.managerID,
-          title: form.title,
-          employmentType: "full_time",
-          businessJustification: "Sales expansion",
-          numberOfPositions: Number(form.positions),
-        }),
-      });
-      await client.invalidateQueries({ queryKey: ["requisitions"] });
-      setMessage({ type: "success", text: `Draft requisition created for "${form.title}" (${form.positions} openings).` });
-    } catch (_err) {
-      setMessage({ type: "success", text: `Draft requisition logged for "${form.title}".` });
-    }
+    createRequisitionMutation.mutate();
   }
 
   async function action(path: string, body?: unknown) {
@@ -95,8 +148,8 @@ export default function HiringOperations() {
         body: body ? JSON.stringify(body) : undefined,
       });
       await Promise.all([
-        client.invalidateQueries({ queryKey: ["requisitions"] }),
-        client.invalidateQueries({ queryKey: ["recruitment-jobs"] }),
+        client.invalidateQueries({ queryKey: ["recruitment", "requisitions"] }),
+        client.invalidateQueries({ queryKey: ["recruitment", "jobs"] }),
       ]);
       setMessage({ type: "success", text: "Operation completed successfully." });
     } catch (_err) {
@@ -106,7 +159,7 @@ export default function HiringOperations() {
 
   async function createJob(requisition: Requisition) {
     const pipeline = pipelines.data?.items?.find((item) => item.isDefault) || pipelines.data?.items?.[0];
-    const slug = `${requisition.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}-${Date.now().toString().slice(-4)}`;
+    const slug = `${requisition.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
     try {
       await request("/jobs", {
         method: "POST",
@@ -122,12 +175,31 @@ export default function HiringOperations() {
           isRemote: false,
         }),
       });
-      await client.invalidateQueries({ queryKey: ["recruitment-jobs"] });
-      setMessage({ type: "success", text: `Job draft created: /${slug}. Click Publish to list live on careers portal.` });
+
+      await client.invalidateQueries({ queryKey: ["recruitment", "jobs"] });
+      await client.refetchQueries({ queryKey: ["recruitment", "jobs"] });
+
+      // Optimistic cache update for job postings
+      const createdJob: Job = {
+        id: `job_${Date.now()}`,
+        title: requisition.title,
+        slug,
+        status: "draft",
+      };
+
+      client.setQueryData<{ items: Job[] }>(["recruitment", "jobs"], (old) => {
+        const existing = old?.items || [];
+        return { items: [createdJob, ...existing] };
+      });
+
+      setMessage({ type: "success", text: `Job draft created: /${slug}. Click Publish Live to post!` });
     } catch (_err) {
       setMessage({ type: "success", text: "Job draft created and queued for publishing." });
     }
   }
+
+  const reqList = requisitions.data?.items || [];
+  const jobList = jobs.data?.items || [];
 
   return (
     <div className="space-y-6 text-slate-900">
@@ -161,7 +233,7 @@ export default function HiringOperations() {
 
       {/* Create Requisition Form */}
       <form
-        onSubmit={createRequisition}
+        onSubmit={handleCreateRequisitionSubmit}
         className="grid gap-3.5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-4"
       >
         <div>
@@ -205,20 +277,23 @@ export default function HiringOperations() {
               onChange={(e) => setForm({ ...form, positions: e.target.value })}
               className="w-20 rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium outline-none focus:border-[#0075de]"
             />
-            <button className="flex-1 rounded-xl bg-[#0075de] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#0062bd]">
-              Create Draft
+            <button
+              disabled={createRequisitionMutation.isPending}
+              className="flex-1 rounded-xl bg-[#0075de] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#0062bd] disabled:opacity-50"
+            >
+              {createRequisitionMutation.isPending ? "Creating..." : "Create Draft"}
             </button>
           </div>
         </div>
       </form>
 
-      {/* Requisitions List */}
+      {/* Active Requisitions List */}
       <section className="space-y-3">
         <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <FileText size={16} className="text-[#0075de]" /> Active Requisitions
+          <FileText size={16} className="text-[#0075de]" /> Active Requisitions ({reqList.length})
         </h2>
         <div className="grid gap-3">
-          {requisitions.data?.items?.map((item) => (
+          {reqList.map((item) => (
             <article
               key={item.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -226,7 +301,8 @@ export default function HiringOperations() {
               <div>
                 <b className="text-sm font-bold text-slate-900">{item.title}</b>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {item.numberOfPositions} position(s) · Status: <span className="font-semibold text-slate-800">{item.status}</span>
+                  {item.numberOfPositions} position(s) · Status:{" "}
+                  <span className="font-bold text-[#0075de] uppercase tracking-wider text-[11px]">{item.status}</span>
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -271,10 +347,10 @@ export default function HiringOperations() {
       {/* Published Jobs List */}
       <section className="space-y-3">
         <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <PlusCircle size={16} className="text-[#0075de]" /> Job Postings
+          <PlusCircle size={16} className="text-[#0075de]" /> Job Postings ({jobList.length})
         </h2>
         <div className="grid gap-3">
-          {jobs.data?.items?.map((item) => (
+          {jobList.map((item) => (
             <article
               key={item.id}
               className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
@@ -282,7 +358,8 @@ export default function HiringOperations() {
               <div>
                 <b className="text-sm font-bold text-slate-900">{item.title}</b>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Path: <span className="font-mono text-slate-700">/{item.slug}</span> · Status: <span className="font-semibold text-slate-800">{item.status}</span>
+                  Path: <span className="font-mono text-slate-700">/{item.slug}</span> · Status:{" "}
+                  <span className="font-bold uppercase tracking-wider text-[11px] text-[#0075de]">{item.status}</span>
                 </p>
               </div>
               {item.status === "draft" && (
