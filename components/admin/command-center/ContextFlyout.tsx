@@ -116,17 +116,19 @@ export function ContextFlyout({ open, mode, activity, onClose, onMode, onUnreadC
   }
 
   return (
-    <aside ref={panelRef} tabIndex={-1} className="fixed inset-y-0 right-0 z-40 flex w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform dark:border-slate-800 dark:bg-slate-950 sm:w-96" aria-label="Command Center details panel">
+    <aside ref={panelRef} tabIndex={-1} className="relative z-30 flex h-full w-[330px] shrink-0 flex-col border-l border-slate-200 bg-white shadow-sm transition-all dark:border-slate-800 dark:bg-slate-950" aria-label="Command Center details panel">
       {/* Header */}
-      <header className="flex h-14 items-center justify-between border-b border-slate-100 px-4 dark:border-slate-800">
-        <nav className="flex gap-1" aria-label="Details view tabs">
+      <header className="flex h-14 items-center justify-between border-b border-slate-200 px-3.5 dark:border-slate-800">
+        <nav className="flex gap-1 overflow-x-auto py-1" aria-label="Details view tabs">
           {(["activity", "approvals", "artifacts", "memory", "notifications"] as const).map((tab) => (
-            <button key={tab} onClick={() => onMode(tab)} className={cn("rounded-lg px-2.5 py-1.5 text-xs font-semibold capitalize transition", mode === tab ? "bg-slate-100 text-blue-600 dark:bg-slate-800 dark:text-blue-400" : "text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900")}>
+            <button key={tab} onClick={() => onMode(tab)} className={cn("rounded-lg px-2 py-1 text-[11px] font-bold capitalize transition", mode === tab ? "bg-blue-50 text-[#0075de] dark:bg-slate-800 dark:text-blue-400 border border-blue-100" : "text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900")}>
               {tab}
             </button>
           ))}
         </nav>
-        <button onClick={onClose} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"><X size={16} /></button>
+        <button onClick={onClose} title="Close Panel" className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 bg-slate-50 transition">
+          <X size={15} />
+        </button>
       </header>
 
       {/* Content Area */}

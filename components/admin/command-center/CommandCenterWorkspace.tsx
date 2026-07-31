@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Menu, PanelRight, Search } from "lucide-react";
+import { Bell, Menu, PanelLeft, PanelRight, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AgentPresence } from "./AgentPresence";
 import { CommandComposer } from "./CommandComposer";
@@ -9,6 +9,7 @@ import { ContextFlyout } from "./ContextFlyout";
 import { MessageThread } from "./MessageThread";
 import type { ActivityItem, AgentState, CommandMessage, ComposerAttachment, ConversationSummary, FlyoutMode, ToolActivity } from "./command-center.types";
 import { consumeSSEChunk, record, safeString } from "./sse";
+import { cn } from "@/lib/utils";
 
 export function CommandCenterWorkspace() {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
@@ -18,7 +19,7 @@ export function CommandCenterWorkspace() {
   const [agentState, setAgentState] = useState<AgentState>("idle");
   const [agentSummary, setAgentSummary] = useState("Ready for an instruction");
   const [busy, setBusy] = useState(false);
-  const [sidebar, setSidebar] = useState(false);
+  const [sidebar, setSidebar] = useState(true);
   const [flyout, setFlyout] = useState(false);
   const [flyoutMode, setFlyoutMode] = useState<FlyoutMode>("activity");
   const [unread, setUnread] = useState(0);
@@ -274,23 +275,42 @@ export function CommandCenterWorkspace() {
       />
 
       <section className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 px-3 sm:px-4">
-          <button onClick={() => setSidebar(true)} className="grid size-9 place-items-center rounded-lg hover:bg-slate-100 md:hidden" aria-label="Open navigation"><Menu size={18} /></button>
+        <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-slate-200 px-3 sm:px-4">
+          <button
+            onClick={() => setSidebar((prev) => !prev)}
+            className={cn("grid size-9 place-items-center rounded-lg border transition", sidebar ? "bg-blue-50 text-[#0075de] border-blue-200" : "text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100")}
+            title="Toggle Left Sidebar"
+          >
+            <PanelLeft size={17} />
+          </button>
+
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-sm font-semibold text-slate-900">{activeTitle}</h1>
-            <p className="truncate text-[10px] text-slate-400">Workspace defaults active</p>
+            <h1 className="truncate text-sm font-bold text-slate-900">{activeTitle}</h1>
+            <p className="truncate text-[10px] text-slate-400 font-medium">Workspace defaults active</p>
           </div>
+
           <div className="hidden min-w-44 sm:block"><AgentPresence name="GXL Orchestrator" state={agentState} summary={agentSummary} /></div>
+          
           <button className="grid size-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Search conversation"><Search size={17} /></button>
+          
           <button onClick={() => { setFlyoutMode("notifications"); setFlyout(true); }} className="relative grid size-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Open notifications">
             <Bell size={17} />
             {unread > 0 && <span className="absolute right-1 top-1 size-2 rounded-full bg-red-500" />}
           </button>
-          <button onClick={() => setFlyout((value) => !value)} className="grid size-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Toggle context panel"><PanelRight size={17} /></button>
+
+          <button
+            onClick={() => setFlyout((value) => !value)}
+            className={cn("grid size-9 place-items-center rounded-lg border transition", flyout ? "bg-blue-50 text-[#0075de] border-blue-200" : "text-slate-500 border-slate-200 bg-slate-50 hover:bg-slate-100")}
+            title="Toggle Right Panel"
+          >
+            <PanelRight size={17} />
+          </button>
         </header>
+
         <div className="min-h-0 flex-1 overflow-y-auto" aria-live="polite"><MessageThread messages={messages} busy={busy} onSuggestion={(text) => void submit(text, [])} /></div>
         <CommandComposer busy={busy} canRetry={Boolean(lastSubmission)} onSubmit={submit} onStop={stop} onRetry={() => { if (lastSubmission) void submit(lastSubmission.text, lastSubmission.attachments); }} />
       </section>
+
       <ContextFlyout open={flyout} mode={flyoutMode} activity={activity} onClose={closeFlyout} onMode={setFlyoutMode} onUnreadChange={setUnread} />
     </div>
   );
