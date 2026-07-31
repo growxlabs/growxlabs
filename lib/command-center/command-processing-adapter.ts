@@ -318,67 +318,79 @@ export class LegacyCommandProcessor {
 
     // 3. DYNAMIC DATABASE DISPATCHER & SYNTHESIZER
     const lowerMsg = message.toLowerCase();
+    const cleanMsg = lowerMsg.trim().replace(/[^\w\s]/g, "");
+    const isGreeting = /^(hi+|hello|hey|greetings|sup|yo|howdy|hola|hlo|hii?\s*(bro|there|man)?|good\s*(morning|afternoon|evening))$/i.test(cleanMsg);
+
     let responseMarkdown = "";
 
-    // Execute real tools to fetch dynamic database data
-    const statsId = "get_company_stats-" + Date.now();
-    executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
-    writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
+    if (isGreeting) {
+      responseMarkdown = `Hello! 👋 I am the **GXL Command Center Central Orchestrator**.
 
-    let companyStats: any = {};
-    try {
-      companyStats = await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-    } catch (_e) {}
+How can I assist you with your operations today? You can ask me to:
+- 📊 **Query Lead Database**: View, search, or add sales leads.
+- 📜 **Generate Client Proposals**: Draft Scopes of Work (SOW) & package pricing.
+- 📈 **Company Telemetry**: Check job requisitions, departments, and content stats.
+- 🌐 **Web Research**: Perform live market research and competitor searches.`;
+    } else {
+      // Execute real tools to fetch dynamic database data for operational queries
+      const statsId = "get_company_stats-" + Date.now();
+      executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
+      writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
 
-    const sIdx = executedToolCalls.findIndex(t => t.id === statsId);
-    if (sIdx !== -1) {
-      executedToolCalls[sIdx].status = "complete";
-      executedToolCalls[sIdx].result = companyStats;
-    }
-    writer.sendEvent("tool_result", { name: "get_company_stats", result: companyStats });
+      let companyStats: any = {};
+      try {
+        companyStats = await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
 
-    const leadsId = "query_leads-" + Date.now();
-    executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
-    writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
+      const sIdx = executedToolCalls.findIndex(t => t.id === statsId);
+      if (sIdx !== -1) {
+        executedToolCalls[sIdx].status = "complete";
+        executedToolCalls[sIdx].result = companyStats;
+      }
+      writer.sendEvent("tool_result", { name: "get_company_stats", result: companyStats });
 
-    let leadsData: any = [];
-    try {
-      leadsData = await ToolRegistry.executeTool("query_leads", { query: message, limit: 15 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-    } catch (_e) {}
+      const leadsId = "query_leads-" + Date.now();
+      executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
+      writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
 
-    const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
-    if (lIdx !== -1) {
-      executedToolCalls[lIdx].status = "complete";
-      executedToolCalls[lIdx].result = leadsData;
-    }
-    writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
+      let leadsData: any = [];
+      try {
+        leadsData = await ToolRegistry.executeTool("query_leads", { query: message, limit: 15 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
 
-    const blogId = "get_blog_posts_stats-" + Date.now();
-    executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
-    writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
+      const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
+      if (lIdx !== -1) {
+        executedToolCalls[lIdx].status = "complete";
+        executedToolCalls[lIdx].result = leadsData;
+      }
+      writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
 
-    let blogStats: any = {};
-    try {
-      blogStats = await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-    } catch (_e) {}
+      const blogId = "get_blog_posts_stats-" + Date.now();
+      executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
+      writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
 
-    const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
-    if (bIdx !== -1) {
-      executedToolCalls[bIdx].status = "complete";
-      executedToolCalls[bIdx].result = blogStats;
-    }
-    writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: blogStats });
+      let blogStats: any = {};
+      try {
+        blogStats = await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+      } catch (_e) {}
 
-    // Format DYNAMIC DATABASE DATA into responseMarkdown
-    const totalLeads = companyStats.totalLeads ?? (Array.isArray(leadsData) ? leadsData.length : 0);
-    const activeReqs = companyStats.activeRequisitions ?? 0;
-    const activeDepts = companyStats.activeDepartments ?? 0;
-    const publishedBlogs = blogStats.publishedCount ?? 0;
-    const draftBlogs = blogStats.draftCount ?? 0;
-    const leadsList = Array.isArray(leadsData) ? leadsData : (Array.isArray(companyStats.recentLeads) ? companyStats.recentLeads : []);
+      const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
+      if (bIdx !== -1) {
+        executedToolCalls[bIdx].status = "complete";
+        executedToolCalls[bIdx].result = blogStats;
+      }
+      writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: blogStats });
 
-    if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
-      responseMarkdown = `## 📋 Executive Operating Brief — GrowX Labs
+      // Format DYNAMIC DATABASE DATA into responseMarkdown
+      const totalLeads = companyStats.totalLeads ?? (Array.isArray(leadsData) ? leadsData.length : 0);
+      const activeReqs = companyStats.activeRequisitions ?? 0;
+      const activeDepts = companyStats.activeDepartments ?? 0;
+      const publishedBlogs = blogStats.publishedCount ?? 0;
+      const draftBlogs = blogStats.draftCount ?? 0;
+      const leadsList = Array.isArray(leadsData) ? leadsData : (Array.isArray(companyStats.recentLeads) ? companyStats.recentLeads : []);
+
+      if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
+        responseMarkdown = `## 📋 Executive Operating Brief — GrowX Labs
 
 ### 📊 1. Live Database Telemetry Summary
 - **Total Leads Ingested**: **${totalLeads} Records**
@@ -407,8 +419,8 @@ ${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.co
 - Maintain regular dispatch schedule for content newsletter pool.
 - Monitor real-time telemetry across recruitment and sales dashboards.`;
 
-    } else if (lowerMsg.includes("lead") || lowerMsg.includes("realestate") || lowerMsg.includes("property")) {
-      responseMarkdown = `### 🏢 Database Lead Results for "${message}"
+      } else if (lowerMsg.includes("lead") || lowerMsg.includes("realestate") || lowerMsg.includes("property")) {
+        responseMarkdown = `### 🏢 Database Lead Results for "${message}"
 
 #### 📋 Pipeline Records (${leadsList.length} Found)
 ${leadsList.length ? `| Business / Name | City / Location | Email / Phone | Status |
@@ -419,15 +431,15 @@ ${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.
 - **Total Ingested Leads**: **${totalLeads}**
 - **Active Requisitions**: **${activeReqs}**`;
 
-    } else {
-      responseMarkdown = `## 🤖 GXL Command Center Executive Response
+      } else {
+        responseMarkdown = `## 🤖 GXL Command Center Response
 
 ### 🎯 Instruction
 **"${message.slice(0, 120)}"**
 
 ---
 
-### 📊 Live Database Operational Summary
+### 📊 Operational Summary
 
 | Domain | Live Metrics | Status | Operational Portal |
 | --- | --- | --- | --- |
@@ -441,6 +453,7 @@ ${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.
 ### 💡 Strategic Actions
 - Manage active leads and requisitions directly through administrative portals.
 - View detailed telemetry across sales, recruitment, and media channels.`;
+      }
     }
 
     const words = responseMarkdown.split(" ");
