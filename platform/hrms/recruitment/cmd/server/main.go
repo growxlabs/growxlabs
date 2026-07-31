@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -39,16 +40,20 @@ func main() {
 	}
 	a := &app{db: db, peopleURL: strings.TrimRight(env("PEOPLE_SERVICE_URL", "http://localhost:8081"), "/"), serviceActor: mustEnv("RECRUITMENT_SERVICE_ACTOR_ID")}
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", a.health)
+	mux.HandleFunc("GET /ready", a.health)
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /public/jobs", a.publicJobs)
 	mux.HandleFunc("GET /public/jobs/{slug}", a.publicJob)
 	mux.HandleFunc("POST /public/jobs/{slug}/applications", a.apply)
 	mux.HandleFunc("GET /requisitions", a.authorize("requisition.create", a.listRequisitions))
 	mux.HandleFunc("POST /requisitions", a.authorize("requisition.create", a.createRequisition))
+	mux.HandleFunc("GET /requisitions/{id}", a.authorize("requisition.create", a.getRequisition))
 	mux.HandleFunc("POST /requisitions/{id}/submit", a.authorize("requisition.create", a.submitRequisition))
 	mux.HandleFunc("POST /requisitions/{id}/approve", a.authorizeAny([]string{"requisition.approve_department", "requisition.approve_hr"}, a.approveRequisition))
 	mux.HandleFunc("GET /jobs", a.authorize("candidate.view", a.listJobs))
 	mux.HandleFunc("POST /jobs", a.authorize("job.create", a.createJob))
+	mux.HandleFunc("GET /jobs/{id}", a.authorize("candidate.view", a.getJob))
 	mux.HandleFunc("PATCH /jobs/{id}", a.authorize("job.edit", a.updateJob))
 	mux.HandleFunc("POST /jobs/{id}/publish", a.authorize("job.publish", a.publishJob))
 	mux.HandleFunc("GET /candidates", a.authorize("candidate.view", a.listCandidates))
@@ -135,11 +140,11 @@ func (a *app) publicJob(w http.ResponseWriter, r *http.Request) {
 }
 func (a *app) apply(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		OrganisationID, FirstName, LastName, Email, Phone, Location, CoverLetter, LinkedInURL, GitHubURL, PortfolioURL, CurrentCompany, Source string
-		NoticePeriodDays                                                                                                                       *int
-		ExpectedSalary                                                                                                                         *float64
-		Consent                                                                                                                                bool
-		Resume                                                                                                                                 *struct {
+		FirstName, LastName, Email, Phone, Location, CoverLetter, LinkedInURL, GitHubURL, PortfolioURL, CurrentCompany, Source string
+		NoticePeriodDays                                                                                                       *int
+		ExpectedSalary                                                                                                         *float64
+		Consent                                                                                                                bool
+		Resume                                                                                                                 *struct {
 			Name, ContentType, ChecksumSHA256 string
 			SizeBytes                         int64
 		}
@@ -147,8 +152,19 @@ func (a *app) apply(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &in) {
 		return
 	}
-	if !in.Consent || in.OrganisationID == "" || in.FirstName == "" || in.LastName == "" || !strings.Contains(in.Email, "@") {
-		problem(w, 422, "validation_error", "identity, organisation and consent are required")
+	organisationID := strings.TrimSpace(r.URL.Query().Get("organisationId"))
+	idempotencyKey := strings.TrimSpace(r.Header.Get("Idempotency-Key"))
+	if !in.Consent || organisationID == "" || in.FirstName == "" || in.LastName == "" || !strings.Contains(in.Email, "@") {
+		problem(w, 422, "validation_error", "identity and recruitment consent are required")
+		return
+	}
+	if idempotencyKey == "" || len(idempotencyKey) > 255 {
+		problem(w, 400, "idempotency_key_required", "A valid Idempotency-Key header is required")
+		return
+	}
+	if in.Resume != nil && (in.Resume.SizeBytes > 10*1024*1024 ||
+		(in.Resume.ContentType != "application/pdf" && in.Resume.ContentType != "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+		problem(w, 422, "invalid_resume", "Resume must be PDF or DOCX and no larger than 10 MB")
 		return
 	}
 	tx, err := a.db.Begin(r.Context())
@@ -158,23 +174,55 @@ func (a *app) apply(w http.ResponseWriter, r *http.Request) {
 	}
 	defer tx.Rollback(r.Context())
 	var jobID, stageID, candidateID, applicationID string
-	err = tx.QueryRow(r.Context(), `SELECT j.id,s.id FROM recruitment.jobs j JOIN recruitment.pipeline_stages s ON s.pipeline_id=j.pipeline_id WHERE j.organisation_id=$1 AND j.slug=$2 AND j.status='published' AND s.position=(SELECT min(position) FROM recruitment.pipeline_stages WHERE pipeline_id=j.pipeline_id)`, in.OrganisationID, r.PathValue("slug")).Scan(&jobID, &stageID)
+	err = tx.QueryRow(r.Context(), `SELECT j.id,s.id FROM recruitment.jobs j JOIN recruitment.pipeline_stages s ON s.pipeline_id=j.pipeline_id WHERE j.organisation_id=$1 AND j.slug=$2 AND j.status='published' AND s.position=(SELECT min(position) FROM recruitment.pipeline_stages WHERE pipeline_id=j.pipeline_id)`, organisationID, r.PathValue("slug")).Scan(&jobID, &stageID)
 	if err != nil {
 		dbProblem(w, err)
 		return
 	}
-	err = tx.QueryRow(r.Context(), `INSERT INTO recruitment.candidate_profiles(organisation_id,email,first_name,last_name,phone,location,current_company,linkedin_url,github_url,portfolio_url,consent_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,now()) ON CONFLICT(organisation_id,email) DO UPDATE SET first_name=excluded.first_name,last_name=excluded.last_name,phone=coalesce(excluded.phone,recruitment.candidate_profiles.phone),updated_at=now(),version=recruitment.candidate_profiles.version+1 RETURNING id`, in.OrganisationID, strings.ToLower(in.Email), in.FirstName, in.LastName, in.Phone, in.Location, in.CurrentCompany, in.LinkedInURL, in.GitHubURL, in.PortfolioURL).Scan(&candidateID)
+	reservation, err := tx.Exec(r.Context(), `INSERT INTO recruitment.application_idempotency(organisation_id,idempotency_key,job_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING`, organisationID, idempotencyKey, jobID)
 	if err != nil {
 		dbProblem(w, err)
 		return
 	}
-	err = tx.QueryRow(r.Context(), `INSERT INTO recruitment.job_applications(organisation_id,candidate_id,job_id,current_stage_id,cover_letter,notice_period_days,expected_salary,source) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, in.OrganisationID, candidateID, jobID, stageID, in.CoverLetter, in.NoticePeriodDays, in.ExpectedSalary, in.Source).Scan(&applicationID)
+	if reservation.RowsAffected() == 0 {
+		var replay []byte
+		err = tx.QueryRow(r.Context(), `SELECT response_body FROM recruitment.application_idempotency WHERE organisation_id=$1 AND idempotency_key=$2 AND expires_at>now()`, organisationID, idempotencyKey).Scan(&replay)
+		if err != nil || len(replay) == 0 {
+			problem(w, 409, "application_in_progress", "An application with this idempotency key is already being processed")
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(replay)
+		return
+	}
+	err = tx.QueryRow(r.Context(), `INSERT INTO recruitment.candidate_profiles(organisation_id,email,first_name,last_name,phone,location,current_company,linkedin_url,github_url,portfolio_url,consent_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,now()) ON CONFLICT(organisation_id,email) DO UPDATE SET first_name=excluded.first_name,last_name=excluded.last_name,phone=coalesce(excluded.phone,recruitment.candidate_profiles.phone),updated_at=now(),version=recruitment.candidate_profiles.version+1 RETURNING id`, organisationID, strings.ToLower(strings.TrimSpace(in.Email)), strings.TrimSpace(in.FirstName), strings.TrimSpace(in.LastName), in.Phone, in.Location, in.CurrentCompany, in.LinkedInURL, in.GitHubURL, in.PortfolioURL).Scan(&candidateID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	err = tx.QueryRow(r.Context(), `INSERT INTO recruitment.job_applications(organisation_id,candidate_id,job_id,current_stage_id,cover_letter,notice_period_days,expected_salary,source) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, organisationID, candidateID, jobID, stageID, in.CoverLetter, in.NoticePeriodDays, in.ExpectedSalary, in.Source).Scan(&applicationID)
 	if err != nil {
 		dbProblem(w, err)
 		return
 	}
 	requestID := requestID(r)
-	if err = a.activityAudit(r.Context(), tx, actor{UserID: a.serviceActor, OrganisationID: in.OrganisationID, RequestID: requestID}, candidateID, applicationID, "job_application", applicationID, "candidate.applied", map[string]any{"jobId": jobID}); err != nil {
+	publicActor := actor{UserID: a.serviceActor, OrganisationID: organisationID, RequestID: requestID}
+	if err = a.activityAudit(r.Context(), tx, publicActor, candidateID, applicationID, "job_application", applicationID, "candidate.applied", map[string]any{"jobId": jobID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.emit(r.Context(), tx, organisationID, "recruitment.application.submitted.v1", "job_application", applicationID, map[string]any{"jobId": jobID, "candidateId": candidateID}); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, err = tx.Exec(r.Context(), `INSERT INTO recruitment.consents(organisation_id,candidate_id,consent_type,consent_version,source) VALUES($1,$2,'recruitment','v1','careers_portal') ON CONFLICT DO NOTHING`, organisationID, candidateID)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	response := map[string]any{"candidateId": candidateID, "applicationId": applicationID, "status": "active"}
+	_, err = tx.Exec(r.Context(), `UPDATE recruitment.application_idempotency SET application_id=$3,response_body=$4 WHERE organisation_id=$1 AND idempotency_key=$2`, organisationID, idempotencyKey, applicationID, response)
+	if err != nil {
 		dbProblem(w, err)
 		return
 	}
@@ -182,17 +230,16 @@ func (a *app) apply(w http.ResponseWriter, r *http.Request) {
 		dbProblem(w, err)
 		return
 	}
-	response := map[string]any{"candidateId": candidateID, "applicationId": applicationID, "status": "active"}
 	if in.Resume != nil {
-		signed, documentID, uploadErr := a.resumeUpload(r.Context(), in.OrganisationID, candidateID, *in.Resume, requestID)
+		signed, documentID, uploadErr := a.resumeUpload(r.Context(), organisationID, candidateID, *in.Resume, requestID)
 		if uploadErr != nil {
 			response["resumeUploadError"] = uploadErr.Error()
 		} else {
 			documentTx, beginErr := a.db.Begin(r.Context())
 			if beginErr == nil {
-				_, beginErr = documentTx.Exec(r.Context(), `INSERT INTO recruitment.candidate_documents(organisation_id,candidate_id,document_id,kind,is_primary) VALUES($1,$2,$3,'resume',true)`, in.OrganisationID, candidateID, documentID)
+				_, beginErr = documentTx.Exec(r.Context(), `INSERT INTO recruitment.candidate_documents(organisation_id,candidate_id,document_id,kind,is_primary) VALUES($1,$2,$3,'resume',true)`, organisationID, candidateID, documentID)
 				if beginErr == nil {
-					_, beginErr = documentTx.Exec(r.Context(), `INSERT INTO recruitment.resume_processing_jobs(organisation_id,candidate_id,application_id,document_id) VALUES($1,$2,$3,$4)`, in.OrganisationID, candidateID, applicationID, documentID)
+					_, beginErr = documentTx.Exec(r.Context(), `INSERT INTO recruitment.resume_processing_jobs(organisation_id,candidate_id,application_id,document_id) VALUES($1,$2,$3,$4)`, organisationID, candidateID, applicationID, documentID)
 				}
 				if beginErr == nil {
 					beginErr = documentTx.Commit(r.Context())
@@ -249,6 +296,21 @@ func (a *app) listRequisitions(w http.ResponseWriter, r *http.Request, ac actor)
 	defer rows.Close()
 	writeRows(w, rows)
 }
+func (a *app) getRequisition(w http.ResponseWriter, r *http.Request, ac actor) {
+	var raw []byte
+	err := a.db.QueryRow(r.Context(), `SELECT to_jsonb(requisition) FROM (
+		SELECT id,title,department_id AS "departmentId",hiring_manager_employee_id AS "hiringManagerEmployeeId",
+		recruiter_user_id AS "recruiterUserId",number_of_positions AS "numberOfPositions",employment_type AS "employmentType",
+		budget,salary_band_min AS "salaryBandMin",salary_band_max AS "salaryBandMax",business_justification AS "businessJustification",
+		target_hiring_date AS "targetHiringDate",status,version,created_at AS "createdAt",updated_at AS "updatedAt"
+		FROM recruitment.job_requisitions WHERE id=$1 AND organisation_id=$2 AND deleted_at IS NULL
+	) requisition`, r.PathValue("id"), ac.OrganisationID).Scan(&raw)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, _ = w.Write(raw)
+}
 func (a *app) createRequisition(w http.ResponseWriter, r *http.Request, ac actor) {
 	var in struct {
 		DepartmentID, HiringManagerEmployeeID, Title, EmploymentType, BusinessJustification string
@@ -283,6 +345,10 @@ func (a *app) createRequisition(w http.ResponseWriter, r *http.Request, ac actor
 		dbProblem(w, err)
 		return
 	}
+	if err = a.emit(r.Context(), tx, ac.OrganisationID, "recruitment.requisition.created.v1", "job_requisition", id, in); err != nil {
+		dbProblem(w, err)
+		return
+	}
 	if err = tx.Commit(r.Context()); err != nil {
 		dbProblem(w, err)
 		return
@@ -307,6 +373,10 @@ func (a *app) submitRequisition(w http.ResponseWriter, r *http.Request, ac actor
 		return
 	}
 	if err = a.activityAudit(r.Context(), tx, ac, "", "", "job_requisition", r.PathValue("id"), "requisition.submitted", nil); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.emit(r.Context(), tx, ac.OrganisationID, "recruitment.requisition.submitted.v1", "job_requisition", r.PathValue("id"), map[string]string{"status": "pending_department_head"}); err != nil {
 		dbProblem(w, err)
 		return
 	}
@@ -366,6 +436,10 @@ func (a *app) approveRequisition(w http.ResponseWriter, r *http.Request, ac acto
 		dbProblem(w, err)
 		return
 	}
+	if err = a.emit(r.Context(), tx, ac.OrganisationID, "recruitment.requisition."+in.Decision+".v1", "job_requisition", r.PathValue("id"), map[string]string{"step": step, "status": next}); err != nil {
+		dbProblem(w, err)
+		return
+	}
 	if err = tx.Commit(r.Context()); err != nil {
 		dbProblem(w, err)
 		return
@@ -381,6 +455,20 @@ func (a *app) listJobs(w http.ResponseWriter, r *http.Request, ac actor) {
 	}
 	defer rows.Close()
 	writeRows(w, rows)
+}
+func (a *app) getJob(w http.ResponseWriter, r *http.Request, ac actor) {
+	var raw []byte
+	err := a.db.QueryRow(r.Context(), `SELECT to_jsonb(job) FROM (
+		SELECT id,requisition_id AS "requisitionId",pipeline_id AS "pipelineId",title,slug,summary,description,
+		responsibilities,requirements,skills,employment_type AS "employmentType",location,is_remote AS "isRemote",
+		benefits,status,published_at AS "publishedAt",closed_at AS "closedAt",version,created_at AS "createdAt",updated_at AS "updatedAt"
+		FROM recruitment.jobs WHERE id=$1 AND organisation_id=$2 AND deleted_at IS NULL
+	) job`, r.PathValue("id"), ac.OrganisationID).Scan(&raw)
+	if err != nil {
+		dbProblem(w, err)
+		return
+	}
+	_, _ = w.Write(raw)
 }
 func (a *app) createJob(w http.ResponseWriter, r *http.Request, ac actor) {
 	var in struct {
@@ -405,6 +493,10 @@ func (a *app) createJob(w http.ResponseWriter, r *http.Request, ac actor) {
 		return
 	}
 	if err = a.activityAudit(r.Context(), tx, ac, "", "", "job", id, "job.created", in); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.emit(r.Context(), tx, ac.OrganisationID, "recruitment.job.created.v1", "job", id, in); err != nil {
 		dbProblem(w, err)
 		return
 	}
@@ -458,6 +550,10 @@ func (a *app) publishJob(w http.ResponseWriter, r *http.Request, ac actor) {
 		return
 	}
 	if err = a.activityAudit(r.Context(), tx, ac, "", "", "job", r.PathValue("id"), "job.published", nil); err != nil {
+		dbProblem(w, err)
+		return
+	}
+	if err = a.emit(r.Context(), tx, ac.OrganisationID, "recruitment.job.published.v1", "job", r.PathValue("id"), map[string]string{"status": "published"}); err != nil {
 		dbProblem(w, err)
 		return
 	}
@@ -891,6 +987,11 @@ func (a *app) activityAudit(ctx context.Context, tx pgx.Tx, ac actor, candidateI
 	_, err = tx.Exec(ctx, `INSERT INTO audit.events(organisation_id,actor_user_id,entity_type,entity_id,action,new_value,ip_address,request_id) VALUES($1,$2,$3,$4,$5,$6,nullif($7,'')::inet,$8)`, ac.OrganisationID, nullable(ac.UserID), entityType, entityID, action, payload, ac.IP, ac.RequestID)
 	return err
 }
+func (a *app) emit(ctx context.Context, tx pgx.Tx, organisationID, eventType, aggregateType, aggregateID string, payload any) error {
+	_, err := tx.Exec(ctx, `INSERT INTO recruitment.outbox(event_type,event_version,aggregate_type,aggregate_id,organisation_id,payload_json)
+		VALUES($1,1,$2,$3,$4,$5)`, eventType, aggregateType, aggregateID, organisationID, payload)
+	return err
+}
 func actorFrom(r *http.Request) (actor, error) {
 	ac := actor{UserID: r.Header.Get("X-Actor-Id"), OrganisationID: r.Header.Get("X-Organisation-Id"), RequestID: requestID(r), Permissions: map[string]bool{}}
 	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
@@ -948,6 +1049,11 @@ func problem(w http.ResponseWriter, status int, code, detail string) {
 func dbProblem(w http.ResponseWriter, err error) {
 	if errors.Is(err, pgx.ErrNoRows) {
 		problem(w, 404, "not_found", "record not found")
+		return
+	}
+	var pgError *pgconn.PgError
+	if errors.As(err, &pgError) && pgError.Code == "23505" {
+		problem(w, 409, "duplicate_record", "This record already exists.")
 		return
 	}
 	log.Printf("database error: %v", err)

@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
+import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -25,7 +26,13 @@ export const authOptions: AuthOptions = {
 
         // 1. New service-oriented Identity foundation.
         let userData = null;
-        const identityURL = process.env.HRMS_GATEWAY_URL;
+        let identityURL = "";
+        try {
+          identityURL = requiredHrmsGatewayURL();
+        } catch {
+          // Credentials authentication can continue through the legacy database
+          // path while the dedicated Identity service is not configured.
+        }
         const organisationId = process.env.DEFAULT_ORGANISATION_ID;
         if (identityURL && organisationId) {
           try {

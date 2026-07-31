@@ -10,12 +10,12 @@ import {
   Search,
   UploadCloud,
   User,
-  CheckCircle2,
 } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 
 import type { CareerJob } from "@/components/careers/JobCard";
 import { CandidateAuthModal } from "@/components/careers/CandidateAuthModal";
+import type { CandidateIdentity } from "@/components/careers/CandidateAuthModal";
 import { MultiStepApplicationForm } from "@/components/careers/MultiStepApplicationForm";
 import { TalentNetworkModal } from "@/components/careers/TalentNetworkModal";
 import { CandidateDashboard } from "@/components/careers/CandidateDashboard";
@@ -47,7 +47,7 @@ async function getJobs(filters: JobFilters, signal?: AbortSignal): Promise<JobsR
 }
 
 export function CareersContent() {
-  const { data: session, status: authStatus } = useSession();
+  const { data: session } = useSession();
   const organisationId = process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID ?? "";
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
@@ -55,34 +55,19 @@ export function CareersContent() {
   const queryClient = useQueryClient();
 
   // Candidate Auth & Modal States
-  const [candidate, setCandidate] = useState<any>(null);
+  const [candidate, setCandidate] = useState<CandidateIdentity | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [talentModalOpen, setTalentModalOpen] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [applyingJob, setApplyingJob] = useState<CareerJob | null>(null);
 
-  // Sync candidate profile from NextAuth session OR persistent local storage
-  useEffect(() => {
-    if (session?.user) {
-      const activeCandidate = {
-        id: session.user.id || `cand_${session.user.email}`,
-        googleId: session.user.id || "",
-        email: session.user.email,
-        fullName: session.user.name || session.user.email,
-        profilePictureUrl: session.user.image,
-        createdAt: new Date().toISOString(),
-      };
-      setCandidate(activeCandidate);
-      localStorage.setItem("gxl_candidate_session", JSON.stringify(activeCandidate));
-    } else {
-      const saved = localStorage.getItem("gxl_candidate_session");
-      if (saved) {
-        try {
-          setCandidate(JSON.parse(saved));
-        } catch (_e) {}
-      }
-    }
-  }, [session]);
+  const activeCandidate = session?.user?.role === "CANDIDATE" ? {
+    id: session.user.id,
+    googleId: session.user.id,
+    email: session.user.email,
+    fullName: session.user.name || session.user.email,
+    profilePictureUrl: session.user.image,
+  } : candidate;
 
   const filters = useMemo<JobFilters>(
     () => ({ query, location, employmentType, organisationId }),
@@ -111,7 +96,7 @@ export function CareersContent() {
   }
 
   function handleStartApplication(job: CareerJob) {
-    if (!candidate) {
+    if (!activeCandidate) {
       setApplyingJob(job);
       setAuthModalOpen(true);
     } else {
@@ -120,7 +105,7 @@ export function CareersContent() {
   }
 
   function handleJoinTalentNetwork() {
-    if (!candidate) {
+    if (!activeCandidate) {
       setTalentModalOpen(true);
       setAuthModalOpen(true);
     } else {
@@ -128,9 +113,8 @@ export function CareersContent() {
     }
   }
 
-  function handleAuthSuccess(authCandidate: any) {
+  function handleAuthSuccess(authCandidate: CandidateIdentity) {
     setCandidate(authCandidate);
-    localStorage.setItem("gxl_candidate_session", JSON.stringify(authCandidate));
     setAuthModalOpen(false);
   }
 
@@ -143,13 +127,13 @@ export function CareersContent() {
             <div className="text-[11px] font-bold uppercase tracking-[.2em] text-[#0075de]">
               Careers at GrowX Labs
             </div>
-            {candidate ? (
+            {activeCandidate ? (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setDashboardOpen(!dashboardOpen)}
                   className="inline-flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-200 px-4 py-2 text-xs font-bold text-[#0075de] hover:bg-blue-100"
                 >
-                  <User size={14} /> Candidate Portal ({candidate.fullName ? candidate.fullName.split(" ")[0] : "Active"})
+                  <User size={14} /> Candidate Portal ({activeCandidate.fullName ? activeCandidate.fullName.split(" ")[0] : "Active"})
                 </button>
               </div>
             ) : (
@@ -191,9 +175,9 @@ export function CareersContent() {
       </section>
 
       {/* Candidate Dashboard View */}
-      {dashboardOpen && candidate ? (
+      {dashboardOpen && activeCandidate ? (
         <section className="mx-auto max-w-[1240px] px-6 py-10 md:px-8 lg:px-10">
-          <CandidateDashboard candidate={candidate} onClose={() => setDashboardOpen(false)} />
+          <CandidateDashboard candidate={activeCandidate} onClose={() => setDashboardOpen(false)} />
         </section>
       ) : null}
 
@@ -269,10 +253,10 @@ export function CareersContent() {
       />
 
       {/* 7-Step Job Application Modal */}
-      {applyingJob && candidate && (
+      {applyingJob && activeCandidate && (
         <MultiStepApplicationForm
           job={applyingJob}
-          candidate={candidate}
+          candidate={activeCandidate}
           onClose={() => setApplyingJob(null)}
         />
       )}
@@ -280,7 +264,7 @@ export function CareersContent() {
       {/* Talent Network Modal */}
       <TalentNetworkModal
         isOpen={talentModalOpen}
-        candidate={candidate}
+        candidate={activeCandidate}
         onClose={() => setTalentModalOpen(false)}
       />
     </div>

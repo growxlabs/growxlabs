@@ -2,11 +2,11 @@ import type { Instrumentation } from "next";
 
 export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
-  const [{ assertProductionConfiguration }, { CommandCenterLogger }] = await Promise.all([
+  const [{ assertCoreProductionConfiguration }, { CommandCenterLogger }] = await Promise.all([
     import("@/lib/command-center/production/config"),
     import("@/lib/command-center/logging/logger"),
   ]);
-  assertProductionConfiguration();
+  assertCoreProductionConfiguration();
   CommandCenterLogger.info("Application runtime initialised", {
     service: "nextjs-bff",
     outcome: "ready",

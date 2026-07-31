@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { ArrowLeft, BriefcaseBusiness, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { CandidateAuthModal } from "@/components/careers/CandidateAuthModal";
+import type { CandidateIdentity } from "@/components/careers/CandidateAuthModal";
 import { MultiStepApplicationForm } from "@/components/careers/MultiStepApplicationForm";
 
 type Job = {
@@ -26,18 +28,16 @@ type Job = {
 };
 
 export default function JobDetailClient({ job }: { job: Job | null }) {
-  const [candidate, setCandidate] = useState<any>(null);
+  const { data: session } = useSession();
+  const [candidate, setCandidate] = useState<CandidateIdentity | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [appModalOpen, setAppModalOpen] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("gxl_candidate_session");
-    if (saved) {
-      try {
-        setCandidate(JSON.parse(saved));
-      } catch (_e) {}
-    }
-  }, []);
+  const activeCandidate = session?.user?.role === "CANDIDATE" ? {
+    id: session.user.id,
+    email: session.user.email,
+    fullName: session.user.name || session.user.email,
+  } : candidate;
 
   if (!job) {
     return (
@@ -56,7 +56,7 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
   }
 
   function handleApplyClick() {
-    if (!candidate) {
+    if (!activeCandidate) {
       setAuthModalOpen(true);
     } else {
       setAppModalOpen(true);
@@ -121,10 +121,10 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
         }}
       />
 
-      {appModalOpen && candidate && (
+      {appModalOpen && activeCandidate && (
         <MultiStepApplicationForm
           job={job}
-          candidate={candidate}
+          candidate={activeCandidate}
           onClose={() => setAppModalOpen(false)}
         />
       )}

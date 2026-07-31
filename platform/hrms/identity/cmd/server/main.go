@@ -37,6 +37,8 @@ func main() {
 	}
 	a := &app{db: db}
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", a.health)
+	mux.HandleFunc("GET /ready", a.health)
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /permissions", a.authorize("organisation.manage", a.listPermissions))
 	mux.HandleFunc("GET /roles", a.authorize("organisation.manage", a.listRoles))

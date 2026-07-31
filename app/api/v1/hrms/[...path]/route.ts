@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import { authOptions } from "@/lib/auth";
+import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
 
 const PUBLIC_PREFIXES = [
   "identity/invitations",
@@ -15,7 +16,7 @@ function apiError(status: number, code: string, message: string, requestId: stri
   );
 }
 
-function requiredServerEnv(name: "HRMS_GATEWAY_URL" | "HRMS_BFF_SHARED_SECRET") {
+function requiredServerEnv(name: "HRMS_BFF_SHARED_SECRET") {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is not configured`);
   return value;
@@ -44,7 +45,7 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   let base: string;
   let gatewaySecret: string;
   try {
-    base = requiredServerEnv("HRMS_GATEWAY_URL");
+    base = requiredHrmsGatewayURL();
     gatewaySecret = publicRequest ? "" : requiredServerEnv("HRMS_BFF_SHARED_SECRET");
   } catch (error) {
     console.error(JSON.stringify({ request_id: requestId, route: request.nextUrl.pathname, error: String(error) }));
@@ -55,9 +56,19 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   if (!publicRequest && !session?.user?.id) {
     return apiError(401, "UNAUTHENTICATED", "Your session has expired. Sign in again.", requestId);
   }
+  if (!publicRequest && session?.user?.role === "CANDIDATE") {
+    return apiError(403, "FORBIDDEN", "Candidate accounts cannot access internal HRMS services.", requestId);
+  }
 
   const upstream = new URL(`/v1/${path.map(encodeURIComponent).join("/")}`, base.replace(/\/$/, ""));
   upstream.search = request.nextUrl.search;
+  if (publicRequest && path[0] === "recruitment") {
+    const publicOrganisationId = process.env.DEFAULT_ORGANISATION_ID?.trim();
+    if (!publicOrganisationId || publicOrganisationId === "org_default") {
+      return apiError(503, "ORGANISATION_CONTEXT_MISSING", "The careers organisation is not configured.", requestId);
+    }
+    upstream.searchParams.set("organisationId", publicOrganisationId);
+  }
   const headers = new Headers({
     Accept: request.headers.get("accept") || "application/json",
     "Content-Type": request.headers.get("content-type") || "application/json",

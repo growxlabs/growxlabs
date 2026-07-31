@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { withConcurrencyLimit, resetConcurrencyForTests } from "./concurrency.ts";
-import { validateProductionConfiguration } from "./config.ts";
+import {
+  validateCoreProductionConfiguration,
+  validateProductionConfiguration,
+} from "./config.ts";
 import { CommandCenterError, errorResponse } from "./errors.ts";
 import { CommandCenterLogger } from "../logging/logger.ts";
 
@@ -32,6 +35,16 @@ test("production configuration reports missing secret names without values", () 
   assert.ok(result.missing.includes("DATABASE_URL"));
   assert.ok(result.invalid.includes("NEXTAUTH_SECRET"));
   assert.equal(JSON.stringify(result).includes("short"), false);
+});
+
+test("core startup validation does not require optional feature infrastructure", () => {
+  const result = validateCoreProductionConfiguration({
+    APP_ENV: "production",
+    NEXTAUTH_SECRET: "a-secure-secret-that-is-at-least-32-characters",
+    NEXTAUTH_URL: "https://growxlabs.tech",
+  } as unknown as NodeJS.ProcessEnv);
+  assert.equal(result.ready, true);
+  assert.deepEqual(result.missing, []);
 });
 
 test("bounded concurrency rejects overflow and releases capacity", async () => {

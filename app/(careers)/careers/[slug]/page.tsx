@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import JobDetailClient from "./JobDetailClient";
+import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
 
 const RESERVED_SLUGS = ["login", "auth", "admin", "dashboard", "api"];
 
 async function getJob(slug: string) {
   if (RESERVED_SLUGS.includes(slug)) return null;
-  const base = process.env.HRMS_GATEWAY_URL;
+  let base = "";
+  try {
+    base = requiredHrmsGatewayURL();
+  } catch {
+    return null;
+  }
   const organisationId = process.env.DEFAULT_ORGANISATION_ID;
   if (!base || !organisationId) return null;
   try {
@@ -16,7 +22,7 @@ async function getJob(slug: string) {
     );
     if (!response.ok) return null;
     return response.json();
-  } catch (_e) {
+  } catch {
     return null;
   }
 }

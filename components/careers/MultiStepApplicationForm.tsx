@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useRef, useState, FormEvent } from "react";
 import { ArrowRight, CheckCircle2, UploadCloud, X } from "lucide-react";
 import type { CareerJob } from "./JobCard";
+import type { CandidateIdentity } from "./CandidateAuthModal";
 
 interface MultiStepApplicationFormProps {
   job: Pick<CareerJob, "id" | "title" | "slug">;
-  candidate: any;
+  candidate: CandidateIdentity;
   onClose: () => void;
 }
 
 export function MultiStepApplicationForm({ job, candidate, onClose }: MultiStepApplicationFormProps) {
-  const organisationId = process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID || "org_default";
+  const idempotencyKey = useRef(crypto.randomUUID());
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -40,6 +41,11 @@ export function MultiStepApplicationForm({ job, candidate, onClose }: MultiStepA
       setError("Please attach a resume.");
       return;
     }
+    const allowedTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!allowedTypes.includes(file.type) || file.size > 10 * 1024 * 1024) {
+      setError("Resume must be a PDF or DOCX file no larger than 10 MB.");
+      return;
+    }
     setSaving(true);
     setError("");
 
@@ -50,12 +56,11 @@ export function MultiStepApplicationForm({ job, candidate, onClose }: MultiStepA
         checksum = Array.from(new Uint8Array(checksumBuffer))
           .map((v) => v.toString(16).padStart(2, "0"))
           .join("");
-      } catch (_e) {}
+      } catch {}
 
       const payload = {
         ...form,
         candidateId: candidate?.id,
-        organisationID: organisationId,
         noticePeriodDays: form.noticePeriodDays ? Number(form.noticePeriodDays) : null,
         expectedSalary: form.expectedSalary ? Number(form.expectedSalary) : null,
         resume: {
@@ -68,26 +73,27 @@ export function MultiStepApplicationForm({ job, candidate, onClose }: MultiStepA
 
       const response = await fetch(`/api/v1/hrms/recruitment/public/jobs/${job.slug}/applications`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey.current },
         body: JSON.stringify(payload),
       });
 
       const body = await response.json();
-      if (!response.ok) throw new Error(body.detail || body.error || "Failed to submit application");
+      if (!response.ok) {
+        const apiError = body?.error;
+        throw new Error(typeof apiError === "object" ? apiError.message : body.detail || apiError || "Failed to submit application");
+      }
 
       if (body.resumeUpload) {
-        try {
-          await fetch(body.resumeUpload.uploadUrl, {
+          const upload = await fetch(body.resumeUpload.uploadUrl, {
             method: body.resumeUpload.method || "PUT",
             headers: body.resumeUpload.headers || { "Content-Type": file.type },
             body: file,
           });
-        } catch (_e) {}
+          if (!upload.ok) throw new Error("Resume upload failed. Your application was saved without an attached resume.");
       }
       setDone(true);
     } catch (submissionError) {
-      // If network/BFF fallback during dev, present clean receipt
-      setDone(true);
+      setError(submissionError instanceof Error ? submissionError.message : "Application could not be submitted.");
     } finally {
       setSaving(false);
     }
@@ -175,10 +181,10 @@ export function MultiStepApplicationForm({ job, candidate, onClose }: MultiStepA
 
               <label className="sm:col-span-2 flex cursor-pointer items-center justify-center gap-3 rounded-xl border border-dashed border-[#0075de]/40 bg-blue-50/60 p-5 text-sm font-bold text-[#0075de] hover:bg-blue-50">
                 <UploadCloud size={20} />
-                {file ? file.name : "Attach resume (PDF or DOCX, max 25MB)"}
+                {file ? file.name : "Attach resume (PDF or DOCX, max 10MB)"}
                 <input
                   type="file"
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   className="hidden"
                   onChange={(event) => setFile(event.target.files?.[0] || null)}
                 />

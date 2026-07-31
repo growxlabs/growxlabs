@@ -2,27 +2,38 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Building2, X, CheckCircle } from "lucide-react";
+import { Building2, X } from "lucide-react";
 
 interface CandidateAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (candidate: any) => void;
+  onSuccess: (candidate: CandidateIdentity) => void;
   title?: string;
   subtitle?: string;
 }
+export type CandidateIdentity = {
+  id: string;
+  googleId?: string;
+  email?: string | null;
+  fullName?: string | null;
+  profilePictureUrl?: string | null;
+  phone?: string;
+  location?: string;
+  linkedInURL?: string;
+  githubURL?: string;
+  portfolioURL?: string;
+  currentCompany?: string;
+  noticePeriodDays?: string | number;
+  expectedSalary?: string | number;
+};
 
 export function CandidateAuthModal({
   isOpen,
   onClose,
-  onSuccess,
   title = "Sign in to Candidate Portal",
   subtitle = "Authenticate with Google to build your candidate dossier and track applications.",
 }: CandidateAuthModalProps) {
   const [loading, setLoading] = useState(false);
-  const [googleEmail, setGoogleEmail] = useState("");
-  const [googleName, setGoogleName] = useState("");
-  const [showDirectInput, setShowDirectInput] = useState(false);
 
   if (!isOpen) return null;
 
@@ -33,29 +44,9 @@ export function CandidateAuthModal({
       await signIn("google", {
         callbackUrl: typeof window !== "undefined" ? window.location.href : "https://careers.growxlabs.tech",
       });
-    } catch (_err) {
-      setShowDirectInput(true);
+    } catch {
       setLoading(false);
     }
-  }
-
-  function handleDirectAuthSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!googleEmail || !googleName) return;
-
-    const candidate = {
-      id: `cand_${Date.now()}`,
-      googleId: `google_${Date.now()}`,
-      email: googleEmail,
-      fullName: googleName,
-      profilePictureUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(googleEmail)}`,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Save session in local storage for candidate persistence
-    localStorage.setItem("gxl_candidate_session", JSON.stringify(candidate));
-    onSuccess(candidate);
-    onClose();
   }
 
   return (
@@ -85,7 +76,6 @@ export function CandidateAuthModal({
         <h2 className="mt-3 text-2xl font-black text-slate-900">{title}</h2>
         <p className="mt-2 text-xs leading-6 text-slate-600">{subtitle}</p>
 
-        {!showDirectInput ? (
           <div className="mt-6 space-y-4">
             <button
               onClick={handleGoogleSignIn}
@@ -112,56 +102,7 @@ export function CandidateAuthModal({
               </svg>
               {loading ? "Redirecting to Google..." : "Continue with Google Account"}
             </button>
-
-            <div className="relative my-4 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400">
-              <span className="bg-white px-2">or quick verify candidate profile</span>
-            </div>
-
-            <button
-              onClick={() => setShowDirectInput(true)}
-              className="w-full text-center text-xs font-bold text-[#0075de] hover:underline"
-            >
-              Enter Google Account details directly
-            </button>
           </div>
-        ) : (
-          <form onSubmit={handleDirectAuthSubmit} className="mt-6 space-y-4">
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                Candidate Full Name
-              </label>
-              <input
-                required
-                type="text"
-                value={googleName}
-                onChange={(e) => setGoogleName(e.target.value)}
-                placeholder="e.g. Varshith Pujala"
-                className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                Google Email Address
-              </label>
-              <input
-                required
-                type="email"
-                value={googleEmail}
-                onChange={(e) => setGoogleEmail(e.target.value)}
-                placeholder="e.g. sai@growxlabs.tech"
-                className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 text-xs font-bold text-white shadow-sm hover:bg-slate-800 outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
-            >
-              <CheckCircle size={16} /> Confirm & Launch Application Dossier
-            </button>
-          </form>
-        )}
 
         <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-center text-xs text-slate-500">
           🔒 Candidate profiles are private, secure, and reusable across all GrowXLabs job openings.

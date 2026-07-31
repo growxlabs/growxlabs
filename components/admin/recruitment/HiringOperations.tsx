@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText, Send, Check } from "lucide-react";
+import { CheckCircle2, AlertCircle, PlusCircle, Layers, FileText } from "lucide-react";
 
 type Requisition = { id: string; title: string; status: string; numberOfPositions: number };
 type Job = { id: string; title: string; slug: string; status: string };
@@ -11,7 +11,10 @@ type Pipeline = { id: string; name: string; isDefault: boolean };
 async function request(path: string, init?: RequestInit) {
   const response = await fetch(`/api/v1/hrms/recruitment${path}`, init);
   const body = response.status === 204 ? null : await response.json();
-  if (!response.ok) throw new Error(body?.detail || body?.error || "Request failed");
+  if (!response.ok) {
+    const error = body?.error;
+    throw new Error(typeof error === "object" ? error.message : body?.detail || error || "Request failed");
+  }
   return body;
 }
 
@@ -67,43 +70,15 @@ export default function HiringOperations() {
         queryKey: ["recruitment", "requisitions"],
       });
 
-      // Update query cache optimistically to guarantee immediate visibility
-      const createdItem: Requisition = {
-        id: data?.id || `req_${Date.now()}`,
-        title: form.title,
-        status: "draft",
-        numberOfPositions: Number(form.positions),
-      };
-
-      client.setQueryData<{ items: Requisition[] }>(["recruitment", "requisitions"], (old) => {
-        const existing = old?.items || [];
-        const filtered = existing.filter((item) => item.id !== createdItem.id);
-        return { items: [createdItem, ...filtered] };
-      });
-
       setMessage({
         type: "success",
-        text: `Draft requisition created for "${form.title}" (${form.positions} openings). Displayed below under Active Requisitions!`,
+        text: `Draft requisition ${data.id} created for "${form.title}".`,
       });
     },
-    onError: async (error) => {
-      // Handle fallback cache insertion so UI displays created requisition
-      const fallbackItem: Requisition = {
-        id: `req_${Date.now()}`,
-        title: form.title,
-        status: "draft",
-        numberOfPositions: Number(form.positions),
-      };
-
-      client.setQueryData<{ items: Requisition[] }>(["recruitment", "requisitions"], (old) => {
-        const existing = old?.items || [];
-        return { items: [fallbackItem, ...existing] };
-      });
-
-      await client.invalidateQueries({ queryKey: ["recruitment", "requisitions"] });
+    onError: (error) => {
       setMessage({
-        type: "success",
-        text: `Draft requisition created for "${form.title}" (${form.positions} openings).`,
+        type: "error",
+        text: error instanceof Error ? error.message : "Requisition could not be created.",
       });
     },
   });
@@ -128,8 +103,8 @@ export default function HiringOperations() {
       });
       await client.invalidateQueries({ queryKey: ["recruitment", "pipelines"] });
       setMessage({ type: "success", text: "Standard hiring pipeline initialized." });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Standard hiring pipeline configured." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Pipeline could not be created." });
     }
   }
 
@@ -152,8 +127,8 @@ export default function HiringOperations() {
         client.invalidateQueries({ queryKey: ["recruitment", "jobs"] }),
       ]);
       setMessage({ type: "success", text: "Operation completed successfully." });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Action processed." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "The action could not be completed." });
     }
   }
 
@@ -179,22 +154,9 @@ export default function HiringOperations() {
       await client.invalidateQueries({ queryKey: ["recruitment", "jobs"] });
       await client.refetchQueries({ queryKey: ["recruitment", "jobs"] });
 
-      // Optimistic cache update for job postings
-      const createdJob: Job = {
-        id: `job_${Date.now()}`,
-        title: requisition.title,
-        slug,
-        status: "draft",
-      };
-
-      client.setQueryData<{ items: Job[] }>(["recruitment", "jobs"], (old) => {
-        const existing = old?.items || [];
-        return { items: [createdJob, ...existing] };
-      });
-
       setMessage({ type: "success", text: `Job draft created: /${slug}. Click Publish Live to post!` });
-    } catch (_err) {
-      setMessage({ type: "success", text: "Job draft created and queued for publishing." });
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Job draft could not be created." });
     }
   }
 
