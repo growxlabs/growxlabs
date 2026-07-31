@@ -48,8 +48,8 @@ function MessageItem({ message, streaming }: { message: CommandMessage; streamin
         )}>
           {message.kind === "error" && <AlertTriangle size={15} className="mb-2 text-red-500" />}
           
-          {/* Formatted Markdown Content */}
-          <div className="space-y-3">
+          {/* Formatted Clean Content */}
+          <div className="space-y-2.5">
             {renderMarkdown(message.text || (streaming ? "Working…" : ""))}
           </div>
 
@@ -127,8 +127,8 @@ function formatTime(value: string) {
 }
 
 /**
- * Intelligent Markdown Renderer:
- * Parses markdown headers, bold formatting, lists, and full HTML tables.
+ * Clean Markdown Renderer:
+ * Parses headers, bold text, bullet lists (* and -), inline code/tool calls, and HTML tables without raw asterisks or slashes.
  */
 function renderMarkdown(text: string) {
   const lines = text.split("\n");
@@ -139,6 +139,7 @@ function renderMarkdown(text: string) {
   lines.forEach((line, index) => {
     const trimmed = line.trim();
 
+    // Markdown Table block
     if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
       inTable = true;
       tableBuffer.push(trimmed);
@@ -151,6 +152,7 @@ function renderMarkdown(text: string) {
       inTable = false;
     }
 
+    // Headers
     if (trimmed.startsWith("### ")) {
       elements.push(
         <h3 key={index} className="mt-3 text-base font-extrabold text-slate-900 border-b border-slate-100 pb-1">
@@ -163,13 +165,18 @@ function renderMarkdown(text: string) {
           {formatInlineMarkdown(trimmed.replace("## ", ""))}
         </h2>
       );
-    } else if (trimmed.startsWith("- ")) {
+    } 
+    // Bullets starting with * or -
+    else if (trimmed.startsWith("* ") || trimmed.startsWith("- ") || /^\*\s+/.test(trimmed)) {
+      const cleanText = trimmed.replace(/^[\*\-]\s+/, "");
       elements.push(
-        <li key={index} className="ml-4 list-disc text-slate-700 font-medium">
-          {formatInlineMarkdown(trimmed.replace("- ", ""))}
+        <li key={index} className="ml-4 list-disc text-slate-700 font-medium my-0.5">
+          {formatInlineMarkdown(cleanText)}
         </li>
       );
-    } else if (trimmed) {
+    } 
+    // Regular paragraphs
+    else if (trimmed) {
       elements.push(
         <p key={index} className="leading-relaxed">
           {formatInlineMarkdown(trimmed)}
@@ -229,10 +236,29 @@ function renderTableBlock(rows: string[], key: string) {
 }
 
 function formatInlineMarkdown(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*.*?\*\*)/g);
+  let processed = text.replace(/^\/\/\s*/, "");
+
+  // Match bold **text**, code `code`, or quoted tool names ('tool_name')
+  const regex = /(\*\*.*?\*\*|`.*?`|\('[a-zA-Z0-9_]+'\))/g;
+  const parts = processed.split(regex);
+
   return parts.map((part, idx) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return <b key={idx} className="font-extrabold text-slate-900">{part.slice(2, -2)}</b>;
+    }
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code key={idx} className="rounded bg-blue-50 px-1.5 py-0.5 font-mono text-[11px] font-bold text-blue-700 border border-blue-100">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    if (part.startsWith("('") && part.endsWith("')")) {
+      return (
+        <code key={idx} className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200">
+          {part.slice(2, -2)}
+        </code>
+      );
     }
     return part;
   });
