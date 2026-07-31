@@ -332,7 +332,41 @@ How can I assist you with your operations today? You can ask me to:
 - 📈 **Company Telemetry**: Check job requisitions, departments, and content stats.
 - 🌐 **Web Research**: Perform live market research and competitor searches.`;
     } else {
-      // Execute real tools to fetch dynamic database data for operational queries
+      // Intelligently execute tools based on user intent in fallback mode
+      const isWebSearch = lowerMsg.includes("web") || lowerMsg.includes("searc") || lowerMsg.includes("google") || lowerMsg.includes("online") || lowerMsg.includes("internet");
+      const isLeadQuery = lowerMsg.includes("lead") || lowerMsg.includes("customer") || lowerMsg.includes("realestate") || lowerMsg.includes("property") || lowerMsg.includes("crm");
+      const isProposalQuery = lowerMsg.includes("proposal") || lowerMsg.includes("sow") || lowerMsg.includes("package");
+      const isAgreementQuery = lowerMsg.includes("agreement") || lowerMsg.includes("contract");
+      const isInvoiceQuery = lowerMsg.includes("invoice") || lowerMsg.includes("billing");
+
+      // Extract search topic query from user prompt
+      const cleanSearchTopic = message
+        .replace(/i ask|using web searc tool|using web search tool|search leads|find|tool/gi, "")
+        .trim() || message;
+
+      // 1. Execute search_web if requested or implied
+      let searchWebResult: any = null;
+      if (isWebSearch || lowerMsg.includes("research") || lowerMsg.includes("market")) {
+        const searchId = "search_web-" + Date.now();
+        const searchArgs = { query: cleanSearchTopic, num: 5 };
+        executedToolCalls.push({ id: searchId, name: "search_web", args: searchArgs, status: "calling" });
+        writer.sendEvent("tool_call", { name: "search_web", args: searchArgs });
+
+        try {
+          searchWebResult = await ToolRegistry.executeTool("search_web", searchArgs, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+        } catch (e: any) {
+          searchWebResult = { error: e.message };
+        }
+
+        const swIdx = executedToolCalls.findIndex(t => t.id === searchId);
+        if (swIdx !== -1) {
+          executedToolCalls[swIdx].status = "complete";
+          executedToolCalls[swIdx].result = searchWebResult;
+        }
+        writer.sendEvent("tool_result", { name: "search_web", result: searchWebResult });
+      }
+
+      // 2. Execute get_company_stats
       const statsId = "get_company_stats-" + Date.now();
       executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
       writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
@@ -349,110 +383,113 @@ How can I assist you with your operations today? You can ask me to:
       }
       writer.sendEvent("tool_result", { name: "get_company_stats", result: companyStats });
 
-      const leadsId = "query_leads-" + Date.now();
-      executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
-      writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
-
+      // 3. Execute query_leads
       let leadsData: any = [];
-      try {
-        leadsData = await ToolRegistry.executeTool("query_leads", { query: message, limit: 15 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (_e) {}
+      if (isLeadQuery || !isWebSearch) {
+        const leadsId = "query_leads-" + Date.now();
+        const leadsArgs = { query: cleanSearchTopic, limit: 15 };
+        executedToolCalls.push({ id: leadsId, name: "query_leads", args: leadsArgs, status: "calling" });
+        writer.sendEvent("tool_call", { name: "query_leads", args: leadsArgs });
 
-      const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
-      if (lIdx !== -1) {
-        executedToolCalls[lIdx].status = "complete";
-        executedToolCalls[lIdx].result = leadsData;
+        try {
+          leadsData = await ToolRegistry.executeTool("query_leads", leadsArgs, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+        } catch (_e) {}
+
+        const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
+        if (lIdx !== -1) {
+          executedToolCalls[lIdx].status = "complete";
+          executedToolCalls[lIdx].result = leadsData;
+        }
+        writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
       }
-      writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
 
-      const blogId = "get_blog_posts_stats-" + Date.now();
-      executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
-      writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
-
-      let blogStats: any = {};
-      try {
-        blogStats = await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (_e) {}
-
-      const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
-      if (bIdx !== -1) {
-        executedToolCalls[bIdx].status = "complete";
-        executedToolCalls[bIdx].result = blogStats;
+      // 4. Execute agreements/invoices if requested
+      if (isAgreementQuery) {
+        const agrId = "get_admin_agreements-" + Date.now();
+        executedToolCalls.push({ id: agrId, name: "get_admin_agreements", args: {}, status: "calling" });
+        writer.sendEvent("tool_call", { name: "get_admin_agreements", args: {} });
+        let agrResult: any = null;
+        try {
+          agrResult = await ToolRegistry.executeTool("get_admin_agreements", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+        } catch (e: any) {
+          agrResult = { error: e.message };
+        }
+        const aIdx = executedToolCalls.findIndex(t => t.id === agrId);
+        if (aIdx !== -1) {
+          executedToolCalls[aIdx].status = "complete";
+          executedToolCalls[aIdx].result = agrResult;
+        }
+        writer.sendEvent("tool_result", { name: "get_admin_agreements", result: agrResult });
       }
-      writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: blogStats });
 
-      // Format DYNAMIC DATABASE DATA into responseMarkdown
+      if (isInvoiceQuery) {
+        const invId = "get_admin_invoices-" + Date.now();
+        executedToolCalls.push({ id: invId, name: "get_admin_invoices", args: {}, status: "calling" });
+        writer.sendEvent("tool_call", { name: "get_admin_invoices", args: {} });
+        let invResult: any = null;
+        try {
+          invResult = await ToolRegistry.executeTool("get_admin_invoices", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+        } catch (e: any) {
+          invResult = { error: e.message };
+        }
+        const iIdx = executedToolCalls.findIndex(t => t.id === invId);
+        if (iIdx !== -1) {
+          executedToolCalls[iIdx].status = "complete";
+          executedToolCalls[iIdx].result = invResult;
+        }
+        writer.sendEvent("tool_result", { name: "get_admin_invoices", result: invResult });
+      }
+
+      // Synthesize response markdown
       const totalLeads = companyStats.totalLeads ?? (Array.isArray(leadsData) ? leadsData.length : 0);
       const activeReqs = companyStats.activeRequisitions ?? 0;
       const activeDepts = companyStats.activeDepartments ?? 0;
-      const publishedBlogs = blogStats.publishedCount ?? 0;
-      const draftBlogs = blogStats.draftCount ?? 0;
       const leadsList = Array.isArray(leadsData) ? leadsData : (Array.isArray(companyStats.recentLeads) ? companyStats.recentLeads : []);
+      const webResultsList: Array<{ title: string; snippet: string; url: string }> = searchWebResult?.results || [];
 
-      if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
+      if (isWebSearch && webResultsList.length > 0) {
+        responseMarkdown = `### 🌐 Live Web Search Results for "${cleanSearchTopic}"
+
+#### 🔍 Online Market & Web Findings (${webResultsList.length} Found)
+${webResultsList.map((r, i) => `**${i + 1}. [${r.title}](${r.url})**\n${r.snippet}`).join("\n\n---\n\n")}
+
+---
+
+### 📊 Related Internal Telemetry Summary
+- **Database Pipeline**: **${totalLeads} Total Ingested Leads**
+- **Active Requisitions**: **${activeReqs} Open Job Openings**`;
+      } else if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
         responseMarkdown = `## 📋 Executive Operating Brief — GrowX Labs
 
 ### 📊 1. Live Database Telemetry Summary
 - **Total Leads Ingested**: **${totalLeads} Records**
 - **Active Job Requisitions**: **${activeReqs} Positions**
 - **Configured Departments**: **${activeDepts} Functional Units**
-- **Published Content**: **${publishedBlogs} Articles** (${draftBlogs} Pending Drafts)
 
 | Metric | Live Database Count | Primary Status | Path |
 | --- | --- | --- | --- |
 | Customer Pipeline | ${totalLeads} Leads | Active | /admin/sales/leads |
 | Recruitment Openings | ${activeReqs} Requisitions | Operational | /admin/recruitment/operations |
 | Department Headcount | ${activeDepts} Departments | Configured | /admin/people/departments |
-| Editorial Media | ${publishedBlogs} Published | Live | /admin/content |
 
 ---
 
 ### 💼 2. Recent Database Lead Pipeline
 ${leadsList.length ? `| Name / Contact | Company / Sector | Location / Status |
 | --- | --- | --- |
-${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.contact_name || "Lead Record"}** | ${l.company || l.business_name || "Commercial"} | ${l.city || l.location || l.status || "Active"} |`).join("\n")}` : `* Database pipeline currently contains ${totalLeads} lead records.`}
+${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.contact_name || "Lead Record"}** | ${l.company || l.business_name || "Commercial"} | ${l.city || l.location || l.status || "Active"} |`).join("\n")}` : `* Database pipeline currently contains ${totalLeads} lead records.`}`;
 
----
-
-### 🎯 3. Operational Priorities
-- Advance qualified candidates through recruitment pipeline stages.
-- Maintain regular dispatch schedule for content newsletter pool.
-- Monitor real-time telemetry across recruitment and sales dashboards.`;
-
-      } else if (lowerMsg.includes("lead") || lowerMsg.includes("realestate") || lowerMsg.includes("property")) {
-        responseMarkdown = `### 🏢 Database Lead Results for "${message}"
+      } else {
+        responseMarkdown = `### 🏢 Database Lead & Pipeline Results for "${cleanSearchTopic}"
 
 #### 📋 Pipeline Records (${leadsList.length} Found)
 ${leadsList.length ? `| Business / Name | City / Location | Email / Phone | Status |
 | --- | --- | --- | --- |
-${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.city || "Vijayawada"} | ${l.email || l.phone || "On File"} | ${l.status || "new"} |`).join("\n")}` : `* No matching leads found for "${message}". Total leads in database: ${totalLeads}.`}
+${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.city || "Vijayawada"} | ${l.email || l.phone || "On File"} | ${l.status || "new"} |`).join("\n")}` : `* No matching leads found for "${cleanSearchTopic}". Total leads in database: ${totalLeads}.`}
 
 #### 📈 Lead Pipeline Summary
 - **Total Ingested Leads**: **${totalLeads}**
 - **Active Requisitions**: **${activeReqs}**`;
-
-      } else {
-        responseMarkdown = `## 🤖 GXL Command Center Response
-
-### 🎯 Instruction
-**"${message.slice(0, 120)}"**
-
----
-
-### 📊 Operational Summary
-
-| Domain | Live Metrics | Status | Operational Portal |
-| --- | --- | --- | --- |
-| **Sales & Leads** | ${totalLeads} Ingested Leads | Active | /admin/sales/leads |
-| **Recruitment & Hiring** | ${activeReqs} Open Roles | Operational | /admin/recruitment/operations |
-| **People Operations** | ${activeDepts} Departments | Configured | /admin/people/departments |
-| **Editorial Content** | ${publishedBlogs} Articles | Live | /admin/content |
-
----
-
-### 💡 Strategic Actions
-- Manage active leads and requisitions directly through administrative portals.
-- View detailed telemetry across sales, recruitment, and media channels.`;
       }
     }
 
