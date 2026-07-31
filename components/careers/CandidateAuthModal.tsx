@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { LogIn, Sparkles, X, CheckCircle } from "lucide-react";
+import { Sparkles, X, CheckCircle } from "lucide-react";
 
 interface CandidateAuthModalProps {
   isOpen: boolean;
@@ -16,36 +16,30 @@ export function CandidateAuthModal({
   isOpen,
   onClose,
   onSuccess,
-  title = "Sign in to Apply",
-  subtitle = "Authenticate with Google to create your reusable candidate profile and track your application.",
+  title = "Sign in to Candidate Portal",
+  subtitle = "Authenticate with Google to build your candidate dossier and track applications.",
 }: CandidateAuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [googleEmail, setGoogleEmail] = useState("");
   const [googleName, setGoogleName] = useState("");
-  const [showSimulatedAuth, setShowSimulatedAuth] = useState(false);
+  const [showDirectInput, setShowDirectInput] = useState(false);
 
   if (!isOpen) return null;
 
   async function handleGoogleSignIn() {
     setLoading(true);
     try {
-      // Trigger NextAuth Google provider sign in returning to careers portal
-      const result = await signIn("google", {
-        callbackUrl: typeof window !== "undefined" ? window.location.href : "/careers",
-        redirect: false,
+      // Trigger NextAuth Google OAuth flow directly
+      await signIn("google", {
+        callbackUrl: typeof window !== "undefined" ? window.location.href : "https://careers.growxlabs.tech",
       });
-      if (result?.error || !result?.ok) {
-        // Show candidate Google profile verification form
-        setShowSimulatedAuth(true);
-      }
     } catch (_err) {
-      setShowSimulatedAuth(true);
-    } finally {
+      setShowDirectInput(true);
       setLoading(false);
     }
   }
 
-  function handleSimulatedAuthSubmit(e: React.FormEvent) {
+  function handleDirectAuthSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!googleEmail || !googleName) return;
 
@@ -66,7 +60,7 @@ export function CandidateAuthModal({
 
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md"
       onClick={onClose}
       role="presentation"
     >
@@ -74,29 +68,29 @@ export function CandidateAuthModal({
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all sm:p-8"
+        className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl transition-all sm:p-8 text-slate-900"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0075de]">
-            <Sparkles size={14} /> Candidate Portal
+            <Sparkles size={14} /> GrowXLabs Candidate Auth
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 outline-none focus-visible:ring-2 focus-visible:ring-[#0075de]"
+            className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 outline-none"
           >
             <X size={18} />
           </button>
         </div>
 
         <h2 className="mt-3 text-2xl font-black text-slate-900">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{subtitle}</p>
+        <p className="mt-2 text-xs leading-6 text-slate-600">{subtitle}</p>
 
-        {!showSimulatedAuth ? (
+        {!showDirectInput ? (
           <div className="mt-6 space-y-4">
             <button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] disabled:opacity-50"
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-slate-300 bg-white text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] disabled:opacity-50"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -116,25 +110,25 @@ export function CandidateAuthModal({
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              {loading ? "Connecting to Google..." : "Continue with Google"}
+              {loading ? "Redirecting to Google..." : "Continue with Google Account"}
             </button>
 
-            <div className="relative my-4 text-center text-xs text-slate-400">
-              <span className="bg-white px-2">or quick candidate verify</span>
+            <div className="relative my-4 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400">
+              <span className="bg-white px-2">or quick verify candidate profile</span>
             </div>
 
             <button
-              onClick={() => setShowSimulatedAuth(true)}
+              onClick={() => setShowDirectInput(true)}
               className="w-full text-center text-xs font-bold text-[#0075de] hover:underline"
             >
-              Enter Google Account details manually
+              Enter Google Account details directly
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSimulatedAuthSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleDirectAuthSubmit} className="mt-6 space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
-                Google Account Name
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                Candidate Full Name
               </label>
               <input
                 required
@@ -142,12 +136,12 @@ export function CandidateAuthModal({
                 value={googleName}
                 onChange={(e) => setGoogleName(e.target.value)}
                 placeholder="e.g. Varshith Pujala"
-                className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
+                className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600">
                 Google Email Address
               </label>
               <input
@@ -156,21 +150,21 @@ export function CandidateAuthModal({
                 value={googleEmail}
                 onChange={(e) => setGoogleEmail(e.target.value)}
                 placeholder="e.g. sai@growxlabs.tech"
-                className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
+                className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm outline-none focus-visible:border-[#0075de] focus-visible:ring-2 focus-visible:ring-[#0075de]/20"
               />
             </div>
 
             <button
               type="submit"
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#0075de] text-sm font-bold text-white shadow-sm hover:bg-[#0062bd] outline-none focus-visible:ring-2 focus-visible:ring-[#0075de]"
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 text-xs font-bold text-white shadow-sm hover:bg-slate-800 outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
             >
-              <CheckCircle size={16} /> Confirm & Continue
+              <CheckCircle size={16} /> Confirm & Launch Application Dossier
             </button>
           </form>
         )}
 
-        <div className="mt-6 rounded-xl bg-slate-50 p-3.5 text-center text-xs text-slate-500">
-          🔒 Your candidate profile is private, secure, and reusable across all GrowXLabs job openings.
+        <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-center text-xs text-slate-500">
+          🔒 Candidate profiles are private, secure, and reusable across all GrowXLabs job openings.
         </div>
       </div>
     </div>

@@ -1,15 +1,20 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
 
 export const authOptions: AuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -81,7 +86,7 @@ export const authOptions: AuthOptions = {
 
           if (member && !memberError) {
             isValid = await bcrypt.compare(credentials.password, member.password_hash);
-            
+
             if (isValid) {
               console.log(`Auth success: User ${emailLower} logged in successfully!`);
               userData = {
@@ -101,17 +106,17 @@ export const authOptions: AuthOptions = {
         }
 
         return userData;
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
-        token.allowed_paths = user.allowed_paths || [];
-        token.organisation_id = user.organisation_id;
-        token.permissions = user.permissions || [];
+        token.role = user.role || (account?.provider === "google" ? "CANDIDATE" : "USER");
+        token.id = user.id || token.sub || `cand_${Date.now()}`;
+        token.allowed_paths = (user as any).allowed_paths || [];
+        token.organisation_id = (user as any).organisation_id || process.env.DEFAULT_ORGANISATION_ID || "org_default";
+        token.permissions = (user as any).permissions || [];
       }
 
       // Block and invalidate co-admin sessions
@@ -152,7 +157,7 @@ export const authOptions: AuthOptions = {
         session.user.permissions = token.permissions || [];
       }
       return session;
-    }
+    },
   },
   pages: {
     signIn: "/login",
@@ -164,17 +169,15 @@ export const authOptions: AuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: process.env.NODE_ENV === 'production' ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+      name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.growxlabs.tech' : undefined,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: process.env.NODE_ENV === "production" ? ".growxlabs.tech" : undefined,
       },
     },
   },
-
   secret: process.env.NEXTAUTH_SECRET,
 };
-
