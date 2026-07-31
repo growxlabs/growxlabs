@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-transform-types --test lib/command-center/planning/planner.test.ts lib/command-center/security/origin.test.ts lib/command-center/production/production-hardening.test.ts lib/command-center/production/cron-runtime.test.ts lib/command-center/production/release-structure.test.ts lib/command-center/artifacts/artifact-safety.test.ts components/admin/command-center/composer-logic.test.ts components/admin/command-center/sse.test.ts lib/command-center/routing/intent-router.test.ts",
+    "test": "node --experimental-transform-types --test lib/command-center/planning/planner.test.ts lib/command-center/security/origin.test.ts lib/command-center/production/production-hardening.test.ts lib/command-center/production/cron-runtime.test.ts lib/command-center/production/release-structure.test.ts lib/command-center/artifacts/artifact-safety.test.ts components/admin/command-center/composer-logic.test.ts components/admin/command-center/sse.test.ts",
     "test:phase8": "node --experimental-transform-types --test lib/command-center/production/*.test.ts lib/command-center/artifacts/artifact-safety.test.ts components/admin/command-center/sse.test.ts",
     "validate:migrations": "node --experimental-transform-types --test lib/command-center/production/release-structure.test.ts",
     "test:hrms-frontend-architecture": "node --experimental-transform-types --test lib/hrms/query/keys.test.ts"

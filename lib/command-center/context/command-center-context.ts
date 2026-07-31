@@ -44,17 +44,13 @@ export async function resolveCommandCenterContext(options: ResolveContextOptions
       requestId,
     };
   }
-
   const session = await getServerSession(authOptions);
-  
-  // Resilient fallback defaults for authenticated users
-  const userId = session?.user?.id ?? "usr_admin_default";
-  const organizationId = session?.user?.organisation_id ?? process.env.DEFAULT_ORGANISATION_ID ?? "00000000-0000-0000-0000-000000000000";
-  const workspaceId = process.env.DEFAULT_WORKSPACE_ID ?? "00000000-0000-0000-0000-000000000000";
-
-  const rawRole = session?.user?.role ? session.user.role.toUpperCase() : "ADMIN";
+  if (!session?.user?.id) throw new Error("Authentication is required.");
+  const organizationId = session.user.organisation_id ?? process.env.DEFAULT_ORGANISATION_ID;
+  const workspaceId = process.env.DEFAULT_WORKSPACE_ID;
+  if (!organizationId || !workspaceId) throw new Error("Trusted organisation and workspace configuration is required.");
+  const rawRole = session.user.role.toUpperCase();
   const role: CommandCenterContext["role"] = rawRole === "ADMIN" || rawRole === "CO_ADMIN" ? "admin" : rawRole.includes("MANAGER") ? "manager" : rawRole === "CLIENT" ? "client" : "employee";
-  const permissions = role === "admin" ? [...new Set([...ADMIN_PERMISSIONS, ...(session?.user?.permissions ?? [])])] : [...new Set(session?.user?.permissions ?? [])];
-
-  return { userId, organizationId, workspaceId, role, permissions, requestId };
+  const permissions = role === "admin" ? [...new Set([...ADMIN_PERMISSIONS, ...(session.user.permissions ?? [])])] : [...new Set(session.user.permissions ?? [])];
+  return { userId: session.user.id, organizationId, workspaceId, role, permissions, requestId };
 }

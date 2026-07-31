@@ -7,8 +7,8 @@ test("parses split SSE chunks without losing events", () => {
   assert.equal(first.events.length, 0);
   const second = consumeSSEChunk(first.remainder, "lo\"}\n\nevent: done\ndata: {}\n\n");
   assert.deepEqual(second.events, [
-    { event: "text_delta", data: { text: "hello" }, id: undefined },
-    { event: "done", data: {}, id: undefined },
+    { event: "text_delta", data: { text: "hello" } },
+    { event: "done", data: {} },
   ]);
 });
 

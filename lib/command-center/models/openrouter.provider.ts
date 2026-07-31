@@ -13,9 +13,8 @@ export class OpenRouterProvider {
     return openrouter;
   }
 
-  static getTools(allowedTools?: string[]) {
-    if (!allowedTools) return OPENAI_TOOLS;
-    return OPENAI_TOOLS.filter(t => allowedTools.includes(t.function.name));
+  static getTools() {
+    return OPENAI_TOOLS;
   }
 
   static isConfigured(): boolean {
