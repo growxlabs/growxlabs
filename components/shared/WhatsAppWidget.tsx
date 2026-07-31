@@ -12,7 +12,8 @@ export function WhatsAppWidget() {
   // Hide the widget completely on dashboard, admin, and client console views
   const isDashboardRoute = pathname?.includes('/admin') || 
                            pathname?.includes('/client') || 
-                           pathname?.includes('/dashboard');
+                           pathname?.includes('/dashboard') ||
+                           pathname?.includes('/careers');
 
   // International format for Indian number: 918185958336
   const phoneNumber = '918185958336';

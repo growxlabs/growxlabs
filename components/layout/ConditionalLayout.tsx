@@ -52,7 +52,8 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
                      normalizedPath.includes("/register") || 
                      normalizedPath.includes("/signup");
   
-  const isCareersPage = normalizedPath.includes("/careers");
+  const isCareersSubdomain = typeof window !== "undefined" && window.location.hostname.startsWith("careers.");
+  const isCareersPage = normalizedPath.includes("/careers") || isCareersSubdomain;
   const isCoursesPage = normalizedPath.includes("/courses");
   const isWishGame = normalizedPath.includes("/wish-game");
   const isArchitecture = normalizedPath.includes("/architecture");
