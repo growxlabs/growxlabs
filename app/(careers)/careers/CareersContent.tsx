@@ -2,6 +2,7 @@
 
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -47,6 +48,7 @@ async function getJobs(filters: JobFilters, signal?: AbortSignal): Promise<JobsR
 }
 
 export function CareersContent() {
+  const { data: session, status: authStatus } = useSession();
   const organisationId = process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID ?? "";
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
@@ -60,15 +62,28 @@ export function CareersContent() {
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [applyingJob, setApplyingJob] = useState<CareerJob | null>(null);
 
-  // Restore existing candidate session if signed in
+  // Sync candidate profile from NextAuth session OR persistent local storage
   useEffect(() => {
-    const saved = localStorage.getItem("gxl_candidate_session");
-    if (saved) {
-      try {
-        setCandidate(JSON.parse(saved));
-      } catch (_e) {}
+    if (session?.user) {
+      const activeCandidate = {
+        id: session.user.id || `cand_${session.user.email}`,
+        googleId: session.user.id || "",
+        email: session.user.email,
+        fullName: session.user.name || session.user.email,
+        profilePictureUrl: session.user.image,
+        createdAt: new Date().toISOString(),
+      };
+      setCandidate(activeCandidate);
+      localStorage.setItem("gxl_candidate_session", JSON.stringify(activeCandidate));
+    } else {
+      const saved = localStorage.getItem("gxl_candidate_session");
+      if (saved) {
+        try {
+          setCandidate(JSON.parse(saved));
+        } catch (_e) {}
+      }
     }
-  }, []);
+  }, [session]);
 
   const filters = useMemo<JobFilters>(
     () => ({ query, location, employmentType, organisationId }),
@@ -107,10 +122,17 @@ export function CareersContent() {
 
   function handleJoinTalentNetwork() {
     if (!candidate) {
+      setTalentModalOpen(true);
       setAuthModalOpen(true);
     } else {
       setTalentModalOpen(true);
     }
+  }
+
+  function handleAuthSuccess(authCandidate: any) {
+    setCandidate(authCandidate);
+    localStorage.setItem("gxl_candidate_session", JSON.stringify(authCandidate));
+    setAuthModalOpen(false);
   }
 
   return (
@@ -128,7 +150,7 @@ export function CareersContent() {
                   onClick={() => setDashboardOpen(!dashboardOpen)}
                   className="inline-flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-200 px-4 py-2 text-xs font-bold text-[#0075de] hover:bg-blue-100"
                 >
-                  <User size={14} /> Candidate Portal ({candidate.fullName.split(" ")[0]})
+                  <User size={14} /> Candidate Portal ({candidate.fullName ? candidate.fullName.split(" ")[0] : "Active"})
                 </button>
               </div>
             ) : (
@@ -244,12 +266,7 @@ export function CareersContent() {
       <CandidateAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        onSuccess={(authCandidate) => {
-          setCandidate(authCandidate);
-          if (applyingJob) {
-            // Re-trigger application modal
-          }
-        }}
+        onSuccess={handleAuthSuccess}
       />
 
       {/* 7-Step Job Application Modal */}
