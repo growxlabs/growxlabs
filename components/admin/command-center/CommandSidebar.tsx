@@ -18,8 +18,8 @@ export function CommandSidebar({
 
       {/* Sidebar navigation panel */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col border-r border-slate-200 bg-[#f7f8fa] transition-transform md:static md:z-auto md:w-[248px] md:translate-x-0",
-        open ? "translate-x-0" : "-translate-x-full md:translate-x-0 md:flex",
+        "fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col border-r border-slate-200 bg-[#f7f8fa] transition-all duration-200 md:static md:z-auto",
+        open ? "translate-x-0 md:flex md:w-[248px]" : "-translate-x-full md:hidden md:w-0",
       )} aria-label="Command Center navigation">
         <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-3">
           <button className="flex min-w-0 flex-1 items-center gap-2 rounded-lg p-2 text-left hover:bg-white" aria-label="Switch workspace">
