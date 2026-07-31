@@ -10,39 +10,48 @@ export const getCompanyStatsExecutor: ToolExecutor<z.infer<typeof GetCompanyStat
   riskLevel: "low",
   requiredPermissions: ["leads:read"],
   async execute(_input, context) {
-    const { count: totalLeads, error: countErr } = await supabaseAdmin
-      .from("leads")
-      .select("*", { count: "exact", head: true });
+    let totalLeads = 0;
+    let statusCounts: Record<string, number> = {};
+    let recentLeads: any[] = [];
+    let reqCount = 0;
+    let deptCount = 0;
 
-    if (countErr) throw countErr;
+    try {
+      const res = await supabaseAdmin.from("leads").select("*", { count: "exact", head: true });
+      totalLeads = res.count || 0;
+    } catch (_e) {}
 
-    const { data: statusData, error: statusErr } = await supabaseAdmin
-      .from("leads")
-      .select("status");
+    try {
+      const res = await supabaseAdmin.from("leads").select("status");
+      if (res.data) {
+        res.data.forEach((item: { status: string }) => {
+          const s = item.status || "new";
+          statusCounts[s] = (statusCounts[s] || 0) + 1;
+        });
+      }
+    } catch (_e) {}
 
-    if (statusErr) throw statusErr;
+    try {
+      const res = await supabaseAdmin.from("leads").select("id, business_name, name, city, email, phone, status, lead_score, created_at").order("created_at", { ascending: false }).limit(10);
+      recentLeads = res.data || [];
+    } catch (_e) {}
 
-    const statusCounts: Record<string, number> = {};
-    if (statusData) {
-      statusData.forEach((item: { status: string }) => {
-        const s = item.status || "new";
-        statusCounts[s] = (statusCounts[s] || 0) + 1;
-      });
-    }
+    try {
+      const res = await supabaseAdmin.from("recruitment_requisitions").select("*", { count: "exact", head: true });
+      reqCount = res.count || 0;
+    } catch (_e) {}
 
-    const { data: recentLeads, error: recentErr } = await supabaseAdmin
-      .from("leads")
-      .select("id, business_name, name, city, email, phone, status, lead_score, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5);
-
-    if (recentErr) throw recentErr;
+    try {
+      const res = await supabaseAdmin.from("departments").select("*", { count: "exact", head: true });
+      deptCount = res.count || 0;
+    } catch (_e) {}
 
     return {
-      totalLeads: totalLeads || 0,
-      averageLeadScore: 8.5,
+      totalLeads,
+      activeRequisitions: reqCount,
+      activeDepartments: deptCount,
       statusCounts,
-      recentLeads: recentLeads || [],
+      recentLeads,
       contextScope: { orgId: context.commandContext.organizationId }
     };
   }
@@ -50,18 +59,38 @@ export const getCompanyStatsExecutor: ToolExecutor<z.infer<typeof GetCompanyStat
 
 export const queryLeadsExecutor: ToolExecutor<z.infer<typeof QueryLeadsSchema>, unknown> = {
   name: "query_leads",
-  description: "Query the leads database with optional filters for status, city, or record limit.",
+  description: "Query the leads database with optional filters for status, city, or search terms.",
   inputSchema: QueryLeadsSchema,
   riskLevel: "low",
   requiredPermissions: ["leads:read"],
   async execute(input) {
     let query = supabaseAdmin.from("leads").select("*");
+    
     if (input.status) query = query.eq("status", input.status);
     if (input.city) query = query.ilike("city", `%${input.city}%`);
-    const limit = Math.min(input.limit || 10, 50);
-    const { data, error } = await query.order("created_at", { ascending: false }).limit(limit);
-    if (error) throw error;
-    return data || [];
+    
+    const searchTerm = ((input as any).query || "").trim();
+    if (searchTerm) {
+      const cleanTerm = searchTerm.replace(/[^a-zA-Z0-9\s]/g, "");
+      const words = cleanTerm.split(/\s+/).filter((w: string) => w.length > 2);
+      if (words.length > 0) {
+        const orConditions = words.map((w: string) => `business_name.ilike.%${w}%,city.ilike.%${w}%,notes.ilike.%${w}%,name.ilike.%${w}%`).join(",");
+        query = query.or(orConditions);
+      }
+    }
+
+    const limit = Math.min(input.limit || 15, 50);
+    try {
+      const { data } = await query.order("created_at", { ascending: false }).limit(limit);
+      if (data && data.length > 0) return data;
+    } catch (_e) {}
+
+    try {
+      const { data: crmData } = await supabaseAdmin.from("crm_leads").select("*").limit(limit);
+      return crmData || [];
+    } catch (_e) {
+      return [];
+    }
   }
 };
 
@@ -90,78 +119,49 @@ export const createLeadExecutor: ToolExecutor<z.infer<typeof CreateLeadSchema>, 
 
     if (error) throw error;
 
-    await supabaseAdmin
-      .from("crm_leads")
-      .insert([{
-        business_name: input.business_name,
-        contact_name: input.name || input.business_name,
-        email: input.email,
-        phone: input.phone,
-        city: input.city,
-        status: "new"
-      }]);
+    try {
+      await supabaseAdmin
+        .from("crm_leads")
+        .insert([{
+          business_name: input.business_name,
+          contact_name: input.name || input.business_name,
+          email: input.email,
+          phone: input.phone,
+          city: input.city,
+          status: "new",
+          source: "command_center"
+        }]);
+    } catch (_e) {}
 
     return data;
   }
 };
 
 export const createLeadsBatchExecutor: ToolExecutor<z.infer<typeof BatchCreateLeadsSchema>, unknown> = {
-  name: "create_leads_batch",
-  description: "Insert multiple new lead records into the database at once.",
+  name: "batch_create_leads",
+  description: "Insert multiple lead records into the database in bulk.",
   inputSchema: BatchCreateLeadsSchema,
   riskLevel: "high",
   requiredPermissions: ["leads:write"],
   async execute(input) {
-    if (!input.leads || input.leads.length === 0) {
-      return { success: false, message: "No leads provided" };
-    }
-
-    const processedLeads = input.leads.map(lead => {
-      const bName = lead.business_name || "Unknown Business";
-      const cName = lead.name || bName;
-      return {
-        business_name: bName,
-        name: cName,
-        contact_name: cName,
-        email: lead.email || null,
-        phone: lead.phone || null,
-        city: lead.city || null,
-        website_url: lead.website_url || null,
-        notes: lead.notes || null,
-        status: "new",
-        lead_score: 5,
-        created_at: new Date().toISOString()
-      };
-    });
-
-    const { error: e1 } = await supabaseAdmin.from("leads").insert(processedLeads.map(l => ({
+    const rows = input.leads.map(l => ({
       business_name: l.business_name,
-      name: l.name,
+      city: l.city,
       email: l.email,
       phone: l.phone,
-      city: l.city,
-      website_url: l.website_url,
-      notes: l.notes,
-      status: l.status,
-      lead_score: l.lead_score,
-      created_at: l.created_at
-    })));
+      name: l.name || null,
+      website_url: l.website_url || null,
+      notes: l.notes || null,
+      status: "new",
+      lead_score: 5
+    }));
 
-    const { error: e2 } = await supabaseAdmin.from("crm_leads").insert(processedLeads.map(l => ({
-      business_name: l.business_name,
-      contact_name: l.contact_name,
-      email: l.email,
-      phone: l.phone,
-      city: l.city,
-      status: l.status,
-      created_at: l.created_at
-    })));
+    const { data, error } = await supabaseAdmin
+      .from("leads")
+      .insert(rows)
+      .select();
 
-    if (e1 || e2) {
-      const err = e2 || e1;
-      throw new Error(`Database Error: ${err?.message}`);
-    }
-
-    return { success: true, count: processedLeads.length };
+    if (error) throw error;
+    return { createdCount: data?.length || 0, leads: data || [] };
   }
 };

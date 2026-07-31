@@ -153,16 +153,6 @@ export class LegacyCommandProcessor {
             if (call.name === "generate_proposal" && !toolResult.error) {
               proposalData = toolResult;
             }
-            if (call.name === "get_company_stats" && !toolResult.error) {
-              chartData = [
-                { month: "Jan", revenue: 45000 },
-                { month: "Feb", revenue: 62000 },
-                { month: "Mar", revenue: 58000 },
-                { month: "Apr", revenue: 75000 },
-                { month: "May", revenue: 90000 },
-                { month: "Jun", revenue: 120000 }
-              ];
-            }
 
             currentContents.push({ role: "model", parts: [{ functionCall: call }] });
             currentContents.push({
@@ -284,16 +274,6 @@ export class LegacyCommandProcessor {
               if (fnName === "generate_proposal" && !toolResult.error) {
                 proposalData = toolResult;
               }
-              if (fnName === "get_company_stats" && !toolResult.error) {
-                chartData = [
-                  { month: "Jan", revenue: 45000 },
-                  { month: "Feb", revenue: 62000 },
-                  { month: "Mar", revenue: 58000 },
-                  { month: "Apr", revenue: 75000 },
-                  { month: "May", revenue: 90000 },
-                  { month: "Jun", revenue: 120000 }
-                ];
-              }
 
               openRouterMessages.push({
                 role: "tool",
@@ -336,208 +316,131 @@ export class LegacyCommandProcessor {
       }
     }
 
-    // 3. SMART AUTONOMOUS INTENT DISPATCHER
+    // 3. DYNAMIC DATABASE DISPATCHER & SYNTHESIZER
     const lowerMsg = message.toLowerCase();
     let responseMarkdown = "";
 
-    // 3A. OPERATING BRIEF / WEEKLY SUMMARY DISPATCHER
+    // Execute real tools to fetch dynamic database data
+    const statsId = "get_company_stats-" + Date.now();
+    executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
+    writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
+
+    let companyStats: any = {};
+    try {
+      companyStats = await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+    } catch (_e) {}
+
+    const sIdx = executedToolCalls.findIndex(t => t.id === statsId);
+    if (sIdx !== -1) {
+      executedToolCalls[sIdx].status = "complete";
+      executedToolCalls[sIdx].result = companyStats;
+    }
+    writer.sendEvent("tool_result", { name: "get_company_stats", result: companyStats });
+
+    const leadsId = "query_leads-" + Date.now();
+    executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
+    writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
+
+    let leadsData: any = [];
+    try {
+      leadsData = await ToolRegistry.executeTool("query_leads", { query: message, limit: 15 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+    } catch (_e) {}
+
+    const lIdx = executedToolCalls.findIndex(t => t.id === leadsId);
+    if (lIdx !== -1) {
+      executedToolCalls[lIdx].status = "complete";
+      executedToolCalls[lIdx].result = leadsData;
+    }
+    writer.sendEvent("tool_result", { name: "query_leads", result: leadsData });
+
+    const blogId = "get_blog_posts_stats-" + Date.now();
+    executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
+    writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
+
+    let blogStats: any = {};
+    try {
+      blogStats = await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
+    } catch (_e) {}
+
+    const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
+    if (bIdx !== -1) {
+      executedToolCalls[bIdx].status = "complete";
+      executedToolCalls[bIdx].result = blogStats;
+    }
+    writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: blogStats });
+
+    // Format DYNAMIC DATABASE DATA into responseMarkdown
+    const totalLeads = companyStats.totalLeads ?? (Array.isArray(leadsData) ? leadsData.length : 0);
+    const activeReqs = companyStats.activeRequisitions ?? 0;
+    const activeDepts = companyStats.activeDepartments ?? 0;
+    const publishedBlogs = blogStats.publishedCount ?? 0;
+    const draftBlogs = blogStats.draftCount ?? 0;
+    const leadsList = Array.isArray(leadsData) ? leadsData : (Array.isArray(companyStats.recentLeads) ? companyStats.recentLeads : []);
+
     if (lowerMsg.includes("brief") || lowerMsg.includes("operating") || lowerMsg.includes("weekly") || lowerMsg.includes("report") || lowerMsg.includes("overview") || lowerMsg.includes("summary")) {
-      const statsId = "get_company_stats-" + Date.now();
-      executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
-      writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
-      await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl }).catch(() => null);
-      const sIdx = executedToolCalls.findIndex(t => t.id === statsId);
-      if (sIdx !== -1) executedToolCalls[sIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "get_company_stats", result: { success: true } });
+      responseMarkdown = `## 📋 Executive Operating Brief — GrowX Labs
 
-      const blogId = "get_blog_posts_stats-" + Date.now();
-      executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
-      writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
-      await ToolRegistry.executeTool("get_blog_posts_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl }).catch(() => null);
-      const bIdx = executedToolCalls.findIndex(t => t.id === blogId);
-      if (bIdx !== -1) executedToolCalls[bIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "get_blog_posts_stats", result: { success: true } });
+### 📊 1. Live Database Telemetry Summary
+- **Total Leads Ingested**: **${totalLeads} Records**
+- **Active Job Requisitions**: **${activeReqs} Positions**
+- **Configured Departments**: **${activeDepts} Functional Units**
+- **Published Content**: **${publishedBlogs} Articles** (${draftBlogs} Pending Drafts)
 
-      const leadId = "query_leads-" + Date.now();
-      executedToolCalls.push({ id: leadId, name: "query_leads", args: { query: "active" }, status: "calling" });
-      writer.sendEvent("tool_call", { name: "query_leads", args: { query: "active" } });
-      await ToolRegistry.executeTool("query_leads", { query: "active" }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl }).catch(() => null);
-      const lIdx = executedToolCalls.findIndex(t => t.id === leadId);
-      if (lIdx !== -1) executedToolCalls[lIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "query_leads", result: { success: true } });
-
-      responseMarkdown = `## 📋 Weekly Executive Operating Brief — GrowX Labs
-
-### 📊 1. Executive Revenue & Financial Summary
-- **Gross Monthly Revenue**: **$120,000** (Up +33% Month-over-Month)
-- **Active Client Portfolio**: **48 Enterprise Clients**
-- **Lead Pipeline Value**: **$1,250,000**
-- **Deal Conversion Rate**: **24.5%**
-
-| Metric | Previous Quarter | Current Quarter | Target | Status |
-| --- | --- | --- | --- | --- |
-| Revenue Run-Rate | $360,000 | $492,000 | $500,000 | On Track |
-| Active Requisitions | 14 | 22 | 20 | Exceeded |
-| Engineering Projects | 8 | 12 | 10 | On Track |
-| Candidate Pipeline | 185 | 340 | 300 | Exceeded |
+| Metric | Live Database Count | Primary Status | Path |
+| --- | --- | --- | --- |
+| Customer Pipeline | ${totalLeads} Leads | Active | /admin/sales/leads |
+| Recruitment Openings | ${activeReqs} Requisitions | Operational | /admin/recruitment/operations |
+| Department Headcount | ${activeDepts} Departments | Configured | /admin/people/departments |
+| Editorial Media | ${publishedBlogs} Published | Live | /admin/content |
 
 ---
 
-### 🚀 2. Operational Department Breakdown
-
-#### 💼 Sales & Commercial Operations
-- **New Opportunities**: 24 qualified leads added this week.
-- **Top Sectors**: Real Estate, SaaS, Healthcare Technology, and Financial Services.
-- **Key Pipeline Action**: 6 client proposal SOWs pending final signature.
-
-#### 👥 HRMS & Recruitment Operations
-- **Active Requisitions**: 22 open engineering & executive positions.
-- **Department Headcount**: Active team allocation across Engineering, Product, and Sales.
-
-#### ✍️ Content, SEO & Media Dispatches
-- **Blog & Newsletter Telemetry**: 12 published articles, 4 pending dispatches.
-- **Live Careers Portal**: Active job postings online.
-
----
-
-### 🎯 3. Strategic Action Items for Next Week
-- Complete client onboarding for newly signed enterprise accounts.
-- Review candidate interview shortlists for open Senior Engineering positions.
-- Finalize Q3 revenue projections with the CFO Agent.`;
-
-    } else if (lowerMsg.includes("lead") || lowerMsg.includes("realestate") || lowerMsg.includes("real estate") || lowerMsg.includes("property")) {
-      const toolCallId = "query_leads-" + Date.now();
-      executedToolCalls.push({ id: toolCallId, name: "query_leads", args: { query: message }, status: "calling" });
-      writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
-
-      let leadResult: any;
-      try {
-        leadResult = await ToolRegistry.executeTool("query_leads", { query: message, limit: 10 }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (e: any) {
-        leadResult = { error: e.message };
-      }
-
-      const tcIdx = executedToolCalls.findIndex(t => t.id === toolCallId);
-      if (tcIdx !== -1) executedToolCalls[tcIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "query_leads", result: leadResult });
-
-      const webCallId = "search_web-" + Date.now();
-      executedToolCalls.push({ id: webCallId, name: "search_web", args: { query: message }, status: "calling" });
-      writer.sendEvent("tool_call", { name: "search_web", args: { query: message } });
-
-      let searchResult: any;
-      try {
-        searchResult = await ToolRegistry.executeTool("search_web", { query: message }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (e: any) {
-        searchResult = { error: e.message };
-      }
-
-      const webIdx = executedToolCalls.findIndex(t => t.id === webCallId);
-      if (webIdx !== -1) executedToolCalls[webIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "search_web", result: searchResult });
-
-      const leadsList = Array.isArray(leadResult?.leads) ? leadResult.leads : [];
-      const searchItems = Array.isArray(searchResult?.results) ? searchResult.results : [];
-
-      responseMarkdown = `### 🏢 Lead Search Results for "${message}"
-
-#### 📋 Database Lead Pipeline
+### 💼 2. Recent Database Lead Pipeline
 ${leadsList.length ? `| Name / Contact | Company / Sector | Location / Status |
 | --- | --- | --- |
-${leadsList.map((l: any) => `| **${l.name || l.contact_name || "Lead"}** | ${l.company || "Real Estate"} | ${l.location || l.city || "Active"} |`).join("\n")}` : `* No matching leads found in local database pipeline.`}
+${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.contact_name || "Lead Record"}** | ${l.company || l.business_name || "Commercial"} | ${l.city || l.location || l.status || "Active"} |`).join("\n")}` : `* Database pipeline currently contains ${totalLeads} lead records.`}
 
-#### 🌐 Live Web Search Results
-${searchItems.length ? searchItems.slice(0, 5).map((s: any) => `* **${s.title}**: ${s.snippet} [${s.link || "Link"}]`).join("\n") : `* Searched web sources for real estate leads.`}`;
+---
 
-    } else if (lowerMsg.includes("stat") || lowerMsg.includes("metric") || lowerMsg.includes("revenue") || lowerMsg.includes("company")) {
-      const toolCallId = "get_company_stats-" + Date.now();
-      executedToolCalls.push({ id: toolCallId, name: "get_company_stats", args: {}, status: "calling" });
-      writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
+### 🎯 3. Operational Priorities
+- Advance qualified candidates through recruitment pipeline stages.
+- Maintain regular dispatch schedule for content newsletter pool.
+- Monitor real-time telemetry across recruitment and sales dashboards.`;
 
-      let statsResult: any;
-      try {
-        statsResult = await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (e: any) {
-        statsResult = { error: e.message };
-      }
+    } else if (lowerMsg.includes("lead") || lowerMsg.includes("realestate") || lowerMsg.includes("property")) {
+      responseMarkdown = `### 🏢 Database Lead Results for "${message}"
 
-      const tcIdx = executedToolCalls.findIndex(t => t.id === toolCallId);
-      if (tcIdx !== -1) executedToolCalls[tcIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "get_company_stats", result: statsResult });
-
-      responseMarkdown = `### 📊 GrowX Labs Company Performance & Metrics
-
-#### 📈 Key Operating Highlights
-- **Total Revenue**: **$492,000**
-- **Active Clients**: **48**
-- **Pipeline Value**: **$1,250,000**
-- **Lead Conversion Rate**: **24.5%**
-
-| Month | Revenue | New Leads | Active Projects |
+#### 📋 Pipeline Records (${leadsList.length} Found)
+${leadsList.length ? `| Business / Name | City / Location | Email / Phone | Status |
 | --- | --- | --- | --- |
-| Jan | $45,000 | 120 | 12 |
-| Feb | $62,000 | 145 | 15 |
-| Mar | $58,000 | 130 | 14 |
-| Apr | $75,000 | 160 | 18 |
-| May | $90,000 | 190 | 22 |
-| Jun | $120,000 | 240 | 28 |`;
+${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.city || "Vijayawada"} | ${l.email || l.phone || "On File"} | ${l.status || "new"} |`).join("\n")}` : `* No matching leads found for "${message}". Total leads in database: ${totalLeads}.`}
 
-    } else if (lowerMsg.includes("search") || lowerMsg.includes("find") || lowerMsg.includes("lookup")) {
-      const toolCallId = "search_web-" + Date.now();
-      executedToolCalls.push({ id: toolCallId, name: "search_web", args: { query: message }, status: "calling" });
-      writer.sendEvent("tool_call", { name: "search_web", args: { query: message } });
-
-      let searchResult: any;
-      try {
-        searchResult = await ToolRegistry.executeTool("search_web", { query: message }, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl });
-      } catch (e: any) {
-        searchResult = { error: e.message };
-      }
-
-      const tcIdx = executedToolCalls.findIndex(t => t.id === toolCallId);
-      if (tcIdx !== -1) executedToolCalls[tcIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "search_web", result: searchResult });
-
-      const searchItems = Array.isArray(searchResult?.results) ? searchResult.results : [];
-
-      responseMarkdown = `### 🌐 Search Results for "${message}"
-
-#### 🔎 Information Summary
-${searchItems.length ? searchItems.slice(0, 5).map((s: any) => `* **${s.title}**: ${s.snippet}`).join("\n") : `* Search complete. Web results analyzed.`}`;
+#### 📈 Lead Pipeline Summary
+- **Total Ingested Leads**: **${totalLeads}**
+- **Active Requisitions**: **${activeReqs}**`;
 
     } else {
-      // UNIVERSAL INTENT DISPATCHER FOR ALL OTHER INSTRUCTIONS
-      const toolCallId = "get_company_stats-" + Date.now();
-      executedToolCalls.push({ id: toolCallId, name: "get_company_stats", args: {}, status: "calling" });
-      writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
-
-      await ToolRegistry.executeTool("get_company_stats", {}, { commandContext, sendEvent: (e, d) => writer.sendEvent(e as any, d), baseUrl }).catch(() => null);
-      const tcIdx = executedToolCalls.findIndex(t => t.id === toolCallId);
-      if (tcIdx !== -1) executedToolCalls[tcIdx].status = "complete";
-      writer.sendEvent("tool_result", { name: "get_company_stats", result: { success: true } });
-
       responseMarkdown = `## 🤖 GXL Command Center Executive Response
 
-### 🎯 Instruction Analysis & Scope
-I have evaluated your request: **"${message.slice(0, 120)}"** and executed the required agent subroutines.
+### 🎯 Instruction
+**"${message.slice(0, 120)}"**
 
 ---
 
-### 📊 Operational Overview & Execution Summary
+### 📊 Live Database Operational Summary
 
-| Domain | Status | Active Systems |
-| --- | --- | --- |
-| **Sales & Growth** | Operational | Lead Database & Proposals |
-| **Recruitment & HRMS** | Operational | Job Openings & Departments |
-| **People Operations** | Operational | Org Structure & Headcount |
-| **Careers Platform** | Live | Public Job Applications |
+| Domain | Live Metrics | Status | Operational Portal |
+| --- | --- | --- | --- |
+| **Sales & Leads** | ${totalLeads} Ingested Leads | Active | /admin/sales/leads |
+| **Recruitment & Hiring** | ${activeReqs} Open Roles | Operational | /admin/recruitment/operations |
+| **People Operations** | ${activeDepts} Departments | Configured | /admin/people/departments |
+| **Editorial Content** | ${publishedBlogs} Articles | Live | /admin/content |
 
 ---
 
-### 💡 Strategic Recommendations
-- **Pipeline Progression**: Maintain proactive follow-ups on active client lead requests.
-- **Resource Allocation**: Align engineering team capacity with current enterprise project deliverables.
-- **Continuous Audit**: Monitor real-time telemetry across recruitment, finance, and marketing dashboards.`;
+### 💡 Strategic Actions
+- Manage active leads and requisitions directly through administrative portals.
+- View detailed telemetry across sales, recruitment, and media channels.`;
     }
 
     const words = responseMarkdown.split(" ");
