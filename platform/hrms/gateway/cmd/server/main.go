@@ -36,6 +36,10 @@ func main() {
 	onboarding := mustURL(env("ONBOARDING_SERVICE_URL", "http://localhost:8084"))
 	assets := mustURL(env("ASSETS_SERVICE_URL", "http://localhost:8085"))
 	learning := mustURL(env("LEARNING_SERVICE_URL", "http://localhost:8086"))
+	performance := mustURL(env("PERFORMANCE_SERVICE_URL", "http://localhost:8087"))
+	payroll := mustURL(env("PAYROLL_SERVICE_URL", "http://localhost:8088"))
+	workforce := mustURL(env("WORKFORCE_SERVICE_URL", "http://localhost:8089"))
+	platform := mustURL(env("PLATFORM_SERVICE_URL", "http://localhost:8090"))
 	rateLimit := &limiter{hits: map[string][]time.Time{}, limit: 120, window: time.Minute, redisURL: strings.TrimRight(os.Getenv("UPSTASH_REDIS_REST_URL"), "/"), redisToken: os.Getenv("UPSTASH_REDIS_REST_TOKEN"), client: &http.Client{Timeout: 2 * time.Second}}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { w.Write([]byte("ok")) })
@@ -51,6 +55,10 @@ func main() {
 	mux.Handle("/v1/documents/", secured(proxy(people, "/v1/documents")))
 	mux.Handle("/v1/assets/", secured(proxy(assets, "/v1/assets")))
 	mux.Handle("/v1/learning/", secured(proxy(learning, "/v1/learning")))
+	mux.Handle("/v1/performance/", secured(proxy(performance, "/v1/performance")))
+	mux.Handle("/v1/payroll/", secured(proxy(payroll, "/v1/payroll")))
+	mux.Handle("/v1/workforce/", secured(proxy(workforce, "/v1/workforce")))
+	mux.Handle("/v1/platform/", secured(proxy(platform, "/v1/platform")))
 	server := &http.Server{Addr: env("HRMS_GATEWAY_ADDR", ":8080"), Handler: requestContext(rateLimit.wrap(mux)), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second}
 	log.Printf("HRMS gateway listening on %s", server.Addr)
 	log.Fatal(server.ListenAndServe())

@@ -40,6 +40,8 @@ func main() {
 	mux.HandleFunc("GET /enrollments", a.auth([]string{"learning.view", "learning.assign", "learning.manage"}, a.enrollments))
 	mux.HandleFunc("PATCH /enrollments/{id}/lessons/{lessonId}", a.auth([]string{"learning.view"}, a.updateLesson))
 	mux.HandleFunc("GET /certificates/{verificationId}", a.auth([]string{"learning.view", "learning.manage"}, a.certificate))
+	mux.HandleFunc("POST /v1/learning/ai/recommendations", a.aiRecommendations)
+	mux.HandleFunc("POST /v1/learning/ai/skill-gaps", a.aiSkillGaps)
 	server := &http.Server{Addr: env("LEARNING_SERVICE_ADDR", ":8086"), Handler: mux, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second}
 	log.Fatal(server.ListenAndServe())
 }
@@ -209,6 +211,27 @@ func writeRows(w http.ResponseWriter, rows pgx.Rows) {
 	}
 	write(w, 200, map[string]any{"items": items})
 }
+func (a *app) aiRecommendations(w http.ResponseWriter, r *http.Request) {
+	ai := NewAILearningAssistant()
+	var body struct {
+		Role string `json:"role"`
+	}
+	_ = json.NewDecoder(r.Body).Decode(&body)
+	recs := ai.RecommendCourses(body.Role)
+	write(w, 200, map[string]any{"recommendations": recs})
+}
+
+func (a *app) aiSkillGaps(w http.ResponseWriter, r *http.Request) {
+	ai := NewAILearningAssistant()
+	var body struct {
+		TargetRole string   `json:"target_role"`
+		Skills     []string `json:"skills"`
+	}
+	_ = json.NewDecoder(r.Body).Decode(&body)
+	gaps := ai.DetectSkillGaps(body.Skills, body.TargetRole)
+	write(w, 200, gaps)
+}
+
 func env(k, f string) string {
 	if v := os.Getenv(k); v != "" {
 		return v

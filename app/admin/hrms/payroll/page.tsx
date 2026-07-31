@@ -1,67 +1,48 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import { PayrollSlipBuilder } from "@/components/admin/hrms/PayrollSlipBuilder";
-import { Card } from "@/components/ui/Card";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { PayrollProcessingStudio } from "@/components/payroll/PayrollProcessingStudio";
+import { ReimbursementConsole } from "@/components/payroll/ReimbursementConsole";
+import { AIPayrollAssistant } from "@/components/payroll/AIPayrollAssistant";
 
-export default function PayrollPage() {
-  const [payrolls, setPayrolls] = useState<any[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-
-  useEffect(() => { fetchData(); }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [payRes, empRes] = await Promise.all([
-        fetch("/api/hrms/payroll"),
-        fetch("/api/hrms/employees")
-      ]);
-      const payData = await payRes.json();
-      const empData = await empRes.json();
-      setPayrolls(payData.payrolls || []);
-      setEmployees(empData.employees || []);
-    } catch (e) { console.error(e); } finally { setLoading(false); }
-  };
-
-  const handleGenerate = async (month: string, employeeIds: string[]) => {
-    try {
-      setGenerating(true);
-      const ids = employeeIds.length > 0 ? employeeIds : employees.map((e: any) => e.id);
-      const res = await fetch("/api/hrms/payroll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payroll_month: month, employee_ids: ids })
-      });
-      if (res.ok) fetchData();
-    } catch (e) { console.error(e); } finally { setGenerating(false); }
-  };
-
-  const latestPayroll = payrolls[0];
-  const payrollItems = latestPayroll?.payroll_items || [];
+export default function HRMSPayrollAdminPage() {
+  const [activeTab, setActiveTab] = useState<"runs" | "reimbursements" | "ai">("runs");
 
   return (
-    <div className="space-y-8 text-[var(--text-primary)]">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight leading-none">Payroll Management</h1>
-        <p className="text-[var(--text-secondary)] text-xs">Generate monthly payslips with PF, ESI, and TDS deductions.</p>
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
+        <div>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-500 font-bold">[ HRMS RELEASE 08 ]</span>
+          <h1 className="text-3xl font-black tracking-tight text-foreground mt-1">Payroll, Compensation & Benefits</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Deterministic payroll calculation, statutory compliance (PF, ESI, IT), reimbursements, and cost forecasting.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 bg-neutral-900 p-1.5 rounded-xl border border-neutral-800">
+          {[
+            { id: "runs", label: "Payroll Runs" },
+            { id: "reimbursements", label: "Reimbursements" },
+            { id: "ai", label: "AI Forecast" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                activeTab === tab.id
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {loading ? (
-        <div className="h-64 flex items-center justify-center">
-          <Loader2 className="animate-spin text-[#0075de] h-8 w-8" />
-        </div>
-      ) : (
-        <PayrollSlipBuilder
-          payrollItems={payrollItems}
-          payrollMonth={latestPayroll?.payroll_month || ""}
-          onGenerate={handleGenerate}
-        />
-      )}
-    </div>
+      {activeTab === "runs" && <PayrollProcessingStudio />}
+      {activeTab === "reimbursements" && <ReimbursementConsole />}
+      {activeTab === "ai" && <AIPayrollAssistant />}
+    </main>
   );
 }
