@@ -1,0 +1,48 @@
+/* Timeline step entrance animation */
+@keyframes cc-slide-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.cc-timeline-step {
+  animation: cc-slide-in 0.25s ease-out both;
+}
+
+.cc-timeline-step:nth-child(1) { animation-delay: 0ms; }
+.cc-timeline-step:nth-child(2) { animation-delay: 60ms; }
+.cc-timeline-step:nth-child(3) { animation-delay: 120ms; }
+.cc-timeline-step:nth-child(4) { animation-delay: 180ms; }
+.cc-timeline-step:nth-child(5) { animation-delay: 240ms; }
+.cc-timeline-step:nth-child(6) { animation-delay: 300ms; }
+.cc-timeline-step:nth-child(7) { animation-delay: 360ms; }
+
+/* Widget expand/collapse */
+@keyframes cc-widget-enter {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 600px; }
+}
+
+.cc-widget-card {
+  animation: cc-widget-enter 0.3s ease-out both;
+  overflow: hidden;
+}
+
+/* Status badge transitions */
+.cc-status-badge {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Capability row fade */
+@keyframes cc-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cc-capability-row {
+  animation: cc-fade-in 0.2s ease-out both;
+}
+
+/* Flyout tab indicator */
+.cc-tab-indicator {
+  transition: left 0.2s ease, width 0.2s ease;
+}

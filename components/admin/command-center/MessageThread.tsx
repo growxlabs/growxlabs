@@ -4,6 +4,7 @@ import { AlertTriangle, Bot, Check, CheckCircle2, Clipboard, FileText, Loader2, 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { CommandMessage } from "./command-center.types";
+import { ExecutionTimeline } from "./ExecutionTimeline";
 
 export function MessageThread({ messages, busy, onSuggestion }: { messages: CommandMessage[]; busy: boolean; onSuggestion: (text: string) => void }) {
   if (!messages.length) return (
@@ -58,37 +59,9 @@ function MessageItem({ message, streaming }: { message: CommandMessage; streamin
           )}
         </div>
 
-        {/* Agent Tool Activity Widget */}
+        {/* Execution Timeline (Agentic UX) — replaces flat tool cards with structured timeline */}
         {message.toolCalls?.length ? (
-          <div className="mt-3 space-y-2">
-            {message.toolCalls.map((tool) => {
-              const toolTitle = getToolTitle(tool.name, tool.summary);
-              const statusStr = String(tool.status || "").toLowerCase();
-              const isComplete = statusStr === "complete" || statusStr === "completed" || !tool.status;
-              return (
-                <details key={tool.id} className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 text-left text-xs transition hover:bg-slate-100/80">
-                  <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-800">
-                    <div className="flex items-center gap-2">
-                      <FileText size={14} className="text-[#0075de]" />
-                      <span>{toolTitle}</span>
-                    </div>
-                    {isComplete ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 border border-emerald-200">
-                        <CheckCircle2 size={11} /> Complete
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 border border-blue-200">
-                        <Loader2 size={11} className="animate-spin" /> Executing
-                      </span>
-                    )}
-                  </summary>
-                  <p className="mt-2 border-t border-slate-200 pt-2 text-[11px] text-slate-500">
-                    Tool: <code className="font-mono text-slate-700">{tool.name}</code>. Sensitive inputs and raw payloads are hidden.
-                  </p>
-                </details>
-              );
-            })}
-          </div>
+          <ExecutionTimeline toolCalls={message.toolCalls} collapsed={!streaming} />
         ) : null}
 
         {!user && message.text && (
