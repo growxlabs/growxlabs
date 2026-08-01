@@ -58,38 +58,8 @@ function MessageItem({ message, streaming }: { message: CommandMessage; streamin
           )}
         </div>
 
-        {/* Agent Tool Activity Widget */}
-        {message.toolCalls?.length ? (
-          <div className="mt-3 space-y-2">
-            {message.toolCalls.map((tool) => {
-              const toolTitle = getToolTitle(tool.name, tool.summary);
-              const statusStr = String(tool.status || "").toLowerCase();
-              const isComplete = statusStr === "complete" || statusStr === "completed" || !tool.status;
-              return (
-                <details key={tool.id} className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 text-left text-xs transition hover:bg-slate-100/80">
-                  <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-800">
-                    <div className="flex items-center gap-2">
-                      <FileText size={14} className="text-[#0075de]" />
-                      <span>{toolTitle}</span>
-                    </div>
-                    {isComplete ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 border border-emerald-200">
-                        <CheckCircle2 size={11} /> Complete
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 border border-blue-200">
-                        <Loader2 size={11} className="animate-spin" /> Executing
-                      </span>
-                    )}
-                  </summary>
-                  <p className="mt-2 border-t border-slate-200 pt-2 text-[11px] text-slate-500">
-                    Tool: <code className="font-mono text-slate-700">{tool.name}</code>. Sensitive inputs and raw payloads are hidden.
-                  </p>
-                </details>
-              );
-            })}
-          </div>
-        ) : null}
+        {/* Real Agent Activity Widget */}
+        <ToolCallActivityWidget toolCalls={message.toolCalls} />
 
         {!user && message.text && (
           <button
@@ -270,3 +240,63 @@ function formatInlineMarkdown(text: string): React.ReactNode {
     return part;
   });
 }
+
+function ToolCallActivityWidget({ toolCalls }: { toolCalls?: CommandMessage["toolCalls"] }) {
+  const [open, setOpen] = useState(false);
+  if (!toolCalls || toolCalls.length === 0) return null;
+
+  return (
+    <div className="my-3 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] text-xs">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between px-3 py-2 text-left font-medium text-[#475569] hover:bg-[#f1f5f9]"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[#0877d1]">⚙</span>
+          <span>Real Agent Activity ({toolCalls.length})</span>
+        </div>
+        <span>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div className="border-t border-[#e2e8f0] p-3 space-y-3">
+          {toolCalls.map((tc, idx) => {
+            const formatArgs = () => {
+              if (!tc.args || Object.keys(tc.args).length === 0) return null;
+              return (
+                <pre className="mt-1 overflow-x-auto rounded bg-[#0f172a] p-2 text-[11px] text-[#f8fafc]">
+                  {JSON.stringify(tc.args, null, 2)}
+                </pre>
+              );
+            };
+
+            const formatResult = () => {
+              if (!tc.result) return null;
+              return (
+                <pre className="mt-1 max-h-48 overflow-auto rounded bg-[#0f172a] p-2 text-[11px] text-[#38bdf8]">
+                  {typeof tc.result === "string" ? tc.result : JSON.stringify(tc.result, null, 2)}
+                </pre>
+              );
+            };
+
+            return (
+              <div key={tc.id || idx} className="rounded border border-[#e2e8f0] bg-white p-2.5">
+                <div className="flex items-center justify-between font-mono text-[11px]">
+                  <span className="font-bold text-[#0f172a]">
+                    ✓ {tc.name}
+                  </span>
+                  <span className="text-[#64748b]">
+                    {tc.status === "calling" ? "Running..." : "Finished"}
+                  </span>
+                </div>
+                {formatArgs()}
+                {formatResult()}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+

@@ -13,6 +13,8 @@ export interface ToolActivity {
   name: string;
   status: "calling" | "complete" | "error";
   summary: string;
+  args?: Record<string, any>;
+  result?: any;
 }
 
 export interface ActivityItem {
