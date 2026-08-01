@@ -209,7 +209,7 @@ export function CommandCenterWorkspace() {
       });
     } else if (event === "tool_call") {
       const name = safeString(value.name);
-      const tool: ToolActivity = { id: crypto.randomUUID(), name, status: "calling", summary: safeToolLabel(name) };
+      const tool: ToolActivity = { id: crypto.randomUUID(), name, status: "calling", summary: safeToolLabel(name), args: value.args || undefined };
       setMessages((items) => {
         const updated = items.map((item) => item.id === agentMessageId ? { ...item, toolCalls: [...(item.toolCalls ?? []), tool] } : item);
         try { localStorage.setItem(`gxl_cc_msgs_${conversationId}`, JSON.stringify(updated)); } catch (_e) {}
@@ -224,7 +224,7 @@ export function CommandCenterWorkspace() {
           return {
             ...item,
             toolCalls: item.toolCalls.map((tc) =>
-              tc.name === name && tc.status === "calling" ? { ...tc, status: "complete" as const } : tc
+              tc.name === name && tc.status === "calling" ? { ...tc, status: "complete" as const, result: value.result || undefined } : tc
             ),
           };
         });
