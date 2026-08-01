@@ -262,26 +262,50 @@ export default function ProposalsPage() {
       `}</style>
 
       {/* Header */}
-      <div className="flex justify-between items-center no-print border-b border-zinc-800/40 pb-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-             <div className="h-8 w-8 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                <Rocket size={16} />
-             </div>
-             <h1 className="text-3xl font-black text-white flex items-center gap-3 tracking-tight italic">
-                Proposal Engine v2
-             </h1>
+      <div className="no-print space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+               <div className="h-10 w-10 bg-gradient-to-br from-[#355CFF] to-[#7B61FF] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#355CFF]/25">
+                  <Rocket size={18} />
+               </div>
+               <div>
+                 <h1 className="text-2xl font-bold text-white tracking-tight">
+                    Proposal Engine
+                 </h1>
+                 <p className="text-zinc-500 text-xs font-medium">
+                    Deploy luxury digital solutions and outbound system proposals globally.
+                 </p>
+               </div>
+            </div>
           </div>
-          <p className="text-[var(--text-secondary)] text-sm max-w-xl font-medium">
-             Deploy luxury digital solutions and outbound system proposals globally.
-          </p>
+          <Button
+            onClick={() => setShowGenerator(!showGenerator)}
+            className="bg-gradient-to-r from-[#355CFF] to-[#7B61FF] hover:opacity-90 text-white font-bold uppercase text-[10px] tracking-[0.15em] h-11 px-7 rounded-xl shadow-lg shadow-[#355CFF]/20 transition-all border-0"
+          >
+            <Plus size={14} className="mr-1.5" />
+            {showGenerator ? "Discard Draft" : "New Proposal"}
+          </Button>
         </div>
-        <Button
-          onClick={() => setShowGenerator(!showGenerator)}
-          className="bg-white hover:bg-zinc-200 text-black font-black uppercase text-[10px] tracking-[0.2em] h-12 px-8 rounded-xl shadow-2xl transition-all"
-        >
-          {showGenerator ? "Discard Draft" : "New Global Proposal"}
-        </Button>
+
+        {/* Pipeline Stats Strip */}
+        <div className="grid grid-cols-5 gap-3">
+          {[
+            { label: "Total", count: proposals.length, color: "from-zinc-500/10 to-zinc-500/5", text: "text-zinc-300", dot: "bg-zinc-400" },
+            { label: "Sent", count: proposals.filter(p => p?.status === "sent").length, color: "from-blue-500/10 to-blue-500/5", text: "text-blue-400", dot: "bg-blue-400" },
+            { label: "Viewed", count: proposals.filter(p => p?.status === "viewed").length, color: "from-purple-500/10 to-purple-500/5", text: "text-purple-400", dot: "bg-purple-400" },
+            { label: "Accepted", count: proposals.filter(p => p?.status === "accepted").length, color: "from-emerald-500/10 to-emerald-500/5", text: "text-emerald-400", dot: "bg-emerald-400" },
+            { label: "Rejected", count: proposals.filter(p => p?.status === "rejected").length, color: "from-red-500/10 to-red-500/5", text: "text-red-400", dot: "bg-red-400" },
+          ].map(stat => (
+            <div key={stat.label} className={`bg-gradient-to-br ${stat.color} border border-zinc-800/60 rounded-xl p-4 flex items-center gap-3 transition-all hover:border-zinc-700/60`}>
+              <div className={`h-2 w-2 rounded-full ${stat.dot} shrink-0`} />
+              <div>
+                <p className={`text-lg font-bold ${stat.text} leading-none`}>{stat.count}</p>
+                <p className="text-[9px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence>
@@ -746,96 +770,147 @@ export default function ProposalsPage() {
           </motion.div>
         ) : (
           /* LIST VIEW */
-          <div className="space-y-8 no-print">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-               <h2 className="text-2xl font-black text-white italic tracking-tighter flex items-center gap-3">
-                  Proposal Repositories <span className="h-6 px-3 bg-white/5 rounded-full text-[10px] font-bold flex items-center non-italic tracking-widest border border-zinc-800/80 text-zinc-400">{filteredProposals.length} TOTAL</span>
+          <div className="space-y-6 no-print">
+            {/* Filter Bar */}
+            <div className="flex items-center justify-between">
+               <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2.5">
+                  <FileText size={18} className="text-zinc-500" />
+                  Proposals
+                  <span className="text-xs font-medium text-zinc-500 bg-zinc-800/60 px-2.5 py-0.5 rounded-full ml-1">{filteredProposals.length}</span>
                </h2>
-               <div className="flex bg-zinc-950 p-1.5 rounded-xl border border-zinc-800/80 overflow-x-auto scrollbar-hide max-w-full">
-                  {["all", "sent", "viewed", "accepted", "rejected"].map((st) => (
+               <div className="flex bg-zinc-900/80 p-1 rounded-lg border border-zinc-800/60">
+                  {[
+                    { key: "all", label: "All" },
+                    { key: "sent", label: "Sent" },
+                    { key: "viewed", label: "Viewed" },
+                    { key: "accepted", label: "Accepted" },
+                    { key: "rejected", label: "Rejected" },
+                  ].map((st) => (
                     <button 
-                      key={st} 
-                      onClick={() => setActiveFilter(st)}
+                      key={st.key} 
+                      onClick={() => setActiveFilter(st.key)}
                       className={cn(
-                        "h-8 px-5 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer", 
-                        activeFilter === st ? "bg-white text-black font-extrabold" : "text-zinc-400 hover:text-white"
+                        "h-7 px-4 rounded-md text-[10px] font-semibold transition-all whitespace-nowrap cursor-pointer", 
+                        activeFilter === st.key 
+                          ? "bg-white text-black shadow-sm" 
+                          : "text-zinc-500 hover:text-zinc-300"
                       )}
                     >
-                      {st}
+                      {st.label}
                     </button>
                   ))}
                </div>
             </div>
 
-            <div className="grid gap-4">
+            {/* Proposal Cards */}
+            <div className="grid gap-3">
               {loading ? (
-                 <div className="h-64 flex items-center justify-center border border-zinc-800 border-dashed rounded-3xl bg-[#0B0F19] space-y-4">
-                    <Loader2 className="animate-spin text-primary/40" />
+                 <div className="h-72 flex items-center justify-center border border-zinc-800/50 rounded-2xl bg-zinc-900/30">
+                    <div className="flex flex-col items-center gap-3">
+                      <Loader2 className="animate-spin text-[#355CFF]/60" size={24} />
+                      <p className="text-zinc-600 text-xs font-medium">Loading proposals...</p>
+                    </div>
                  </div>
               ) : filteredProposals.length > 0 ? (
                  filteredProposals.map((p, i) => {
                     if (!p || typeof p !== 'object') return null;
-                    const statusColors: any = { 
-                      sent: "text-blue-400 bg-blue-500/10 border-blue-500/20", 
-                      viewed: "text-purple-400 bg-purple-500/10 border-purple-500/20", 
-                      accepted: "text-green-400 bg-green-500/10 border-green-500/20", 
-                      rejected: "text-red-400 bg-red-500/10 border-red-500/20" 
+                    const statusConfig: Record<string, { bg: string; text: string; dot: string }> = { 
+                      sent: { bg: "bg-blue-500/10", text: "text-blue-400", dot: "bg-blue-400" }, 
+                      viewed: { bg: "bg-purple-500/10", text: "text-purple-400", dot: "bg-purple-400" }, 
+                      accepted: { bg: "bg-emerald-500/10", text: "text-emerald-400", dot: "bg-emerald-400" }, 
+                      rejected: { bg: "bg-red-500/10", text: "text-red-400", dot: "bg-red-400" } 
+                    };
+                    const sc = statusConfig[p.status || ""] || { bg: "bg-zinc-500/10", text: "text-zinc-400", dot: "bg-zinc-400" };
+                    const pkgColors: Record<string, string> = {
+                      starter: "text-blue-400",
+                      growth: "text-[#355CFF]",
+                      enterprise: "text-purple-400"
                     };
                     return (
-                       <motion.div key={p.id || `proposal-${i}`} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}>
-                          <Card className="p-6 border border-zinc-800 bg-[#0B0F19] hover:border-zinc-700 transition-all group rounded-2xl shadow-xl">
-                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                <div className="flex items-center gap-6">
-                                   <div className="h-14 w-14 bg-zinc-950 rounded-xl flex items-center justify-center text-zinc-500 border border-zinc-800 shadow-inner group-hover:border-zinc-700 group-hover:text-primary transition-colors">
-                                      <FileText size={22} />
+                       <motion.div key={p.id || `proposal-${i}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.3 }}>
+                          <div className="p-5 border border-zinc-800/50 bg-zinc-900/30 hover:bg-zinc-900/50 hover:border-zinc-700/60 transition-all group rounded-xl">
+                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
+                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                   <div className="h-11 w-11 bg-gradient-to-br from-zinc-800/80 to-zinc-900 rounded-lg flex items-center justify-center text-zinc-500 border border-zinc-800/60 group-hover:border-zinc-700 group-hover:text-[#355CFF] transition-all shrink-0">
+                                      <FileText size={18} />
                                    </div>
-                                   <div>
-                                      <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                         <h3 className="text-lg font-black text-white tracking-tight leading-none hover:italic transition-all cursor-pointer">{p.business_name || "Unidentified Niche"}</h3>
-                                         <span className={cn("h-5 px-2.5 rounded text-[8px] font-mono font-bold uppercase tracking-wider flex items-center border", statusColors[p.status || ""] || "text-zinc-400 bg-zinc-500/10 border-zinc-500/20")}>
-                                            {p.status || "UNKNOWN"}
+                                   <div className="min-w-0 flex-1">
+                                      <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+                                         <h3 className="text-sm font-bold text-white tracking-tight leading-none truncate">{p.business_name || "Unnamed"}</h3>
+                                         <span className={cn("h-5 px-2 rounded-md text-[8px] font-semibold uppercase tracking-wider flex items-center gap-1.5", sc.bg, sc.text)}>
+                                            <span className={cn("h-1.5 w-1.5 rounded-full", sc.dot)} />
+                                            {p.status || "draft"}
                                          </span>
-                                         {p.viewed_at && <span className="h-5 px-2 bg-green-500/10 text-green-400 border border-green-500/20 text-[8px] font-mono font-bold rounded flex items-center">VIEWED</span>}
+                                         {p.viewed_at && <span className="h-5 px-2 bg-emerald-500/10 text-emerald-400 text-[8px] font-semibold rounded-md flex items-center gap-1">
+                                           <Globe size={9} /> Opened
+                                         </span>}
                                       </div>
-                                      <div className="flex items-center gap-3 text-[9px] font-mono text-zinc-500 uppercase tracking-wider">
+                                      <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-medium">
                                          <span>{p.client_name || "Unknown"}</span>
-                                         <span className="w-1 h-1 bg-zinc-800 rounded-full" />
-                                         <span className="text-[#355CFF] font-bold">{p.selected_package && typeof p.selected_package === 'string' ? p.selected_package.toUpperCase() : "UNKNOWN"} PKG</span>
-                                         <span className="w-1 h-1 bg-zinc-800 rounded-full" />
-                                         <span className="text-zinc-600 font-medium normal-case italic">Valid until: {p.valid_until ? new Date(p.valid_until).toLocaleDateString() : "N/A"}</span>
+                                         <span className="w-0.5 h-0.5 bg-zinc-700 rounded-full" />
+                                         <span className={pkgColors[p.selected_package] || "text-zinc-400"}>{p.selected_package && typeof p.selected_package === 'string' ? p.selected_package.charAt(0).toUpperCase() + p.selected_package.slice(1) : "Unknown"}</span>
+                                         <span className="w-0.5 h-0.5 bg-zinc-700 rounded-full" />
+                                         <span className="text-zinc-600">{p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ""}</span>
+                                         {p.valid_until && <><span className="w-0.5 h-0.5 bg-zinc-700 rounded-full" /><span className="text-zinc-600">Expires {new Date(p.valid_until).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span></>}
                                       </div>
                                    </div>
                                 </div>
-                                <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t border-zinc-900 md:border-0 pt-4 md:pt-0">
-                                   <div className="flex items-center space-x-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                      <Button onClick={() => updateStatus(p.id, 'accepted')} title="Mark Accepted" variant="outline" className="h-9 w-9 p-0 border-zinc-800 hover:border-zinc-700 rounded-lg hover:bg-green-500 hover:text-white cursor-pointer"><CheckSquare size={14} /></Button>
-                                      <Button onClick={() => updateStatus(p.id, 'rejected')} title="Mark Rejected" variant="outline" className="h-9 w-9 p-0 border-zinc-800 hover:border-zinc-700 rounded-lg hover:bg-red-500 hover:text-white cursor-pointer"><XCircle size={14} /></Button>
-                                      <Button onClick={() => {
+                                <div className="flex items-center gap-2 shrink-0">
+                                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button onClick={() => updateStatus(p.id, 'accepted')} title="Accept" className="h-8 w-8 rounded-lg border border-zinc-800/60 flex items-center justify-center text-zinc-500 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all cursor-pointer">
+                                        <CheckSquare size={13} />
+                                      </button>
+                                      <button onClick={() => updateStatus(p.id, 'rejected')} title="Reject" className="h-8 w-8 rounded-lg border border-zinc-800/60 flex items-center justify-center text-zinc-500 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all cursor-pointer">
+                                        <XCircle size={13} />
+                                      </button>
+                                      <button onClick={() => {
                                          navigator.clipboard.writeText(`${window.location.origin}/proposal/${p.id}`);
-                                         alert("Share link copied to clipboard!");
-                                      }} title="Copy Client Link" variant="outline" className="h-9 w-9 p-0 border-zinc-800 hover:border-zinc-700 rounded-lg hover:bg-white hover:text-black cursor-pointer"><Copy size={14} /></Button>
-                                      <Button variant="outline" className="h-9 w-9 p-0 border-zinc-800 hover:border-zinc-700 rounded-lg hover:bg-[#355CFF] hover:text-white cursor-pointer" onClick={async () => {
+                                         alert("Share link copied!");
+                                      }} title="Copy Link" className="h-8 w-8 rounded-lg border border-zinc-800/60 flex items-center justify-center text-zinc-500 hover:bg-white/10 hover:text-white hover:border-zinc-600 transition-all cursor-pointer">
+                                        <Copy size={13} />
+                                      </button>
+                                      <button onClick={async () => {
                                           const res = await fetch("/api/proposals/send", {
                                             method: "POST", headers: { "Content-Type": "application/json" },
                                             body: JSON.stringify({ proposalId: p.id })
                                           });
                                           if (res.ok) alert("Email Dispatched.");
-                                      }}><Send size={14} /></Button>
+                                      }} title="Send Email" className="h-8 w-8 rounded-lg border border-zinc-800/60 flex items-center justify-center text-zinc-500 hover:bg-[#355CFF]/20 hover:text-[#355CFF] hover:border-[#355CFF]/30 transition-all cursor-pointer">
+                                        <Send size={13} />
+                                      </button>
                                    </div>
                                    <Link href={`/proposal/${p.id}`} target="_blank">
-                                      <Button className="h-10 px-6 bg-white hover:bg-zinc-200 text-black font-black uppercase text-[9px] tracking-widest rounded-lg shadow-md cursor-pointer transition-all">
-                                         Review Vault
+                                      <Button className="h-8 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-semibold text-[10px] tracking-wide rounded-lg transition-all flex items-center gap-1.5 cursor-pointer border border-zinc-700/50">
+                                         <ExternalLink size={12} />
+                                         View
                                       </Button>
                                    </Link>
                                 </div>
                              </div>
-                          </Card>
+                          </div>
                        </motion.div>
                     )
                  })
               ) : (
-                 <div className="h-64 flex flex-col items-center justify-center border border-zinc-800 border-dashed rounded-3xl bg-[#0B0F19] space-y-4">
-                    <p className="text-zinc-500 text-[10px] font-mono uppercase tracking-[0.4em] italic">Proposals Repository Void</p>
+                 /* Premium Empty State */
+                 <div className="relative overflow-hidden rounded-2xl border border-zinc-800/40 bg-gradient-to-br from-zinc-900/50 via-[#0B0F19] to-zinc-900/30">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(53,92,255,0.08),transparent_70%)]" />
+                    <div className="relative flex flex-col items-center justify-center py-20 px-8">
+                       <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-zinc-800/80 to-zinc-900 border border-zinc-700/40 flex items-center justify-center mb-5 shadow-lg">
+                          <Rocket size={28} className="text-zinc-500" />
+                       </div>
+                       <h3 className="text-lg font-bold text-white tracking-tight mb-1.5">No proposals yet</h3>
+                       <p className="text-zinc-500 text-sm font-medium text-center max-w-sm mb-6">
+                          Create your first proposal to start closing deals and tracking client engagement.
+                       </p>
+                       <Button
+                         onClick={() => setShowGenerator(true)}
+                         className="bg-gradient-to-r from-[#355CFF] to-[#7B61FF] hover:opacity-90 text-white font-bold uppercase text-[10px] tracking-[0.15em] h-10 px-6 rounded-xl shadow-lg shadow-[#355CFF]/20 transition-all border-0"
+                       >
+                         <Plus size={14} className="mr-1.5" />
+                         Create First Proposal
+                       </Button>
+                    </div>
                  </div>
               )}
             </div>
