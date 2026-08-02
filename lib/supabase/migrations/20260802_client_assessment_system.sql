@@ -1,5 +1,16 @@
 BEGIN;
 
+-- The project previously had a different assessment_questions table. Keep it
+-- intact, then let this migration create the canonical schema below.
+DO $$
+BEGIN
+  IF to_regclass('public.assessment_questions') IS NOT NULL
+     AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assessment_questions' AND column_name='difficulty')
+     AND to_regclass('public.assessment_questions_legacy_20260802') IS NULL THEN
+    ALTER TABLE public.assessment_questions RENAME TO assessment_questions_legacy_20260802;
+  END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS public.client_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE,
@@ -18,6 +29,8 @@ CREATE TABLE IF NOT EXISTS public.assessment_templates (
   published_at TIMESTAMPTZ, created_by UUID, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (slug, version)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS assessment_templates_slug_version_uq
+  ON public.assessment_templates(slug, version);
 CREATE TABLE IF NOT EXISTS public.assessment_sections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID NOT NULL REFERENCES public.assessment_templates(id) ON DELETE CASCADE,
   section_key TEXT NOT NULL, title TEXT NOT NULL, description TEXT, position INTEGER NOT NULL CHECK (position > 0),
@@ -50,16 +63,16 @@ ALTER TABLE public.assessment_questions
   ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now(),
   ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
 
-DO $$ BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'assessment_questions_section_id_question_key_key') THEN
-    BEGIN
-      ALTER TABLE public.assessment_questions ADD CONSTRAINT assessment_questions_section_id_question_key_key UNIQUE (section_id, question_key);
-    EXCEPTION WHEN OTHERS THEN NULL;
-    END;
-  END IF;
-END $$;
+WITH ranked_questions AS (
+  SELECT id, ROW_NUMBER() OVER (PARTITION BY section_id, question_key ORDER BY created_at NULLS LAST, id) AS duplicate_rank
+  FROM public.assessment_questions WHERE section_id IS NOT NULL AND question_key IS NOT NULL
+)
+DELETE FROM public.assessment_questions q USING ranked_questions r WHERE q.id = r.id AND r.duplicate_rank > 1;
+CREATE UNIQUE INDEX IF NOT EXISTS assessment_questions_section_question_uq
+  ON public.assessment_questions(section_id, question_key)
+  WHERE section_id IS NOT NULL AND question_key IS NOT NULL;
 CREATE TABLE IF NOT EXISTS public.assessment_question_options (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), question_id TEXT NOT NULL REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), question_id UUID NOT NULL REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
   label TEXT NOT NULL, value TEXT NOT NULL, position INTEGER NOT NULL CHECK (position > 0), is_active BOOLEAN NOT NULL DEFAULT true,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(question_id, value), UNIQUE(question_id, position)
@@ -76,22 +89,24 @@ CREATE TABLE IF NOT EXISTS public.client_assessments (
 CREATE UNIQUE INDEX IF NOT EXISTS client_assessments_active_uq ON public.client_assessments(client_id, template_id, template_version) WHERE status <> 'archived';
 CREATE TABLE IF NOT EXISTS public.assessment_answers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
-  question_id TEXT REFERENCES public.assessment_questions(id), question_key TEXT NOT NULL, value JSONB, section_snapshot JSONB,
+  question_id UUID REFERENCES public.assessment_questions(id), question_key TEXT NOT NULL, value JSONB, section_snapshot JSONB,
   question_snapshot JSONB NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE(assessment_id, question_key)
 );
 CREATE TABLE IF NOT EXISTS public.assessment_files (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
-  question_id TEXT REFERENCES public.assessment_questions(id), question_key TEXT, uploaded_by UUID NOT NULL, file_name TEXT NOT NULL,
+  question_id UUID REFERENCES public.assessment_questions(id), question_key TEXT, uploaded_by UUID NOT NULL, file_name TEXT NOT NULL,
   storage_path TEXT NOT NULL, file_type TEXT, file_size BIGINT CHECK (file_size IS NULL OR file_size >= 0), metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS public.assessment_reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
-  reviewer_id UUID NOT NULL, status TEXT NOT NULL DEFAULT 'pending', summary TEXT, missing_information TEXT,
+  reviewer_id UUID, status TEXT NOT NULL DEFAULT 'pending', summary TEXT, missing_information TEXT,
   immediate_opportunities JSONB NOT NULL DEFAULT '[]'::jsonb, medium_term_opportunities JSONB NOT NULL DEFAULT '[]'::jsonb,
   long_term_opportunities JSONB NOT NULL DEFAULT '[]'::jsonb, risks JSONB NOT NULL DEFAULT '[]'::jsonb,
   recommended_next_action TEXT, internal_notes TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS assessment_reviews_assessment_uq
+  ON public.assessment_reviews(assessment_id);
 CREATE TABLE IF NOT EXISTS public.assessment_information_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
   requested_by UUID NOT NULL, message TEXT NOT NULL, requested_question_keys JSONB NOT NULL DEFAULT '[]'::jsonb,
@@ -180,7 +195,7 @@ WITH template AS (SELECT id FROM public.assessment_templates WHERE slug='busines
 ('executive_declaration','final_summary','Assessment Summary','summary',NULL,NULL,1,false,'{}'),('executive_declaration','signature_name','Digital Signature — Typed Full Name','signature',NULL,NULL,2,true,'{"minLength":2}'),('executive_declaration','signature_designation','Designation','text',NULL,NULL,3,true,'{}'),('executive_declaration','signature_company','Company Name','text',NULL,NULL,4,true,'{}'),('executive_declaration','assessment_date','Date','date',NULL,NULL,5,true,'{}'),('executive_declaration','consent','I confirm the information is accurate and consent to its processing for consulting purposes.','consent',NULL,NULL,6,true,'{}'))
 INSERT INTO public.assessment_questions(section_id,question_key,label,field_type,placeholder,help_text,position,is_required,validation)
 SELECT s.id,q.question_key,q.label,q.field_type,q.placeholder,q.help_text,q.position,q.is_required,q.validation FROM q JOIN template t ON true JOIN public.assessment_sections s ON s.template_id=t.id AND s.section_key=q.section_key
-ON CONFLICT(section_id,question_key) DO UPDATE SET label=EXCLUDED.label,field_type=EXCLUDED.field_type,placeholder=EXCLUDED.placeholder,help_text=EXCLUDED.help_text,position=EXCLUDED.position,is_required=EXCLUDED.is_required,validation=EXCLUDED.validation,updated_at=now();
+ON CONFLICT(section_id,question_key) WHERE section_id IS NOT NULL AND question_key IS NOT NULL DO UPDATE SET label=EXCLUDED.label,field_type=EXCLUDED.field_type,placeholder=EXCLUDED.placeholder,help_text=EXCLUDED.help_text,position=EXCLUDED.position,is_required=EXCLUDED.is_required,validation=EXCLUDED.validation,updated_at=now();
 
 WITH option_seed(question_key, labels) AS (VALUES
 ('annual_revenue',ARRAY['Pre-revenue','Below ₹1 crore','₹1–5 crore','₹5–25 crore','₹25–100 crore','₹100 crore+']),
@@ -233,7 +248,7 @@ RETURNS TIMESTAMPTZ LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS 
   IF NOT FOUND THEN RAISE EXCEPTION 'Assessment is unavailable or locked'; END IF;
   UPDATE client_assessments SET status='submitted',submitted_at=v_now,completion_percentage=100,updated_at=v_now WHERE id=p_assessment_id;
   INSERT INTO assessment_activity(assessment_id,actor_id,actor_type,event_type) VALUES(p_assessment_id,p_user_id,'client','assessment_submitted');
-  INSERT INTO assessment_reviews(assessment_id,reviewer_id,status) VALUES(p_assessment_id,'00000000-0000-0000-0000-000000000000','pending') ON CONFLICT DO NOTHING;
+  INSERT INTO assessment_reviews(assessment_id,reviewer_id,status) VALUES(p_assessment_id,NULL,'pending') ON CONFLICT(assessment_id) DO NOTHING;
   IF v_deal IS NOT NULL THEN SELECT id INTO v_stage FROM deal_stages WHERE lower(name)=lower('Assessment Received') LIMIT 1; IF v_stage IS NOT NULL THEN UPDATE deals SET stage_id=v_stage,updated_at=v_now WHERE id=v_deal; END IF; END IF;
   RETURN v_now;
 END $$;
