@@ -99,11 +99,11 @@ export default function OnboardingFlow() {
     <DocumentShell>
       <DocumentHeader />
       <main>
-      <DocumentContainer className={css({ pt: { base: "20px", md: "28px" } })}>
+      <DocumentContainer className={css({ pt: { base: "20px", md: "34px" } })}>
         <div className={css({ display: "flex", justifyContent: "space-between", alignItems: "end", mb: "9px" })}><div><span className={css({ color: "#1d4f7a", fontSize: "11px", fontWeight: "750", letterSpacing: ".12em", textTransform: "uppercase" })}>Section {section + 1} of 12</span><div className={css({ fontSize: "13px", color: "#596578", mt: "3px" })}>{SECTIONS[section][0]}</div></div><span className={css({ color: "#7b8491", fontSize: "12px" })}>{Math.round(progress)}% complete</span></div>
         <div className={css({ h: "3px", bg: "#d9dee5", mb: "24px" })}><div className={css({ h: "100%", bg: "#1d4f7a", transition: "width .25s" })} style={{ width: `${progress}%` }} /></div>
 
-        <form onSubmit={(event) => event.preventDefault()} className={css({ bg: "#fff", border: "1px solid #d9dee5", borderRadius: "6px 6px 0 0" })}>
+        <form onSubmit={(event) => event.preventDefault()} className={css({ bg: "#fff", border: "1px solid #d9dee5", borderRadius: "6px 6px 0 0", boxShadow: "0 8px 28px rgba(28,39,54,.045)" })}>
           <div className={css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "42px" }, borderBottom: "1px solid #e2e6eb" })}><div className={css({ color: "#7c8796", fontSize: "11px", fontWeight: "700", letterSpacing: ".12em", textTransform: "uppercase", mb: "8px" })}>GrowXLabs Consulting Assessment</div><h2 className={css({ fontFamily: "Georgia, serif", fontSize: { base: "27px", md: "34px" }, fontWeight: "500" })}>{SECTIONS[section][0]}</h2><p className={css({ color: "#657184", fontSize: "14px", lineHeight: "1.7", mt: "9px", maxW: "650px" })}>{SECTIONS[section][1]}</p></div>
           <div className={cx("assessment-section", css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "38px" }, display: "grid", gap: "26px" }))}>{renderSection(section, data, setValue, selected, toggle, assets, addFiles, setAssets, fileInput, summary)}</div>
           {message && <div role={section === 11 ? "alert" : "status"} className={css({ mx: { base: "20px", md: "46px" }, mb: "24px", borderLeft: "3px solid #9a6425", bg: "#fbf7f0", color: "#65451e", px: "14px", py: "11px", fontSize: "13px", lineHeight: "1.55" })}>{message}</div>}
