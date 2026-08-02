@@ -1,10 +1,9 @@
-import type { RefObject } from "react";
 import { css } from "@/styled-system/css";
 import { DocumentContainer } from "./DocumentShell";
 
-export function DocumentFooter({ section, progress, footerRef, onRestoreDraft }: { section: number; progress: number; footerRef: RefObject<HTMLElement | null>; onRestoreDraft: () => void }) {
+export function DocumentFooter({ section, progress, onRestoreDraft }: { section: number; progress: number; onRestoreDraft: () => void }) {
   return (
-    <footer ref={footerRef} className={css({ bg: "#fff", border: "1px solid #d9dee5", borderTop: "0", borderRadius: "0 0 6px 6px" })}>
+    <footer className={css({ bg: "#fff", border: "1px solid #d9dee5", borderTop: "0", borderRadius: "0 0 6px 6px" })}>
       <DocumentContainer className={css({ width: "100%", maxW: "none", px: { base: "20px", md: "46px" }, py: "28px", display: "grid", gridTemplateColumns: { base: "1fr", md: "1fr 1.2fr 1fr" }, gap: { base: "18px", md: "24px" }, alignItems: "start" })}>
         <div><strong className={footerHeading}>GrowXLabs.tech</strong><a href="mailto:sai@growxlabs.tech" className={footerLink}>sai@growxlabs.tech</a></div>
         <div className={css({ textAlign: { base: "left", md: "center" } })}><strong className={footerHeading}>Business Discovery Assessment</strong><span className={footerText}>Confidential client information</span></div>

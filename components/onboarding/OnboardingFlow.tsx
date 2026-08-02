@@ -45,7 +45,6 @@ export default function OnboardingFlow() {
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
-  const footerRef = useRef<HTMLElement>(null);
 
   const selected = (key: string) => Array.isArray(data[key]) ? data[key] as string[] : [];
   const setValue = (key: string, value: string | string[]) => setData((current) => ({ ...current, [key]: value }));
@@ -108,10 +107,10 @@ export default function OnboardingFlow() {
           <div className={cx("assessment-section", css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "38px" }, display: "grid", gap: "26px" }))}>{renderSection(section, data, setValue, selected, toggle, assets, addFiles, setAssets, fileInput, summary)}</div>
           {message && <div role={section === 11 ? "alert" : "status"} className={css({ mx: { base: "20px", md: "46px" }, mb: "24px", borderLeft: "3px solid #9a6425", bg: "#fbf7f0", color: "#65451e", px: "14px", py: "11px", fontSize: "13px", lineHeight: "1.55" })}>{message}</div>}
         </form>
-        <DocumentFooter section={section} progress={progress} footerRef={footerRef} onRestoreDraft={loadDraft} />
+        <DocumentActionBar section={section} submitting={submitting} onPrevious={() => setSection((value) => Math.max(0, value - 1))} onSave={saveDraft} onNext={() => { setSection((value) => Math.min(11, value + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSubmit={submitAssessment} />
+        <DocumentFooter section={section} progress={progress} onRestoreDraft={loadDraft} />
       </DocumentContainer>
       </main>
-      <DocumentActionBar section={section} submitting={submitting} footerRef={footerRef} onPrevious={() => setSection((value) => Math.max(0, value - 1))} onSave={saveDraft} onNext={() => { setSection((value) => Math.min(11, value + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSubmit={submitAssessment} />
     </DocumentShell>
   );
 }

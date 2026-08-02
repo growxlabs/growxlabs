@@ -1,26 +1,12 @@
 "use client";
 
-import type { RefObject } from "react";
-import { useEffect, useState } from "react";
 import { css, cx } from "@/styled-system/css";
 import { DocumentContainer } from "./DocumentShell";
 
-export function DocumentActionBar({ section, submitting, footerRef, onPrevious, onSave, onNext, onSubmit }: { section: number; submitting: boolean; footerRef: RefObject<HTMLElement | null>; onPrevious: () => void; onSave: () => void; onNext: () => void; onSubmit: () => void }) {
-  const [footerVisible, setFooterVisible] = useState(false);
-
-  useEffect(() => {
-    const footer = footerRef.current;
-    if (!footer) return;
-    const observer = new IntersectionObserver(([entry]) => setFooterVisible(entry.isIntersecting), { threshold: 0.05 });
-    observer.observe(footer);
-    return () => observer.disconnect();
-  }, [footerRef]);
-
-  if (footerVisible) return null;
-
+export function DocumentActionBar({ section, submitting, onPrevious, onSave, onNext, onSubmit }: { section: number; submitting: boolean; onPrevious: () => void; onSave: () => void; onNext: () => void; onSubmit: () => void }) {
   return (
-    <nav aria-label="Assessment navigation" className={cx("document-action-bar", css({ position: "fixed", bottom: 0, insetX: 0, bg: "rgba(255,255,255,.98)", borderTop: "1px solid #cfd5dd", boxShadow: "0 -4px 18px rgba(28,39,54,.06)", zIndex: "20" }))}>
-      <DocumentContainer className={css({ py: { base: "10px", md: "13px" }, display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", alignItems: "center", gap: { base: "8px", md: "12px" } })}>
+    <nav aria-label="Assessment navigation" className={cx("document-action-bar", css({ bg: "#fff", border: "1px solid #d9dee5", borderTop: "0" }))}>
+      <DocumentContainer className={css({ width: "100%", maxW: "none", px: { base: "20px", md: "46px" }, py: { base: "16px", md: "20px" }, display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", alignItems: "center", gap: { base: "8px", md: "14px" } })}>
         <button type="button" onClick={onPrevious} disabled={section === 0} className={secondaryButton}>Previous</button>
         <button type="button" onClick={onSave} className={secondaryButton}>Save Draft</button>
         {section < 11 ? <button type="button" onClick={onNext} className={primaryButton}>Next</button> : <button type="button" onClick={onSubmit} disabled={submitting} className={primaryButton}>{submitting ? "Submitting…" : "Submit Assessment"}</button>}
