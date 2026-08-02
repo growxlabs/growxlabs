@@ -1,0 +1,4 @@
+import { completeSectionSchema } from "@/lib/assessments/request-schema";
+import { completeSection } from "@/lib/assessments/mutations";
+import { assessmentErrorResponse,getClientAssessment,requireClientContext } from "@/lib/assessments/server";
+export async function POST(request:Request){try{const context=await requireClientContext();const parsed=completeSectionSchema.safeParse(await request.json());if(!parsed.success)return Response.json({error:"Invalid section payload."},{status:400});const assessment=await getClientAssessment(context);if(!assessment)return Response.json({error:"Start the assessment first."},{status:404});const result=await completeSection(assessment,context.userId,parsed.data.sectionKey,parsed.data.answers);return Response.json(result,{status:result.ok?200:422});}catch(error){return assessmentErrorResponse(error);}}

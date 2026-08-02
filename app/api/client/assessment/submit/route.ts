@@ -1,0 +1,4 @@
+import { submitSchema } from "@/lib/assessments/request-schema";
+import { submitAssessment } from "@/lib/assessments/mutations";
+import { assessmentErrorResponse,getClientAssessment,requireClientContext } from "@/lib/assessments/server";
+export async function POST(request:Request){try{const context=await requireClientContext();const parsed=submitSchema.safeParse(await request.json());if(!parsed.success)return Response.json({error:"Invalid submission payload."},{status:400});const assessment=await getClientAssessment(context);if(!assessment)return Response.json({error:"Start the assessment first."},{status:404});const result=await submitAssessment(assessment,context.userId,parsed.data.answers);return Response.json(result,{status:result.ok?200:422});}catch(error){return assessmentErrorResponse(error);}}

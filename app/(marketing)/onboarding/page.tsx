@@ -1,7 +1,8 @@
-"use client";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
 
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
-
-export default function OnboardingPage() {
-  return <OnboardingFlow />;
+export default async function OnboardingPage() {
+  const session = await getServerSession(authOptions);
+  redirect(session?.user?.role === "CLIENT" ? "/client/assessment" : "/contact");
 }

@@ -1,0 +1,2 @@
+import { AssessmentAdminList } from "@/components/admin/assessments/AssessmentAdminList";
+export default function AdminAssessmentsPage(){return <main className="p-6 md:p-10"><header className="mb-7"><h1 className="text-3xl font-bold">Client Assessments</h1><p className="mt-2 text-sm text-slate-600">Review submitted business discovery assessments and manage information requests.</p></header><AssessmentAdminList/></main>}

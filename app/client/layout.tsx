@@ -1,14 +1,24 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ClientNav } from "@/components/client/ClientNav";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Loader2 } from "lucide-react";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+  const publicClientRoute = pathname === "/client/login" || pathname.startsWith("/client/invite/");
+  const userRole = session?.user?.role;
+  const authorized = status === "authenticated" && ["CLIENT", "ADMIN", "CO_ADMIN"].includes(userRole || "");
+
+  useEffect(() => {
+    if (!publicClientRoute && status === "unauthenticated") router.replace(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+  }, [pathname, publicClientRoute, router, status]);
+
+  if (publicClientRoute) return <div className="min-h-screen bg-slate-50 px-5 py-20">{children}</div>;
 
   if (status === "loading") {
     return (
@@ -21,15 +31,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  const userRole = (session?.user as any)?.role;
-
-  if (status === "unauthenticated" || (userRole !== "CLIENT" && userRole !== "ADMIN" && userRole !== "CO_ADMIN")) {
-    // Gracefully handle unauthorized access instead of crashing
-    if (status === "unauthenticated") {
-       router.push(`/${window.location.pathname.split('/')[1] || 'en-IN'}/login`);
-       return null;
-     }
-  }
+  if (!authorized) return status === "authenticated" ? <div className="min-h-screen p-10">Client portal access is required.</div> : null;
 
 
   return (

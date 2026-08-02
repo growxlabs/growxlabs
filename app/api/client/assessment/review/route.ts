@@ -1,0 +1,2 @@
+import { assessmentErrorResponse,getClientAssessment,requireClientContext } from "@/lib/assessments/server";
+export async function GET(){try{const context=await requireClientContext();const assessment=await getClientAssessment(context);if(!assessment)return Response.json({error:"Assessment not found."},{status:404});return Response.json({assessment});}catch(error){return assessmentErrorResponse(error);}}

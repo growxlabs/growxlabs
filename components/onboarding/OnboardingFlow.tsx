@@ -13,7 +13,7 @@ type UploadedAsset = { id: string; name: string; size: number; type: string; ver
 const SECTIONS = [
   ["Company Profile", "Establish the organisation, its leadership contact and operating footprint."],
   ["Business Overview", "Document how the organisation creates value and serves its markets."],
-  ["Business Challenges", "Identify the commercial and operational constraints requiring attention."],
+  ["AI-Native Business Assessment", "Help us understand how your business currently operates so our consulting team can identify opportunities where AI, automation, and custom software can create measurable business value."],
   ["Current Technology Landscape", "Create an inventory of systems currently supporting the business."],
   ["Digital Presence Assessment", "Review the organisation's owned, social and paid digital channels."],
   ["Business Objectives", "Prioritise the outcomes expected from this consulting engagement."],
@@ -29,6 +29,20 @@ const CHALLENGES = ["Lead Generation", "Branding", "Website", "CRM", "Sales", "I
 const OBJECTIVES = ["Increase Revenue", "Generate More Leads", "Expand Distribution", "Launch New Products", "Improve Operations", "Reduce Manual Work", "Improve Customer Experience", "Digital Transformation", "Improve Brand Position"];
 const SERVICES = ["Website", "Branding", "CRM", "Custom Software", "Dealer Management", "Distributor Management", "Inventory", "ERP", "Automation", "SEO", "AEO", "GEO", "Google Ads", "Meta Ads", "Video Marketing", "Analytics", "Training", "Support"];
 const READINESS = ["Business Goals Defined", "Stakeholders Identified", "Budget Approved", "Timeline Confirmed", "Assets Ready", "Decision Makers Confirmed"];
+const AI_BUSINESS_FUNCTIONS = ["Sales", "Marketing", "Customer Support", "Operations", "Finance", "Accounting", "Inventory", "Procurement", "Dealer Management", "Distributor Management", "Manufacturing", "Human Resources", "Recruitment", "Reporting", "Compliance", "Project Management", "Logistics", "Other"];
+const AI_CURRENT_SOFTWARE = ["Excel", "Google Sheets", "WhatsApp", "Email", "Tally", "CRM", "ERP", "Inventory Software", "Accounting Software", "Project Management Software", "HRMS", "Custom Software", "Other"];
+const AI_OPPORTUNITIES = ["Lead Qualification", "Sales Follow-up", "Proposal Generation", "Quotation Generation", "Customer Support", "Marketing Content", "SEO", "AEO", "GEO", "Reporting", "Business Analytics", "Inventory Planning", "Workflow Automation", "Internal Knowledge Search", "AI Agents", "Decision Support", "Other"];
+const AI_SERVICES = ["AI-Native Website", "AI CRM", "AI Dealer Management", "AI Distributor Management", "AI Inventory Management", "AI Sales Assistant", "AI Customer Support Assistant", "AI Workflow Automation", "AI Reporting Dashboard", "AI Knowledge Base", "AI Agent Workspace", "Custom AI Software", "Custom Business Software", "Unsure — Need Consulting Recommendation"];
+const AI_DATA_LOCATIONS = ["Excel", "Google Sheets", "Tally", "CRM", "ERP", "Inventory Software", "Email", "WhatsApp", "Paper Records", "Cloud Storage", "Database", "Other"];
+const AI_CONCERNS = ["Security", "Privacy", "Cost", "Accuracy", "Employee Adoption", "Integration", "Compliance", "No Concerns", "Other"];
+const AI_OUTCOMES = ["Increase Revenue", "Generate More Leads", "Reduce Costs", "Save Employee Time", "Improve Customer Experience", "Improve Sales Conversion", "Better Reporting", "Better Decision Making", "Improve Productivity", "Scale Business", "Reduce Manual Work", "Other"];
+const AI_ARRAY_FIELDS = ["ai_business_functions", "ai_current_software", "ai_opportunities", "ai_services", "ai_data_locations", "ai_concerns", "ai_outcomes"];
+const AI_TEXT_FIELDS = ["ai_process_maturity", "ai_repetitive_work", "ai_current_usage", "ai_three_year_vision", "ai_priority_problem"];
+
+function isAiAssessmentComplete(data: AssessmentData) {
+  return AI_ARRAY_FIELDS.every((key) => Array.isArray(data[key]) && (data[key] as string[]).length > 0)
+    && AI_TEXT_FIELDS.every((key) => String(data[key] || "").trim().length > 0);
+}
 
 const field = css({ display: "grid", gap: "7px" });
 const label = css({ color: "#273348", fontSize: "12px", fontWeight: "650", letterSpacing: "0.025em" });
@@ -78,7 +92,23 @@ export default function OnboardingFlow() {
     setAssets((current) => [...current, ...Array.from(files).map((file) => ({ id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type || "Document", version: 1 }))]);
   }
 
+  function continueAssessment() {
+    if (section === 2 && !isAiAssessmentComplete(data)) {
+      setMessage("Complete every mandatory question in the AI-Native Business Assessment before continuing.");
+      return;
+    }
+    setMessage("");
+    setSection((value) => Math.min(11, value + 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   async function submitAssessment() {
+    if (!isAiAssessmentComplete(data)) {
+      setSection(2);
+      setMessage("Complete every mandatory question in the AI-Native Business Assessment before submitting.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     if (!data.consent || !data.signature_name || !data.business_name || !data.business_email) {
       setMessage("Complete the company, signature and consent fields before submission."); return;
     }
@@ -105,9 +135,9 @@ export default function OnboardingFlow() {
         <form onSubmit={(event) => event.preventDefault()} className={css({ bg: "#fff", border: "1px solid #d9dee5", borderRadius: "6px 6px 0 0", boxShadow: "0 8px 28px rgba(28,39,54,.045)" })}>
           <div className={css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "42px" }, borderBottom: "1px solid #e2e6eb" })}><div className={css({ color: "#7c8796", fontSize: "11px", fontWeight: "700", letterSpacing: ".12em", textTransform: "uppercase", mb: "8px" })}>GrowXLabs Consulting Assessment</div><h2 className={css({ fontFamily: "Georgia, serif", fontSize: { base: "27px", md: "34px" }, fontWeight: "500" })}>{SECTIONS[section][0]}</h2><p className={css({ color: "#657184", fontSize: "14px", lineHeight: "1.7", mt: "9px", maxW: "650px" })}>{SECTIONS[section][1]}</p></div>
           <div className={cx("assessment-section", css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "38px" }, display: "grid", gap: "26px" }))}>{renderSection(section, data, setValue, selected, toggle, assets, addFiles, setAssets, fileInput, summary)}</div>
-          {message && <div role={section === 11 ? "alert" : "status"} className={css({ mx: { base: "20px", md: "46px" }, mb: "24px", borderLeft: "3px solid #9a6425", bg: "#fbf7f0", color: "#65451e", px: "14px", py: "11px", fontSize: "13px", lineHeight: "1.55" })}>{message}</div>}
+          {message && <div role={section === 2 || section === 11 ? "alert" : "status"} className={css({ mx: { base: "20px", md: "46px" }, mb: "24px", borderLeft: "3px solid #9a6425", bg: "#fbf7f0", color: "#65451e", px: "14px", py: "11px", fontSize: "13px", lineHeight: "1.55" })}>{message}</div>}
         </form>
-        <DocumentActionBar section={section} submitting={submitting} onPrevious={() => setSection((value) => Math.max(0, value - 1))} onSave={saveDraft} onNext={() => { setSection((value) => Math.min(11, value + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSubmit={submitAssessment} />
+        <DocumentActionBar section={section} submitting={submitting} onPrevious={() => setSection((value) => Math.max(0, value - 1))} onSave={saveDraft} onNext={continueAssessment} onSubmit={submitAssessment} />
         <DocumentFooter section={section} progress={progress} onRestoreDraft={loadDraft} />
       </DocumentContainer>
       </main>
@@ -120,11 +150,39 @@ function TextArea({ name, title, data, setValue, rows = 5 }: { name: string; tit
 function SelectField({ name, title, options, data, setValue }: { name: string; title: string; options: string[]; data: AssessmentData; setValue: (key: string, value: string) => void }) { return <label className={field}><span className={label}>{title}</span><select className={input} value={String(data[name] || "")} onChange={(e) => setValue(name, e.target.value)}><option value="">Select an option</option>{options.map((option) => <option key={option}>{option}</option>)}</select></label>; }
 function Options({ name, options, selected, toggle }: { name: string; options: string[]; selected: (key: string) => string[]; toggle: (key: string, value: string) => void }) { return <fieldset><legend className={label}>Select all that apply</legend><div className={cx(optionGrid, css({ mt: "10px" }))}>{options.map((option) => <label key={option} className={css({ display: "flex", alignItems: "center", gap: "9px", border: "1px solid #d7dde5", borderRadius: "4px", px: "12px", py: "11px", color: "#344154", fontSize: "13px", cursor: "pointer", bg: selected(name).includes(option) ? "#eef4f8" : "#fff" })}><input type="checkbox" checked={selected(name).includes(option)} onChange={() => toggle(name, option)} className={css({ accentColor: "#173f63" })} />{option}</label>)}</div></fieldset>; }
 
+function RequiredQuestion({ number, title, children }: { number: string; title: string; children: React.ReactNode }) {
+  return <section className={css({ display: "grid", gap: "14px", borderBottom: "1px solid #e2e6eb", pb: "26px" })}>
+    <div><span className={css({ display: "block", color: "#7c8796", fontSize: "10px", fontWeight: "750", letterSpacing: ".11em", textTransform: "uppercase", mb: "5px" })}>Question {number} · Required</span><h3 className={css({ color: "#202c3e", fontSize: "15px", fontWeight: "650", lineHeight: "1.55" })}>{title} <span aria-hidden="true" className={css({ color: "#8a3030" })}>*</span></h3></div>
+    {children}
+  </section>;
+}
+
 function renderSection(section: number, data: AssessmentData, setValue: (key: string, value: string | string[]) => void, selected: (key: string) => string[], toggle: (key: string, value: string) => void, assets: UploadedAsset[], addFiles: (files: FileList | null) => void, setAssets: React.Dispatch<React.SetStateAction<UploadedAsset[]>>, fileInput: React.RefObject<HTMLInputElement | null>, summary: { company: string; contact: string; objectives: string[]; services: string[]; timeline: string; budget: string }) {
   const sf = (key: string, value: string) => setValue(key, value);
   if (section === 0) return <><div className={grid2}><TextField name="business_name" title="Business / Company Name" data={data} setValue={sf} required /><TextField name="legal_entity_name" title="Legal Entity Name" data={data} setValue={sf} /><TextField name="industry" title="Industry" data={data} setValue={sf} /><TextField name="primary_contact" title="Primary Contact" data={data} setValue={sf} required /><TextField name="designation" title="Designation" data={data} setValue={sf} /><TextField name="business_email" title="Business Email" type="email" data={data} setValue={sf} required /><TextField name="phone" title="Phone" type="tel" data={data} setValue={sf} /><TextField name="website" title="Website" type="url" data={data} setValue={sf} /><TextField name="headquarters" title="Headquarters" data={data} setValue={sf} /><TextField name="operating_regions" title="Operating Regions" data={data} setValue={sf} /><TextField name="employee_count" title="Number of Employees" data={data} setValue={sf} /><TextField name="years_in_business" title="Years in Business" data={data} setValue={sf} /></div></>;
   if (section === 1) return <><TextArea name="company_overview" title="Company Overview" data={data} setValue={sf} /><div className={grid2}><TextArea name="products" title="Products" data={data} setValue={sf} /><TextArea name="services_overview" title="Services" data={data} setValue={sf} /><TextArea name="primary_customers" title="Primary Customers" data={data} setValue={sf} /><TextArea name="business_model" title="Business Model" data={data} setValue={sf} /></div><SelectField name="annual_revenue" title="Annual Revenue Range" options={["Pre-revenue", "Below ₹1 crore", "₹1–5 crore", "₹5–25 crore", "₹25–100 crore", "₹100 crore+"]} data={data} setValue={sf} /><TextArea name="markets_served" title="Markets Served" data={data} setValue={sf} /><TextArea name="competitive_advantage" title="Competitive Advantage" data={data} setValue={sf} /></>;
-  if (section === 2) return <><Options name="challenges" options={CHALLENGES} selected={selected} toggle={toggle} /><TextArea name="biggest_challenge" title="Describe your biggest business challenge." data={data} setValue={sf} rows={7} /></>;
+  if (section === 2) return <>
+    <RequiredQuestion number="1" title="Which business functions are part of your organisation?"><Options name="ai_business_functions" options={AI_BUSINESS_FUNCTIONS} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="2" title="How are most of your business activities managed today?"><SelectField name="ai_process_maturity" title="Current process maturity" options={["Mostly Manual", "Manual using Excel and WhatsApp", "Partially Digital", "Multiple Disconnected Systems", "Mostly Integrated", "Fully Digital"]} data={data} setValue={sf} /></RequiredQuestion>
+    <RequiredQuestion number="3" title="Which software and tools do you currently use?"><Options name="ai_current_software" options={AI_CURRENT_SOFTWARE} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="4" title="Which repetitive activities consume the most time in your organisation?"><TextArea name="ai_repetitive_work" title="Examples: quotations, follow-ups, data entry, reporting, inventory updates, support, billing or approvals" data={data} setValue={sf} rows={7} /></RequiredQuestion>
+    <RequiredQuestion number="5" title="Where would you like AI to assist your business?"><Options name="ai_opportunities" options={AI_OPPORTUNITIES} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="6" title="Which AI-native solutions are you interested in exploring?">
+      <Options name="ai_services" options={AI_SERVICES} selected={selected} toggle={toggle} />
+      <p className={css({ color: "#657184", fontSize: "12px", lineHeight: "1.65", mt: "10px" })}>These selections help our consulting team understand your interests. Final recommendations will be provided after business analysis.</p>
+    </RequiredQuestion>
+    <RequiredQuestion number="7" title="How does your organisation currently use AI?"><SelectField name="ai_current_usage" title="Current AI usage" options={["Never Used AI", "Occasionally", "Daily", "Team Uses AI", "Already Have AI Systems"]} data={data} setValue={sf} /></RequiredQuestion>
+    <RequiredQuestion number="8" title="Where is your business information currently stored?"><Options name="ai_data_locations" options={AI_DATA_LOCATIONS} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="9" title="Do you have any concerns about adopting AI?"><Options name="ai_concerns" options={AI_CONCERNS} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="10" title="What business outcomes do you expect from AI?"><Options name="ai_outcomes" options={AI_OUTCOMES} selected={selected} toggle={toggle} /></RequiredQuestion>
+    <RequiredQuestion number="11" title="Where do you want your business to be within the next three years?"><TextArea name="ai_three_year_vision" title="Long-term vision, growth plans, expansion goals, technology goals and business objectives" data={data} setValue={sf} rows={7} /></RequiredQuestion>
+    <RequiredQuestion number="12" title="If GrowXLabs could solve only ONE business problem for your organisation within the next 12 months, what would it be, and why is it your highest priority?"><TextArea name="ai_priority_problem" title="Highest priority business problem" data={data} setValue={sf} rows={8} /></RequiredQuestion>
+    <section className={css({ borderTop: "1px solid #d9dee5", pt: "28px", mt: "4px" })}>
+      <h3 className={css({ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: "500", mb: "7px" })}>Business Challenges</h3>
+      <p className={css({ color: "#657184", fontSize: "13px", lineHeight: "1.65", mb: "20px" })}>Identify the commercial and operational constraints requiring attention.</p>
+      <div className={css({ display: "grid", gap: "24px" })}><Options name="challenges" options={CHALLENGES} selected={selected} toggle={toggle} /><TextArea name="biggest_challenge" title="Describe your biggest business challenge." data={data} setValue={sf} rows={7} /></div>
+    </section>
+  </>;
   if (section === 3) return <div className={grid2}>{["Website", "CRM", "ERP", "Inventory", "Accounting", "Marketing Tools", "Hosting", "Analytics", "Email Platform", "Integrations"].map((item) => <TextArea key={item} name={`technology_${item.toLowerCase().replaceAll(" ", "_")}`} title={item} data={data} setValue={sf} rows={3} />)}</div>;
   if (section === 4) return <div className={grid2}>{["Website URL", "Google Business Profile", "Instagram", "Facebook", "LinkedIn", "YouTube", "Google Analytics", "Search Console", "Google Ads", "Meta Ads", "SEO Status"].map((item) => <TextField key={item} name={`digital_${item.toLowerCase().replaceAll(" ", "_")}`} title={item} data={data} setValue={sf} />)}</div>;
   if (section === 5) return <><Options name="objectives" options={OBJECTIVES} selected={selected} toggle={toggle} /><SelectField name="objective_priority" title="Overall Priority" options={["High", "Medium", "Low"]} data={data} setValue={sf} /></>;

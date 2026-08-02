@@ -1,0 +1,2 @@
+import { transitionReview } from "@/lib/assessments/admin";import { assessmentErrorResponse,requireAssessmentAdmin } from "@/lib/assessments/server";
+export async function POST(_request:Request,{params}:{params:Promise<{assessmentId:string}>}){try{const admin=await requireAssessmentAdmin();const {assessmentId}=await params;await transitionReview(assessmentId,admin.userId,"start_review");return Response.json({ok:true});}catch(error){return assessmentErrorResponse(error);}}
