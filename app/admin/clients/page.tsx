@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Users, CreditCard, ExternalLink, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClientsPage() {
+  const router = useRouter();
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,7 @@ export default function ClientsPage() {
           <h1 className="text-3xl font-bold text-white tracking-tight">Client Partners</h1>
           <p className="text-white/40 font-medium">Manage and monitor active high-ticket partnerships.</p>
         </div>
-        <Button className="bg-white text-black hover:bg-white/90 shadow-[0_0_15px_rgba(255,255,255,0.1)] px-6 py-2 h-11">
+        <Button onClick={() => router.push("/admin/leads?status=qualified")} className="bg-white text-black hover:bg-white/90 shadow-[0_0_15px_rgba(255,255,255,0.1)] px-6 py-2 h-11">
           Provision New Client
         </Button>
       </div>
@@ -69,10 +71,10 @@ export default function ClientsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="h-10 rounded-lg border-white/5 text-white/40 hover:text-white text-xs font-bold grow">
+                    <Button onClick={() => router.push(`/admin/clients?clientId=${client.id}`)} variant="outline" className="h-10 rounded-lg border-white/5 text-white/40 hover:text-white text-xs font-bold grow">
                       Profile
                     </Button>
-                    <Button className="h-10 rounded-lg bg-white text-black text-xs font-bold grow">
+                    <Button onClick={() => router.push(`/admin/invoices?clientId=${client.id}`)} className="h-10 rounded-lg bg-white text-black text-xs font-bold grow">
                       Billing
                     </Button>
                   </div>
@@ -89,7 +91,7 @@ export default function ClientsPage() {
               <p className="text-white font-bold">No clients found</p>
               <p className="text-white/20 text-sm">Convert your first lead to a client to see them here.</p>
             </div>
-            <Button className="bg-white text-black h-10 px-6 mt-4">
+            <Button onClick={() => router.push("/admin/leads?status=qualified")} className="bg-white text-black h-10 px-6 mt-4">
               View Leads
             </Button>
           </div>

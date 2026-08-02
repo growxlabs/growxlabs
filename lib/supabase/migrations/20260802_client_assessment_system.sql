@@ -29,9 +29,35 @@ CREATE TABLE IF NOT EXISTS public.assessment_questions (
   question_key TEXT NOT NULL, label TEXT NOT NULL, description TEXT, field_type TEXT NOT NULL CHECK (field_type IN ('text','textarea','email','phone','number','currency','date','url','single_select','multi_select','radio','checkbox','boolean','file_upload','signature','consent','summary')),
   placeholder TEXT, help_text TEXT, position INTEGER NOT NULL CHECK (position > 0), is_required BOOLEAN NOT NULL DEFAULT false,
   validation JSONB NOT NULL DEFAULT '{}'::jsonb, visibility_rules JSONB NOT NULL DEFAULT '[]'::jsonb, config JSONB NOT NULL DEFAULT '{}'::jsonb,
-  is_active BOOLEAN NOT NULL DEFAULT true, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE(section_id, question_key), UNIQUE(section_id, position)
+  is_active BOOLEAN NOT NULL DEFAULT true, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Compatibility for installations that already have the original lightweight
+-- assessment_questions table. CREATE TABLE IF NOT EXISTS does not add columns.
+ALTER TABLE public.assessment_questions
+  ADD COLUMN IF NOT EXISTS section_id UUID,
+  ADD COLUMN IF NOT EXISTS question_key TEXT,
+  ADD COLUMN IF NOT EXISTS label TEXT,
+  ADD COLUMN IF NOT EXISTS description TEXT,
+  ADD COLUMN IF NOT EXISTS field_type TEXT DEFAULT 'text',
+  ADD COLUMN IF NOT EXISTS placeholder TEXT,
+  ADD COLUMN IF NOT EXISTS help_text TEXT,
+  ADD COLUMN IF NOT EXISTS position INTEGER,
+  ADD COLUMN IF NOT EXISTS is_required BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS validation JSONB DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS visibility_rules JSONB DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS config JSONB DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now(),
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'assessment_questions_section_id_question_key_key') THEN
+    BEGIN
+      ALTER TABLE public.assessment_questions ADD CONSTRAINT assessment_questions_section_id_question_key_key UNIQUE (section_id, question_key);
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END;
+  END IF;
+END $$;
 CREATE TABLE IF NOT EXISTS public.assessment_question_options (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), question_id TEXT NOT NULL REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
   label TEXT NOT NULL, value TEXT NOT NULL, position INTEGER NOT NULL CHECK (position > 0), is_active BOOLEAN NOT NULL DEFAULT true,
