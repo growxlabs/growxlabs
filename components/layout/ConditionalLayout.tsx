@@ -57,11 +57,12 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isCoursesPage = normalizedPath.includes("/courses");
   const isWishGame = normalizedPath.includes("/wish-game");
   const isArchitecture = normalizedPath.includes("/architecture");
+  const isDocumentAssessment = normalizedPath === "/onboarding";
   
   const isCheckoutPage = normalizedPath.includes("/checkout");
   
-  // Hide marketing UI for dashboard, auth, careers, courses, wish-game, and architecture components to prevent visual conflicts
-  if (isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture) {
+  // Document-mode routes supply their own formal header and footer.
+  if (isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment) {
     return <>{children}</>;
   }
 

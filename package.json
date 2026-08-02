@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "panda codegen",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -77,6 +78,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@pandacss/dev": "^1.12.0",
     "@swc/helpers": "^0.5.13",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",

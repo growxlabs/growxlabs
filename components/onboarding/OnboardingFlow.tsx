@@ -1,408 +1,140 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { useRef, useState } from "react";
+import { css, cx } from "@/styled-system/css";
+import { DocumentActionBar } from "@/components/document/DocumentActionBar";
+import { DocumentFooter } from "@/components/document/DocumentFooter";
+import { DocumentHeader } from "@/components/document/DocumentHeader";
+import { DocumentContainer, DocumentShell } from "@/components/document/DocumentShell";
+
+type AssessmentData = Record<string, string | string[]>;
+type UploadedAsset = { id: string; name: string; size: number; type: string; version: number };
+
+const SECTIONS = [
+  ["Company Profile", "Establish the organisation, its leadership contact and operating footprint."],
+  ["Business Overview", "Document how the organisation creates value and serves its markets."],
+  ["Business Challenges", "Identify the commercial and operational constraints requiring attention."],
+  ["Current Technology Landscape", "Create an inventory of systems currently supporting the business."],
+  ["Digital Presence Assessment", "Review the organisation's owned, social and paid digital channels."],
+  ["Business Objectives", "Prioritise the outcomes expected from this consulting engagement."],
+  ["Project Scope", "Define the services and capabilities required from GrowXLabs."],
+  ["Commercial Information", "Align investment expectations, timing and decision authority."],
+  ["Operational Information", "Capture the operating model, network and internal workflow."],
+  ["Documentation & Assets", "Provide the materials required for discovery and solution design."],
+  ["Project Readiness Review", "Confirm stakeholder, commercial and delivery readiness."],
+  ["Executive Declaration & Final Review", "Review the assessment and formally authorise submission."],
+] as const;
+
+const CHALLENGES = ["Lead Generation", "Branding", "Website", "CRM", "Sales", "Inventory", "Distribution", "Dealer Network", "Marketing", "SEO", "Operations", "Reporting", "Customer Experience", "Automation", "Other"];
+const OBJECTIVES = ["Increase Revenue", "Generate More Leads", "Expand Distribution", "Launch New Products", "Improve Operations", "Reduce Manual Work", "Improve Customer Experience", "Digital Transformation", "Improve Brand Position"];
+const SERVICES = ["Website", "Branding", "CRM", "Custom Software", "Dealer Management", "Distributor Management", "Inventory", "ERP", "Automation", "SEO", "AEO", "GEO", "Google Ads", "Meta Ads", "Video Marketing", "Analytics", "Training", "Support"];
+const READINESS = ["Business Goals Defined", "Stakeholders Identified", "Budget Approved", "Timeline Confirmed", "Assets Ready", "Decision Makers Confirmed"];
+
+const field = css({ display: "grid", gap: "7px" });
+const label = css({ color: "#273348", fontSize: "12px", fontWeight: "650", letterSpacing: "0.025em" });
+const input = css({ width: "100%", minH: "44px", border: "1px solid #cfd6df", borderRadius: "4px", bg: "#fff", color: "#152033", px: "13px", fontSize: "14px", outline: "none", transition: "border-color .15s, box-shadow .15s", _focus: { borderColor: "#1d4f7a", boxShadow: "0 0 0 3px rgba(29,79,122,.10)" }, _placeholder: { color: "#8993a3" } });
+const textarea = cx(input, css({ minH: "116px", py: "11px", resize: "vertical" }));
+const grid2 = css({ display: "grid", gridTemplateColumns: { base: "1fr", md: "repeat(2,minmax(0,1fr))" }, gap: "20px" });
+const optionGrid = css({ display: "grid", gridTemplateColumns: { base: "1fr", sm: "repeat(2,minmax(0,1fr))", md: "repeat(3,minmax(0,1fr))" }, gap: "9px" });
 
 export default function OnboardingFlow() {
-  const [submitted, setSubmitted] = useState(false);
+  const [section, setSection] = useState(0);
+  const [data, setData] = useState<AssessmentData>({ assessment_date: new Date().toISOString().slice(0, 10) });
+  const [assets, setAssets] = useState<UploadedAsset[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [message, setMessage] = useState("");
+  const fileInput = useRef<HTMLInputElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
+  const selected = (key: string) => Array.isArray(data[key]) ? data[key] as string[] : [];
+  const setValue = (key: string, value: string | string[]) => setData((current) => ({ ...current, [key]: value }));
+  const toggle = (key: string, value: string) => setValue(key, selected(key).includes(value) ? selected(key).filter((item) => item !== value) : [...selected(key), value]);
+  const progress = ((section + 1) / SECTIONS.length) * 100;
 
-    const formData = new FormData(e.currentTarget);
-    const data: any = {};
-    
-    // Extract basic fields
-    formData.forEach((value, key) => {
-      if (key === 'features' || key === 'assets') {
-        if (!data[key]) data[key] = [];
-        data[key].push(value);
-      } else {
-        data[key] = value;
-      }
-    });
-
-    try {
-      const res = await fetch("/api/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      if (res.ok) {
-        setSubmitted(true);
-      } else {
-        const err = await res.json();
-        setError(err.error || "Submission failed. Please try again.");
-      }
-    } catch (err) {
-      setError("Network error. Please check your connection.");
-    } finally {
-      setSubmitting(false);
-    }
+  const summary = {
+    company: String(data.business_name || "Not provided"),
+    contact: [data.primary_contact, data.designation, data.business_email].filter(Boolean).join(" · ") || "Not provided",
+    objectives: selected("objectives"), services: selected("services"),
+    timeline: String(data.timeline || "Not selected"), budget: String(data.budget || "Not selected"),
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-6">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="h-20 w-20 bg-[#00b894] rounded-full flex items-center justify-center mx-auto shadow-lg">
-            <CheckCircle2 className="text-white h-10 w-10" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900">Submission Received!</h2>
-          <p className="text-gray-600">
-            Thank you for your onboarding details. Our team at GrowXLabsTech will review your information and get back to you within 24 hours via WhatsApp or Email.
-          </p>
-          <button 
-            onClick={() => window.location.href = '/'}
-            className="px-8 py-3 bg-[#00b894] text-white rounded-lg font-bold hover:opacity-90 transition-all"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
+  function saveDraft() {
+    localStorage.setItem("growxlabs-business-assessment-draft", JSON.stringify({ data, assets, section, savedAt: new Date().toISOString() }));
+    setMessage("Draft saved on this device.");
   }
 
+  function loadDraft() {
+    const raw = localStorage.getItem("growxlabs-business-assessment-draft");
+    if (!raw) return setMessage("No saved draft was found on this device.");
+    const draft = JSON.parse(raw) as { data?: AssessmentData; assets?: UploadedAsset[]; section?: number };
+    if (draft.data) setData(draft.data);
+    if (draft.assets) setAssets(draft.assets);
+    if (typeof draft.section === "number") setSection(Math.min(draft.section, 11));
+    setMessage("Draft restored.");
+  }
+
+  function addFiles(files: FileList | null) {
+    if (!files) return;
+    setAssets((current) => [...current, ...Array.from(files).map((file) => ({ id: crypto.randomUUID(), name: file.name, size: file.size, type: file.type || "Document", version: 1 }))]);
+  }
+
+  async function submitAssessment() {
+    if (!data.consent || !data.signature_name || !data.business_name || !data.business_email) {
+      setMessage("Complete the company, signature and consent fields before submission."); return;
+    }
+    setSubmitting(true); setMessage("");
+    try {
+      const response = await fetch("/api/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...data, assets }) });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Submission failed");
+      localStorage.removeItem("growxlabs-business-assessment-draft"); setSubmitted(true);
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Submission failed. Please try again."); }
+    finally { setSubmitting(false); }
+  }
+
+  if (submitted) return <Success />;
+
   return (
-    <div className="onboarding-container">
-      <style jsx>{`
-        .onboarding-container {
-          background: #f9fafb;
-          min-height: 100vh;
-          padding: 40px 20px;
-          color: #222;
-          font-family: 'Inter', Arial, sans-serif;
-        }
-        .paper {
-          background: #fff;
-          max-width: 900px;
-          margin: auto;
-          padding: 60px;
-          box-shadow: 0 10px 50px rgba(0,0,0,0.05);
-          border-radius: 8px;
-          position: relative;
-        }
-        .header { text-align: center; border-bottom: 4px solid #00b894; padding-bottom: 24px; margin-bottom: 30px; }
-        .header h1 { font-size: 32px; color: #00b894; letter-spacing: 0.2em; font-weight: 900; text-transform: uppercase; }
-        .header p { font-size: 10px; color: #888; margin-top: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
-        .doc-title { text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 6px; color: #111; }
-        .doc-sub { text-align: center; font-size: 12px; color: #888; margin-bottom: 30px; }
-        
-        h2 { 
-          font-size: 13px; color: #fff; background: #00b894; padding: 10px 16px; margin: 32px 0 16px; 
-          border-radius: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;
-        }
-        
-        .field-row { display: flex; gap: 24px; margin-bottom: 18px; }
-        .field { flex: 1; display: flex; flex-col; gap: 4px; }
-        .field label { font-size: 11px; color: #555; display: block; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input[type="text"], input[type="email"], input[type="tel"], textarea, select {
-          width: 100%;
-          border: 1px solid #ddd;
-          border-radius: 6px;
-          padding: 10px 14px;
-          font-size: 13px;
-          font-family: inherit;
-          background: #fafafa;
-          transition: all 0.2s;
-          color: #222;
-        }
-        
-        input:focus, textarea:focus {
-          outline: none;
-          border-color: #00b894;
-          background: #fff;
-          box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.1);
-        }
-        
-        textarea { resize: vertical; min-height: 80px; }
-        
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
-        .checkbox-item { 
-          display: flex; align-items: center; gap: 8px; font-size: 12px; 
-          background: #f3f4f6; padding: 8px 14px; border-radius: 8px; 
-          border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s;
-          font-weight: 500;
-        }
-        .checkbox-item:hover { background: #e5e7eb; }
-        .checkbox-item input { margin: 0; accent-color: #00b894; }
-        
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; border-radius: 8px; overflow: hidden; }
-        th { background: #f0faf8; color: #00b894; padding: 12px; text-align: left; font-size: 11px; border: 1px solid #e0f2f1; text-transform: uppercase; font-weight: 800; }
-        td { padding: 12px; border: 1px solid #eee; font-size: 12px; color: #444; }
-        
-        .submit-btn {
-          width: 100%;
-          background: #00b894;
-          color: white;
-          border: none;
-          padding: 16px;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          cursor: pointer;
-          margin-top: 40px;
-          transition: all 0.3s;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-        }
-        .submit-btn:hover { background: #00a383; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2); }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        
-        .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #aaa; border-top: 1px solid #eee; padding-top: 24px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
-        
-        @media print {
-          .onboarding-container { background: white; padding: 0; }
-          .paper { box-shadow: none; padding: 0; margin: 0; max-width: 100%; }
-          .submit-btn { display: none; }
-          input, textarea, select { border: 1px solid transparent !important; background: transparent !important; padding-left: 0 !important; }
-          .checkbox-item { background: transparent !important; border: none !important; padding-left: 0 !important; }
-          input[type="radio"], input[type="checkbox"] { print-color-adjust: exact; }
-          h2 { background: #f5f5f5 !important; color: #222 !important; border: 1px solid #eee; }
-        }
-      `}</style>
+    <DocumentShell>
+      <DocumentHeader />
+      <main>
+      <DocumentContainer className={css({ pt: { base: "20px", md: "28px" } })}>
+        <div className={css({ display: "flex", justifyContent: "space-between", alignItems: "end", mb: "9px" })}><div><span className={css({ color: "#1d4f7a", fontSize: "11px", fontWeight: "750", letterSpacing: ".12em", textTransform: "uppercase" })}>Section {section + 1} of 12</span><div className={css({ fontSize: "13px", color: "#596578", mt: "3px" })}>{SECTIONS[section][0]}</div></div><span className={css({ color: "#7b8491", fontSize: "12px" })}>{Math.round(progress)}% complete</span></div>
+        <div className={css({ h: "3px", bg: "#d9dee5", mb: "24px" })}><div className={css({ h: "100%", bg: "#1d4f7a", transition: "width .25s" })} style={{ width: `${progress}%` }} /></div>
 
-      <form ref={formRef} onSubmit={handleSubmit} className="paper">
-        <div className="header">
-          <h1>✕ GROWXLABSTECH</h1>
-          <p>AI-native Software Company | growxlabs.tech | sai@growxlabs.tech</p>
-        </div>
-
-        <div className="doc-title">CLIENT ONBOARDING FORM</div>
-        <div className="doc-sub">Help us understand your business so we can build something amazing for you.</div>
-
-        {/* SECTION 1 */}
-        <h2>Section 1: Business Information</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Full Name *</label>
-            <input type="text" name="full_name" placeholder="Enter your full name" required />
-          </div>
-          <div className="field">
-            <label>Business / Brand Name *</label>
-            <input type="text" name="business_name" placeholder="Your business legal or brand name" required />
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Email Address *</label>
-            <input type="email" name="email" placeholder="example@email.com" required />
-          </div>
-          <div className="field">
-            <label>WhatsApp Number *</label>
-            <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required />
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Business Type</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="business_type" value="E-Commerce" /> E-Commerce</label>
-              <label className="checkbox-item"><input type="radio" name="business_type" value="Service Business" /> Service Business</label>
-              <label className="checkbox-item"><input type="radio" name="business_type" value="SaaS / App" /> SaaS / App</label>
-              <label className="checkbox-item"><input type="radio" name="business_type" value="Personal Brand" /> Personal Brand</label>
-              <label className="checkbox-item"><input type="radio" name="business_type" value="Local Shop" /> Local Shop</label>
-              <label className="checkbox-item"><input type="radio" name="business_type" value="Other" /> Other</label>
-            </div>
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Business Description (What do you sell/offer?)</label>
-            <textarea name="description" placeholder="Briefly describe your products or services..."></textarea>
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Target Audience (Who are your customers?)</label>
-            <input type="text" name="target_audience" placeholder="e.g. Small business owners, Teens, Tech professionals" />
-          </div>
-          <div className="field">
-            <label>Location / City of Business</label>
-            <input type="text" name="city" placeholder="Guntur, AP, etc." />
-          </div>
-        </div>
-
-        {/* SECTION 2 */}
-        <h2>Section 2: Project Requirements</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Selected Plan</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="plan" value="Starter" /> Starter (₹10,000)</label>
-              <label className="checkbox-item"><input type="radio" name="plan" value="Growth" /> Growth (₹20,000)</label>
-              <label className="checkbox-item"><input type="radio" name="plan" value="Enterprise Next.js" /> Enterprise Next.js (₹40,000+)</label>
-              <label className="checkbox-item"><input type="radio" name="plan" value="Enterprise Microservices" /> Enterprise Microservices (₹1L+)</label>
-              <label className="checkbox-item"><input type="radio" name="plan" value="Custom Quote" /> Custom Quote</label>
-            </div>
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Do you have an existing website?</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="has_website" value="Yes" /> Yes – Redesign it</label>
-              <label className="checkbox-item"><input type="radio" name="has_website" value="No" /> No – Build from scratch</label>
-            </div>
-          </div>
-          <div className="field">
-            <label>Existing Website URL (if any)</label>
-            <input type="text" name="website_url" placeholder="https://..." />
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Features Needed</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Contact Form" /> Contact Form</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="WhatsApp Button" /> WhatsApp Button</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Product Catalog" /> Product Catalog</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Online Payments" /> Online Payments</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Blog / News" /> Blog / News</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Booking System" /> Booking System</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Admin Dashboard" /> Admin Dashboard</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="AI Chatbot" /> AI Chatbot</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="Multi-language" /> Multi-language</label>
-              <label className="checkbox-item"><input type="checkbox" name="features" value="User Accounts" /> User Accounts</label>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 3: ASSETS */}
-        <h2>Section 3: Content & Assets</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>I Will Provide</th>
-              <th>Need Help</th>
-              <th>Not Needed</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              "Logo / Brand Identity",
-              "Product / Service Photos",
-              "Website Text / Copy",
-              "Banner / Hero Images",
-              "Social Media Links",
-              "Video Content"
-            ].map(asset => (
-              <tr key={asset}>
-                <td>{asset}</td>
-                <td style={{textAlign: 'center'}}><input type="radio" name={`asset_${asset.replace(/[^a-zA-Z]/g, '')}`} value="Provide" /></td>
-                <td style={{textAlign: 'center'}}><input type="radio" name={`asset_${asset.replace(/[^a-zA-Z]/g, '')}`} value="Help" /></td>
-                <td style={{textAlign: 'center'}}><input type="radio" name={`asset_${asset.replace(/[^a-zA-Z]/g, '')}`} value="None" /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* SECTION 4: TECHNICAL */}
-        <h2>Section 4: Technical Details</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Do you have a domain name?</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="has_domain" value="Yes" /> Yes</label>
-              <label className="checkbox-item"><input type="radio" name="has_domain" value="No" /> No – Need one</label>
-            </div>
-          </div>
-          <div className="field">
-            <label>Domain Name (if any)</label>
-            <input type="text" name="domain" placeholder="example.com" />
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Payment Gateway Needed?</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="payment_gateway" value="Razorpay" /> Razorpay</label>
-              <label className="checkbox-item"><input type="radio" name="payment_gateway" value="Stripe" /> Stripe</label>
-              <label className="checkbox-item"><input type="radio" name="payment_gateway" value="UPI/Manual" /> UPI/Manual</label>
-              <label className="checkbox-item"><input type="radio" name="payment_gateway" value="Not needed" /> Not needed</label>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 5: BUDGET */}
-        <h2>Section 5: Budget & Timeline</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Total Budget (One-time Build)</label>
-            <input type="text" name="budget" placeholder="₹XXXXX" />
-          </div>
-          <div className="field">
-            <label>Desired Launch Date</label>
-            <input type="text" name="timeline" placeholder="e.g. Next Month, 15th Aug" />
-          </div>
-        </div>
-
-        {/* SECTION 6: COMMUNICATION */}
-        <h2>Section 6: Communication & Preferences</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Preferred Contact Method</label>
-            <div className="checkbox-group">
-              <label className="checkbox-item"><input type="radio" name="contact_method" value="WhatsApp" /> WhatsApp</label>
-              <label className="checkbox-item"><input type="radio" name="contact_method" value="Email" /> Email</label>
-              <label className="checkbox-item"><input type="radio" name="contact_method" value="Phone Call" /> Phone Call</label>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 7: NOTES */}
-        <h2>Section 7: Additional Notes</h2>
-        <div className="field-row">
-          <div className="field">
-            <label>Any special requirements or concerns?</label>
-            <textarea name="notes" placeholder="Tell us anything else we should know..."></textarea>
-          </div>
-        </div>
-
-        <br />
-        <p style={{fontSize:'12px', color:'#555', fontWeight: 600}}>By submitting this form, I confirm the information provided is accurate and I agree to GrowXLabsTech's Terms & Conditions.</p>
-        
-        <div className="field-row" style={{marginTop: '30px', alignItems: 'flex-end'}}>
-          <div className="field" style={{maxWidth: '300px'}}>
-            <label>Client Digital Signature</label>
-            <input type="text" name="signature" placeholder="Type full name to sign" style={{fontFamily: "var(--font-cursive), cursive", fontSize: '24px', background: 'transparent', borderBottom: '2px solid #333', borderRadius: '0', padding: '0 0 5px 0'}} required />
-          </div>
-          <div style={{fontSize: '11px', color: '#888', paddingBottom: '10px'}}>
-            Date: {new Date().toLocaleDateString()}
-          </div>
-        </div>
-
-        {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-bold">
-            {error}
-          </div>
-        )}
-
-        <button type="submit" disabled={submitting} className="submit-btn">
-          {submitting ? (
-            <>
-              <Loader2 className="animate-spin h-5 w-5" />
-              Processing Submission...
-            </>
-          ) : "Submit Details"}
-        </button>
-
-        <div className="footer">
-          GrowXLabsTech | growxlabs.tech | sai@growxlabs.tech | © {new Date().getFullYear()} GrowXLabsTech. All rights reserved.
-        </div>
-      </form>
-    </div>
+        <form onSubmit={(event) => event.preventDefault()} className={css({ bg: "#fff", border: "1px solid #d9dee5", borderRadius: "6px 6px 0 0" })}>
+          <div className={css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "42px" }, borderBottom: "1px solid #e2e6eb" })}><div className={css({ color: "#7c8796", fontSize: "11px", fontWeight: "700", letterSpacing: ".12em", textTransform: "uppercase", mb: "8px" })}>GrowXLabs Consulting Assessment</div><h2 className={css({ fontFamily: "Georgia, serif", fontSize: { base: "27px", md: "34px" }, fontWeight: "500" })}>{SECTIONS[section][0]}</h2><p className={css({ color: "#657184", fontSize: "14px", lineHeight: "1.7", mt: "9px", maxW: "650px" })}>{SECTIONS[section][1]}</p></div>
+          <div className={cx("assessment-section", css({ px: { base: "20px", md: "46px" }, py: { base: "28px", md: "38px" }, display: "grid", gap: "26px" }))}>{renderSection(section, data, setValue, selected, toggle, assets, addFiles, setAssets, fileInput, summary)}</div>
+          {message && <div role={section === 11 ? "alert" : "status"} className={css({ mx: { base: "20px", md: "46px" }, mb: "24px", borderLeft: "3px solid #9a6425", bg: "#fbf7f0", color: "#65451e", px: "14px", py: "11px", fontSize: "13px", lineHeight: "1.55" })}>{message}</div>}
+        </form>
+        <DocumentFooter section={section} progress={progress} footerRef={footerRef} onRestoreDraft={loadDraft} />
+      </DocumentContainer>
+      </main>
+      <DocumentActionBar section={section} submitting={submitting} footerRef={footerRef} onPrevious={() => setSection((value) => Math.max(0, value - 1))} onSave={saveDraft} onNext={() => { setSection((value) => Math.min(11, value + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }} onSubmit={submitAssessment} />
+    </DocumentShell>
   );
 }
+
+function TextField({ name, title, data, setValue, type = "text", required = false }: { name: string; title: string; data: AssessmentData; setValue: (key: string, value: string) => void; type?: string; required?: boolean }) { return <label className={field}><span className={label}>{title}{required && " *"}</span><input className={input} name={name} type={type} required={required} value={String(data[name] || "")} onChange={(e) => setValue(name, e.target.value)} /></label>; }
+function TextArea({ name, title, data, setValue, rows = 5 }: { name: string; title: string; data: AssessmentData; setValue: (key: string, value: string) => void; rows?: number }) { return <label className={field}><span className={label}>{title}</span><textarea className={textarea} rows={rows} value={String(data[name] || "")} onChange={(e) => setValue(name, e.target.value)} /></label>; }
+function SelectField({ name, title, options, data, setValue }: { name: string; title: string; options: string[]; data: AssessmentData; setValue: (key: string, value: string) => void }) { return <label className={field}><span className={label}>{title}</span><select className={input} value={String(data[name] || "")} onChange={(e) => setValue(name, e.target.value)}><option value="">Select an option</option>{options.map((option) => <option key={option}>{option}</option>)}</select></label>; }
+function Options({ name, options, selected, toggle }: { name: string; options: string[]; selected: (key: string) => string[]; toggle: (key: string, value: string) => void }) { return <fieldset><legend className={label}>Select all that apply</legend><div className={cx(optionGrid, css({ mt: "10px" }))}>{options.map((option) => <label key={option} className={css({ display: "flex", alignItems: "center", gap: "9px", border: "1px solid #d7dde5", borderRadius: "4px", px: "12px", py: "11px", color: "#344154", fontSize: "13px", cursor: "pointer", bg: selected(name).includes(option) ? "#eef4f8" : "#fff" })}><input type="checkbox" checked={selected(name).includes(option)} onChange={() => toggle(name, option)} className={css({ accentColor: "#173f63" })} />{option}</label>)}</div></fieldset>; }
+
+function renderSection(section: number, data: AssessmentData, setValue: (key: string, value: string | string[]) => void, selected: (key: string) => string[], toggle: (key: string, value: string) => void, assets: UploadedAsset[], addFiles: (files: FileList | null) => void, setAssets: React.Dispatch<React.SetStateAction<UploadedAsset[]>>, fileInput: React.RefObject<HTMLInputElement | null>, summary: { company: string; contact: string; objectives: string[]; services: string[]; timeline: string; budget: string }) {
+  const sf = (key: string, value: string) => setValue(key, value);
+  if (section === 0) return <><div className={grid2}><TextField name="business_name" title="Business / Company Name" data={data} setValue={sf} required /><TextField name="legal_entity_name" title="Legal Entity Name" data={data} setValue={sf} /><TextField name="industry" title="Industry" data={data} setValue={sf} /><TextField name="primary_contact" title="Primary Contact" data={data} setValue={sf} required /><TextField name="designation" title="Designation" data={data} setValue={sf} /><TextField name="business_email" title="Business Email" type="email" data={data} setValue={sf} required /><TextField name="phone" title="Phone" type="tel" data={data} setValue={sf} /><TextField name="website" title="Website" type="url" data={data} setValue={sf} /><TextField name="headquarters" title="Headquarters" data={data} setValue={sf} /><TextField name="operating_regions" title="Operating Regions" data={data} setValue={sf} /><TextField name="employee_count" title="Number of Employees" data={data} setValue={sf} /><TextField name="years_in_business" title="Years in Business" data={data} setValue={sf} /></div></>;
+  if (section === 1) return <><TextArea name="company_overview" title="Company Overview" data={data} setValue={sf} /><div className={grid2}><TextArea name="products" title="Products" data={data} setValue={sf} /><TextArea name="services_overview" title="Services" data={data} setValue={sf} /><TextArea name="primary_customers" title="Primary Customers" data={data} setValue={sf} /><TextArea name="business_model" title="Business Model" data={data} setValue={sf} /></div><SelectField name="annual_revenue" title="Annual Revenue Range" options={["Pre-revenue", "Below ₹1 crore", "₹1–5 crore", "₹5–25 crore", "₹25–100 crore", "₹100 crore+"]} data={data} setValue={sf} /><TextArea name="markets_served" title="Markets Served" data={data} setValue={sf} /><TextArea name="competitive_advantage" title="Competitive Advantage" data={data} setValue={sf} /></>;
+  if (section === 2) return <><Options name="challenges" options={CHALLENGES} selected={selected} toggle={toggle} /><TextArea name="biggest_challenge" title="Describe your biggest business challenge." data={data} setValue={sf} rows={7} /></>;
+  if (section === 3) return <div className={grid2}>{["Website", "CRM", "ERP", "Inventory", "Accounting", "Marketing Tools", "Hosting", "Analytics", "Email Platform", "Integrations"].map((item) => <TextArea key={item} name={`technology_${item.toLowerCase().replaceAll(" ", "_")}`} title={item} data={data} setValue={sf} rows={3} />)}</div>;
+  if (section === 4) return <div className={grid2}>{["Website URL", "Google Business Profile", "Instagram", "Facebook", "LinkedIn", "YouTube", "Google Analytics", "Search Console", "Google Ads", "Meta Ads", "SEO Status"].map((item) => <TextField key={item} name={`digital_${item.toLowerCase().replaceAll(" ", "_")}`} title={item} data={data} setValue={sf} />)}</div>;
+  if (section === 5) return <><Options name="objectives" options={OBJECTIVES} selected={selected} toggle={toggle} /><SelectField name="objective_priority" title="Overall Priority" options={["High", "Medium", "Low"]} data={data} setValue={sf} /></>;
+  if (section === 6) return <Options name="services" options={SERVICES} selected={selected} toggle={toggle} />;
+  if (section === 7) return <div className={grid2}><SelectField name="budget" title="Estimated Investment" options={["< ₹5 lakh", "₹5–10 lakh", "₹10–25 lakh", "₹25 lakh+"]} data={data} setValue={sf} /><SelectField name="timeline" title="Timeline" options={["Immediate", "30 Days", "60 Days", "90 Days", "Planning Stage"]} data={data} setValue={sf} /><SelectField name="decision_maker" title="Decision Maker" options={["Owner", "CEO", "Director", "Marketing Head", "Operations Head", "IT Head"]} data={data} setValue={sf} /></div>;
+  if (section === 8) return <div className={grid2}>{["Sales Process", "Lead Sources", "Current Team", "Warehouses", "Branches", "Distribution Regions", "Dealer Network", "Current Challenges", "Internal Workflow"].map((item) => <TextArea key={item} name={`operations_${item.toLowerCase().replaceAll(" ", "_")}`} title={item} data={data} setValue={sf} rows={3} />)}</div>;
+  if (section === 9) return <><div onClick={() => fileInput.current?.click()} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); addFiles(e.dataTransfer.files); }} className={css({ border: "1px dashed #9ba8b7", borderRadius: "4px", bg: "#fafbfc", py: "42px", px: "20px", textAlign: "center", cursor: "pointer" })}><strong className={css({ display: "block", fontSize: "14px" })}>Select or drop discovery documents</strong><span className={css({ display: "block", color: "#748092", fontSize: "12px", mt: "6px" })}>Logo, brand guidelines, catalogues, profiles, presentations, media and certificates</span><input ref={fileInput} hidden multiple type="file" onChange={(e) => addFiles(e.target.files)} /></div><div className={css({ display: "grid", gap: "8px" })}>{assets.map((asset) => <div key={asset.id} className={css({ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #e2e6eb", py: "11px", fontSize: "13px" })}><div><strong>{asset.name}</strong><span className={css({ color: "#788393", ml: "10px" })}>Version {asset.version} · {(asset.size / 1024).toFixed(1)} KB</span></div><button type="button" onClick={() => setAssets((current) => current.filter((item) => item.id !== asset.id))} className={css({ color: "#8a3030", fontSize: "12px", cursor: "pointer" })}>Remove</button></div>)}</div></>;
+  if (section === 10) return <><Options name="readiness" options={READINESS} selected={selected} toggle={toggle} /><TextArea name="additional_notes" title="Additional Notes" data={data} setValue={sf} /><TextArea name="questions" title="Questions" data={data} setValue={sf} /><TextArea name="comments" title="Comments" data={data} setValue={sf} /><TextArea name="dependencies" title="Dependencies" data={data} setValue={sf} /></>;
+  return <><div className={css({ border: "1px solid #ccd3dc" })}>{[["Business", summary.company], ["Primary Contact", summary.contact], ["Selected Services", summary.services.join(", ") || "None selected"], ["Project Objectives", summary.objectives.join(", ") || "None selected"], ["Estimated Timeline", summary.timeline], ["Budget Range", summary.budget], ["Uploaded Assets", `${assets.length} document(s)`]].map(([key, value]) => <div key={key} className={css({ display: "grid", gridTemplateColumns: { base: "1fr", md: "190px 1fr" }, borderBottom: "1px solid #e2e6eb", _last: { borderBottom: "0" } })}><div className={css({ bg: "#f4f6f8", px: "15px", py: "12px", fontSize: "12px", fontWeight: "700" })}>{key}</div><div className={css({ px: "15px", py: "12px", color: "#4f5c6f", fontSize: "13px" })}>{value}</div></div>)}</div><section className={css({ borderTop: "2px solid #25364b", pt: "26px", mt: "8px" })}><h3 className={css({ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: "500" })}>Executive Declaration</h3><p className={css({ color: "#4f5c6f", fontSize: "13px", lineHeight: "1.75", mt: "12px" })}>I confirm that the information provided in this assessment is accurate to the best of my knowledge and will be used by GrowXLabs for business discovery, consulting analysis, solution design, proposal preparation, and project planning.</p><div className={cx(grid2, css({ mt: "24px" }))}><TextField name="signature_name" title="Digital Signature — Typed Full Name" data={data} setValue={sf} required /><TextField name="signature_designation" title="Designation" data={data} setValue={sf} /><TextField name="assessment_date" title="Date" type="date" data={data} setValue={sf} /></div><label className={css({ display: "flex", gap: "10px", alignItems: "flex-start", mt: "22px", fontSize: "13px", lineHeight: "1.6", color: "#3d4a5d" })}><input type="checkbox" checked={data.consent === "yes"} onChange={(e) => setValue("consent", e.target.checked ? "yes" : "")} className={css({ mt: "4px", accentColor: "#173f63" })} />I provide my consent for GrowXLabs to process this assessment for the stated consulting purposes.</label></section></>;
+}
+
+function Success() { const steps = ["Internal Business Review", "Discovery Meeting", "Technology Assessment", "Consulting Recommendations", "Commercial Proposal", "Project Kickoff"]; return <main className={css({ minH: "100vh", bg: "#f3f5f7", color: "#152033", px: "20px", py: { base: "50px", md: "90px" } })}><article className={css({ maxW: "760px", mx: "auto", bg: "#fff", border: "1px solid #d5dbe3", px: { base: "24px", md: "58px" }, py: { base: "36px", md: "56px" } })}><div className={css({ color: "#1d5f4a", fontSize: "12px", fontWeight: "750", letterSpacing: ".12em", textTransform: "uppercase" })}>Submission confirmed</div><h1 className={css({ fontFamily: "Georgia, serif", fontSize: { base: "31px", md: "40px" }, fontWeight: "500", mt: "12px" })}>Business Discovery Assessment Submitted</h1><p className={css({ color: "#566376", fontSize: "15px", lineHeight: "1.75", mt: "18px" })}>Thank you. Our consulting team will now begin reviewing your business.</p><h2 className={css({ fontSize: "13px", letterSpacing: ".1em", textTransform: "uppercase", mt: "38px", mb: "12px" })}>Next steps</h2><ol className={css({ borderTop: "1px solid #d9dee5" })}>{steps.map((step, index) => <li key={step} className={css({ display: "grid", gridTemplateColumns: "36px 1fr", py: "13px", borderBottom: "1px solid #e2e6eb", fontSize: "14px" })}><span className={css({ color: "#7b8695" })}>{String(index + 1).padStart(2, "0")}</span>{step}</li>)}</ol><div className={css({ mt: "30px", bg: "#f4f6f8", borderLeft: "3px solid #173f63", px: "17px", py: "14px" })}><div className={css({ color: "#748092", fontSize: "11px", textTransform: "uppercase", letterSpacing: ".1em" })}>Estimated review time</div><strong className={css({ display: "block", mt: "4px", fontSize: "15px" })}>2–3 Business Days</strong></div></article></main>; }

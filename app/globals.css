@@ -3,6 +3,45 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
 
+@layer reset, base, tokens, recipes, utilities;
+
+@media print {
+  .site-navigation,
+  .document-action-bar,
+  .whatsapp-button,
+  .nextjs-toast,
+  [data-next-badge-root] {
+    display: none !important;
+  }
+
+  .document-shell {
+    background: #fff !important;
+    padding-bottom: 0 !important;
+  }
+
+  .document-shell > header,
+  .document-shell footer {
+    position: static !important;
+    box-shadow: none !important;
+  }
+
+  .document-container {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .assessment-section,
+  .assessment-section fieldset,
+  .assessment-section section {
+    break-inside: avoid;
+  }
+
+  .assessment-section h2,
+  .assessment-section h3 {
+    break-after: avoid;
+  }
+}
+
 
 @theme inline {
   --font-sans: var(--font-sans), sans-serif;

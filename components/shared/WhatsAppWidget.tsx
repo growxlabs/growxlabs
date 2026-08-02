@@ -13,7 +13,8 @@ export function WhatsAppWidget() {
   const isDashboardRoute = pathname?.includes('/admin') || 
                            pathname?.includes('/client') || 
                            pathname?.includes('/dashboard') ||
-                           pathname?.includes('/careers');
+                           pathname?.includes('/careers') ||
+                           pathname === '/onboarding';
 
   // International format for Indian number: 918185958336
   const phoneNumber = '918185958336';
