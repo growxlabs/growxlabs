@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.assessment_questions (
   UNIQUE(section_id, question_key), UNIQUE(section_id, position)
 );
 CREATE TABLE IF NOT EXISTS public.assessment_question_options (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), question_id UUID NOT NULL REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), question_id TEXT NOT NULL REFERENCES public.assessment_questions(id) ON DELETE CASCADE,
   label TEXT NOT NULL, value TEXT NOT NULL, position INTEGER NOT NULL CHECK (position > 0), is_active BOOLEAN NOT NULL DEFAULT true,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(question_id, value), UNIQUE(question_id, position)
@@ -50,12 +50,12 @@ CREATE TABLE IF NOT EXISTS public.client_assessments (
 CREATE UNIQUE INDEX IF NOT EXISTS client_assessments_active_uq ON public.client_assessments(client_id, template_id, template_version) WHERE status <> 'archived';
 CREATE TABLE IF NOT EXISTS public.assessment_answers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
-  question_id UUID REFERENCES public.assessment_questions(id), question_key TEXT NOT NULL, value JSONB, section_snapshot JSONB,
+  question_id TEXT REFERENCES public.assessment_questions(id), question_key TEXT NOT NULL, value JSONB, section_snapshot JSONB,
   question_snapshot JSONB NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE(assessment_id, question_key)
 );
 CREATE TABLE IF NOT EXISTS public.assessment_files (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(), assessment_id UUID NOT NULL REFERENCES public.client_assessments(id) ON DELETE CASCADE,
-  question_id UUID REFERENCES public.assessment_questions(id), question_key TEXT, uploaded_by UUID NOT NULL, file_name TEXT NOT NULL,
+  question_id TEXT REFERENCES public.assessment_questions(id), question_key TEXT, uploaded_by UUID NOT NULL, file_name TEXT NOT NULL,
   storage_path TEXT NOT NULL, file_type TEXT, file_size BIGINT CHECK (file_size IS NULL OR file_size >= 0), metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
