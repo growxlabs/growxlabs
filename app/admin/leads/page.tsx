@@ -139,7 +139,7 @@ const DropdownFilter = ({ label, value, options, onChange }: DropdownFilterProps
 
 export default function LeadsAdminPage() {
   const { data: session } = useSession();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
   const isAdminOrCoAdmin = role === "ADMIN" || role === "CO_ADMIN";
 
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -162,6 +162,8 @@ export default function LeadsAdminPage() {
 
   // Toast State
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+  const [invitation, setInvitation] = useState<{ status: "loading" | "not_invited" | "sent" | "accepted" | "expired" | "revoked"; email?: string | null; expiresAt?: string | null }>({ status: "not_invited" });
+  const [inviting, setInviting] = useState(false);
 
   // New Lead / Import Modals State
   const [showAddLead, setShowAddLead] = useState(false);
@@ -182,8 +184,8 @@ export default function LeadsAdminPage() {
     try {
       setLoading(true);
       const res = await fetch(`/api/leads/list?t=${Date.now()}`);
-      const data = await res.json();
-      const sortedData = (data || []).sort((a: any, b: any) => {
+      const data = await res.json() as Lead[];
+      const sortedData = (data || []).sort((a, b) => {
         return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       });
       setLeads(sortedData);
@@ -198,6 +200,17 @@ export default function LeadsAdminPage() {
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
+
+  useEffect(() => {
+    if (!activeLeadId) return;
+    let cancelled = false;
+    setInvitation({ status: "loading" });
+    fetch(`/api/admin/leads/${activeLeadId}/invite-client`, { cache: "no-store" })
+      .then(async (response) => { const body = await response.json(); if (!response.ok) throw new Error(body.error || "Unable to load invitation status"); return body; })
+      .then((body) => { if (!cancelled) setInvitation(body); })
+      .catch(() => { if (!cancelled) setInvitation({ status: "not_invited" }); });
+    return () => { cancelled = true; };
+  }, [activeLeadId]);
 
   useEffect(() => {
     if (toast) {
@@ -242,12 +255,28 @@ export default function LeadsAdminPage() {
       
       showToast("Lead updated successfully");
       await fetchLeads();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       setLeads(previousLeads);
-      showToast(e.message || "Update failed", "error");
+      showToast(e instanceof Error ? e.message : "Update failed", "error");
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const inviteQualifiedClient = async (lead: Lead) => {
+    if (!lead.id) return;
+    setInviting(true);
+    try {
+      const response = await fetch(`/api/admin/leads/${lead.id}/invite-client`, { method: "POST" });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Unable to invite client");
+      setInvitation(body);
+      showToast(`Secure invitation sent to ${body.email}`);
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Invitation failed", "error");
+    } finally {
+      setInviting(false);
     }
   };
 
@@ -267,8 +296,8 @@ export default function LeadsAdminPage() {
       showToast("Lead deleted successfully");
       if (activeLeadId === id) setActiveLeadId(null);
       fetchLeads();
-    } catch (e: any) {
-      showToast(e.message, "error");
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : "Delete failed", "error");
     }
   };
   const handleDeleteSelectedLeads = async () => {
@@ -300,8 +329,8 @@ export default function LeadsAdminPage() {
       setSelectedLeadIds([]);
       setActiveLeadId(null);
       fetchLeads();
-    } catch (e: any) {
-      showToast(e.message || "Bulk delete failed", "error");
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : "Bulk delete failed", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -354,8 +383,8 @@ export default function LeadsAdminPage() {
       setShowAddLead(false);
       setNewLead({ business_name: "", email: "", phone: "", city: "", status: "new" });
       fetchLeads();
-    } catch (e: any) {
-      showToast(e.message, "error");
+    } catch (e: unknown) {
+      showToast(e instanceof Error ? e.message : "Unable to create lead", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -403,7 +432,7 @@ export default function LeadsAdminPage() {
       const headers = parseCSVLine(rawLines[0]).map(h => h.toLowerCase().replace(/["']/g, ""));
       const data = rawLines.slice(1).map(line => {
         const values = parseCSVLine(line).map(v => v.replace(/["']/g, ""));
-        const obj: any = {};
+        const obj: Record<string, string | number | boolean> = {};
         headers.forEach((header, i) => {
           const val = values[i];
           if (!val) return;
@@ -431,8 +460,8 @@ export default function LeadsAdminPage() {
       setShowImportLead(false);
       setSelectedFile(null);
       fetchLeads();
-    } catch (e: any) {
-      showToast(`Import Failed: ${e.message}`, "error");
+    } catch (e: unknown) {
+      showToast(`Import Failed: ${e instanceof Error ? e.message : "Unknown error"}`, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -794,12 +823,13 @@ export default function LeadsAdminPage() {
                               >
                                 Start Outreach
                               </button>
-                              <button 
+                              {lead.status === "qualified" ? <button
+                                onClick={() => { inviteQualifiedClient(lead); setActiveActionMenuId(null); }}
+                                className="w-full text-left px-3 py-1.5 text-xs text-emerald-700 hover:bg-emerald-50 font-semibold cursor-pointer"
+                              >Invite Client</button> : <button
                                 onClick={() => { updateStatus(lead.id, 'qualified'); setActiveActionMenuId(null); }}
                                 className="w-full text-left px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-2)] font-medium cursor-pointer"
-                              >
-                                Mark Qualified
-                              </button>
+                              >Mark Qualified</button>}
                               {isAdminOrCoAdmin && (
                                 <button 
                                   onClick={() => { handleDeleteLead(lead.id!); setActiveActionMenuId(null); }}
@@ -1030,14 +1060,18 @@ export default function LeadsAdminPage() {
 
               {/* Drawer Actions Footer */}
               <div className="p-5 border-t border-[#E5E7EB] bg-slate-50/50 flex flex-col gap-2">
+                {selectedLead.status === "qualified" && <div className="mb-1 rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[10px] text-[#6B7280]"><span className="font-bold uppercase tracking-wider text-neutral-700">Client invitation: </span>{invitation.status === "loading" ? "Checking…" : invitation.status === "accepted" ? "Accepted" : invitation.status === "sent" ? `Sent${invitation.email ? ` to ${invitation.email}` : ""}${invitation.expiresAt ? ` · expires ${new Date(invitation.expiresAt).toLocaleString()}` : ""}` : invitation.status === "expired" ? "Expired — resend required" : invitation.status === "revoked" ? "Revoked" : "Not invited"}</div>}
                 <div className="flex gap-2">
-                  <Button 
+                  {selectedLead.status === "qualified" ? <Button
+                    onClick={() => inviteQualifiedClient(selectedLead)}
+                    isLoading={inviting || invitation.status === "loading"}
+                    disabled={invitation.status === "accepted"}
+                    className="flex-1 h-9 bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm disabled:bg-emerald-100 disabled:text-emerald-800"
+                  >{invitation.status === "accepted" ? "Invitation Accepted" : invitation.status === "sent" ? "Resend Invitation" : "Invite Client"}</Button> : <Button
                     onClick={() => updateStatus(selectedLead.id, 'qualified')}
                     isLoading={updatingId === selectedLead.id}
                     className="flex-1 h-9 bg-white border border-[#E5E7EB] text-neutral-600 hover:bg-slate-50 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
-                  >
-                    Mark Qualified
-                  </Button>
+                  >Mark Qualified</Button>}
                   <Button 
                     onClick={() => {
                       generateAIOutreach(selectedLead);
