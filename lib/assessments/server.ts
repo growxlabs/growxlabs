@@ -53,9 +53,13 @@ export async function getClientAssessment(context: ClientContext): Promise<Clien
   const { data, error } = await supabaseAdmin.from("client_assessments").select("*,assessment_answers(question_key,value,updated_at),assessment_files(id,question_id,question_key,file_name,file_type,file_size,created_at),assessment_information_requests(id,message,requested_question_keys,requested_section_keys,status,due_at,created_at)").eq("user_id",context.userId).neq("status","archived").order("created_at",{ascending:false}).limit(1).maybeSingle();
   if (error) throw new Error(`Unable to load assessment: ${error.message}`);
   if (!data) return null;
+  return mapStoredAssessment(data);
+}
+
+export function mapStoredAssessment(data: unknown): ClientAssessment {
   const row=record(data); const answers: Record<string,AssessmentAnswerValue>={}; for(const answer of list(row.assessment_answers)) answers[text(answer.question_key)]=answer.value as AssessmentAnswerValue;
   const snapshot=record(row.template_snapshot); const template=(Array.isArray(snapshot.sections)?snapshot:mapTemplate(snapshot)) as AssessmentTemplate;
-  return { id:text(row.id),templateId:text(row.template_id),templateVersion:integer(row.template_version),status:text(row.status) as ClientAssessment["status"],currentSection:integer(row.current_section),completedSections:Array.isArray(row.completed_sections)?row.completed_sections.map(text):[],completionPercentage:integer(row.completion_percentage),template,answers,
+  return { id:text(row.id),templateId:text(row.template_id),templateVersion:integer(row.template_version),clientId:text(row.client_id),companyId:nullableText(row.company_id),leadId:nullableText(row.lead_id),dealId:nullableText(row.deal_id),status:text(row.status) as ClientAssessment["status"],currentSection:integer(row.current_section),completedSections:Array.isArray(row.completed_sections)?row.completed_sections.map(text):[],completionPercentage:integer(row.completion_percentage),template,answers,
     files:list(row.assessment_files).map((file)=>({id:text(file.id),questionId:nullableText(file.question_id),questionKey:nullableText(file.question_key),fileName:text(file.file_name),fileType:nullableText(file.file_type),fileSize:file.file_size===null?null:integer(file.file_size),createdAt:text(file.created_at)})),
     informationRequests:list(row.assessment_information_requests).map((request)=>({id:text(request.id),message:text(request.message),requestedQuestionKeys:Array.isArray(request.requested_question_keys)?request.requested_question_keys.map(text):[],requestedSectionKeys:Array.isArray(request.requested_section_keys)?request.requested_section_keys.map(text):[],status:text(request.status) as "open"|"answered"|"resolved"|"cancelled",dueAt:nullableText(request.due_at),createdAt:text(request.created_at)})),
     startedAt:nullableText(row.started_at),submittedAt:nullableText(row.submitted_at),updatedAt:text(row.updated_at) };

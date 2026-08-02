@@ -40,6 +40,49 @@
   .assessment-section h3 {
     break-after: avoid;
   }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .assessment-document,
+  .assessment-document * {
+    visibility: visible !important;
+  }
+
+  .assessment-document {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+
+  .assessment-document-section,
+  .assessment-document-answer,
+  .assessment-document-footer {
+    break-inside: avoid;
+  }
+
+  .assessment-document-section h2,
+  .assessment-document-answer dt {
+    break-after: avoid;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-page-number::after {
+    content: " " counter(page);
+  }
+}
+
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+.pdf-export .no-print {
+  display: none !important;
 }
 
 

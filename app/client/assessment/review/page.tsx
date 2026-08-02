@@ -1,2 +1,2 @@
-import { ClientAssessmentPage } from "@/components/assessment/ClientAssessmentPage";
-export default function AssessmentReviewPage(){return <ClientAssessmentPage/>;}
+import { redirect } from "next/navigation";
+export default function AssessmentReviewPage(){redirect("/client/assessment/document");}
