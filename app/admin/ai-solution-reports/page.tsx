@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { ConsultingList } from "@/components/admin/consulting/ConsultingList";
+export default function AiSolutionReportsPage(){return <main className="p-6 md:p-10"><header className="mb-7"><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Phase 5 · Consulting deliverables</p><h1 className="mt-2 text-3xl font-bold">AI Opportunity &amp; Solution Reports</h1><p className="mt-2 text-sm text-slate-600">Create from an internally approved audit. Each report stays linked to its audit, discovery, client, and deal.</p><Link href="/admin/audits" className="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Open Audits to Create a Report</Link></header><ConsultingList kind="report"/></main>}

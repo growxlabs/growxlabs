@@ -1,0 +1,5 @@
+import { completeKickoff, financeError, requireFinanceAdmin, supabaseAdmin } from "@/lib/finance/activation-workflow";
+
+export async function GET() { try { await requireFinanceAdmin(); const { data, error } = await supabaseAdmin.from("consulting_kickoffs").select("id,kickoff_number,project_id,client_id,status,agenda,attendees,preparation,meeting_details,scheduled_for,completed_at").order("created_at", { ascending: false }); if (error) throw new Error(error.message); return Response.json({ kickoffs: data || [] }); } catch (error) { return financeError(error); } }
+
+export async function PATCH(request: Request) { try { const { userId } = await requireFinanceAdmin(); const body = await request.json() as { kickoffId?: string; meetingDetails?: Record<string, unknown> }; if (!body.kickoffId) return Response.json({ error: "Kickoff is required." }, { status: 400 }); return Response.json({ kickoff: await completeKickoff(body.kickoffId, userId, { meetingDetails: body.meetingDetails }) }); } catch (error) { return financeError(error); } }

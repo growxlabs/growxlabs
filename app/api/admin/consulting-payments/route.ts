@@ -1,0 +1,5 @@
+import { financeError, requireFinanceAdmin, supabaseAdmin, verifyPayment } from "@/lib/finance/activation-workflow";
+
+export async function GET() { try { await requireFinanceAdmin(); const { data, error } = await supabaseAdmin.from("consulting_payments").select("id,payment_number,invoice_id,client_id,amount,currency,method,transaction_reference,status,submitted_at,verified_at").order("submitted_at", { ascending: false }); if (error) throw new Error(error.message); return Response.json({ payments: data || [] }); } catch (error) { return financeError(error); } }
+
+export async function PATCH(request: Request) { try { const { userId } = await requireFinanceAdmin(); const body = await request.json() as { paymentId?: string; action?: "verify" | "reject" }; if (!body.paymentId || !body.action) return Response.json({ error: "Payment and action are required." }, { status: 400 }); return Response.json({ payment: await verifyPayment(body.paymentId, userId, body.action === "verify") }); } catch (error) { return financeError(error); } }

@@ -74,6 +74,12 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Client Accounts", href: "/admin/clients", icon: Users },
       { name: "Client Assessments", href: "/admin/assessments", icon: ClipboardCheck },
       { name: "Business & Technical Audits", href: "/admin/audits", icon: FileText },
+      { name: "AI Solution Reports", href: "/admin/ai-solution-reports", icon: Sparkles },
+      { name: "Solution Architectures", href: "/admin/solution-architectures", icon: Layers3 },
+      { name: "Scopes of Work", href: "/admin/scopes", icon: ClipboardList },
+      { name: "Commercial Proposals", href: "/admin/proposals", icon: FileText },
+      { name: "Proposal Approvals", href: "/admin/proposal-approvals", icon: ClipboardCheck },
+      { name: "Master Service Agreements", href: "/admin/agreements", icon: FileSignature },
       { name: "Outreach", href: "/admin/outreach", icon: Inbox },
       { name: "GrowX Email", href: "/admin/growx-email", icon: Mail },
       { name: "Presentation Builder", href: "/admin/pitch-deck", icon: Presentation },
@@ -87,6 +93,8 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Briefcase,
     items: [
       { name: "Projects", href: "/admin/pm/projects", icon: Briefcase },
+      { name: "Project Workspaces", href: "/admin/projects", icon: Layers3 },
+      { name: "Change Requests", href: "/admin/change-requests", icon: ClipboardList },
       { name: "Sprints", href: "/admin/pm/sprints", icon: Zap },
       { name: "Workload", href: "/admin/pm/workload", icon: Users },
       { name: "Timesheets", href: "/admin/pm/timesheets", icon: Clock },
@@ -105,6 +113,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Ledger Accounts", href: "/admin/finance/accounts", icon: Database },
       { name: "Reports", href: "/admin/finance/reports", icon: FileText },
       { name: "AI Helper", href: "/admin/finance/ai-helper", icon: Brain },
+      { name: "Consulting Activation", href: "/admin/consulting-finance", icon: Receipt },
     ]
   },
   {

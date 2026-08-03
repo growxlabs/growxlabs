@@ -1,0 +1,19 @@
+"use client";
+import { useMutation,useQuery,useQueryClient } from "@tanstack/react-query";
+import { consultingStatusLabel } from "@/lib/consulting/status";
+const statusLabel = consultingStatusLabel;
+const statuses=["draft","internal_review","changes_required","approved_internal","ready_for_client","shared","client_reviewed","client_acknowledged","closed","archived"];
+export function ConsultingWorkspace({kind,id}:{kind:"report"|"architecture";id:string}){
+  const config=kind==="report"?{endpoint:"/api/admin/ai-solution-reports",key:"ai-solution-report",root:"report",title:"AI Opportunity & Solution Report",next:"Generate Solution Architecture",nextEndpoint:"/api/admin/solution-architectures"}:{endpoint:"/api/admin/solution-architectures",key:"solution-architecture",root:"architecture",title:"Solution Architecture",next:"Ready for Scope of Work",nextEndpoint:""};
+  const qc=useQueryClient();
+  const query=useQuery<{[key:string]:Record<string,unknown>}>({queryKey:[config.key,id],queryFn:async()=>{const r=await fetch(`${config.endpoint}/${id}`);const b=await r.json();if(!r.ok)throw new Error(b.error||"Unable to load document.");return b;}});
+  const update=useMutation({mutationFn:async(payload:Record<string,unknown>)=>{const r=await fetch(`${config.endpoint}/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const b=await r.json();if(!r.ok)throw new Error(b.error||"Unable to update document.");return b;},onSuccess:()=>qc.invalidateQueries({queryKey:[config.key,id]})});
+  const createNext=useMutation({mutationFn:async()=>{const r=await fetch(config.nextEndpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reportId:id})});const b=await r.json();if(!r.ok)throw new Error(b.error||"Unable to continue workflow.");return b;}});
+  if(query.isPending)return <p>Loading document…</p>;
+  if(query.error)return <p className="text-red-700">{query.error.message}</p>;
+  const doc=query.data[config.root];
+  const number=String(doc[kind==="report"?"report_number":"architecture_number"]);
+  const content=Object.entries(doc).filter(([key,value])=>typeof value==="object"&&value!==null&&key!=="id");
+  const mutationError=update.error??createNext.error;
+  return <main className="space-y-6 p-6 md:p-10"><header className="rounded-xl border border-slate-200 bg-white p-6"><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Consulting workflow</p><h1 className="mt-2 text-3xl font-bold">{number}</h1><p className="mt-1 text-sm text-slate-500">{config.title} · {statusLabel(String(doc.status))}</p><div className="mt-5 flex flex-wrap gap-3"><select value={String(doc.status)} onChange={e=>update.mutate({status:e.target.value})} className="rounded border border-slate-300 px-3 py-2 text-sm">{statuses.map(status=><option key={status} value={status}>{statusLabel(status)}</option>)}</select>{kind==="report"&&<button onClick={()=>createNext.mutate()} disabled={createNext.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">{config.next}</button>}{kind==="architecture"&&<button onClick={()=>update.mutate({status:"closed"})} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">{config.next}</button>}<button onClick={()=>window.print()} className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold">Print</button></div>{mutationError&&<p className="mt-3 text-sm text-red-700">{mutationError.message}</p>}</header><div className="grid gap-5 lg:grid-cols-2">{content.map(([key,value])=><section key={key} className="rounded-xl border border-slate-200 bg-white p-5"><h2 className="font-semibold capitalize">{key.replace(/_/g," ")}</h2><pre className="mt-3 max-h-60 overflow-auto whitespace-pre-wrap text-xs leading-6 text-slate-600">{JSON.stringify(value,null,2)}</pre></section>)}</div></main>;
+}

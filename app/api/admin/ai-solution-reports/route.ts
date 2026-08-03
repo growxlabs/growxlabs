@@ -1,0 +1,4 @@
+import { createAiSolutionReport, requireConsultingAdmin, workflowError } from "@/lib/consulting/workflow";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+export async function GET(){try{await requireConsultingAdmin();const {data,error}=await supabaseAdmin.from("ai_solution_reports").select("id,report_number,status,version,audit_id,client_id,created_at,updated_at").order("updated_at",{ascending:false});if(error)throw new Error(error.message);return Response.json({reports:data||[]});}catch(error){return workflowError(error);}}
+export async function POST(request:Request){try{const admin=await requireConsultingAdmin();const body=await request.json() as {auditId?:string};if(!body.auditId)return Response.json({error:"Audit is required."},{status:400});return Response.json({report:await createAiSolutionReport(body.auditId,admin.userId)},{status:201});}catch(error){return workflowError(error);}}

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export const AUDIT_STATUSES=["Draft","Internal Review","Ready for Client","Shared","Client Reviewed","Closed"] as const;
+export const AUDIT_STATUSES=["Draft","Internal Review","approved_internal","Ready for Client","Shared","Client Reviewed","Closed"] as const;
 export class AuditHttpError extends Error{constructor(public status:number,message:string){super(message);}}
 export async function requireAuditAdmin(){const session=await getServerSession(authOptions);if(!session?.user?.id)throw new AuditHttpError(401,"Authentication required.");if(!["ADMIN","CO_ADMIN"].includes(session.user.role))throw new AuditHttpError(403,"Audit administration permission is required.");return {userId:session.user.id};}
 export async function requireAuditClient(){const session=await getServerSession(authOptions);if(!session?.user?.id||session.user.role!=="CLIENT")throw new AuditHttpError(403,"A client account is required.");const {data}=await supabaseAdmin.from("client_profiles").select("id").eq("user_id",session.user.id).maybeSingle();if(!data)throw new AuditHttpError(403,"Client account is not linked.");return {userId:session.user.id,clientId:data.id};}
