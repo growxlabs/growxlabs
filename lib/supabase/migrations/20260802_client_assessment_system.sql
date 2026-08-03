@@ -258,7 +258,7 @@ RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGI
   PERFORM 1 FROM client_assessments WHERE id=p_assessment_id FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'Assessment not found'; END IF;
   IF p_action='start_review' THEN
     UPDATE client_assessments SET status='under_review',review_started_at=COALESCE(review_started_at,now()),updated_at=now() WHERE id=p_assessment_id AND status IN('submitted','under_review');
-    INSERT INTO assessment_reviews(assessment_id,reviewer_id,status) VALUES(p_assessment_id,p_reviewer_id,'in_progress');
+  INSERT INTO assessment_reviews(assessment_id,reviewer_id,status) VALUES(p_assessment_id,p_reviewer_id,'in_progress') ON CONFLICT(assessment_id) DO UPDATE SET reviewer_id=EXCLUDED.reviewer_id,status='in_progress',updated_at=now();
     INSERT INTO assessment_activity(assessment_id,actor_id,actor_type,event_type) VALUES(p_assessment_id,p_reviewer_id,'admin','review_started');
   ELSIF p_action='request_information' THEN
     INSERT INTO assessment_information_requests(assessment_id,requested_by,message,requested_question_keys,requested_section_keys,required_files,due_at) VALUES(p_assessment_id,p_reviewer_id,p_payload->>'message',COALESCE(p_payload->'questionKeys','[]'),COALESCE(p_payload->'sectionKeys','[]'),COALESCE(p_payload->'requiredFiles','[]'),(p_payload->>'dueAt')::timestamptz);
