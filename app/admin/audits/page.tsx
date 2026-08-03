@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { AuditList } from "@/components/admin/audits/AuditList";
+export default function AuditsPage(){return <main className="p-6 md:p-10"><header className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Consulting deliverables</p><h1 className="mt-2 text-3xl font-bold">Business & Technical Audits</h1><p className="mt-2 text-sm text-slate-600">Prepare, review and share the formal audit after Discovery is closed.</p></div><Link href="/admin/audits/new" className="rounded-lg bg-[#1d4f7a] px-4 py-2.5 text-sm font-semibold text-white">Create Audit</Link></header><AuditList/></main>}

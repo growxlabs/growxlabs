@@ -23,6 +23,8 @@ export default function LeadDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notes, setNotes] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editValues, setEditValues] = useState<Partial<Lead>>({});
   const [error, setError] = useState<string | null>(null);
 
   // Dynamic Email Outreach States
@@ -52,6 +54,7 @@ export default function LeadDetailsPage() {
       
       setLead(data);
       setNotes(data.notes || "");
+      setEditValues({ business_name: data.business_name || "", name: data.name || "", email: data.email || "", phone: data.phone || "", website_url: data.website_url || "", city: data.city || "", status: data.status, lead_score: data.lead_score || 0 });
     } catch (e: any) {
       console.error("FETCH ERROR:", e.message);
       setError(e.message);
@@ -69,9 +72,10 @@ export default function LeadDetailsPage() {
         body: JSON.stringify(updates),
       });
       const updated = await res.json();
+      if (!res.ok || updated.error) throw new Error(updated.error || "Unable to update lead.");
       setLead(updated);
     } catch (e) {
-      console.error(e);
+      setError(e instanceof Error ? e.message : "Unable to update lead.");
     } finally {
       setSaving(false);
     }
@@ -151,6 +155,7 @@ export default function LeadDetailsPage() {
           <ArrowLeft size={16} className="mr-2" /> Back to Leads
         </Button>
         <div className="flex gap-3">
+           <Button onClick={() => setEditOpen((open) => !open)} className="bg-[#0075de] text-white hover:bg-[#005bab]"><Save size={16} className="mr-2" /> {editOpen ? "Close Editor" : "Edit Lead"}</Button>
            <Button 
             onClick={() => updateLead({ status: "contacted" })}
             disabled={saving || lead.status === "contacted"}
@@ -171,6 +176,7 @@ export default function LeadDetailsPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Info */}
         <div className="lg:col-span-2 space-y-8">
+          {editOpen && <Card className="border-blue-200 bg-blue-50 p-6 rounded-2xl space-y-5"><div className="flex items-start justify-between"><div><h2 className="text-lg font-bold text-slate-900">Edit Lead Details</h2><p className="mt-1 text-sm text-slate-600">Update the CRM record and save changes to PostgreSQL.</p></div><span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-blue-700">Editing</span></div><div className="grid gap-4 md:grid-cols-2">{([['business_name','Business / Company Name'],['name','Contact Person'],['email','Email'],['phone','Phone'],['website_url','Website'],['city','City']] as const).map(([key,label])=><label key={key} className="grid gap-1.5 text-xs font-semibold text-slate-700">{label}<input value={String(editValues[key] || '')} onChange={(event)=>setEditValues((current)=>({...current,[key]:event.target.value}))} className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900 outline-none focus:border-blue-500" /></label>)}<label className="grid gap-1.5 text-xs font-semibold text-slate-700">Status<select value={String(editValues.status || 'new')} onChange={(event)=>setEditValues((current)=>({...current,status:event.target.value as Lead['status']}))} className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900"><option value="new">New</option><option value="qualified">Qualified</option><option value="contacted">Contacted</option><option value="following_up">Following Up</option><option value="warm">Warm</option><option value="cold">Cold</option><option value="closed">Closed</option></select></label><label className="grid gap-1.5 text-xs font-semibold text-slate-700">Lead Score<input type="number" min="0" max="10" step="0.1" value={Number(editValues.lead_score || 0)} onChange={(event)=>setEditValues((current)=>({...current,lead_score:Number(event.target.value)}))} className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900" /></label></div><div className="flex justify-end gap-3"><Button variant="outline" onClick={()=>setEditOpen(false)} className="border-slate-300 bg-white text-slate-700">Cancel</Button><Button disabled={saving} onClick={async()=>{await updateLead(editValues);setEditOpen(false);}} className="bg-[#0075de] text-white">{saving?'Saving…':'Save Lead Details'}</Button></div></Card>}
           <Card className="p-8 border-white/5 bg-white/[0.02] rounded-2xl">
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <div className="h-20 w-20 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 border border-white/5 shrink-0">
