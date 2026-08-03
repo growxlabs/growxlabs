@@ -1,0 +1,2 @@
+import { ProjectWorkspaceList } from "@/components/admin/delivery/ProjectWorkspaceList";
+export default function ProjectsPage() { return <main className="mx-auto max-w-7xl space-y-6 p-6 md:p-8"><div><p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Delivery operations</p><h1 className="mt-2 text-3xl font-bold">Project Workspaces</h1><p className="mt-2 text-slate-600">Activate and manage delivery only after payment verification and kickoff completion.</p></div><ProjectWorkspaceList /></main>; }

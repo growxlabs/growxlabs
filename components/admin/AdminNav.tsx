@@ -82,6 +82,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Master Service Agreements", href: "/admin/agreements", icon: FileSignature },
       { name: "Outreach", href: "/admin/outreach", icon: Inbox },
       { name: "GrowX Email", href: "/admin/growx-email", icon: Mail },
+      { name: "Communications", href: "/admin/communications", icon: Inbox },
       { name: "Presentation Builder", href: "/admin/pitch-deck", icon: Presentation },
       { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
       { name: "Workflows", href: "/admin/workflows", icon: Zap },

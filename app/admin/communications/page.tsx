@@ -1,0 +1,2 @@
+import { CommunicationWorkspace } from "@/components/admin/communications/CommunicationWorkspace";
+export default function CommunicationsPage() { return <main className="mx-auto max-w-7xl space-y-6 p-6 md:p-8"><div><p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Communication platform</p><h1 className="mt-2 text-3xl font-bold">Communications</h1><p className="mt-2 text-slate-600">Monitor queued, scheduled, delivered, and failed client communications.</p></div><CommunicationWorkspace /></main>; }
