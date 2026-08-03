@@ -20,11 +20,13 @@ export default function LoginPage() {
 
     try {
       // Redirect is handled by NextAuth redirect callback based on user role
+      const requestedCallback = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("callbackUrl") : null;
+      const callbackUrl = requestedCallback && requestedCallback.startsWith("/") ? requestedCallback : "/admin";
       const result = await signIn("credentials", {
         email,
         password,
         redirect: true,
-        callbackUrl: "/admin"
+        callbackUrl
       });
 
       if (result?.error) {

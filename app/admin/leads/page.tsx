@@ -1066,18 +1066,18 @@ export default function LeadsAdminPage() {
                     onClick={() => inviteQualifiedClient(selectedLead)}
                     isLoading={inviting || invitation.status === "loading"}
                     disabled={invitation.status === "accepted"}
-                    className="flex-1 h-9 bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm disabled:bg-emerald-100 disabled:text-emerald-800"
+                    className="flex-1 h-8.5 bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700 text-[9px] font-semibold tracking-wide rounded-md shadow-sm disabled:bg-emerald-100 disabled:text-emerald-800"
                   >{invitation.status === "accepted" ? "Invitation Accepted" : invitation.status === "sent" ? "Resend Invitation" : "Invite Client"}</Button> : <Button
                     onClick={() => updateStatus(selectedLead.id, 'qualified')}
                     isLoading={updatingId === selectedLead.id}
-                    className="flex-1 h-9 bg-white border border-[#E5E7EB] text-neutral-600 hover:bg-slate-50 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
+                    className="flex-1 h-8.5 bg-white border border-[#E5E7EB] text-neutral-600 hover:bg-slate-50 text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
                   >Mark Qualified</Button>}
                   <Button 
                     onClick={() => {
                       generateAIOutreach(selectedLead);
                       showToast("Outreach generator active");
                     }}
-                    className="flex-1 h-9 bg-[#2563EB] hover:bg-blue-700 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
+                    className="flex-1 h-8.5 bg-[#2563EB] hover:bg-blue-700 text-white text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
                   >
                     Start Outreach
                   </Button>
@@ -1085,7 +1085,7 @@ export default function LeadsAdminPage() {
                 <Button 
                   onClick={() => alert("Proposal generator active for company.")}
                   variant="outline"
-                  className="w-full h-9 bg-white border border-[#E5E7EB] hover:bg-slate-50 text-neutral-500 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
+                  className="w-full h-8.5 bg-white border border-[#E5E7EB] hover:bg-slate-50 text-neutral-500 text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
                 >
                   Generate Proposal
                 </Button>
