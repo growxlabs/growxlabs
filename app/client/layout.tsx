@@ -5,12 +5,14 @@ import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { ClientNav } from "@/components/client/ClientNav";
 import { Loader2 } from "lucide-react";
+import { ClientActivityDock } from "@/components/client/ClientActivityDock";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const publicClientRoute = pathname === "/client/login" || pathname.startsWith("/client/invite/");
+  const hideDock = pathname.includes("/document") || pathname.includes("/print") || pathname.includes("/pdf");
   const userRole = session?.user?.role;
   const authorized = status === "authenticated" && ["CLIENT", "ADMIN", "CO_ADMIN"].includes(userRole || "");
 
@@ -42,6 +44,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           {children}
         </main>
       </div>
+      {!hideDock && <ClientActivityDock />}
     </div>
   );
 }

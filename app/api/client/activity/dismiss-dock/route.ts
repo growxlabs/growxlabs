@@ -1,0 +1,3 @@
+import { dockError, requireDockClient } from "@/lib/activity/dock";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+export async function POST() { try { const ctx = await requireDockClient(); const result = await supabaseAdmin.from("client_activity_dock_preferences").upsert({ user_id: ctx.userId, dock_state: "hidden", dismissed_until: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), updated_at: new Date().toISOString() }, { onConflict: "user_id" }); if (result.error) throw new Error(result.error.message); return Response.json({ ok: true }); } catch (error) { return dockError(error); } }

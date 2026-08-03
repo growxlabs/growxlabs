@@ -1,0 +1,3 @@
+import { dockError, requireDockClient } from "@/lib/activity/dock";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+export async function POST() { try { const ctx = await requireDockClient(); const { data, error } = await supabaseAdmin.from("client_activity_events").select("id").eq("client_id", ctx.clientId); if (error) throw new Error(error.message); if (data?.length) { const result = await supabaseAdmin.from("client_activity_reads").upsert(data.map((event) => ({ activity_event_id: event.id, user_id: ctx.userId })), { onConflict: "activity_event_id,user_id" }); if (result.error) throw new Error(result.error.message); } return Response.json({ ok: true }); } catch (error) { return dockError(error); } }

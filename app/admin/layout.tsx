@@ -7,6 +7,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { Loader2, ShieldAlert, ArrowLeft, LogOut, ExternalLink, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { AdminOperationsDock } from "@/components/admin/AdminOperationsDock";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -306,6 +307,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {children}
          </div>
       </main>
+      {!isCommandCenterWorkspace && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
     </div>
   );
 }
