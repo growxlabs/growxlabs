@@ -1,0 +1,13 @@
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+type Meeting = { meeting_number:string; title:string; status:string; scheduled_start:string|null; timezone:string|null; platform:string|null; meeting_url:string|null; location:string|null; agenda:Array<{order:number;title:string}>; client_summary:string|null; discovery_meeting_participants:Array<{name:string;email:string|null;participant_type:string}> };
+const label=(value:string)=>value.replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase());
+export default function ClientDiscoveryMeetingPage(){
+  const {meetingId}=useParams<{meetingId:string}>();
+  const query=useQuery<{meeting:Meeting}>({queryKey:["client-discovery-meeting",meetingId],queryFn:async()=>{const r=await fetch(`/api/client/discovery-meetings/${meetingId}`);const b=await r.json();if(!r.ok)throw new Error(b.error||"Unable to load meeting.");return b;}});
+  if(query.isPending)return <main className="mx-auto max-w-3xl p-8">Loading meeting…</main>;
+  if(query.error)return <main className="mx-auto max-w-3xl p-8 text-red-700">{query.error.message}</main>;
+  const m=query.data.meeting;
+  return <main className="mx-auto max-w-3xl space-y-6 p-6 md:p-10"><header className="rounded-xl border border-slate-200 bg-white p-6"><p className="text-xs font-bold uppercase tracking-widest text-slate-500">GrowXLabs discovery</p><h1 className="mt-2 text-3xl font-bold">{m.title}</h1><p className="mt-2 text-sm text-slate-600">{m.meeting_number} · {label(m.status)}</p></header><section className="rounded-xl border border-slate-200 bg-white p-6"><h2 className="font-bold">Meeting details</h2><dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2"><div><dt className="text-slate-500">Date and time</dt><dd>{m.scheduled_start?new Date(m.scheduled_start).toLocaleString():"To be scheduled"}</dd></div><div><dt className="text-slate-500">Platform</dt><dd>{m.platform||"—"}</dd></div><div><dt className="text-slate-500">Time zone</dt><dd>{m.timezone||"—"}</dd></div><div><dt className="text-slate-500">Location</dt><dd>{m.location||m.meeting_url||"—"}</dd></div></dl></section><section className="rounded-xl border border-slate-200 bg-white p-6"><h2 className="font-bold">Agenda</h2><ol className="mt-4 space-y-2 text-sm">{m.agenda.map(item=><li key={item.order}>{item.order}. {item.title}</li>)}</ol></section>{m.client_summary&&<section className="rounded-xl border border-slate-200 bg-white p-6"><h2 className="font-bold">Meeting summary</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{m.client_summary}</p></section>}</main>;
+}

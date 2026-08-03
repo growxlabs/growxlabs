@@ -138,6 +138,7 @@ const DropdownFilter = ({ label, value, options, onChange }: DropdownFilterProps
 };
 
 export default function LeadsAdminPage() {
+  const router = useRouter();
   const { data: session } = useSession();
   const role = session?.user?.role;
   const isAdminOrCoAdmin = role === "ADMIN" || role === "CO_ADMIN";

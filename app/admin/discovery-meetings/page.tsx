@@ -1,0 +1,2 @@
+import { DiscoveryMeetingsClient } from "@/components/admin/discovery/DiscoveryMeetingsClient";
+export default function DiscoveryMeetingsPage(){return <main className="p-6 md:p-10"><header className="mb-7"><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Consulting delivery</p><h1 className="mt-2 text-3xl font-bold">Discovery Meeting Workspace</h1><p className="mt-2 text-sm text-slate-600">Schedule, prepare and conduct structured discovery meetings after assessment review.</p></header><DiscoveryMeetingsClient/></main>}
