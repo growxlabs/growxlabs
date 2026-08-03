@@ -1060,6 +1060,9 @@ export default function LeadsAdminPage() {
 
               {/* Drawer Actions Footer */}
               <div className="p-5 border-t border-[#E5E7EB] bg-slate-50/50 flex flex-col gap-2">
+                <Button onClick={() => router.push(`/admin/leads/${selectedLead.id}`)} className="w-full h-8.5 bg-white border border-[#E5E7EB] text-neutral-700 hover:bg-slate-50 text-[9px] font-semibold tracking-wide rounded-md shadow-sm">
+                  Edit Lead Details
+                </Button>
                 {selectedLead.status === "qualified" && <div className="mb-1 rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[10px] text-[#6B7280]"><span className="font-bold uppercase tracking-wider text-neutral-700">Client invitation: </span>{invitation.status === "loading" ? "Checking…" : invitation.status === "accepted" ? "Accepted" : invitation.status === "sent" ? `Sent${invitation.email ? ` to ${invitation.email}` : ""}${invitation.expiresAt ? ` · expires ${new Date(invitation.expiresAt).toLocaleString()}` : ""}` : invitation.status === "expired" ? "Expired — resend required" : invitation.status === "revoked" ? "Revoked" : "Not invited"}</div>}
                 <div className="flex gap-2">
                   {selectedLead.status === "qualified" ? <Button

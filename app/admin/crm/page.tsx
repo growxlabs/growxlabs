@@ -887,6 +887,12 @@ export default function AdminCRMPage() {
                             >
                               View Details
                             </button>
+                            <button
+                              onClick={() => { window.location.href = `/admin/leads/${lead.id}`; }}
+                              className="w-full text-left px-3 py-1.5 text-xs text-[#0075de] hover:bg-slate-50 font-semibold"
+                            >
+                              Edit Lead Details
+                            </button>
                             <button 
                               onClick={() => { handleUpdateLead(lead.id!, { status: 'contacted' }); setActiveActionMenuId(null); }}
                               className="w-full text-left px-3 py-1.5 text-xs text-[#2563EB] hover:bg-slate-50 font-medium"
