@@ -12,7 +12,7 @@ import {
   Database, UserCog, Settings, Menu, X, KeyRound, Eye, EyeOff, Loader2, CheckCircle,
   Sun, Moon, Monitor, Building2, DollarSign, Briefcase, Clock, Bug, Wallet, Brain, UserPlus,
   CalendarCheck, CalendarOff, Receipt, Sparkles, Megaphone, LifeBuoy, Cpu, LogOut,
-  ChevronDown, ChevronRight, GraduationCap, Award, Mail, Presentation, UserCheck, Video, Layers3, FileSignature, ClipboardCheck
+  ChevronDown, ChevronRight, GraduationCap, Award, Mail, Presentation, UserCheck, Video, Layers3, FileSignature, ClipboardCheck, Activity, FileSearch, AlertCircle
 } from "lucide-react";
 
 const InstagramNavIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -86,6 +86,23 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Presentation Builder", href: "/admin/pitch-deck", icon: Presentation },
       { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
       { name: "Workflows", href: "/admin/workflows", icon: Zap },
+    ]
+  },
+  {
+    id: "consulting",
+    title: "Consulting Workflow",
+    icon: FileSignature,
+    items: [
+      { name: "Assessments", href: "/admin/assessments", icon: ClipboardCheck },
+      { name: "Business & Technical Audits", href: "/admin/audits", icon: FileSearch },
+      { name: "Discovery Meetings", href: "/admin/discovery-meetings", icon: CalendarCheck },
+      { name: "Solution Architecture", href: "/admin/solution-architectures", icon: Layers3 },
+      { name: "Scopes of Work", href: "/admin/scopes", icon: ClipboardList },
+      { name: "Commercial Proposals", href: "/admin/proposals", icon: FileText },
+      { name: "Agreements", href: "/admin/agreements", icon: FileSignature },
+      { name: "Invoices & Payments", href: "/admin/consulting-finance", icon: Receipt },
+      { name: "Project Workspaces", href: "/admin/projects", icon: Briefcase },
+      { name: "Communications", href: "/admin/communications", icon: Mail },
     ]
   },
   {
@@ -192,6 +209,16 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Team & Access", href: "/admin/team", icon: UserCog },
       { name: "Reports & Analytics", href: "/admin/reports", icon: BarChart3 },
     ]
+  },
+  {
+    id: "operations",
+    title: "Operations & Audit",
+    icon: Activity,
+    items: [
+      { name: "Activity", href: "/admin/activity", icon: Activity },
+      { name: "Audit Logs", href: "/admin/audit-logs", icon: FileSearch },
+      { name: "System Errors", href: "/admin/system/errors", icon: AlertCircle },
+    ]
   }
 ];
 
@@ -229,6 +256,8 @@ export function AdminNav({ isCollapsed, onToggle, isMobileOpen, onMobileToggle }
     ai: false,
     academy: false,
     admin: false,
+    operations: false,
+    consulting: false,
   });
 
   useEffect(() => {

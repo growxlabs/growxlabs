@@ -114,12 +114,12 @@ export function CareersContent() {
           const formatted = data.jobs.map((job: any) => {
             const isVideo = job.title.toLowerCase().includes("video") || job.title.toLowerCase().includes("videographer") || job.title.toLowerCase().includes("content creator");
             return {
-              slug: job.id || job.title.toLowerCase().replace(/\s+/g, "-"),
+              slug: job.slug || job.id || job.title.toLowerCase().replace(/\s+/g, "-"),
               title: job.title,
               department: isVideo ? "Creative & Content" : "Engineering & Design",
               type: "Founding Role",
               location: "Remote (India)",
-              compensation: job.salary_range || "Market Standard",
+              compensation: job.compensation_text || job.salary_range || "Market Standard",
               shortDesc: job.description || "",
               about: "GrowX Labs is an AI-native software company building intelligent products, automation solutions, and custom software for startups and businesses.",
               roleDesc: job.description || "",
@@ -180,7 +180,11 @@ export function CareersContent() {
     }
   };
 
-  const startApplication = (roleName: string) => {
+  const startApplication = (roleName: string, slug?: string) => {
+    if (slug) {
+      router.push(`/jobs/${slug}/apply`);
+      return;
+    }
     setFormData(prev => ({ ...prev, role: roleName }));
     setStep(1); // Start at Step 1 (Name)
     setShowForm(true);
@@ -651,7 +655,7 @@ export function CareersContent() {
                                   {isExpanded ? "Close Details" : "View Details"}
                                 </button>
                                 <button
-                                  onClick={() => startApplication(job.title)}
+                                  onClick={() => startApplication(job.title, job.slug)}
                                   className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all active:scale-95 cursor-pointer font-bold"
                                 >
                                   Apply Now
@@ -734,7 +738,7 @@ export function CareersContent() {
 
                                   <div className="pt-6 flex justify-end">
                                     <button
-                                      onClick={() => startApplication(job.title)}
+                                      onClick={() => startApplication(job.title, job.slug)}
                                       className="px-6 py-2.5 bg-[#C0F0FB] hover:bg-[#a8e3f0] text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded transition-all active:scale-95 cursor-pointer"
                                     >
                                       Apply for this role

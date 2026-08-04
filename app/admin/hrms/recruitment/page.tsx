@@ -9,7 +9,8 @@ export default function RecruitmentPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showJobForm, setShowJobForm] = useState(false);
-  const [jobForm, setJobForm] = useState({ title: "", description: "", salary_range: "", requirements: "" });
+  const emptyJob = { title: "", description: "", salary_range: "", requirements: "", location: "India", employment_type: "Full-time", workplace_type: "On-site", applications_open_at: "", applications_close_at: "", application_limit: "" };
+  const [jobForm, setJobForm] = useState(emptyJob);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => { fetchJobs(); }, []);
@@ -31,12 +32,15 @@ export default function RecruitmentPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...jobForm,
-          requirements: jobForm.requirements.split(",").map(r => r.trim()).filter(Boolean)
+          requirements: jobForm.requirements.split(",").map(r => r.trim()).filter(Boolean),
+          applications_open_at: jobForm.applications_open_at ? new Date(jobForm.applications_open_at).toISOString() : null,
+          applications_close_at: jobForm.applications_close_at ? new Date(jobForm.applications_close_at).toISOString() : null,
+          application_limit: jobForm.application_limit ? Number(jobForm.application_limit) : null,
         })
       });
       if (res.ok) {
         setShowJobForm(false);
-        setJobForm({ title: "", description: "", salary_range: "", requirements: "" });
+        setJobForm(emptyJob);
         fetchJobs();
       }
     } catch (e) { console.error(e); } finally { setSubmitting(false); }
@@ -81,11 +85,17 @@ export default function RecruitmentPage() {
               { key: "salary_range", label: "Salary Range", placeholder: "₹15,00,000 - ₹25,00,000" },
               { key: "description", label: "Description", placeholder: "Key responsibilities...", full: true },
               { key: "requirements", label: "Requirements (comma-separated)", placeholder: "React, Node.js, PostgreSQL", full: true },
+              { key: "location", label: "Location", placeholder: "India" },
+              { key: "employment_type", label: "Employment type", placeholder: "Full-time / Internship" },
+              { key: "workplace_type", label: "Workplace", placeholder: "On-site / Remote / Hybrid" },
+              { key: "applications_open_at", label: "Opening (optional)", placeholder: "YYYY-MM-DDTHH:mm", type: "datetime-local" },
+              { key: "applications_close_at", label: "Closing (optional)", placeholder: "YYYY-MM-DDTHH:mm", type: "datetime-local" },
+              { key: "application_limit", label: "Application limit (optional)", placeholder: "Maximum applications", type: "number" },
             ].map((field) => (
               <div key={field.key} className={field.full ? "md:col-span-2" : ""}>
                 <label className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1 block">{field.label}</label>
                 <input
-                  type="text"
+                  type={(field as any).type || "text"}
                   placeholder={field.placeholder}
                   value={(jobForm as any)[field.key]}
                   onChange={(e) => setJobForm({ ...jobForm, [field.key]: e.target.value })}

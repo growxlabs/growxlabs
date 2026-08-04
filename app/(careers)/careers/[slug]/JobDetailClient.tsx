@@ -56,11 +56,7 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
   }
 
   function handleApplyClick() {
-    if (!activeCandidate) {
-      setAuthModalOpen(true);
-    } else {
-      setAppModalOpen(true);
-    }
+    if (job) window.location.href = `/jobs/${job.slug}/apply`;
   }
 
   const description = typeof job.description === "string" ? job.description : JSON.stringify(job.description);
