@@ -1,6 +1,9 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export const CAREERS_ORGANISATION = process.env.DEFAULT_ORGANISATION_ID || "org_default";
+export const CAREERS_ORGANISATION =
+  process.env.DEFAULT_ORGANISATION_ID ||
+  process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID ||
+  "org_default";
 
 export type CareersJob = Record<string, any>;
 
