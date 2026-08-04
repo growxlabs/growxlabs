@@ -115,7 +115,7 @@
     },
     {
       "path": "/api/cron/reconcile-job-statuses",
-      "schedule": "0 * * * *"
+      "schedule": "0 3 * * *"
     }
   ],
   "headers": [
