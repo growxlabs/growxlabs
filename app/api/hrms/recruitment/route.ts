@@ -19,11 +19,18 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const requirements = Array.isArray(body.requirements) ? body.requirements : String(body.requirements || "").split(",").map((x) => x.trim()).filter(Boolean);
+    const openAt = body.applications_open_at || null;
+    const closeAt = body.applications_close_at || null;
+    if (openAt && closeAt && new Date(closeAt) <= new Date(openAt)) return NextResponse.json({ error: "Closing time must be after opening time" }, { status: 400 });
+    const status = openAt && new Date(openAt) > new Date() ? "scheduled" : "published";
     const { data: job, error } = await supabaseAdmin.schema("recruitment").from("careers_jobs").insert({
       organisation_id: CAREERS_ORGANISATION, title: body.title, slug: slugify(body.slug || body.title), job_reference: await nextJobReference(),
+      department: body.department || null,
       description: body.description || "", summary: body.summary || body.description || "", requirements, responsibilities: body.responsibilities || [],
       compensation_text: body.salary_range || body.compensation_text || null, location: body.location || "India", employment_type: body.employment_type || "Full-time",
-      workplace_type: body.workplace_type || "On-site", application_questions: body.application_questions || [], status: "published", published_at: new Date().toISOString(),
+      workplace_type: body.workplace_type || "On-site", application_questions: body.application_questions || [],
+      applications_open_at: openAt, applications_close_at: closeAt, application_limit: body.application_limit || null,
+      close_when_limit_reached: Boolean(body.close_when_limit_reached), status, published_at: status === "published" ? new Date().toISOString() : null,
     })
       .select()
       .single();

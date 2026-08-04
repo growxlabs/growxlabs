@@ -9,9 +9,10 @@ export default function RecruitmentPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showJobForm, setShowJobForm] = useState(false);
-  const emptyJob = { title: "", description: "", salary_range: "", requirements: "", location: "India", employment_type: "Full-time", workplace_type: "On-site", applications_open_at: "", applications_close_at: "", application_limit: "" };
+  const emptyJob = { title: "", department: "", description: "", salary_range: "", requirements: "", location: "India", employment_type: "Full-time", workplace_type: "On-site", applications_open_at: "", applications_close_at: "", application_limit: "" };
   const [jobForm, setJobForm] = useState(emptyJob);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => { fetchJobs(); }, []);
 
@@ -27,6 +28,7 @@ export default function RecruitmentPage() {
   const handleCreateJob = async () => {
     try {
       setSubmitting(true);
+      setSubmitError("");
       const res = await fetch("/api/hrms/recruitment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,8 +44,8 @@ export default function RecruitmentPage() {
         setShowJobForm(false);
         setJobForm(emptyJob);
         fetchJobs();
-      }
-    } catch (e) { console.error(e); } finally { setSubmitting(false); }
+      } else { const data = await res.json().catch(() => ({})); setSubmitError(data.error || "Unable to publish job opening"); }
+    } catch (e) { console.error(e); setSubmitError("Unable to publish job opening. Please try again."); } finally { setSubmitting(false); }
   };
 
   const handleUpdateStage = async (candidateId: string, newStage: string) => {
@@ -82,6 +84,7 @@ export default function RecruitmentPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
               { key: "title", label: "Job Title", placeholder: "Senior Full Stack Engineer" },
+              { key: "department", label: "Department", placeholder: "Sales & Marketing" },
               { key: "salary_range", label: "Salary Range", placeholder: "₹15,00,000 - ₹25,00,000" },
               { key: "description", label: "Description", placeholder: "Key responsibilities...", full: true },
               { key: "requirements", label: "Requirements (comma-separated)", placeholder: "React, Node.js, PostgreSQL", full: true },
@@ -111,6 +114,7 @@ export default function RecruitmentPage() {
           >
             {submitting ? <Loader2 className="animate-spin h-3.5 w-3.5" /> : "Publish Job Opening"}
           </button>
+          {submitError && <p className="mt-3 text-xs text-red-600">{submitError}</p>}
         </Card>
       )}
 
