@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, Plus, X } from "lucide-react";
+import { Loader2, Plus, RefreshCw, X } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { RecruitmentPipeline } from "@/components/admin/hrms/RecruitmentPipeline";
 
 export default function RecruitmentPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [showJobForm, setShowJobForm] = useState(false);
   const emptyJob = { title: "", department: "", description: "", salary_range: "", requirements: "", location: "India", employment_type: "Full-time", workplace_type: "On-site", applications_open_at: "", applications_close_at: "", application_limit: "" };
   const [jobForm, setJobForm] = useState(emptyJob);
@@ -19,10 +20,12 @@ export default function RecruitmentPage() {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/hrms/recruitment");
+      setLoadError("");
+      const res = await fetch("/api/hrms/recruitment", { cache: "no-store" });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unable to load recruitment data");
       setJobs(data.jobs || []);
-    } catch (e) { console.error(e); } finally { setLoading(false); }
+    } catch (e) { console.error(e); setJobs([]); setLoadError(e instanceof Error ? e.message : "Unable to load recruitment data"); } finally { setLoading(false); }
   };
 
   const handleCreateJob = async () => {
@@ -55,6 +58,7 @@ export default function RecruitmentPage() {
   };
 
   const allCandidates = jobs.flatMap((j: any) => (j.candidates || []).map((c: any) => ({ ...c, job_title: j.title })));
+  const displayStage = (stage: string) => String(stage || "APPLIED").replace(/[_-]+/g, " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 
   return (
     <div className="space-y-8 text-[var(--text-primary)]">
@@ -66,13 +70,13 @@ export default function RecruitmentPage() {
       {/* Actions */}
       <div className="flex justify-between items-center">
         <p className="text-xs font-bold text-[var(--text-secondary)]">Active Job Openings: {jobs.length}</p>
-        <button
-          onClick={() => setShowJobForm(true)}
-          className="flex items-center gap-1.5 bg-[#0075de] hover:bg-[#005bab] text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer"
-        >
-          <Plus className="h-3.5 w-3.5" /> Post Job Opening
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={fetchJobs} className="flex items-center gap-1.5 border border-[var(--border-subtle)] bg-[var(--card)] px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer" title="Refresh applications"><RefreshCw className="h-3.5 w-3.5" /> Refresh</button>
+          <button onClick={() => setShowJobForm(true)} className="flex items-center gap-1.5 bg-[#0075de] hover:bg-[#005bab] text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer"><Plus className="h-3.5 w-3.5" /> Post Job Opening</button>
+        </div>
       </div>
+
+      {loadError && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">Recruitment data could not be loaded: {loadError}</div>}
 
       {/* Post Job Modal */}
       {showJobForm && (
@@ -125,6 +129,16 @@ export default function RecruitmentPage() {
         </div>
       ) : (
         <RecruitmentPipeline candidates={allCandidates} onUpdateStage={handleUpdateStage} />
+      )}
+
+      {!loading && !loadError && (
+        <Card className="overflow-hidden border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl">
+          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-4">
+            <div><h2 className="text-sm font-bold">Submitted Applications</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">Applications received from the public careers portal.</p></div>
+            <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">{allCandidates.length}</span>
+          </div>
+          {allCandidates.length === 0 ? <div className="px-5 py-10 text-center text-xs text-[var(--text-secondary)]">No applications have been submitted yet.</div> : <div className="overflow-x-auto"><table className="w-full text-left text-xs"><thead className="bg-[var(--surface-1)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]"><tr><th className="px-5 py-3">Reference</th><th className="px-5 py-3">Candidate</th><th className="px-5 py-3">Job</th><th className="px-5 py-3">Stage</th><th className="px-5 py-3">Submitted</th></tr></thead><tbody>{allCandidates.map((candidate: any) => <tr key={candidate.id} className="border-t border-[var(--border-subtle)]"><td className="px-5 py-3 font-semibold">{candidate.application_reference || "—"}</td><td className="px-5 py-3">{candidate.full_name}<div className="text-[10px] text-[var(--text-secondary)]">{candidate.email}</div></td><td className="px-5 py-3">{candidate.job_title}</td><td className="px-5 py-3">{displayStage(candidate.stage)}</td><td className="px-5 py-3 text-[var(--text-secondary)]">{candidate.submitted_at ? new Date(candidate.submitted_at).toLocaleString() : "—"}</td></tr>)}</tbody></table></div>}
+        </Card>
       )}
     </div>
   );

@@ -37,7 +37,10 @@ export function RecruitmentPipeline({ candidates, onUpdateStage }: RecruitmentPi
     <div className="overflow-x-auto pb-4">
       <div className="flex gap-4 min-w-max">
         {STAGES.map((stage) => {
-          const stageCandidates = candidates.filter((c) => c.stage === stage);
+          const stageCandidates = candidates.filter((c) => {
+            const candidateStage = String(c.stage || "APPLIED").trim().toUpperCase().replace(/[\s-]+/g, "_");
+            return candidateStage === stage;
+          });
           return (
             <div key={stage} className="w-[220px] flex-shrink-0">
               {/* Column Header */}
