@@ -25,9 +25,10 @@ const STAGE_HEADER_COLORS: Record<string, string> = {
 interface RecruitmentPipelineProps {
   candidates: any[];
   onUpdateStage: (id: string, stage: string) => void;
+  updatingCandidateId?: string | null;
 }
 
-export function RecruitmentPipeline({ candidates, onUpdateStage }: RecruitmentPipelineProps) {
+export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandidateId }: RecruitmentPipelineProps) {
   const getNextStage = (current: string) => {
     const idx = STAGES.indexOf(current);
     return idx < STAGES.length - 1 ? STAGES[idx + 1] : null;
@@ -67,12 +68,15 @@ export function RecruitmentPipeline({ candidates, onUpdateStage }: RecruitmentPi
                         <span className="text-[10px] font-bold text-[var(--text-secondary)]">{candidate.score || 0}</span>
                       </div>
                       {getNextStage(stage) && (
-                        <button
-                          onClick={() => onUpdateStage(candidate.id, getNextStage(stage)!)}
-                          className="flex items-center gap-0.5 text-[8px] font-bold text-[#0075de] hover:underline transition-colors uppercase tracking-wider cursor-pointer"
-                        >
-                          Advance <ChevronRight className="h-3 w-3" />
-                        </button>
+          <button
+            type="button"
+            onClick={() => onUpdateStage(candidate.id, getNextStage(stage)!)}
+            disabled={updatingCandidateId === candidate.id}
+            aria-busy={updatingCandidateId === candidate.id}
+            className="flex items-center gap-0.5 text-[8px] font-bold text-[#0075de] hover:underline transition-colors uppercase tracking-wider cursor-pointer disabled:cursor-wait disabled:opacity-50"
+          >
+            {updatingCandidateId === candidate.id ? "Updating..." : "Advance"} <ChevronRight className="h-3 w-3" />
+          </button>
                       )}
                     </div>
                   </div>

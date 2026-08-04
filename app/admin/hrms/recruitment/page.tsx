@@ -14,6 +14,8 @@ export default function RecruitmentPage() {
   const [jobForm, setJobForm] = useState(emptyJob);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [updatingCandidateId, setUpdatingCandidateId] = useState<string | null>(null);
+  const [stageError, setStageError] = useState("");
 
   useEffect(() => { fetchJobs(); }, []);
 
@@ -53,8 +55,22 @@ export default function RecruitmentPage() {
 
   const handleUpdateStage = async (candidateId: string, newStage: string) => {
     try {
-      fetchJobs();
-    } catch (e) { console.error(e); }
+      setUpdatingCandidateId(candidateId);
+      setStageError("");
+      const response = await fetch("/api/hrms/recruitment", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId: candidateId, stage: newStage }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Unable to update candidate stage");
+      await fetchJobs();
+    } catch (e) {
+      console.error(e);
+      setStageError(e instanceof Error ? e.message : "Unable to update candidate stage");
+    } finally {
+      setUpdatingCandidateId(null);
+    }
   };
 
   const allCandidates = jobs.flatMap((j: any) => (j.candidates || []).map((c: any) => ({ ...c, job_title: j.title })));
@@ -128,7 +144,18 @@ export default function RecruitmentPage() {
           <Loader2 className="animate-spin text-[#0075de] h-8 w-8" />
         </div>
       ) : (
-        <RecruitmentPipeline candidates={allCandidates} onUpdateStage={handleUpdateStage} />
+        <>
+          {stageError && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+              Candidate stage could not be updated: {stageError}
+            </div>
+          )}
+          <RecruitmentPipeline
+            candidates={allCandidates}
+            onUpdateStage={handleUpdateStage}
+            updatingCandidateId={updatingCandidateId}
+          />
+        </>
       )}
 
       {!loading && !loadError && (

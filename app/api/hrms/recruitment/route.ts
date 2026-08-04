@@ -46,3 +46,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message || "Failed to create job opening" }, { status: 400 });
   }
 }
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const applicationId = String(body.applicationId || "").trim();
+    const stage = String(body.stage || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+    const allowedStages = new Set(["applied", "screening", "interview", "assessment", "offer", "hired"]);
+
+    if (!applicationId || !allowedStages.has(stage)) {
+      return NextResponse.json({ error: "A valid applicationId and stage are required" }, { status: 400 });
+    }
+
+    const { data: application, error: lookupError } = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_applications")
+      .select("id, organisation_id")
+      .eq("id", applicationId)
+      .maybeSingle();
+
+    if (lookupError) throw lookupError;
+    if (!application || application.organisation_id !== CAREERS_ORGANISATION) {
+      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_applications")
+      .update({ current_stage: stage })
+      .eq("id", applicationId)
+      .eq("organisation_id", CAREERS_ORGANISATION)
+      .select("id, current_stage, status")
+      .single();
+
+    if (error) throw error;
+    return NextResponse.json({ application: data });
+  } catch (error: any) {
+    return NextResponse.json({ error: error?.message || "Failed to update candidate stage" }, { status: 500 });
+  }
+}
