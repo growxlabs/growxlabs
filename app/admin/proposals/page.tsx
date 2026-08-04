@@ -116,7 +116,7 @@ export default function AdminProposalsPage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Consulting workflow</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Commercial proposals</h1>
-          <p className="mt-2 text-sm text-slate-500">Create and manage proposals generated from approved scopes of work.</p>
+          <p className="mt-2 text-sm text-slate-500">Create and manage client-ready proposals generated from approved scopes of work.</p>
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={() => void load()} className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50">
