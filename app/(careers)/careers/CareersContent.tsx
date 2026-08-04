@@ -182,7 +182,7 @@ export function CareersContent() {
 
   const startApplication = (roleName: string, slug?: string) => {
     if (slug) {
-      router.push(`/jobs/${slug}/apply`);
+      router.push(`/careers/${slug}/apply`);
       return;
     }
     setFormData(prev => ({ ...prev, role: roleName }));

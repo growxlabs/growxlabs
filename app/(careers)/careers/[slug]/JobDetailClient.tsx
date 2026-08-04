@@ -56,7 +56,7 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
   }
 
   function handleApplyClick() {
-    if (job) window.location.href = `/jobs/${job.slug}/apply`;
+    if (job) window.location.href = `/careers/${job.slug}/apply`;
   }
 
   const description = typeof job.description === "string" ? job.description : JSON.stringify(job.description);
