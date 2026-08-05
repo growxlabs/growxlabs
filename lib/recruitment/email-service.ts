@@ -14,7 +14,7 @@ import {
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const DEFAULT_FROM = 'GrowXLabs <noreply@growxlabs.tech>';
-const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'hr@growxlabs.tech';
+const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'sai@growxlabs.tech';
 
 async function getSettings() {
   const { data } = await supabaseAdmin.schema('recruitment').from('email_settings').select('*').eq('organisation_id', CAREERS_ORGANISATION).maybeSingle();

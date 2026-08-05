@@ -164,7 +164,56 @@ export default function RecruitmentPage() {
             <div><h2 className="text-sm font-bold">Submitted Applications</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">Applications received from the public careers portal.</p></div>
             <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700">{allCandidates.length}</span>
           </div>
-          {allCandidates.length === 0 ? <div className="px-5 py-10 text-center text-xs text-[var(--text-secondary)]">No applications have been submitted yet.</div> : <div className="overflow-x-auto"><table className="w-full text-left text-xs"><thead className="bg-[var(--surface-1)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]"><tr><th className="px-5 py-3">Reference</th><th className="px-5 py-3">Candidate</th><th className="px-5 py-3">Job</th><th className="px-5 py-3">Stage</th><th className="px-5 py-3">Submitted</th></tr></thead><tbody>{allCandidates.map((candidate: any) => <tr key={candidate.id} className="border-t border-[var(--border-subtle)]"><td className="px-5 py-3 font-semibold">{candidate.application_reference || "—"}</td><td className="px-5 py-3">{candidate.full_name}<div className="text-[10px] text-[var(--text-secondary)]">{candidate.email}</div></td><td className="px-5 py-3">{candidate.job_title}</td><td className="px-5 py-3">{displayStage(candidate.stage)}</td><td className="px-5 py-3 text-[var(--text-secondary)]">{candidate.submitted_at ? new Date(candidate.submitted_at).toLocaleString() : "—"}</td></tr>)}</tbody></table></div>}
+          {allCandidates.length === 0 ? (
+            <div className="px-5 py-10 text-center text-xs text-[var(--text-secondary)]">No applications have been submitted yet.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[var(--surface-1)] text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                  <tr>
+                    <th className="px-5 py-3">Reference</th>
+                    <th className="px-5 py-3">Candidate</th>
+                    <th className="px-5 py-3">Job</th>
+                    <th className="px-5 py-3">Stage</th>
+                    <th className="px-5 py-3">Resume</th>
+                    <th className="px-5 py-3">Submitted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allCandidates.map((candidate: any) => (
+                    <tr key={candidate.id} className="border-t border-[var(--border-subtle)] hover:bg-[var(--surface-1)]/50 transition-colors">
+                      <td className="px-5 py-3 font-mono font-bold text-[#0075de]">{candidate.application_reference || "—"}</td>
+                      <td className="px-5 py-3 font-medium">
+                        {candidate.full_name}
+                        <div className="text-[10px] text-[var(--text-secondary)]">{candidate.email}</div>
+                      </td>
+                      <td className="px-5 py-3 font-medium">{candidate.job_title}</td>
+                      <td className="px-5 py-3">
+                        <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-500">
+                          {displayStage(candidate.stage)}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3">
+                        {candidate.resume_url ? (
+                          <a
+                            href={candidate.resume_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:underline uppercase tracking-wider"
+                          >
+                            Download Resume ↗
+                          </a>
+                        ) : (
+                          <span className="text-[10px] text-[var(--text-muted)] italic">No Resume</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-[var(--text-secondary)]">{candidate.submitted_at ? new Date(candidate.submitted_at).toLocaleString() : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
       )}
     </div>

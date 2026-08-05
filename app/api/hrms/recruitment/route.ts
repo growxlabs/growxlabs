@@ -11,12 +11,37 @@ export async function GET() {
     if (error) throw error;
     const ids = (jobs || []).map((job) => job.id);
     const applicationResult = ids.length
-      ? await supabaseAdmin.schema("recruitment").from("careers_applications").select("id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at").in("job_id", ids).order("submitted_at", { ascending: false })
+      ? await supabaseAdmin
+          .schema("recruitment")
+          .from("careers_applications")
+          .select("id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at,resume_path,cover_letter,answers")
+          .in("job_id", ids)
+          .order("submitted_at", { ascending: false })
       : { data: [], error: null };
     if (applicationResult.error) throw applicationResult.error;
     const applications = applicationResult.data || [];
     const normalizeStage = (value: unknown) => String(value || "applied").trim().toUpperCase().replace(/[\s-]+/g, "_");
-    return NextResponse.json({ jobs: (jobs || []).map((job) => ({ ...job, candidates: applications.filter((a) => a.job_id === job.id).map((a) => ({ id: a.id, job_id: a.job_id, full_name: a.profile?.full_name || a.candidate_id, email: a.profile?.email || a.candidate_id, stage: normalizeStage(a.current_stage || a.status), application_reference: a.application_reference, submitted_at: a.submitted_at })) })) });
+    return NextResponse.json({
+      jobs: (jobs || []).map((job) => ({
+        ...job,
+        candidates: applications
+          .filter((a) => a.job_id === job.id)
+          .map((a) => ({
+            id: a.id,
+            job_id: a.job_id,
+            full_name: a.profile?.full_name || a.candidate_id,
+            email: a.profile?.email || a.candidate_id,
+            phone: a.profile?.phone || "N/A",
+            resume_url: a.resume_path || a.profile?.resume_url || null,
+            cover_letter: a.cover_letter || a.profile?.cover_letter || "",
+            answers: a.answers || [],
+            profile: a.profile || {},
+            stage: normalizeStage(a.current_stage || a.status),
+            application_reference: a.application_reference,
+            submitted_at: a.submitted_at,
+          })),
+      })),
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch recruitment data" }, { status: 500 });
   }
