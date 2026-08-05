@@ -38,16 +38,6 @@ const nextConfig: NextConfig = {
         destination: '/:path*',
         permanent: true,
       },
-      {
-        source: '/admin/career_portal',
-        destination: '/admin/career-portal',
-        permanent: true,
-      },
-      {
-        source: '/admin/career_portal/:path*',
-        destination: '/admin/career-portal/:path*',
-        permanent: true,
-      },
     ];
   },
   async headers() {

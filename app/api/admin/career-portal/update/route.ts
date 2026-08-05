@@ -3,7 +3,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
 import { Resend } from "resend";
 
-// Corporate-style HTML email templates mapping
 function getEmailContent(name: string, role: string, status: string) {
   let subject = "";
   let heading = "";
@@ -128,7 +127,6 @@ function getEmailContent(name: string, role: string, status: string) {
 
 export async function POST(request: Request) {
   try {
-    // Session validation via JWT token
     const token = await getToken({
       req: request as any,
       secret: process.env.NEXTAUTH_SECRET,
@@ -154,47 +152,18 @@ export async function POST(request: Request) {
     if (status !== undefined) updateFields.status = status;
     if (notes !== undefined) updateFields.notes = notes;
 
-    let data: any = null;
-
-    // Try modern recruitment.careers_applications table first
-    const recruitmentRes = await supabaseAdmin
-      .schema("recruitment")
-      .from("careers_applications")
-      .update({
-        ...(status !== undefined ? { current_stage: status.toLowerCase() } : {}),
-        ...(notes !== undefined ? { notes } : {}),
-      })
+    const { data, error } = await supabaseAdmin
+      .from("career_applications")
+      .update(updateFields)
       .eq("id", id)
-      .select("*, careers_jobs(title)")
-      .maybeSingle();
+      .select()
+      .single();
 
-    if (recruitmentRes.data) {
-      data = {
-        ...recruitmentRes.data,
-        name: recruitmentRes.data.profile?.full_name || recruitmentRes.data.candidate_id,
-        email: recruitmentRes.data.profile?.email || "",
-        role: recruitmentRes.data.careers_jobs?.title || "Specialist",
-        status: recruitmentRes.data.current_stage || status,
-      };
-    } else {
-      // Fallback to legacy public.career_applications table
-      const legacyRes = await supabaseAdmin
-        .from("career_applications")
-        .update(updateFields)
-        .eq("id", id)
-        .select()
-        .single();
+    if (error) throw error;
 
-      if (legacyRes.error) throw legacyRes.error;
-      data = legacyRes.data;
-    }
-
-    // Send email notification using Resend if status changed
     if (status && data && data.email) {
       const apiKey = process.env.RESEND_API_KEY;
-      if (!apiKey || apiKey === "your_resend_key_here") {
-        console.warn("Resend API key missing or default. Email notification skipped.");
-      } else {
+      if (apiKey && apiKey !== "your_resend_key_here") {
         try {
           const resend = new Resend(apiKey);
           const { subject, html } = getEmailContent(data.name || "Candidate", data.role || "Specialist", status);
@@ -204,22 +173,14 @@ export async function POST(request: Request) {
             bccList.push(token.email);
           }
 
-          const { error: emailError } = await resend.emails.send({
+          await resend.emails.send({
             from: "GrowX Labs Careers <careers@growxlabs.tech>",
             to: [data.email],
             ...(bccList.length > 0 ? { bcc: bccList } : {}),
             subject: subject,
             html: html,
           });
-
-          if (emailError) {
-            console.error("Resend error sending candidate status update email:", emailError);
-          } else {
-            console.log(`Corporate status update email successfully dispatched to ${data.email} for status: ${status}`);
-          }
-        } catch (emailErr) {
-          console.error("Unexpected error in Resend dispatch:", emailErr);
-        }
+        } catch { /* swallow email error */ }
       }
     }
 
