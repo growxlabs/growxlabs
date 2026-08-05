@@ -158,6 +158,9 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Leaves", href: "/admin/hrms/leaves", icon: CalendarOff },
       { name: "Payroll", href: "/admin/hrms/payroll", icon: Receipt },
       { name: "Recruiting Assistant", href: "/admin/hrms/ai-recruiter", icon: Sparkles },
+      { name: "Email Status", href: "/admin/hrms/recruitment/emails", icon: Mail },
+      { name: "Email Templates", href: "/admin/hrms/recruitment/email-templates", icon: FileText },
+      { name: "Email Settings", href: "/admin/hrms/recruitment/email-settings", icon: Settings },
       { name: "Sales Team Onboarding", href: "/admin/employee-onboarding", icon: UserCheck },
     ]
   },

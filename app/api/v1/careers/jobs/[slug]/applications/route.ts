@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { availability, CAREERS_ORGANISATION, findJob, nextApplicationReference } from "@/lib/careers/jobs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { sendCandidateEmail, sendHrNotification } from "@/lib/recruitment/email-service";
 
 export async function POST(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -13,6 +14,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     if (job.application_limit) { const { count } = await supabaseAdmin.schema("recruitment").from("careers_applications").select("id", { count: "exact", head: true }).eq("organisation_id", CAREERS_ORGANISATION).eq("job_id", job.id).neq("status", "withdrawn"); if ((count || 0) >= job.application_limit) return NextResponse.json({ code: "APPLICATION_LIMIT_REACHED", error: "Application limit reached" }, { status: 409 }); }
     const { data, error } = await supabaseAdmin.schema("recruitment").from("careers_applications").insert({ job_id: job.id, candidate_id: candidateId, organisation_id: CAREERS_ORGANISATION, application_reference: await nextApplicationReference(), profile: body.profile, experience: body.experience || {}, answers: body.answers || {}, resume_path: body.resume_path || null, cover_letter: body.cover_letter || null }).select("id,application_reference,current_stage,submitted_at,job_id").single();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+    // Fire-and-forget: Send confirmation email to candidate + HR notification
+    const emailVars = {
+      candidateName: body.profile.full_name,
+      jobTitle: job.title,
+      companyName: "GrowXLabs",
+      applicationRef: data.application_reference,
+      portalLink: "https://growxlabs.tech/careers",
+    };
+
+    sendCandidateEmail("application_received", emailVars, body.profile.email, candidateId, data.id, job.id).catch(() => {});
+    sendHrNotification("new_application", {
+      candidateName: body.profile.full_name,
+      candidateEmail: body.profile.email,
+      jobTitle: job.title,
+      applicationRef: data.application_reference,
+      submittedAt: data.submitted_at,
+    }).catch(() => {});
+
     return NextResponse.json({ application: data }, { status: 201 });
   } catch { return NextResponse.json({ error: "Unable to submit application" }, { status: 400 }); }
 }
+

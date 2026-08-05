@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CAREERS_ORGANISATION, nextJobReference, slugify } from "@/lib/careers/jobs";
+import { sendCandidateEmail, sendHrNotification } from "@/lib/recruitment/email-service";
+import { TemplateType } from "@/lib/recruitment/email-templates";
 
 export async function GET() {
   try {
@@ -61,7 +63,7 @@ export async function PATCH(request: Request) {
     const { data: application, error: lookupError } = await supabaseAdmin
       .schema("recruitment")
       .from("careers_applications")
-      .select("id, organisation_id")
+      .select("id, organisation_id, candidate_id, profile, job_id, current_stage")
       .eq("id", applicationId)
       .maybeSingle();
 
@@ -69,6 +71,8 @@ export async function PATCH(request: Request) {
     if (!application || application.organisation_id !== CAREERS_ORGANISATION) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
+
+    const previousStage = application.current_stage;
 
     const { data, error } = await supabaseAdmin
       .schema("recruitment")
@@ -80,8 +84,63 @@ export async function PATCH(request: Request) {
       .single();
 
     if (error) throw error;
+
+    // Fire-and-forget: Send stage-appropriate email to candidate + HR notification
+    const candidateEmail = application.profile?.email;
+    const candidateName = application.profile?.full_name || application.candidate_id;
+    const candidateId = application.candidate_id;
+
+    // Fetch job title for email context
+    const { data: jobData } = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_jobs")
+      .select("title")
+      .eq("id", application.job_id)
+      .maybeSingle();
+
+    const jobTitle = jobData?.title || "the position";
+    const stageUpper = stage.toUpperCase();
+
+    // Determine which email template to send based on new stage
+    const STAGE_EMAIL_MAP: Record<string, string> = {
+      INTERVIEW: "interview_invite",
+      ASSESSMENT: "assessment_invite",
+      OFFER: "offer_extended",
+      HIRED: "stage_update",
+    };
+
+    const templateKey = (STAGE_EMAIL_MAP[stageUpper] || "stage_update") as TemplateType;
+
+    if (candidateEmail && stageUpper !== "SCREENING" && stageUpper !== "APPLIED") {
+      sendCandidateEmail(
+        templateKey,
+        {
+          candidateName,
+          jobTitle,
+          companyName: "GrowXLabs",
+          currentStage: String(previousStage || "applied").toUpperCase(),
+          newStage: stageUpper,
+          portalLink: "https://growxlabs.tech/careers",
+        },
+        candidateEmail,
+        candidateId,
+        applicationId,
+        application.job_id
+      ).catch(() => {});
+    }
+
+    // HR notification for every stage change
+    sendHrNotification("stage_change", {
+      candidateName,
+      candidateEmail: candidateEmail || candidateId,
+      jobTitle,
+      previousStage: String(previousStage || "applied").toUpperCase(),
+      newStage: stageUpper,
+    }).catch(() => {});
+
     return NextResponse.json({ application: data });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || "Failed to update candidate stage" }, { status: 500 });
   }
 }
+
