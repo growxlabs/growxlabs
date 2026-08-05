@@ -16,3 +16,16 @@ export async function GET(request: Request) {
   ]);
   return NextResponse.json({ candidate: { name: application.profile?.full_name || "Candidate", email }, application: { reference: application.application_reference, jobTitle: (application.careers_jobs as any)?.title || "Role", appliedAt: application.submitted_at, updatedAt: application.updated_at, status: application.status, stage: application.current_stage, profile: application.profile, resumePath: application.resume_path }, timeline: [{ to_stage: "applied", created_at: application.submitted_at }, ...(history.data || [])], interviews: interviews.data || [], messages: messages.data || [], offer: offers.data?.[0] || null });
 }
+
+export async function PATCH(request: Request) {
+  const body = await request.json(); const reference = String(body.reference || "").trim(); const email = String(body.email || "").trim().toLowerCase();
+  if (!reference || !email) return NextResponse.json({ error: "Application reference and email are required." }, { status: 400 });
+  const { data: application, error } = await supabaseAdmin.schema("recruitment").from("careers_applications").select("id,profile").eq("organisation_id", CAREERS_ORGANISATION).eq("application_reference", reference).maybeSingle();
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!application || String(application.profile?.email || "").toLowerCase() !== email) return NextResponse.json({ error: "Application not found." }, { status: 404 });
+  const allowed = ["phone", "address", "linkedInURL", "portfolioURL"];
+  const profile = { ...application.profile }; for (const key of allowed) if (typeof body.profile?.[key] === "string") profile[key] = body.profile[key].trim();
+  const update = await supabaseAdmin.schema("recruitment").from("careers_applications").update({ profile, updated_at: new Date().toISOString() }).eq("id", application.id).select("profile,updated_at").single();
+  if (update.error) return NextResponse.json({ error: update.error.message }, { status: 500 });
+  return NextResponse.json({ profile: update.data.profile, updatedAt: update.data.updated_at });
+}
