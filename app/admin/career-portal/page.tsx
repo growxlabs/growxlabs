@@ -245,12 +245,14 @@ export default function AdminCareersPage() {
     }
   };
 
-  // Filter candidates
-  const filteredApplications = applications.filter(app => {
+  // Filter candidates with strict null guards
+  const filteredApplications = (Array.isArray(applications) ? applications : []).filter(app => {
+    if (!app || typeof app !== "object") return false;
+    const searchLower = String(searchTerm || "").toLowerCase();
     const matchesSearch = 
-      app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.role?.toLowerCase().includes(searchTerm.toLowerCase());
+      String(app.name || "").toLowerCase().includes(searchLower) ||
+      String(app.email || "").toLowerCase().includes(searchLower) ||
+      String(app.role || "").toLowerCase().includes(searchLower);
     
     const matchesStatus = selectedStatus === "all" || app.status === selectedStatus;
     const matchesRole = selectedRole === "all" || app.role === selectedRole;
@@ -258,8 +260,8 @@ export default function AdminCareersPage() {
     return matchesSearch && matchesStatus && matchesRole;
   });
 
-  // Extract unique roles from submissions for filters
-  const uniqueRoles = Array.from(new Set(applications.map(app => app.role).filter(Boolean)));
+  // Extract unique roles from submissions safely
+  const uniqueRoles = Array.from(new Set((Array.isArray(applications) ? applications : []).map(app => app?.role).filter(Boolean)));
 
   const getStatusBadge = (statusValue: string) => {
     const status = STATUSES.find(s => s.value === statusValue) || STATUSES[1];
@@ -398,7 +400,9 @@ export default function AdminCareersPage() {
                 <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-center gap-4 shrink-0">
                   <div className="text-left md:text-right">
                     <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Submitted On</p>
-                    <p className="text-xs text-[var(--text-secondary)] font-semibold">{new Date(app.created_at).toLocaleDateString()}</p>
+                    <p className="text-xs text-[var(--text-secondary)] font-semibold">
+                      {app.created_at ? new Date(app.created_at).toLocaleDateString() : "Recent"}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     {app.resume_url && (
@@ -659,7 +663,9 @@ export default function AdminCareersPage() {
                     </div>
                     <div>
                       <span className="block text-[9px] text-neutral-550 uppercase">Applied Date</span>
-                      <span className="font-bold text-neutral-900 mt-1 block">{new Date(activeCandidate.created_at).toLocaleDateString()}</span>
+                      <span className="font-bold text-neutral-900 mt-1 block">
+                        {activeCandidate.created_at ? new Date(activeCandidate.created_at).toLocaleDateString() : "Recent"}
+                      </span>
                     </div>
                   </div>
                 </div>
