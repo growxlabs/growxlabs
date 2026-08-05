@@ -5,7 +5,10 @@ export const TEMPLATE_TYPES = [
   'offer_extended',
   'rejection',
   'stage_update',
-  'general'
+  'general',
+  'interviewer_assignment',
+  'interview_access_extended',
+  'interview_access_revoked'
 ] as const;
 
 export type TemplateType = typeof TEMPLATE_TYPES[number];
@@ -186,6 +189,56 @@ export function getDefaultTemplate(templateKey: TemplateType): { subject: string
            <p>If you have any questions, please feel free to reach out.</p>
            <p>Best regards,<br>The {{companyName}} Team</p>`,
           'Message from GrowXLabs'
+        )
+      };
+
+    case 'interviewer_assignment':
+      return {
+        subject: 'Interview Assignment: {{candidateName}} for {{jobTitle}} | GrowXLabs',
+        html: wrapInHtmlLayout(
+          `<p>Hi {{interviewerName}},</p>
+           <p>You have been assigned to conduct an interview for candidate <strong>{{candidateName}}</strong> applying for the position of <strong>{{jobTitle}}</strong>.</p>
+           
+           <div class="info-box">
+             <p>📅 <strong>Date:</strong> {{interviewDate}}</p>
+             <p>⏰ <strong>Time:</strong> {{interviewTime}} ({{timeZone}})</p>
+             <p>⏱️ <strong>Duration:</strong> {{interviewDuration}} mins</p>
+             <p>🔓 <strong>Access Window:</strong> Available from {{accessStartsAt}} to {{accessExpiresAt}}</p>
+           </div>
+           
+           <p>You can access the dedicated Interviewer Workspace to review approved candidate details, resume, screening answers, and complete your evaluation scorecard.</p>
+
+           <a href="{{invitationLink}}" class="button">Review Candidate & Access Workspace</a>
+           
+           <p class="text-muted">Note: Access is time-bound and strictly authorized for your account during the assigned window.</p>`,
+          'Interview Assignment'
+        )
+      };
+
+    case 'interview_access_extended':
+      return {
+        subject: 'Interview Access Extended: {{candidateName}} | GrowXLabs',
+        html: wrapInHtmlLayout(
+          `<p>Hi {{interviewerName}},</p>
+           <p>Your temporary access window to review <strong>{{candidateName}}</strong> for the <strong>{{jobTitle}}</strong> role has been extended by the recruitment administrator.</p>
+           
+           <div class="info-box">
+             <p>⏳ <strong>New Expiry Time:</strong> {{accessExpiresAt}}</p>
+           </div>
+
+           <a href="{{workspaceLink}}" class="button">Open Interviewer Workspace</a>`,
+          'Interview Access Extended'
+        )
+      };
+
+    case 'interview_access_revoked':
+      return {
+        subject: 'Interview Access Revoked: {{candidateName}} | GrowXLabs',
+        html: wrapInHtmlLayout(
+          `<p>Hi {{interviewerName}},</p>
+           <p>Your temporary access assignment for candidate <strong>{{candidateName}}</strong> has been updated or revoked by the recruitment administrator.</p>
+           <p class="text-muted">If you believe this is an error, please contact your hiring administrator.</p>`,
+          'Interview Access Revoked'
         )
       };
   }

@@ -153,6 +153,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "People Overview", href: "/admin/hrms/dashboard", icon: BarChart3 },
       { name: "Employees", href: "/admin/hrms/employees", icon: Users },
       { name: "Recruitment", href: "/admin/hrms/recruitment", icon: UserPlus },
+      { name: "Interviews & Access", href: "/admin/hrms/recruitment/interviews", icon: KeyRound },
       { name: "Career Portal Applications", href: "/admin/career-portal", icon: ClipboardList },
       { name: "Attendance", href: "/admin/hrms/attendance", icon: CalendarCheck },
       { name: "Leaves", href: "/admin/hrms/leaves", icon: CalendarOff },
