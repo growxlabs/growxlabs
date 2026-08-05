@@ -4,7 +4,8 @@ ALTER TABLE public.assessment_information_requests
   ADD COLUMN IF NOT EXISTS request_number TEXT,
   ADD COLUMN IF NOT EXISTS client_id UUID,
   ADD COLUMN IF NOT EXISTS company_id UUID,
-  ADD COLUMN IF NOT EXISTS general_message TEXT;
+  ADD COLUMN IF NOT EXISTS general_message TEXT,
+  ADD COLUMN IF NOT EXISTS sent_at TIMESTAMPTZ;
 ALTER TABLE public.assessment_information_requests DROP CONSTRAINT IF EXISTS assessment_information_requests_status_check;
 ALTER TABLE public.assessment_information_requests ADD CONSTRAINT assessment_information_requests_status_check CHECK (status IN ('draft','sent','in_progress','submitted','under_review','partially_accepted','changes_required','resolved','cancelled','open','answered'));
 CREATE UNIQUE INDEX IF NOT EXISTS assessment_information_requests_number_uq ON public.assessment_information_requests(request_number) WHERE request_number IS NOT NULL;
