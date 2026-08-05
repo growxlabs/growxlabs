@@ -144,7 +144,7 @@ export default function EmailSettingsPage() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[var(--text-primary)]">Email Configuration</h2>
-              <p className="text-[10px] text-[var(--text-muted)]">Provider: {(settings.provider || "resend").toUpperCase()}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">Manage the details shown on every recruitment email.</p>
             </div>
           </div>
           <button
@@ -165,12 +165,12 @@ export default function EmailSettingsPage() {
         <div className="p-6 space-y-5">
           {/* Provider */}
           <div>
-            <label className="text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)] mb-1.5 block">Email Provider</label>
+            <label className="text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)] mb-1.5 block">Email Delivery Service</label>
             <div className="flex items-center gap-2 h-9 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-xl">
               <Mail className="h-3.5 w-3.5 text-[#0075de]" />
               <span className="text-sm font-bold text-[var(--text-primary)]">Resend</span>
               <span className={cn("text-[9px] px-1.5 py-0.5 rounded font-bold", configured ? "text-emerald-600 bg-emerald-500/10" : "text-amber-700 bg-amber-500/10")}>
-                {configured ? "Ready to send" : "API key missing"}
+                {configured ? "Ready to send" : "Needs attention"}
               </span>
             </div>
           </div>
@@ -217,8 +217,8 @@ export default function EmailSettingsPage() {
             <Send className="mt-0.5 h-4 w-4 text-[#0075de]" />
             <div className="min-w-0 flex-1">
               <h3 className="text-xs font-bold text-[var(--text-primary)]">Send a test email</h3>
-              <p className="mt-1 text-[11px] text-[var(--text-muted)]">Send a real test through Resend. This verifies the configured provider, not only the form.</p>
-              {setupRequired && <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-300">Save is unavailable until the recruitment email database migration is applied.</p>}
+              <p className="mt-1 text-[11px] text-[var(--text-muted)]">Send a test to confirm candidates will receive recruitment emails correctly.</p>
+              {setupRequired && <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-300">Saving is temporarily unavailable. Please contact your system administrator to complete the email service setup.</p>}
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <input type="email" value={testTo} onChange={(event) => setTestTo(event.target.value)} placeholder="you@company.com" className="h-9 min-w-0 flex-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] px-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40" />
                 <button onClick={handleTest} disabled={testing || !testTo || !configured} className="flex h-9 items-center justify-center gap-2 rounded-xl border border-[#0075de]/30 px-4 text-xs font-bold text-[#0075de] disabled:cursor-not-allowed disabled:opacity-50">

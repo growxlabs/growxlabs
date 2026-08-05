@@ -19,7 +19,7 @@ export async function GET() {
         connection: {
           configured: Boolean(process.env.RESEND_API_KEY),
           setupRequired: true,
-          message: 'Recruitment email settings are not available yet. Apply the recruitment email migration before saving settings.',
+          message: 'Email settings are not ready yet. Please contact your system administrator to complete the email service setup.',
         },
       });
     }
