@@ -103,7 +103,8 @@ export async function PATCH(request: Request) {
 
     // Determine which email template to send based on new stage
     const STAGE_EMAIL_MAP: Record<string, string> = {
-      INTERVIEW: "interview_invite",
+      // Interview invitations are sent only by the explicit scheduling
+      // endpoint, once date/time/link are known.
       ASSESSMENT: "assessment_invite",
       OFFER: "offer_extended",
       HIRED: "stage_update",
@@ -111,7 +112,7 @@ export async function PATCH(request: Request) {
 
     const templateKey = (STAGE_EMAIL_MAP[stageUpper] || "stage_update") as TemplateType;
 
-    if (candidateEmail && stageUpper !== "SCREENING" && stageUpper !== "APPLIED") {
+    if (candidateEmail && stageUpper !== "SCREENING" && stageUpper !== "APPLIED" && stageUpper !== "INTERVIEW") {
       sendCandidateEmail(
         templateKey,
         {
@@ -143,4 +144,3 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error?.message || "Failed to update candidate stage" }, { status: 500 });
   }
 }
-
