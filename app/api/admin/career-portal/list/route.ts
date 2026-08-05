@@ -28,7 +28,13 @@ export async function GET(request: Request) {
       .eq("organisation_id", CAREERS_ORGANISATION)
       .order("submitted_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      // Keep the legacy page available while older deployments finish their
+      // recruitment schema migration.
+      const legacy = await supabaseAdmin.from("career_applications").select("*").order("created_at", { ascending: false });
+      if (legacy.error) throw error;
+      return NextResponse.json(legacy.data || []);
+    }
     const jobIds = [...new Set((current || []).map((item: any) => item.job_id).filter(Boolean))];
     const { data: jobs } = jobIds.length
       ? await supabaseAdmin.schema("recruitment").from("careers_jobs").select("id,title").in("id", jobIds)

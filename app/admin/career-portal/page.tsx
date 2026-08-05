@@ -127,7 +127,7 @@ export default function AdminCareersPage() {
       setLoading(true);
       const res = await fetch(`/api/admin/career-portal/list?t=${Date.now()}`);
       const data = await res.json();
-      setApplications(data || []);
+      setApplications(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Failed to fetch applications:", e);
     } finally {
