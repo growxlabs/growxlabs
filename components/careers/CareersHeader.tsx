@@ -12,13 +12,21 @@ export function CareersHeader() {
           <ArrowLeft aria-hidden="true" size={17} />
           Back to Home
         </a>
-        <a
-          href="https://growxlabs.tech"
-          className="rounded-md font-serif text-xl font-semibold tracking-tight text-slate-950 outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2"
-          aria-label="GrowXLabs home"
-        >
-          GrowXLabs
-        </a>
+        <div className="flex items-center gap-4">
+          <a
+            href="/careers/login"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-950"
+          >
+            Candidate Portal
+          </a>
+          <a
+            href="https://growxlabs.tech"
+            className="rounded-md font-serif text-xl font-semibold tracking-tight text-slate-950 outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2"
+            aria-label="GrowXLabs home"
+          >
+            GrowXLabs
+          </a>
+        </div>
       </div>
     </header>
   );
