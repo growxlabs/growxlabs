@@ -3,7 +3,7 @@
 import { Link, usePathname } from "@/navigation-client";
 import { cn } from "@/lib/utils";
 import {
-  Layout, FileText, CreditCard, Bell,
+  Layout, FileText, CreditCard, Bell, ClipboardList,
   Rocket, LogOut, ShieldCheck
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -13,6 +13,7 @@ const navItems = [
   { name: "Contracts", href: "/client/agreement", icon: FileText },
   { name: "Billing", href: "/client/invoices", icon: CreditCard },
   { name: "Progress", href: "/client/project", icon: Rocket },
+  { name: "Change Requests", href: "/client/change-requests", icon: ClipboardList },
   { name: "Notifications", href: "/client/notifications", icon: Bell },
 ];
 
