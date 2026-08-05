@@ -19,6 +19,16 @@ export interface TemplateVariables {
   interviewTime?: string;
   interviewLink?: string;
   interviewType?: string;
+  interviewFormat?: string;
+  timeZone?: string;
+  interviewDuration?: string;
+  interviewerName?: string;
+  interviewerRole?: string;
+  preparationInstructions?: string;
+  supportEmail?: string;
+  confirmLink?: string;
+  rescheduleLink?: string;
+  declineLink?: string;
   assessmentLink?: string;
   assessmentDeadline?: string;
   currentStage?: string;
@@ -92,9 +102,15 @@ export function getDefaultTemplate(templateKey: TemplateType): { subject: string
            <div class="info-box">
              <p style="margin-top:0;"><strong>Date:</strong> {{interviewDate}}</p>
              <p><strong>Time:</strong> {{interviewTime}}</p>
-             <p><strong>Format:</strong> {{interviewType}}</p>
-             <p style="margin-bottom:0;"><strong>Link/Location:</strong> <a href="{{interviewLink}}">{{interviewLink}}</a></p>
+           <p><strong>Format:</strong> {{interviewFormat}}</p>
+           <p><strong>Time zone:</strong> {{timeZone}}</p>
+           <p><strong>Duration:</strong> {{interviewDuration}}</p>
+           <p><strong>Interviewer:</strong> {{interviewerName}} ({{interviewerRole}})</p>
+             <p style="margin-bottom:0;"><strong>Meeting link / office:</strong> {{interviewLink}}</p>
            </div>
+           <p><strong>Preparation:</strong> {{preparationInstructions}}</p>
+           <p><strong>Questions?</strong> Contact <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
+           <p style="text-align:center"><a class="button" href="{{confirmLink}}">Confirm Attendance</a> <a class="button" href="{{rescheduleLink}}">Request Reschedule</a> <a class="button" href="{{declineLink}}">Decline Interview</a></p>
            <p>Please let us know if you need any accommodations or if this time no longer works for you.</p>
            <p>Best regards,<br>The {{companyName}} Team</p>`,
           'Invitation to interview'

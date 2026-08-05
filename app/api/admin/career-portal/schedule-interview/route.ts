@@ -141,8 +141,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { id, dateTime, customMeetLink } = body;
 
-    if (!id || !dateTime) {
-      return NextResponse.json({ error: "Application ID and Interview Date/Time are required" }, { status: 400 });
+    if (!id || !dateTime || !customMeetLink) {
+      return NextResponse.json({ error: "Application ID, interview date/time, and meeting link or office location are required" }, { status: 400 });
     }
 
     // 1. Fetch Candidate details
