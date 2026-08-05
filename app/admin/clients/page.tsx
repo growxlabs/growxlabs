@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Users, CreditCard, ExternalLink, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -9,12 +9,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ClientsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<any | null>(null);
 
   useEffect(() => {
     fetchClients();
   }, []);
+
+  useEffect(() => { const id = searchParams.get("clientId"); if (id && clients.length) setSelectedClient(clients.find(client => client.id === id) || null); }, [clients, searchParams]);
 
   const fetchClients = async () => {
     try {
@@ -71,7 +75,7 @@ export default function ClientsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <Button onClick={() => router.push(`/admin/clients?clientId=${client.id}`)} variant="outline" className="h-10 rounded-lg border-white/5 text-white/40 hover:text-white text-xs font-bold grow">
+                    <Button onClick={() => { setSelectedClient(client); router.replace(`/admin/clients?clientId=${client.id}`); }} variant="outline" className="h-10 rounded-lg border-white/5 text-white/40 hover:text-white text-xs font-bold grow">
                       Profile
                     </Button>
                     <Button onClick={() => router.push(`/admin/invoices?clientId=${client.id}`)} className="h-10 rounded-lg bg-white text-black text-xs font-bold grow">
@@ -97,6 +101,7 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
+      {selectedClient && <div className="fixed inset-0 z-50 flex justify-end bg-black/50" onClick={() => { setSelectedClient(null); router.replace("/admin/clients"); }}><aside className="h-full w-full max-w-lg overflow-y-auto bg-slate-950 p-7 text-white shadow-2xl" onClick={event => event.stopPropagation()}><div className="flex items-start justify-between"><div><p className="text-xs font-bold uppercase tracking-widest text-blue-400">Client profile</p><h2 className="mt-2 text-2xl font-bold">{selectedClient.business_name || selectedClient.name}</h2><p className="mt-1 text-sm text-white/60">{selectedClient.email}</p></div><button onClick={() => { setSelectedClient(null); router.replace("/admin/clients"); }} className="rounded-lg border border-white/15 px-3 py-2 text-sm">Close</button></div><dl className="mt-8 space-y-5 rounded-xl border border-white/10 p-5 text-sm"><div><dt className="text-xs uppercase tracking-wider text-white/40">Account status</dt><dd className="mt-1 font-semibold text-emerald-400">Active client</dd></div><div><dt className="text-xs uppercase tracking-wider text-white/40">Contact email</dt><dd className="mt-1">{selectedClient.email}</dd></div><div><dt className="text-xs uppercase tracking-wider text-white/40">Client ID</dt><dd className="mt-1 break-all text-white/70">{selectedClient.id}</dd></div></dl><div className="mt-6 grid gap-3"><Button onClick={() => router.push(`/admin/invoices?clientId=${selectedClient.id}`)} className="bg-[#0075de]">View billing</Button><Button onClick={() => router.push(`/admin/change-requests?clientId=${selectedClient.id}`)} variant="outline">View change requests</Button></div></aside></div>}
     </div>
   );
 }
