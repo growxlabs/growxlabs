@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Settings, Save, Loader2, CheckCircle, Mail, ToggleLeft, ToggleRight } from "lucide-react";
+import { Settings, Save, Loader2, CheckCircle, Mail, ToggleLeft, ToggleRight, AlertCircle, Send, FileText, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EmailSettings {
@@ -9,7 +9,7 @@ interface EmailSettings {
   provider: string;
   from_name: string;
   from_email: string;
-  reply_to: string;
+  reply_to: string | null;
   enabled: boolean;
 }
 
@@ -24,14 +24,33 @@ export default function EmailSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [configured, setConfigured] = useState(false);
+  const [setupRequired, setSetupRequired] = useState(false);
+  const [testTo, setTestTo] = useState("");
+  const [testing, setTesting] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch("/api/admin/recruitment/email-settings");
         const data = await res.json();
-        if (data.settings) setSettings(data.settings);
-      } catch { /* use defaults */ } finally {
+        if (!res.ok) throw new Error(data.error || "Unable to load email settings.");
+        if (data.settings) {
+          setSettings((current) => ({
+            ...current,
+            ...data.settings,
+            provider: data.settings.provider || "resend",
+            reply_to: data.settings.reply_to || "",
+          }));
+        }
+        setConfigured(Boolean(data.connection?.configured));
+        setSetupRequired(Boolean(data.connection?.setupRequired));
+        if (data.connection?.message) setError(data.connection.message);
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Unable to load email settings.");
+      } finally {
         setLoading(false);
       }
     })();
@@ -40,6 +59,8 @@ export default function EmailSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     setSaveSuccess(false);
+    setError(null);
+    setNotice(null);
     try {
       const res = await fetch("/api/admin/recruitment/email-settings", {
         method: "PUT",
@@ -47,13 +68,35 @@ export default function EmailSettingsPage() {
         body: JSON.stringify(settings),
       });
       const data = await res.json();
-      if (data.settings) {
-        setSettings(data.settings);
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
-      }
-    } catch { /* swallow */ } finally {
+      if (!res.ok) throw new Error(data.error || "Unable to save email settings.");
+      if (data.settings) setSettings((current) => ({ ...current, ...data.settings, reply_to: data.settings.reply_to || "" }));
+      setSaveSuccess(true);
+      setNotice("Sender settings saved. New recruitment emails will use these details.");
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Unable to save email settings.");
+    } finally {
       setSaving(false);
+    }
+  };
+
+  const handleTest = async () => {
+    setTesting(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const res = await fetch("/api/admin/recruitment/email-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "test", to: testTo }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details || data.error || "Test email could not be sent.");
+      setNotice(`Test email sent to ${testTo}. Message ID: ${data.messageId}`);
+    } catch (testError) {
+      setError(testError instanceof Error ? testError.message : "Test email could not be sent.");
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -66,12 +109,31 @@ export default function EmailSettingsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-4xl">
       {/* Page Header */}
       <div>
         <h1 className="text-xl font-black text-[var(--text-primary)] tracking-tight">Email Settings</h1>
-        <p className="text-xs text-[var(--text-muted)] mt-1">Configure recruitment email delivery settings</p>
+        <p className="text-xs text-[var(--text-muted)] mt-1">Control the sender candidates see and confirm delivery before using recruitment emails.</p>
       </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        <GuideCard icon={<Settings className="h-4 w-4" />} title="1. Set up delivery" description="Choose the sender name, sender address, reply-to address, and whether sending is enabled." />
+        <GuideCard icon={<FileText className="h-4 w-4" />} title="2. Edit templates" description="Use Email Templates to change the wording used for invitations, offers, and updates." />
+        <GuideCard icon={<History className="h-4 w-4" />} title="3. Check delivery" description="Use Email Status to see sent, failed, bounced, and retried emails for every candidate." />
+      </div>
+
+      {error && (
+        <div className="flex gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+      {notice && (
+        <div className="flex gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-xs text-emerald-700 dark:text-emerald-300">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          <span>{notice}</span>
+        </div>
+      )}
 
       <div className="bg-[var(--card)] rounded-xl border border-[var(--border-subtle)] overflow-hidden">
         {/* Section Header */}
@@ -82,7 +144,7 @@ export default function EmailSettingsPage() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-[var(--text-primary)]">Email Configuration</h2>
-              <p className="text-[10px] text-[var(--text-muted)]">Provider: {settings.provider.toUpperCase()}</p>
+              <p className="text-[10px] text-[var(--text-muted)]">Provider: {(settings.provider || "resend").toUpperCase()}</p>
             </div>
           </div>
           <button
@@ -107,7 +169,9 @@ export default function EmailSettingsPage() {
             <div className="flex items-center gap-2 h-9 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-xl">
               <Mail className="h-3.5 w-3.5 text-[#0075de]" />
               <span className="text-sm font-bold text-[var(--text-primary)]">Resend</span>
-              <span className="text-[9px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded font-bold">Connected</span>
+              <span className={cn("text-[9px] px-1.5 py-0.5 rounded font-bold", configured ? "text-emerald-600 bg-emerald-500/10" : "text-amber-700 bg-amber-500/10")}>
+                {configured ? "Ready to send" : "API key missing"}
+              </span>
             </div>
           </div>
 
@@ -140,7 +204,7 @@ export default function EmailSettingsPage() {
             <label className="text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)] mb-1.5 block">Reply-To Email</label>
             <input
               type="email"
-              value={settings.reply_to}
+              value={settings.reply_to || ""}
               onChange={(e) => setSettings((s) => ({ ...s, reply_to: e.target.value }))}
               placeholder="hr@growxlabs.tech"
               className="w-full h-9 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40"
@@ -148,11 +212,28 @@ export default function EmailSettingsPage() {
           </div>
         </div>
 
+        <div className="mx-6 mb-6 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-4">
+          <div className="flex items-start gap-3">
+            <Send className="mt-0.5 h-4 w-4 text-[#0075de]" />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-xs font-bold text-[var(--text-primary)]">Send a test email</h3>
+              <p className="mt-1 text-[11px] text-[var(--text-muted)]">Send a real test through Resend. This verifies the configured provider, not only the form.</p>
+              {setupRequired && <p className="mt-2 text-[11px] text-amber-700 dark:text-amber-300">Save is unavailable until the recruitment email database migration is applied.</p>}
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <input type="email" value={testTo} onChange={(event) => setTestTo(event.target.value)} placeholder="you@company.com" className="h-9 min-w-0 flex-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] px-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40" />
+                <button onClick={handleTest} disabled={testing || !testTo || !configured} className="flex h-9 items-center justify-center gap-2 rounded-xl border border-[#0075de]/30 px-4 text-xs font-bold text-[#0075de] disabled:cursor-not-allowed disabled:opacity-50">
+                  {testing && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Send Test
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Save Button */}
         <div className="px-6 py-4 border-t border-[var(--border-subtle)] flex justify-end">
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || setupRequired}
             className="flex items-center gap-2 h-9 px-6 bg-[#0075de] text-white text-xs font-bold rounded-xl hover:bg-[#0063bd] transition-all disabled:opacity-50 cursor-pointer"
           >
             {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : saveSuccess ? <CheckCircle className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
@@ -160,6 +241,16 @@ export default function EmailSettingsPage() {
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function GuideCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] p-4">
+      <div className="mb-2 text-[#0075de]">{icon}</div>
+      <h2 className="text-xs font-bold text-[var(--text-primary)]">{title}</h2>
+      <p className="mt-1 text-[11px] leading-5 text-[var(--text-muted)]">{description}</p>
     </div>
   );
 }

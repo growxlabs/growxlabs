@@ -10,21 +10,26 @@ export async function GET() {
       .from('email_settings')
       .select('*')
       .eq('organisation_id', CAREERS_ORGANISATION)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('Error fetching email settings:', error);
-      return NextResponse.json({ error: 'Failed to fetch email settings' }, { status: 500 });
+      return NextResponse.json({
+        settings: defaultSettings(),
+        connection: {
+          configured: Boolean(process.env.RESEND_API_KEY),
+          setupRequired: true,
+          message: 'Recruitment email settings are not available yet. Apply the recruitment email migration before saving settings.',
+        },
+      });
     }
 
-    return NextResponse.json({ 
-      settings: settings || {
-        organisation_id: CAREERS_ORGANISATION,
-        from_name: 'GrowXLabs',
-        from_email: 'noreply@growxlabs.tech',
-        reply_to: null,
-        enabled: true
-      }
+    return NextResponse.json({
+      settings: { ...defaultSettings(), ...settings },
+      connection: {
+        configured: Boolean(process.env.RESEND_API_KEY),
+        setupRequired: false,
+      },
     });
   } catch (error) {
     console.error('Error in email settings GET:', error);
@@ -35,7 +40,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { from_name, from_email, reply_to, enabled, provider, smtp_host, smtp_port, smtp_username } = body;
+    const { from_name, from_email, reply_to, enabled, provider } = body;
 
     const updates = {
       organisation_id: CAREERS_ORGANISATION,
@@ -44,9 +49,6 @@ export async function PUT(request: NextRequest) {
       reply_to,
       enabled,
       provider: provider || 'resend',
-      smtp_host: smtp_host || null,
-      smtp_port: smtp_port ? Number(smtp_port) : 587,
-      smtp_username: smtp_username || null,
       updated_at: new Date().toISOString()
     };
 
@@ -67,6 +69,17 @@ export async function PUT(request: NextRequest) {
     console.error('Error in email settings PUT:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
+}
+
+function defaultSettings() {
+  return {
+    organisation_id: CAREERS_ORGANISATION,
+    provider: 'resend',
+    from_name: 'GrowXLabs',
+    from_email: 'noreply@growxlabs.tech',
+    reply_to: '',
+    enabled: true,
+  };
 }
 
 export async function POST(request: NextRequest) {
