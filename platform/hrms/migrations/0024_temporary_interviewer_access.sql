@@ -1,6 +1,7 @@
 -- ============================================================================
 -- GROWXLABS RECRUITMENT — TEMPORARY INTERVIEWER ACCESS & WORKSPACE MIGRATION
 -- Migration: 0024_temporary_interviewer_access.sql
+-- (Hardened for idempotent compatibility with pre-existing schemas)
 -- ============================================================================
 
 CREATE SCHEMA IF NOT EXISTS recruitment;
@@ -13,26 +14,53 @@ CREATE TABLE IF NOT EXISTS recruitment.interviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organisation_id UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001'::UUID,
   application_id UUID NOT NULL,
-  candidate_id TEXT NOT NULL,
-  job_id UUID NOT NULL,
-  title VARCHAR(255) NOT NULL,
+  candidate_id TEXT NOT NULL DEFAULT '',
+  job_id UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001'::UUID,
+  title VARCHAR(255) NOT NULL DEFAULT 'Interview',
   stage VARCHAR(64) NOT NULL DEFAULT 'INTERVIEW',
-  meeting_provider VARCHAR(64) NOT NULL DEFAULT 'google_meet', -- google_meet, zoom, teams, phone, in_person, custom
+  meeting_provider VARCHAR(64) NOT NULL DEFAULT 'google_meet',
   meeting_join_url TEXT,
   meeting_created_at TIMESTAMPTZ,
   calendar_provider VARCHAR(64),
   calendar_event_id TEXT,
   conference_id TEXT,
-  scheduled_at TIMESTAMPTZ NOT NULL,
+  scheduled_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   duration_minutes INT NOT NULL DEFAULT 30,
   timezone VARCHAR(64) NOT NULL DEFAULT 'Asia/Kolkata',
   location_text TEXT,
   instructions TEXT,
-  status VARCHAR(32) NOT NULL DEFAULT 'scheduled', -- scheduled, completed, cancelled, rescheduled
+  status VARCHAR(32) NOT NULL DEFAULT 'scheduled',
   created_by UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Ensure all columns exist even if recruitment.interviews was created by an older migration
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS candidate_id TEXT DEFAULT '';
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS job_id UUID DEFAULT '00000000-0000-0000-0000-000000000001'::UUID;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS stage VARCHAR(64) DEFAULT 'INTERVIEW';
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS meeting_provider VARCHAR(64) DEFAULT 'google_meet';
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS meeting_join_url TEXT;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS meeting_created_at TIMESTAMPTZ;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS calendar_provider VARCHAR(64);
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS calendar_event_id TEXT;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS conference_id TEXT;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS duration_minutes INT DEFAULT 30;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS timezone VARCHAR(64) DEFAULT 'Asia/Kolkata';
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS location_text TEXT;
+ALTER TABLE recruitment.interviews ADD COLUMN IF NOT EXISTS instructions TEXT;
+
+-- Backfill scheduled_at from starts_at if starts_at exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='recruitment' AND table_name='interviews' AND column_name='starts_at') THEN
+    UPDATE recruitment.interviews SET scheduled_at = starts_at WHERE scheduled_at IS NULL AND starts_at IS NOT NULL;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='recruitment' AND table_name='interviews' AND column_name='meeting_url') THEN
+    UPDATE recruitment.interviews SET meeting_join_url = meeting_url WHERE meeting_join_url IS NULL AND meeting_url IS NOT NULL;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_interviews_app_id ON recruitment.interviews(application_id);
 CREATE INDEX IF NOT EXISTS idx_interviews_scheduled_at ON recruitment.interviews(scheduled_at);
@@ -48,15 +76,15 @@ CREATE TABLE IF NOT EXISTS recruitment.interview_assignments (
   workspace_id UUID DEFAULT '00000000-0000-0000-0000-000000000001'::UUID,
   interview_id UUID NOT NULL REFERENCES recruitment.interviews(id) ON DELETE CASCADE,
   application_id UUID NOT NULL,
-  candidate_id TEXT NOT NULL,
-  job_id UUID NOT NULL,
+  candidate_id TEXT NOT NULL DEFAULT '',
+  job_id UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001'::UUID,
   interviewer_user_id UUID,
   interviewer_email VARCHAR(255) NOT NULL,
   interviewer_name VARCHAR(255),
   assigned_by_user_id UUID,
-  access_starts_at TIMESTAMPTZ NOT NULL,
-  access_expires_at TIMESTAMPTZ NOT NULL,
-  status VARCHAR(32) NOT NULL DEFAULT 'invited', -- draft, invited, accepted, active, expired, revoked, completed, cancelled
+  access_starts_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  access_expires_at TIMESTAMPTZ NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL '24 hours'),
+  status VARCHAR(32) NOT NULL DEFAULT 'invited',
   permissions JSONB NOT NULL DEFAULT '[
     "interview.assignment.read",
     "interview.candidate.summary.read",
@@ -95,7 +123,6 @@ CREATE INDEX IF NOT EXISTS idx_assignments_access_window ON recruitment.intervie
 
 -- ----------------------------------------------------------------------------
 -- 3. RECRUITMENT INTERVIEW ACCESS EVENTS
--- Immutable audit log for all interviewer access and document view events
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS recruitment.interview_access_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -104,7 +131,7 @@ CREATE TABLE IF NOT EXISTS recruitment.interview_access_events (
   interview_id UUID NOT NULL REFERENCES recruitment.interviews(id) ON DELETE CASCADE,
   user_id UUID,
   user_email VARCHAR(255),
-  event_type VARCHAR(64) NOT NULL, -- assignment_created, invitation_sent, invitation_accepted, profile_viewed, resume_previewed, resume_downloaded, meeting_joined, feedback_saved, feedback_submitted, access_extended, access_revoked, scorecard_reopened
+  event_type VARCHAR(64) NOT NULL,
   action_details JSONB NOT NULL DEFAULT '{}'::JSONB,
   ip_address VARCHAR(64),
   user_agent TEXT,
@@ -116,7 +143,6 @@ CREATE INDEX IF NOT EXISTS idx_access_events_type ON recruitment.interview_acces
 
 -- ----------------------------------------------------------------------------
 -- 4. RECRUITMENT INTERVIEW SCORECARDS & FEEDBACK
--- Scorecard definitions, rating evaluations (1-5), and recommendation history
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS recruitment.interview_scorecards (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -140,13 +166,13 @@ CREATE TABLE IF NOT EXISTS recruitment.interview_feedback (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organisation_id UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000001'::UUID,
   interview_id UUID NOT NULL REFERENCES recruitment.interviews(id) ON DELETE CASCADE,
-  assignment_id UUID NOT NULL REFERENCES recruitment.interview_assignments(id) ON DELETE CASCADE,
-  interviewer_user_id UUID NOT NULL,
-  ratings JSONB NOT NULL DEFAULT '{}'::JSONB, -- e.g. {"communication": 4, "confidence": 5}
+  assignment_id UUID REFERENCES recruitment.interview_assignments(id) ON DELETE CASCADE,
+  interviewer_user_id UUID,
+  ratings JSONB NOT NULL DEFAULT '{}'::JSONB,
   notes TEXT,
   scratchpad_notes TEXT,
-  recommendation VARCHAR(64), -- strong_hire, hire, mixed, no_hire, strong_no_hire
-  status VARCHAR(32) NOT NULL DEFAULT 'draft', -- draft, submitted, locked, reopened
+  recommendation VARCHAR(64),
+  status VARCHAR(32) NOT NULL DEFAULT 'draft',
   submitted_at TIMESTAMPTZ,
   is_locked BOOLEAN NOT NULL DEFAULT FALSE,
   reopened_at TIMESTAMPTZ,
@@ -156,6 +182,15 @@ CREATE TABLE IF NOT EXISTS recruitment.interview_feedback (
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Add columns to feedback if pre-existing
+ALTER TABLE recruitment.interview_feedback ADD COLUMN IF NOT EXISTS assignment_id UUID REFERENCES recruitment.interview_assignments(id) ON DELETE CASCADE;
+ALTER TABLE recruitment.interview_feedback ADD COLUMN IF NOT EXISTS scratchpad_notes TEXT;
+ALTER TABLE recruitment.interview_feedback ADD COLUMN IF NOT EXISTS is_locked BOOLEAN DEFAULT FALSE;
+ALTER TABLE recruitment.interview_feedback ADD COLUMN IF NOT EXISTS version INT DEFAULT 1;
+
+-- Drop strict check constraint on recommendation if pre-existing
+ALTER TABLE recruitment.interview_feedback DROP CONSTRAINT IF EXISTS interview_feedback_recommendation_check;
 
 CREATE TABLE IF NOT EXISTS recruitment.interview_feedback_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -169,7 +204,6 @@ CREATE TABLE IF NOT EXISTS recruitment.interview_feedback_versions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_feedback_interview ON recruitment.interview_feedback(interview_id);
-CREATE INDEX IF NOT EXISTS idx_feedback_assignment ON recruitment.interview_feedback(assignment_id);
 
 -- Enable RLS
 ALTER TABLE recruitment.interviews ENABLE ROW LEVEL SECURITY;
@@ -179,9 +213,24 @@ ALTER TABLE recruitment.interview_scorecards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recruitment.interview_feedback ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recruitment.interview_feedback_versions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "interviews_admin_all" ON recruitment.interviews FOR ALL USING (true);
-CREATE POLICY "assignments_admin_all" ON recruitment.interview_assignments FOR ALL USING (true);
-CREATE POLICY "access_events_admin_all" ON recruitment.interview_access_events FOR ALL USING (true);
-CREATE POLICY "scorecards_admin_all" ON recruitment.interview_scorecards FOR ALL USING (true);
-CREATE POLICY "feedback_admin_all" ON recruitment.interview_feedback FOR ALL USING (true);
-CREATE POLICY "feedback_versions_admin_all" ON recruitment.interview_feedback_versions FOR ALL USING (true);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'interviews_admin_all' AND tablename = 'interviews') THEN
+    CREATE POLICY "interviews_admin_all" ON recruitment.interviews FOR ALL USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'assignments_admin_all' AND tablename = 'interview_assignments') THEN
+    CREATE POLICY "assignments_admin_all" ON recruitment.interview_assignments FOR ALL USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'access_events_admin_all' AND tablename = 'interview_access_events') THEN
+    CREATE POLICY "access_events_admin_all" ON recruitment.interview_access_events FOR ALL USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'scorecards_admin_all' AND tablename = 'interview_scorecards') THEN
+    CREATE POLICY "scorecards_admin_all" ON recruitment.interview_scorecards FOR ALL USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'feedback_admin_all' AND tablename = 'interview_feedback') THEN
+    CREATE POLICY "feedback_admin_all" ON recruitment.interview_feedback FOR ALL USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'feedback_versions_admin_all' AND tablename = 'interview_feedback_versions') THEN
+    CREATE POLICY "feedback_versions_admin_all" ON recruitment.interview_feedback_versions FOR ALL USING (true);
+  END IF;
+END $$;
