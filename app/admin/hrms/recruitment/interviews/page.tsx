@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, Plus, RefreshCw, Calendar, Clock, Video, ShieldCheck, UserCheck, ChevronRight, ExternalLink, ShieldAlert, KeyRound } from "lucide-react";
+import { Loader2, Plus, RefreshCw, Calendar, Clock, Video, ShieldCheck, UserCheck, ChevronRight, ExternalLink, ShieldAlert, KeyRound, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 
@@ -9,6 +9,21 @@ export default function AdminInterviewsPage() {
   const [interviews, setInterviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+
+  // Schedule Interview Modal State
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loadingApps, setLoadingApps] = useState(false);
+
+  const [selectedAppId, setSelectedAppId] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("30");
+  const [interviewerEmail, setInterviewerEmail] = useState("");
+  const [interviewerName, setInterviewerName] = useState("");
+  const [customMeetLink, setCustomMeetLink] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleMsg, setScheduleMsg] = useState("");
 
   useEffect(() => {
     fetchInterviews();
@@ -27,6 +42,61 @@ export default function AdminInterviewsPage() {
       setLoadError(err.message || "Failed to load interviews");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openScheduleModal = async () => {
+    setShowScheduleModal(true);
+    setScheduleMsg("");
+    try {
+      setLoadingApps(true);
+      const res = await fetch("/api/hrms/recruitment", { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok && data.candidates) {
+        setApplications(data.candidates);
+        if (data.candidates.length > 0) {
+          setSelectedAppId(data.candidates[0].id);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load candidate applications:", err);
+    } finally {
+      setLoadingApps(false);
+    }
+  };
+
+  const handleScheduleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAppId || !scheduledAt) return;
+
+    try {
+      setScheduling(true);
+      setScheduleMsg("");
+      const res = await fetch("/api/admin/recruitment/interviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          applicationId: selectedAppId,
+          scheduledAt,
+          durationMinutes: Number(durationMinutes),
+          interviewerEmail,
+          interviewerName,
+          customMeetLink,
+          instructions,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to schedule interview");
+
+      setScheduleMsg("Interview scheduled and invitation email dispatched!");
+      setTimeout(() => {
+        setShowScheduleModal(false);
+        fetchInterviews();
+      }, 1200);
+    } catch (err: any) {
+      setScheduleMsg(`Error: ${err.message}`);
+    } finally {
+      setScheduling(false);
     }
   };
 
@@ -78,6 +148,13 @@ export default function AdminInterviewsPage() {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={openScheduleModal}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-bold uppercase tracking-wider cursor-pointer shadow-sm transition-all"
+          >
+            <Plus size={15} /> Schedule New Interview
+          </button>
+
+          <button
             onClick={fetchInterviews}
             className="flex items-center gap-1.5 border border-[var(--border-subtle)] bg-[var(--card)] px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer hover:bg-[var(--surface-1)]"
           >
@@ -103,8 +180,20 @@ export default function AdminInterviewsPage() {
             <Loader2 className="animate-spin text-[#0075de]" size={24} />
           </div>
         ) : interviews.length === 0 ? (
-          <div className="p-12 text-center text-xs text-[var(--text-secondary)]">
-            No interviews scheduled yet.
+          <div className="p-12 text-center space-y-3">
+            <Calendar className="mx-auto text-[var(--text-muted)]" size={36} />
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">No interviews scheduled yet.</h3>
+              <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto">
+                Schedule candidate interviews and assign team members with time-bound access.
+              </p>
+            </div>
+            <button
+              onClick={openScheduleModal}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0075de] text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
+            >
+              <Plus size={14} /> Schedule First Interview
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -181,6 +270,137 @@ export default function AdminInterviewsPage() {
           </div>
         )}
       </Card>
+
+      {/* Schedule Interview Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[var(--card)] border border-[var(--border-subtle)] rounded-2xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-[var(--text-primary)]">
+                Schedule Candidate Interview
+              </h3>
+              <button onClick={() => setShowScheduleModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer">
+                <X size={18} />
+              </button>
+            </div>
+
+            {scheduleMsg && (
+              <div className={`p-3 rounded-lg text-xs font-medium ${scheduleMsg.startsWith("Error") ? "bg-red-500/10 text-red-500" : "bg-emerald-500/10 text-emerald-500"}`}>
+                {scheduleMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleScheduleSubmit} className="space-y-4 text-xs">
+              {/* Select Candidate Application */}
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Select Candidate *</label>
+                {loadingApps ? (
+                  <div className="p-2.5 bg-[var(--surface-1)] rounded-lg text-xs text-[var(--text-muted)] flex items-center gap-2">
+                    <Loader2 size={14} className="animate-spin text-[#0075de]" /> Loading active candidates...
+                  </div>
+                ) : (
+                  <select
+                    required
+                    value={selectedAppId}
+                    onChange={(e) => setSelectedAppId(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                  >
+                    {applications.map((app: any) => (
+                      <option key={app.id} value={app.id}>
+                        {app.candidate_name || app.candidate_id} — {app.job_title} ({app.application_reference || "Ref"})
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* Date & Time */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Scheduled Date & Time *</label>
+                  <input
+                    required
+                    type="datetime-local"
+                    value={scheduledAt}
+                    onChange={(e) => setScheduledAt(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Duration</label>
+                  <select
+                    value={durationMinutes}
+                    onChange={(e) => setDurationMinutes(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                  >
+                    <option value="15">15 Minutes</option>
+                    <option value="30">30 Minutes</option>
+                    <option value="45">45 Minutes</option>
+                    <option value="60">60 Minutes</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Interviewer Assignment */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Interviewer Email</label>
+                  <input
+                    type="email"
+                    value={interviewerEmail}
+                    onChange={(e) => setInterviewerEmail(e.target.value)}
+                    placeholder="interviewer@company.com"
+                    className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Interviewer Name</label>
+                  <input
+                    type="text"
+                    value={interviewerName}
+                    onChange={(e) => setInterviewerName(e.target.value)}
+                    placeholder="Alex Smith"
+                    className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Custom Meeting Link */}
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Google Meet Link (Optional)</label>
+                <input
+                  type="url"
+                  value={customMeetLink}
+                  onChange={(e) => setCustomMeetLink(e.target.value)}
+                  placeholder="https://meet.google.com/fau-nfbw-kfu"
+                  className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
+                />
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex items-center gap-2 pt-3 border-t border-[var(--border-subtle)]">
+                <button
+                  type="button"
+                  onClick={() => setShowScheduleModal(false)}
+                  className="flex-1 py-2 rounded-lg border border-[var(--border-subtle)] font-bold text-[var(--text-secondary)]"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={scheduling || !selectedAppId || !scheduledAt}
+                  className="flex-1 py-2 rounded-lg bg-[#0075de] hover:bg-[#005bab] text-white font-bold uppercase tracking-wider cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {scheduling ? <Loader2 className="animate-spin" size={14} /> : <Calendar size={14} />} Schedule & Notify
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
