@@ -31,11 +31,11 @@ export default function Error({
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] tracking-tight mb-4">
-            Something went wrong
+            We couldn’t complete that request
           </h1>
 
           <p className="text-[16px] text-[#6B7280] leading-relaxed mb-10 max-w-sm mx-auto">
-            An unexpected error occurred. Please try again or return to the homepage.
+            Please try again. If the problem continues, return to your dashboard or contact the GrowXLabs team for support.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -45,7 +45,7 @@ export default function Error({
               className="h-12 px-8 rounded-full bg-[#355CFF] text-white hover:bg-[#2A4AD4] font-semibold text-[15px] transition-all group shadow-none"
             >
               <RefreshCcw className="mr-2 w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
-              Try Again
+              Try again
             </Button>
 
             <Link href="/">
@@ -55,7 +55,7 @@ export default function Error({
                 className="h-12 px-8 rounded-full border-[#E8E6E1] text-[#1A1A1A] hover:border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white font-semibold text-[15px] transition-all"
               >
                 <Home className="mr-2 w-4 h-4" />
-                Back to Home
+                Go to dashboard
               </Button>
             </Link>
           </div>

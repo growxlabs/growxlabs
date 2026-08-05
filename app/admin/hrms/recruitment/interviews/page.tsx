@@ -39,7 +39,7 @@ export default function AdminInterviewsPage() {
       setInterviews(data.interviews || []);
     } catch (err: any) {
       console.error(err);
-      setLoadError(err.message || "Failed to load interviews");
+      setLoadError("We couldn’t load interviews. Please refresh and try again.");
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ export default function AdminInterviewsPage() {
         fetchInterviews();
       }, 1200);
     } catch (err: any) {
-      setScheduleMsg(`Error: ${err.message}`);
+      setScheduleMsg("We couldn’t schedule this interview. Please review the details and try again.");
     } finally {
       setScheduling(false);
     }
@@ -136,13 +136,13 @@ export default function AdminInterviewsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Interviews & Access Management</h1>
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)] tracking-tight">Interview Management</h1>
             <span className="px-2 py-0.5 rounded-full bg-[#0075de]/10 text-[#0075de] text-[10px] font-bold uppercase tracking-wider">
               {interviews.length} Scheduled
             </span>
           </div>
           <p className="text-xs text-[var(--text-secondary)] mt-1">
-            Configure time-bound interviewer access windows, control candidate visibility, and review scorecards.
+            Schedule interviews, assign the interview team, and keep every candidate’s interview details in one place.
           </p>
         </div>
 
@@ -185,7 +185,7 @@ export default function AdminInterviewsPage() {
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">No interviews scheduled yet.</h3>
               <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto">
-                Schedule candidate interviews and assign team members with time-bound access.
+                Schedule an interview and assign the people who will take part.
               </p>
             </div>
             <button

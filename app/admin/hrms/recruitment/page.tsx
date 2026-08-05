@@ -27,7 +27,7 @@ export default function RecruitmentPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unable to load recruitment data");
       setJobs(data.jobs || []);
-    } catch (e) { console.error(e); setJobs([]); setLoadError(e instanceof Error ? e.message : "Unable to load recruitment data"); } finally { setLoading(false); }
+    } catch (e) { console.error(e); setJobs([]); setLoadError("We couldn’t load recruitment information. Please refresh and try again."); } finally { setLoading(false); }
   };
 
   const handleCreateJob = async () => {
@@ -49,7 +49,7 @@ export default function RecruitmentPage() {
         setShowJobForm(false);
         setJobForm(emptyJob);
         fetchJobs();
-      } else { const data = await res.json().catch(() => ({})); setSubmitError(data.error || "Unable to publish job opening"); }
+      } else { setSubmitError("We couldn’t publish this job opening. Please review the details and try again."); }
     } catch (e) { console.error(e); setSubmitError("Unable to publish job opening. Please try again."); } finally { setSubmitting(false); }
   };
 
@@ -67,7 +67,7 @@ export default function RecruitmentPage() {
       await fetchJobs();
     } catch (e) {
       console.error(e);
-      setStageError(e instanceof Error ? e.message : "Unable to update candidate stage");
+      setStageError("We couldn’t update this candidate’s stage. Please try again.");
     } finally {
       setUpdatingCandidateId(null);
     }
@@ -80,7 +80,7 @@ export default function RecruitmentPage() {
     <div className="space-y-8 text-[var(--text-primary)]">
       <div className="space-y-1">
         <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight leading-none">Recruitment Pipeline</h1>
-        <p className="text-[var(--text-secondary)] text-xs">Track job openings, candidate stages, and hiring workflows.</p>
+        <p className="text-[var(--text-secondary)] text-xs">Track job openings, candidate progress, and hiring activity.</p>
       </div>
 
       {/* Actions */}
@@ -92,7 +92,7 @@ export default function RecruitmentPage() {
         </div>
       </div>
 
-      {loadError && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">Recruitment data could not be loaded: {loadError}</div>}
+      {loadError && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{loadError}</div>}
 
       {/* Post Job Modal */}
       {showJobForm && (
@@ -147,7 +147,7 @@ export default function RecruitmentPage() {
         <>
           {stageError && (
             <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
-              Candidate stage could not be updated: {stageError}
+              {stageError}
             </div>
           )}
           <RecruitmentPipeline
