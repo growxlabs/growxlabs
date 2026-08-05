@@ -154,6 +154,14 @@ ALTER TABLE recruitment.email_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recruitment.email_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recruitment.email_settings ENABLE ROW LEVEL SECURITY;
 
+-- Provider configuration is intentionally stored separately from secrets. The
+-- password is never persisted; SMTP credentials belong in deployment secrets.
+ALTER TABLE recruitment.email_settings ADD COLUMN IF NOT EXISTS smtp_host TEXT;
+ALTER TABLE recruitment.email_settings ADD COLUMN IF NOT EXISTS smtp_port INTEGER DEFAULT 587;
+ALTER TABLE recruitment.email_settings ADD COLUMN IF NOT EXISTS smtp_username TEXT;
+ALTER TABLE recruitment.email_settings ADD COLUMN IF NOT EXISTS last_email_sent_at TIMESTAMPTZ;
+ALTER TABLE recruitment.email_settings ADD COLUMN IF NOT EXISTS failed_emails_count INTEGER DEFAULT 0;
+
 -- Email Templates Policies
 CREATE POLICY "Enable read for authenticated users" ON recruitment.email_templates FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Enable all for admins" ON recruitment.email_templates FOR ALL TO authenticated USING (auth.jwt() ->> 'role' = 'admin') WITH CHECK (auth.jwt() ->> 'role' = 'admin');

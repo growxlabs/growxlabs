@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { CAREERS_ORGANISATION } from '@/lib/careers/jobs';
 import { 
   TemplateType, 
   TemplateVariables, 
@@ -11,11 +12,20 @@ import {
 
 // Initialize Resend with API key
 const resendApiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(resendApiKey || 'dummy_key');
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
+const DEFAULT_FROM = 'GrowXLabs <noreply@growxlabs.tech>';
+const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'hr@growxlabs.tech';
 
-const FROM_EMAIL = 'GrowXLabs <noreply@growxlabs.tech>';
-const HR_FROM_EMAIL = 'GrowXLabs HR <hr@growxlabs.tech>';
-const HR_TO_EMAIL = 'hr@growxlabs.tech';
+async function getSettings() {
+  const { data } = await supabaseAdmin.schema('recruitment').from('email_settings').select('*').eq('organisation_id', CAREERS_ORGANISATION).maybeSingle();
+  return data || { enabled: true, from_name: 'GrowXLabs', from_email: 'noreply@growxlabs.tech', reply_to: 'hr@growxlabs.tech' };
+}
+
+async function getTemplate(templateKey: TemplateType) {
+  const { data } = await supabaseAdmin.schema('recruitment').from('email_templates').select('subject,html_body,is_active').eq('organisation_id', CAREERS_ORGANISATION).eq('template_key', templateKey).maybeSingle();
+  if (data?.is_active !== false && data?.subject && data?.html_body && !data.html_body.startsWith('<!-- HTML rendered')) return { subject: data.subject, html: data.html_body };
+  return getDefaultTemplate(templateKey);
+}
 
 export interface SendRecruitmentEmailOptions {
   to: string | string[];
@@ -35,16 +45,19 @@ export interface EmailResult {
 }
 
 export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions): Promise<EmailResult> {
+  const settings = await getSettings();
+  const from = `${settings.from_name || 'GrowXLabs'} <${settings.from_email || 'noreply@growxlabs.tech'}>`;
+  const recipients = Array.isArray(options.to) ? options.to.join(',') : options.to;
   try {
-    if (!resendApiKey) {
-      console.warn('RESEND_API_KEY is not set. Email would have been sent:', options.subject);
-    }
+    if (settings.enabled === false) throw new Error('Recruitment email sending is disabled in Email Settings.');
+    if (!resend) throw new Error('RESEND_API_KEY is not configured. Configure the provider before sending email.');
 
     const response = await resend.emails.send({
-      from: FROM_EMAIL,
+      from,
       to: options.to,
       subject: options.subject,
       html: options.html,
+      replyTo: settings.reply_to || undefined,
       tags: [
         { name: 'source', value: 'recruitment_system' },
         ...(options.templateKey ? [{ name: 'template', value: options.templateKey }] : [])
@@ -60,7 +73,8 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
     // Log the email in Supabase
     try {
       await supabaseAdmin.schema('recruitment').from('email_logs').insert({
-        to_email: Array.isArray(options.to) ? options.to.join(',') : options.to,
+        organisation_id: CAREERS_ORGANISATION,
+        recipient_email: recipients,
         subject: options.subject,
         template_key: options.templateKey,
         candidate_id: options.candidateId,
@@ -85,7 +99,8 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
     // Log the failed email
     try {
       await supabaseAdmin.schema('recruitment').from('email_logs').insert({
-        to_email: Array.isArray(options.to) ? options.to.join(',') : options.to,
+        organisation_id: CAREERS_ORGANISATION,
+        recipient_email: recipients,
         subject: options.subject,
         template_key: options.templateKey,
         candidate_id: options.candidateId,
@@ -114,7 +129,7 @@ export async function sendCandidateEmail(
   applicationId?: string,
   jobId?: string
 ): Promise<EmailResult> {
-  const template = getDefaultTemplate(templateKey);
+  const template = await getTemplate(templateKey);
   
   const subject = renderTemplate(template.subject, variables);
   const html = renderTemplate(template.html, variables);
@@ -138,21 +153,7 @@ export async function sendHrNotification(
   const { subject, html } = getHrNotificationHtml(type, data);
 
   try {
-    const response = await resend.emails.send({
-      from: HR_FROM_EMAIL,
-      to: HR_TO_EMAIL,
-      subject,
-      html
-    });
-
-    if (response.error) {
-      throw new Error(response.error.message);
-    }
-
-    return {
-      success: true,
-      messageId: response.data?.id
-    };
+    return sendRecruitmentEmail({ to: HR_TO_EMAIL, subject, html, templateKey: `hr_${type}`, metadata: { notificationType: type } });
   } catch (error: any) {
     console.error('Error sending HR notification:', error);
     return {
@@ -164,8 +165,11 @@ export async function sendHrNotification(
 
 export async function sendTestEmail(toEmail: string): Promise<EmailResult> {
   try {
+    if (!resend) return { success: false, error: 'RESEND_API_KEY is not configured.' };
+    const settings = await getSettings();
+    if (settings.enabled === false) return { success: false, error: 'Recruitment email sending is disabled.' };
     const response = await resend.emails.send({
-      from: FROM_EMAIL,
+      from: `${settings.from_name || 'GrowXLabs'} <${settings.from_email || 'noreply@growxlabs.tech'}>`,
       to: toEmail,
       subject: 'GrowXLabs Recruitment System - Test Email',
       html: '<p>This is a test email to verify that the Resend integration is working correctly.</p>'
@@ -257,12 +261,12 @@ export async function retryEmail(emailLogId: string): Promise<EmailResult> {
     return { success: false, error: 'Missing template key to retry email' };
   }
 
-  const template = getDefaultTemplate(templateKey);
+  const template = await getTemplate(templateKey);
   const subject = renderTemplate(template.subject, variables);
   const html = renderTemplate(template.html, variables);
 
   return sendRecruitmentEmail({
-    to: log.to_email,
+    to: log.recipient_email,
     subject,
     html,
     templateKey,

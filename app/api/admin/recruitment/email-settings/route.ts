@@ -35,7 +35,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { from_name, from_email, reply_to, enabled } = body;
+    const { from_name, from_email, reply_to, enabled, provider, smtp_host, smtp_port, smtp_username } = body;
 
     const updates = {
       organisation_id: CAREERS_ORGANISATION,
@@ -43,6 +43,10 @@ export async function PUT(request: NextRequest) {
       from_email,
       reply_to,
       enabled,
+      provider: provider || 'resend',
+      smtp_host: smtp_host || null,
+      smtp_port: smtp_port ? Number(smtp_port) : 587,
+      smtp_username: smtp_username || null,
       updated_at: new Date().toISOString()
     };
 
