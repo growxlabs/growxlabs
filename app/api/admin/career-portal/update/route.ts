@@ -154,14 +154,40 @@ export async function POST(request: Request) {
     if (status !== undefined) updateFields.status = status;
     if (notes !== undefined) updateFields.notes = notes;
 
-    const { data, error } = await supabaseAdmin
-      .from("career_applications")
-      .update(updateFields)
-      .eq("id", id)
-      .select()
-      .single();
+    let data: any = null;
 
-    if (error) throw error;
+    // Try modern recruitment.careers_applications table first
+    const recruitmentRes = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_applications")
+      .update({
+        ...(status !== undefined ? { current_stage: status.toLowerCase() } : {}),
+        ...(notes !== undefined ? { notes } : {}),
+      })
+      .eq("id", id)
+      .select("*, careers_jobs(title)")
+      .maybeSingle();
+
+    if (recruitmentRes.data) {
+      data = {
+        ...recruitmentRes.data,
+        name: recruitmentRes.data.profile?.full_name || recruitmentRes.data.candidate_id,
+        email: recruitmentRes.data.profile?.email || "",
+        role: recruitmentRes.data.careers_jobs?.title || "Specialist",
+        status: recruitmentRes.data.current_stage || status,
+      };
+    } else {
+      // Fallback to legacy public.career_applications table
+      const legacyRes = await supabaseAdmin
+        .from("career_applications")
+        .update(updateFields)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (legacyRes.error) throw legacyRes.error;
+      data = legacyRes.data;
+    }
 
     // Send email notification using Resend if status changed
     if (status && data && data.email) {

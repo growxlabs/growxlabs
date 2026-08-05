@@ -146,19 +146,38 @@ export async function POST(request: Request) {
     }
 
     // 1. Fetch Candidate details
-    const { data: candidate, error: fetchError } = await supabaseAdmin
-      .from("career_applications")
-      .select("*")
+    let candidateEmail = "";
+    let candidateName = "Candidate";
+    let targetRole = "Sales Development Representative (SDR)";
+    let isRecruitmentSchema = false;
+
+    const recruitmentRes = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_applications")
+      .select("*, careers_jobs(title)")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    if (fetchError || !candidate) {
-      return NextResponse.json({ error: "Candidate not found" }, { status: 404 });
+    if (recruitmentRes.data) {
+      isRecruitmentSchema = true;
+      candidateEmail = recruitmentRes.data.profile?.email || "";
+      candidateName = recruitmentRes.data.profile?.full_name || recruitmentRes.data.candidate_id || "Candidate";
+      targetRole = recruitmentRes.data.careers_jobs?.title || "Sales Development Representative (SDR)";
+    } else {
+      const { data: legacyCandidate, error: fetchError } = await supabaseAdmin
+        .from("career_applications")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (fetchError || !legacyCandidate) {
+        return NextResponse.json({ error: "Candidate not found" }, { status: 404 });
+      }
+
+      candidateEmail = legacyCandidate.email;
+      candidateName = legacyCandidate.name || "Candidate";
+      targetRole = legacyCandidate.role || "Sales Development Representative (SDR)";
     }
-
-    const candidateEmail = candidate.email;
-    const candidateName = candidate.name || "Candidate";
-    const targetRole = candidate.role || "Sales Development Representative (SDR)";
 
     // 2. Write event to the hr@growxlabs.tech Calendar and obtain the Meet URL
     const meetUrl = await createHRCalendarEvent(candidateName, candidateEmail, dateTime, customMeetLink, targetRole);
@@ -269,16 +288,24 @@ export async function POST(request: Request) {
     }
 
     // 4. Update candidate status to 'contacted' in Supabase
-    const { data: updatedCandidate, error: updateError } = await supabaseAdmin
-      .from("career_applications")
-      .update({ status: "contacted", updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.error("Error updating status to contacted:", updateError);
-      return NextResponse.json({ error: "Email sent but failed to update status in DB" }, { status: 500 });
+    let updatedCandidate: any = null;
+    if (isRecruitmentSchema) {
+      const res = await supabaseAdmin
+        .schema("recruitment")
+        .from("careers_applications")
+        .update({ current_stage: "contacted" })
+        .eq("id", id)
+        .select()
+        .single();
+      updatedCandidate = res.data;
+    } else {
+      const res = await supabaseAdmin
+        .from("career_applications")
+        .update({ status: "contacted", updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single();
+      updatedCandidate = res.data;
     }
 
     return NextResponse.json({ message: "Interview scheduled and email invitation dispatched successfully", data: updatedCandidate });
