@@ -24,17 +24,22 @@ export async function GET(request: Request) {
     // legacy response shape for this page while reading the current source.
     const { data: current, error } = await supabaseAdmin.schema("recruitment")
       .from("careers_applications")
-      .select("*, careers_jobs(title)")
+      .select("*")
       .eq("organisation_id", CAREERS_ORGANISATION)
       .order("submitted_at", { ascending: false });
 
     if (error) throw error;
+    const jobIds = [...new Set((current || []).map((item: any) => item.job_id).filter(Boolean))];
+    const { data: jobs } = jobIds.length
+      ? await supabaseAdmin.schema("recruitment").from("careers_jobs").select("id,title").in("id", jobIds)
+      : { data: [] as any[] };
+    const jobTitles = new Map((jobs || []).map((job: any) => [job.id, job.title]));
     const data = (current || []).map((application: any) => ({
       ...application,
       name: application.profile?.full_name || application.candidate_id,
       email: application.profile?.email || "",
       phone: application.profile?.phone || "",
-      role: application.careers_jobs?.title || "",
+      role: jobTitles.get(application.job_id) || "",
       created_at: application.submitted_at,
       resume_url: application.resume_path || application.profile?.resume_url || null,
       cover_letter: application.cover_letter || application.profile?.cover_letter || "",
