@@ -1,0 +1,65 @@
+{
+  "name": "growxlabs-desktop",
+  "version": "1.0.0",
+  "description": "GrowxLabs Desktop — Native Windows application for the GrowxLabs platform",
+  "author": "GrowxLabs",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "npm run build && electron .",
+    "build": "tsc",
+    "package": "npm run build && electron-builder --win",
+    "package:portable": "npm run build && electron-builder --win portable",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "electron": "^35.1.2",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.8.3"
+  },
+  "build": {
+    "appId": "tech.growxlabs.desktop",
+    "productName": "GrowxLabs",
+    "artifactName": "GrowxLabs-Desktop-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "!node_modules/**/*.ts",
+      "!node_modules/**/*.map"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.png",
+      "uninstallerIcon": "assets/icon.png",
+      "installerHeaderIcon": "assets/icon.png",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "GrowxLabs",
+      "artifactName": "GrowxLabs-Desktop-Setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "GrowxLabs-Desktop-Portable.${ext}"
+    }
+  }
+}

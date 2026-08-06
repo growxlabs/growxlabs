@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "desktop:dev": "cd desktop && npm run dev",
+    "desktop:build": "cd desktop && npm run build",
+    "desktop:package": "cd desktop && npm run package",
     "prepare": "panda codegen",
     "dev": "next dev",
     "build": "next build",

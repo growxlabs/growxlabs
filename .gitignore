@@ -54,3 +54,8 @@ next-env.d.ts
 
 # spiderman game / vite folder
 /public/spiderman/
+
+# Electron desktop build artifacts
+/desktop/dist
+/desktop/release
+/desktop/node_modules
