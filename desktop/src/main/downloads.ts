@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, app } from 'electron';
+import { BrowserWindow, dialog, app, FileFilter } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -88,10 +88,10 @@ function getUniqueFilePath(dir: string, filename: string): string {
 /**
  * Build file dialog filters based on file extension.
  */
-function getFileFilters(filename: string): Electron.FileFilter[] {
+function getFileFilters(filename: string): FileFilter[] {
   const ext = path.extname(filename).toLowerCase().replace('.', '');
 
-  const filterMap: Record<string, Electron.FileFilter> = {
+  const filterMap: Record<string, FileFilter> = {
     pdf: { name: 'PDF Documents', extensions: ['pdf'] },
     csv: { name: 'CSV Files', extensions: ['csv'] },
     xlsx: { name: 'Excel Files', extensions: ['xlsx'] },
@@ -106,7 +106,7 @@ function getFileFilters(filename: string): Electron.FileFilter[] {
     json: { name: 'JSON Files', extensions: ['json'] },
   };
 
-  const filters: Electron.FileFilter[] = [];
+  const filters: FileFilter[] = [];
   if (filterMap[ext]) {
     filters.push(filterMap[ext]);
   }
