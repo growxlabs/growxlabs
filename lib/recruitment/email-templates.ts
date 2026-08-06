@@ -48,32 +48,42 @@ export function wrapInHtmlLayout(content: string, preheader: string = 'Message f
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${preheader}</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #334155; }
-    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
-    .header { background-color: #0f172a; padding: 24px; text-align: center; }
-    .header h1 { margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
-    .content { padding: 32px 24px; line-height: 1.6; font-size: 16px; }
-    .footer { padding: 24px; text-align: center; font-size: 14px; color: #64748b; background-color: #f1f5f9; border-top: 1px solid #e2e8f0; }
-    .button { display: inline-block; padding: 12px 24px; background-color: #0075de; color: #ffffff !important; text-decoration: none; border-radius: 6px; font-weight: 500; margin: 16px 0; }
-    .text-muted { color: #64748b; }
-    .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    body { margin: 0; padding: 0; background: #eef2f7; color: #172033; font-family: Arial, Helvetica, sans-serif; }
+    .shell { width: 100%; background: #eef2f7; padding: 36px 12px; }
+    .container { width: 100%; max-width: 620px; margin: 0 auto; background: #ffffff; border: 1px solid #dce4ef; border-radius: 18px; overflow: hidden; }
+    .header { background: #101a33; padding: 28px 34px; }
+    .brand { color: #ffffff; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .brand-mark { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 3px; background: #1d8fff; }
+    .eyebrow { margin: 0 0 10px; color: #1d8fff; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+    .content { padding: 36px 34px 30px; line-height: 1.58; font-size: 16px; }
+    .content p { margin: 0 0 18px; }
+    .content a { color: #006dcc; }
+    .footer { padding: 22px 34px 28px; color: #718096; background: #f7f9fc; border-top: 1px solid #e7edf5; font-size: 12px; line-height: 1.5; }
+    .footer p { margin: 4px 0; }
+    .button { display: inline-block; padding: 13px 22px; background: #0878df; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 700; margin: 4px 0 14px; }
+    .text-muted { color: #718096; }
+    .info-box { background: #f7f9fc; border: 1px solid #dce4ef; border-radius: 10px; padding: 16px 18px; margin: 22px 0; }
+    .status-box { background: #eef7ff; border-left: 4px solid #0878df; border-radius: 8px; padding: 16px 18px; margin: 22px 0; }
+    @media only screen and (max-width: 640px) { .shell { padding: 16px 8px; } .header { padding: 24px 22px; } .content { padding: 28px 22px 20px; } .footer { padding: 20px 22px 24px; } }
   </style>
 </head>
 <body>
   <div style="display:none;font-size:1px;color:#333333;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
     ${preheader}
   </div>
+  <div class="shell">
   <div class="container">
     <div class="header">
-      <h1>GrowXLabs</h1>
+      <div class="brand"><span class="brand-mark"></span>GrowXLabs Careers</div>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} GrowXLabs. All rights reserved.</p>
-      <p>If you no longer wish to receive these emails, please <a href="{{portalLink}}" style="color: #64748b; text-decoration: underline;">update your preferences</a>.</p>
+      <p>&copy; ${new Date().getFullYear()} GrowXLabs. This is an application update.</p>
+      <p>Questions? Reply to this email and our recruitment team will help.</p>
     </div>
+  </div>
   </div>
 </body>
 </html>`;
@@ -83,14 +93,15 @@ export function getDefaultTemplate(templateKey: TemplateType): { subject: string
   switch (templateKey) {
     case 'application_received':
       return {
-        subject: 'Thank you for applying to {{jobTitle}}',
+        subject: 'We received your application for {{jobTitle}}',
         html: wrapInHtmlLayout(
-          `<p>Hi {{candidateName}},</p>
-           <p>Thank you for applying for the <strong>{{jobTitle}}</strong> position at {{companyName}}.</p>
-           <p>We have successfully received your application. Your application reference number is: <strong>{{applicationRef}}</strong>.</p>
-           <p>Our team will review your qualifications and experience. If your profile matches our requirements for this role, we will contact you to discuss the next steps.</p>
-           <p>You can check the status of your application anytime through our <a href="{{portalLink}}">careers portal</a>.</p>
-           <p>Best regards,<br>The {{companyName}} Team</p>`,
+          `<p class="eyebrow">Application received</p>
+           <p>Hi {{candidateName}},</p>
+           <p>Thank you for applying for <strong>{{jobTitle}}</strong> at {{companyName}}. Your application is safely with our recruitment team.</p>
+           <div class="status-box"><strong>Application reference</strong><br>{{applicationRef}}</div>
+           <p>We’ll review your experience and contact you if we’d like to move forward. You can check your status at any time in the candidate portal.</p>
+           <p style="text-align:center"><a class="button" href="{{portalLink}}">Open candidate portal</a></p>
+           <p>Best regards,<br>The {{companyName}} Recruitment Team</p>`,
           'We have received your application'
         )
       };
@@ -169,13 +180,15 @@ export function getDefaultTemplate(templateKey: TemplateType): { subject: string
 
     case 'stage_update':
       return {
-        subject: 'Application Update: {{jobTitle}}',
+        subject: 'Application update for {{jobTitle}}: {{newStage}}',
         html: wrapInHtmlLayout(
-          `<p>Hi {{candidateName}},</p>
-           <p>We are writing to provide an update on your application for the <strong>{{jobTitle}}</strong> position at {{companyName}}.</p>
-           <p>Your application has moved to the next stage of our process: <strong>{{newStage}}</strong>.</p>
-           <p>We will be in touch shortly with next steps. You can track your application status anytime on our <a href="{{portalLink}}">careers portal</a>.</p>
-           <p>Best regards,<br>The {{companyName}} Team</p>`,
+          `<p class="eyebrow">Application update</p>
+           <p>Hi {{candidateName}},</p>
+           <p>There’s an update on your application for <strong>{{jobTitle}}</strong> at {{companyName}}.</p>
+           <div class="status-box"><strong>New status</strong><br><span style="font-size:20px;color:#0878df;font-weight:700">{{newStage}}</span></div>
+           <p>We’ll share any next steps with you as soon as they’re ready. You can view your full application timeline in the candidate portal.</p>
+           <p style="text-align:center"><a class="button" href="{{portalLink}}">View application status</a></p>
+           <p>Best regards,<br>The {{companyName}} Recruitment Team</p>`,
           'Update on your application status'
         )
       };

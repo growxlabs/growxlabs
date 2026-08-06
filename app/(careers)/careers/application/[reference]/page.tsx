@@ -5,23 +5,14 @@ import { useSearchParams } from "next/navigation";
 import {
   Loader2,
   Calendar,
-  Clock,
   Video,
   FileText,
   ExternalLink,
   CheckCircle2,
-  XCircle,
-  AlertCircle,
   Mail,
-  Phone,
-  MapPin,
-  Globe,
   Edit3,
   Download,
-  Send,
-  UserCheck,
   CalendarPlus,
-  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -193,16 +184,17 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
   const { candidate, application, timeline = [], interviews = [], messages = [], offer, rescheduleRequests = [], documents = [] } = data;
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-10 space-y-8 text-slate-900">
+    <main className="min-h-screen bg-[#f5f7fb] px-4 py-8 text-slate-900 sm:py-12">
+      <div className="mx-auto max-w-6xl space-y-7">
       {/* Top Breadcrumb & Live Sync Badge */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/careers/portal" className="text-xs font-bold text-[#0075de] hover:underline flex items-center gap-1">
           ← Back to Candidate Portal
         </Link>
 
         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Live HR Integration Active
+          Status updates automatically
         </div>
       </div>
 
@@ -213,14 +205,15 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
       )}
 
       {/* Main Header Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+      <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_50px_-28px_rgba(15,23,42,.45)]">
+        <div className="bg-[#101a33] px-6 py-7 text-white sm:px-9 sm:py-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
           <div>
             <span className="text-xs font-mono font-bold text-[#0075de] tracking-wider block">
               APPLICATION REF: {application.reference}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">{candidate.name}</h1>
-            <p className="text-sm font-semibold text-slate-600">
+            <h1 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">{candidate.name}</h1>
+            <p className="text-sm font-semibold text-slate-300">
               {application.jobTitle} • <span className="text-slate-400">{application.jobDepartment}</span>
             </p>
           </div>
@@ -228,42 +221,47 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowProfileModal(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-white/20"
             >
               <Edit3 size={14} /> Edit Candidate Profile
             </button>
           </div>
         </div>
 
+        </div>
+
         {/* Info Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+        <div className="grid grid-cols-2 gap-5 px-6 py-6 text-xs sm:px-9 md:grid-cols-4">
           <div>
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Applied Date</span>
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Applied</span>
             <span className="font-semibold text-slate-800 block mt-0.5">{new Date(application.appliedAt).toLocaleDateString()}</span>
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Current Stage</span>
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Current stage</span>
             <span className="font-bold text-[#0075de] uppercase tracking-wider block mt-0.5">{application.stage}</span>
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Last Updated</span>
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Last updated</span>
             <span className="font-semibold text-slate-800 block mt-0.5">{new Date(application.updatedAt).toLocaleString()}</span>
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase text-slate-400 block">Email Address</span>
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Email</span>
             <span className="font-semibold text-slate-800 block mt-0.5">{candidate.email}</span>
           </div>
         </div>
       </div>
 
       {/* 7-Stage Application Progress Timeline */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Application Stage Progress</h2>
+      <div className="space-y-5 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_-28px_rgba(15,23,42,.35)] sm:p-8">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0075de]">Your application journey</p>
+          <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-900">Application progress</h2>
+        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 pt-2">
+        <div className="grid grid-cols-2 gap-3 pt-1 sm:grid-cols-4 md:grid-cols-7">
           {timeline.map((item: any, idx: number) => (
             <div
               key={item.stage}
@@ -290,8 +288,8 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
       {/* Scheduled Interviews Card */}
       {interviews.length > 0 && (
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <Video size={16} className="text-[#0075de]" /> Scheduled Video Interview
+          <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900">
+            <Video size={18} className="text-[#0075de]" /> Interview details
           </h2>
 
           {interviews.map((inv: any) => {
@@ -340,11 +338,11 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer"
                     >
-                      <Video size={16} /> Join Google Meet Interview <ExternalLink size={14} />
+                      <Video size={16} /> Join interview <ExternalLink size={14} />
                     </a>
                   ) : (
                     <div className="px-4 py-2.5 rounded-xl bg-slate-800 text-amber-300 text-xs font-medium border border-slate-700">
-                      Join button activates 15 mins before scheduled time
+                      The join button will be available 15 minutes before your interview
                     </div>
                   )}
 
@@ -450,23 +448,23 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
 
       {/* Messages from HR */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-          <Mail size={16} className="text-[#0075de]" /> HR Communication History ({messages.length})
+        <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900">
+          <Mail size={18} className="text-[#0075de]" /> Messages about your application ({messages.length})
         </h2>
 
         {messages.length === 0 ? (
-          <p className="text-xs text-slate-400 italic">No email messages sent yet.</p>
+          <p className="text-sm text-slate-500">You don’t have any messages yet. We’ll show updates here as they become available.</p>
         ) : (
           <div className="divide-y divide-slate-100">
             {messages.map((msg: any) => (
               <div key={msg.id} className="py-3.5 flex items-start justify-between gap-4 text-xs">
                 <div>
                   <span className="font-bold text-slate-900 block">{msg.subject}</span>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Template: {msg.template_key || "General Update"}</span>
+                  <span className="mt-1 block text-[10px] text-slate-500">GrowXLabs Careers</span>
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-[10px] text-slate-500 block">{new Date(msg.sent_at || msg.created_at).toLocaleString()}</span>
-                  <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800">Delivered</span>
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-800">Sent</span>
                 </div>
               </div>
             ))}
@@ -624,6 +622,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
           </div>
         </div>
       )}
+      </div>
     </main>
   );
 }
