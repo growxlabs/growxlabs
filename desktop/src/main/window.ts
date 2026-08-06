@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
 import * as path from 'path';
 import { WindowStateStore } from './store';
 import { setupNavigation } from './navigation';
@@ -11,9 +11,12 @@ import { setupDownloads } from './downloads';
 const store = new WindowStateStore();
 
 // ---------------------------------------------------------------------------
-// Production URL
+// Production URL & Portal URLs
 // ---------------------------------------------------------------------------
 const PRODUCTION_URL = process.env.GROWX_DESKTOP_URL || 'https://growxlabs.tech';
+const LOGIN_URL = `${PRODUCTION_URL.replace(/\/$/, '')}/login`;
+const ADMIN_URL = `${PRODUCTION_URL.replace(/\/$/, '')}/admin`;
+const CLIENT_URL = `${PRODUCTION_URL.replace(/\/$/, '')}/client`;
 
 // ---------------------------------------------------------------------------
 // Loading & error screen HTML
@@ -189,7 +192,7 @@ export function createMainWindow(): void {
     show: false,
     backgroundColor: '#0a0a0a',
     icon: path.join(__dirname, '..', '..', 'assets', 'icon.png'),
-    autoHideMenuBar: true,
+    autoHideMenuBar: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -200,10 +203,73 @@ export function createMainWindow(): void {
     },
   });
 
-  // Remove default menu in production
-  if (app.isPackaged) {
-    Menu.setApplicationMenu(null);
-  }
+  // -----------------------------------------------------------------------
+  // Build Native Application Menu (Shortcuts for Navigation & Login)
+  // -----------------------------------------------------------------------
+  const menuTemplate: MenuItemConstructorOptions[] = [
+    {
+      label: 'Navigation',
+      submenu: [
+        {
+          label: 'Home',
+          accelerator: 'CmdOrCtrl+H',
+          click: () => mainWindow?.loadURL(PRODUCTION_URL),
+        },
+        {
+          label: 'Login / Sign In',
+          accelerator: 'CmdOrCtrl+L',
+          click: () => mainWindow?.loadURL(LOGIN_URL),
+        },
+        { type: 'separator' },
+        {
+          label: 'Admin Command Center',
+          accelerator: 'CmdOrCtrl+Shift+A',
+          click: () => mainWindow?.loadURL(ADMIN_URL),
+        },
+        {
+          label: 'Client Portal',
+          accelerator: 'CmdOrCtrl+Shift+C',
+          click: () => mainWindow?.loadURL(CLIENT_URL),
+        },
+        { type: 'separator' },
+        {
+          label: 'Back',
+          accelerator: 'Alt+Left',
+          click: () => {
+            if (mainWindow?.webContents.canGoBack()) {
+              mainWindow.webContents.goBack();
+            }
+          },
+        },
+        {
+          label: 'Forward',
+          accelerator: 'Alt+Right',
+          click: () => {
+            if (mainWindow?.webContents.canGoForward()) {
+              mainWindow.webContents.goForward();
+            }
+          },
+        },
+        { type: 'separator' },
+        { role: 'quit', label: 'Exit GrowxLabs' },
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload', accelerator: 'F5' },
+        { role: 'forceReload', accelerator: 'CmdOrCtrl+F5' },
+        { role: 'togglefullscreen', accelerator: 'F11' },
+        { type: 'separator' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { role: 'resetZoom' },
+      ],
+    },
+  ];
+
+  const appMenu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(appMenu);
 
   // Restore maximized state
   if (savedState.isMaximized) {
@@ -285,8 +351,18 @@ export function createMainWindow(): void {
   mainWindow.webContents.on('before-input-event', (_event, input) => {
     if (!mainWindow) return;
 
+    // Ctrl+L: Go directly to Login
+    if (input.control && input.key.toLowerCase() === 'l') {
+      mainWindow.loadURL(LOGIN_URL);
+    }
+
+    // Ctrl+H: Go directly to Home
+    if (input.control && input.key.toLowerCase() === 'h') {
+      mainWindow.loadURL(PRODUCTION_URL);
+    }
+
     // F5 or Ctrl+R: Refresh
-    if (input.key === 'F5' || (input.control && input.key === 'r')) {
+    if (input.key === 'F5' || (input.control && input.key.toLowerCase() === 'r')) {
       const currentURL = mainWindow.webContents.getURL();
       if (currentURL.startsWith('data:')) {
         mainWindow.loadURL(PRODUCTION_URL);
@@ -301,7 +377,7 @@ export function createMainWindow(): void {
     }
 
     // Ctrl+Shift+I: DevTools (development only)
-    if (!app.isPackaged && input.control && input.shift && input.key === 'I') {
+    if (!app.isPackaged && input.control && input.shift && input.key.toLowerCase() === 'i') {
       mainWindow.webContents.toggleDevTools();
     }
   });
