@@ -40,7 +40,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { from_name, from_email, reply_to, enabled, provider } = body;
+    const { from_name, from_email, reply_to, enabled, provider, internal_audit_enabled, internal_audit_recipients } = body;
 
     const updates = {
       organisation_id: CAREERS_ORGANISATION,
@@ -49,6 +49,8 @@ export async function PUT(request: NextRequest) {
       reply_to,
       enabled,
       provider: provider || 'resend',
+      internal_audit_enabled: internal_audit_enabled !== false,
+      internal_audit_recipients: Array.isArray(internal_audit_recipients) ? internal_audit_recipients : ['sai@growxlabs.tech'],
       updated_at: new Date().toISOString()
     };
 
@@ -79,6 +81,8 @@ function defaultSettings() {
     from_email: 'noreply@growxlabs.tech',
     reply_to: '',
     enabled: true,
+    internal_audit_enabled: true,
+    internal_audit_recipients: ['sai@growxlabs.tech'],
   };
 }
 

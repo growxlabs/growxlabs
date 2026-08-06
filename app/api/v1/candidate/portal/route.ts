@@ -1,19 +1,17 @@
 import { NextResponse } from "next/server";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getCandidateSession } from "@/lib/recruitment/candidate-session";
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const reference = url.searchParams.get("reference")?.trim();
-    const emailParam = url.searchParams.get("email")?.trim().toLowerCase();
+    const session = getCandidateSession(request);
+    const email = session?.email;
 
-    // Check for candidate session cookie if no email param is passed
-    const cookieEmail = request.headers.get("cookie")?.split("candidate_session_email=")?.[1]?.split(";")?.[0];
-    const email = emailParam || cookieEmail;
-
-    if (!reference && !email) {
-      return NextResponse.json({ error: "Application reference or email is required." }, { status: 400 });
+    if (!email) {
+      return NextResponse.json({ error: "Please sign in to view your applications." }, { status: 401 });
     }
 
     // 1. Fetch Candidate Applications
@@ -23,11 +21,8 @@ export async function GET(request: Request) {
       .select("id,application_reference,candidate_id,current_stage,status,profile,submitted_at,updated_at,job_id,resume_path,cover_letter,careers_jobs(title,slug,department,description)")
       .eq("organisation_id", CAREERS_ORGANISATION);
 
-    if (reference) {
-      query = query.eq("application_reference", reference);
-    } else if (email) {
-      query = query.filter("profile->>email", "eq", email);
-    }
+    query = query.filter("profile->>email", "eq", email);
+    if (reference) query = query.or(`application_reference.eq.${reference},id.eq.${reference}`);
 
     const { data: applications, error: appErr } = await query;
 
@@ -42,7 +37,7 @@ export async function GET(request: Request) {
 
     const candidateEmail = String(application.profile?.email || email || "").toLowerCase();
 
-    if (email && String(application.profile?.email || "").toLowerCase() !== email) {
+    if (String(application.profile?.email || "").toLowerCase() !== email) {
       return NextResponse.json({ error: "Application not found. Verification failed." }, { status: 404 });
     }
 
@@ -218,10 +213,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json();
     const reference = String(body.reference || "").trim();
-    const email = String(body.email || "").trim().toLowerCase();
+    const session = getCandidateSession(request);
+    const email = session?.email;
 
     if (!reference || !email) {
-      return NextResponse.json({ error: "Application reference and email are required." }, { status: 400 });
+      return NextResponse.json({ error: "Please sign in before updating your profile." }, { status: 401 });
     }
 
     const { data: application, error } = await supabaseAdmin

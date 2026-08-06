@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendRecruitmentEmail } from "@/lib/recruitment/email-service";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
+import { getCandidateSession } from "@/lib/recruitment/candidate-session";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { offerId, applicationId, email, decision, notes } = body;
+    const { offerId, applicationId, decision, notes } = body;
+    const email = getCandidateSession(request)?.email;
 
     if (!applicationId || !email || !decision || !["accepted", "rejected"].includes(decision)) {
-      return NextResponse.json({ error: "Application ID, Email, and valid Decision ('accepted' or 'rejected') are required" }, { status: 400 });
+      return NextResponse.json({ error: "Please sign in and choose a valid offer decision." }, { status: 400 });
     }
 
     // Verify candidate application

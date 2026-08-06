@@ -73,19 +73,20 @@ export default function CandidatePortalDashboardPage() {
   const { candidate, allApplications = [] } = data;
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-12 space-y-8">
+      <main className="min-h-screen bg-[#f5f7fb] px-4 py-10">
+      <div className="max-w-5xl mx-auto space-y-8">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-2">
-        <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#0075de]">Candidate Portal</span>
+      <div className="bg-white border border-slate-200 text-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm space-y-2">
+        <span className="text-xs font-semibold text-[#0075de]">GrowXLabs Careers</span>
         <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">Welcome, {candidate.name}</h1>
-        <p className="text-xs sm:text-sm text-slate-300">
-          Track real-time hiring stage progress, view interview meeting links, complete assessments, and accept offer letters.
+        <p className="text-sm text-slate-600">
+          Track your applications and next steps.
         </p>
       </div>
 
       {/* Applications List */}
       <div className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-600">Your Job Applications ({allApplications.length})</h2>
+        <h2 className="text-lg font-bold text-slate-900">Your applications</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {allApplications.map((app: any) => (
@@ -113,15 +114,16 @@ export default function CandidatePortalDashboardPage() {
 
               <div className="pt-4 border-t border-slate-100">
                 <Link
-                  href={`/careers/application/${encodeURIComponent(app.reference)}?email=${encodeURIComponent(candidate.email)}`}
-                  className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-2xl bg-[#0075de] hover:bg-[#005bab] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-sm"
+                  href={`/careers/applications/${encodeURIComponent(app.id)}`}
+                  className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-xl bg-[#0075de] hover:bg-[#005bab] text-white font-semibold text-sm transition-all shadow-sm"
                 >
-                  View Application Workspace <ChevronRight size={14} />
+                  View application <ChevronRight size={14} />
                 </Link>
               </div>
             </div>
           ))}
         </div>
+      </div>
       </div>
     </main>
   );

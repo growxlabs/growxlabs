@@ -88,7 +88,7 @@ export async function PATCH(request: Request) {
     const { data: application, error: lookupError } = await supabaseAdmin
       .schema("recruitment")
       .from("careers_applications")
-      .select("id, organisation_id, candidate_id, profile, job_id, current_stage")
+      .select("id, organisation_id, candidate_id, profile, job_id, current_stage, application_reference")
       .eq("id", applicationId)
       .maybeSingle();
 
@@ -138,8 +138,8 @@ export async function PATCH(request: Request) {
     const templateKey = (STAGE_EMAIL_MAP[stageUpper] || "stage_update") as TemplateType;
 
     if (candidateEmail) {
-      const portalLink = application.application_reference
-        ? `https://growxlabs.tech/careers/application/${encodeURIComponent(application.application_reference)}?email=${encodeURIComponent(candidateEmail)}`
+      const portalLink = application.id
+        ? `https://growxlabs.tech/careers/applications/${encodeURIComponent(application.id)}`
         : "https://growxlabs.tech/careers/portal";
 
       sendCandidateEmail(
@@ -148,6 +148,7 @@ export async function PATCH(request: Request) {
           candidateName,
           jobTitle,
           companyName: "GrowXLabs",
+          applicationRef: application.application_reference,
           currentStage: String(previousStage || "applied").toUpperCase(),
           newStage: stageUpper,
           portalLink,

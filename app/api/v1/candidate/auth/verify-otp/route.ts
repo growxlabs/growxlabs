@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import crypto from "crypto";
+import { setCandidateSession } from "@/lib/recruitment/candidate-session";
 
 export async function POST(request: Request) {
   try {
@@ -62,12 +63,7 @@ export async function POST(request: Request) {
       })),
     });
 
-    response.cookies.set("candidate_session_email", email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    });
+    setCandidateSession(response, email);
 
     return response;
   } catch (error: any) {

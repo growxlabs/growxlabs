@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendRecruitmentEmail } from "@/lib/recruitment/email-service";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
+import { getCandidateSession } from "@/lib/recruitment/candidate-session";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { interviewId, applicationId, email, reason, preferredTimes } = body;
+    const { interviewId, applicationId, reason, preferredTimes } = body;
+    const email = getCandidateSession(request)?.email;
 
     if (!interviewId || !applicationId || !email || !reason) {
-      return NextResponse.json({ error: "Interview ID, Application ID, Email, and Reason are required" }, { status: 400 });
+      return NextResponse.json({ error: "Please sign in and provide a reason for your request." }, { status: 400 });
     }
 
     // Verify candidate application

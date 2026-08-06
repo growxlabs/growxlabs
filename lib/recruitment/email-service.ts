@@ -18,7 +18,7 @@ const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'sai@growxlabs.tech';
 
 async function getSettings() {
   const { data } = await supabaseAdmin.schema('recruitment').from('email_settings').select('*').eq('organisation_id', CAREERS_ORGANISATION).maybeSingle();
-  return data || { enabled: true, from_name: 'GrowXLabs', from_email: 'noreply@growxlabs.tech', reply_to: 'hr@growxlabs.tech' };
+  return data || { enabled: true, from_name: 'GrowXLabs', from_email: 'noreply@growxlabs.tech', reply_to: 'hr@growxlabs.tech', internal_audit_enabled: true, internal_audit_recipients: ['sai@growxlabs.tech'] };
 }
 
 async function getTemplate(templateKey: TemplateType) {
@@ -36,6 +36,7 @@ export interface SendRecruitmentEmailOptions {
   applicationId?: string;
   jobId?: string;
   metadata?: Record<string, any>;
+  skipInternalAudit?: boolean;
 }
 
 export interface EmailResult {
@@ -82,11 +83,48 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
         job_id: options.jobId,
         status: 'sent',
         message_id: messageId,
-        metadata: options.metadata || {}
+        metadata: options.metadata || {},
+        last_attempt_at: new Date().toISOString(),
       });
     } catch (dbError) {
       console.error('Failed to log email to database:', dbError);
       // We still return success for the email sending part
+    }
+
+    if (!options.skipInternalAudit && settings.internal_audit_enabled !== false) {
+      const recipients = Array.isArray(settings.internal_audit_recipients)
+        ? settings.internal_audit_recipients.filter((recipient: unknown): recipient is string => typeof recipient === 'string' && recipient.includes('@'))
+        : ['sai@growxlabs.tech'];
+      if (recipients.length) {
+        try {
+          const auditHtml = buildInternalAuditHtml(options, recipients, settings, messageId);
+          const auditResult = await resend.emails.send({
+            from,
+            to: recipients,
+            subject: `[Internal Copy] ${options.subject}`,
+            html: auditHtml,
+            replyTo: settings.reply_to || undefined,
+            tags: [{ name: 'source', value: 'recruitment_audit' }],
+          });
+          if (auditResult.error) console.error('Failed to send recruitment audit copy:', auditResult.error.message);
+          else await supabaseAdmin.schema('recruitment').from('email_logs').insert({
+            organisation_id: CAREERS_ORGANISATION,
+            recipient_email: recipients.join(','),
+            subject: `[Internal Copy] ${options.subject}`,
+            template_key: 'internal_audit',
+            candidate_id: options.candidateId,
+            application_id: options.applicationId,
+            job_id: options.jobId,
+            status: 'sent',
+            message_id: auditResult.data?.id,
+            sent_at: new Date().toISOString(),
+            last_attempt_at: new Date().toISOString(),
+            metadata: { candidateMessageId: messageId, sourceTemplate: options.templateKey || 'manual' },
+          });
+        } catch (auditError) {
+          console.error('Failed to send recruitment audit copy:', auditError);
+        }
+      }
     }
 
     return {
@@ -108,7 +146,8 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
         job_id: options.jobId,
         status: 'failed',
         error_message: error.message,
-        metadata: options.metadata || {}
+        metadata: options.metadata || {},
+        last_attempt_at: new Date().toISOString(),
       });
     } catch (dbError) {
       console.error('Failed to log failed email to database:', dbError);
@@ -119,6 +158,27 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
       error: error.message || 'Unknown error occurred while sending email'
     };
   }
+}
+
+function buildInternalAuditHtml(options: SendRecruitmentEmailOptions, recipients: string[], settings: any, messageId?: string) {
+  const vars = options.metadata?.variables || {};
+  const metadata = [
+    ['Candidate name', vars.candidateName || 'Not provided'],
+    ['Candidate email', Array.isArray(options.to) ? options.to.join(', ') : options.to],
+    ['Application reference', vars.applicationRef || 'Not provided'],
+    ['Job role', vars.jobTitle || 'Not provided'],
+    ['Current stage', vars.newStage || vars.currentStage || 'Not provided'],
+    ['Email template', options.templateKey || 'Manual communication'],
+    ['Sent timestamp', new Date().toISOString()],
+    ['Triggered by', options.metadata?.triggeredBy || 'System'],
+    ['Candidate message ID', messageId || 'Not available'],
+    ['Audit recipients', recipients.join(', ')],
+  ].map(([label, value]) => `<tr><td style="padding:7px 12px;border:1px solid #dbe3ee;font-weight:700">${escapeAuditHtml(label)}</td><td style="padding:7px 12px;border:1px solid #dbe3ee">${escapeAuditHtml(value)}</td></tr>`).join('');
+  return `<!doctype html><html><body style="margin:0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#172033"><div style="max-width:680px;margin:24px auto;background:#fff;border:1px solid #dbe3ee"><div style="padding:16px 24px;background:#172033;color:#fff;font-weight:700;letter-spacing:.08em">INTERNAL RECRUITMENT COPY</div><div style="padding:24px"><p style="margin-top:0">This is an internal audit copy. It was not shown to the candidate.</p><table style="border-collapse:collapse;width:100%;font-size:13px;margin:18px 0">${metadata}</table><hr style="border:0;border-top:1px solid #dbe3ee;margin:24px 0"><div>${options.html}</div></div></div></body></html>`;
+}
+
+function escapeAuditHtml(value: unknown) {
+  return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
 }
 
 export async function sendCandidateEmail(

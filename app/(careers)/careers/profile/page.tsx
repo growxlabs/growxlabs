@@ -1,0 +1,13 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+export default function CandidateProfilePage() {
+  const [data, setData] = useState<any>(null); const [saving, setSaving] = useState(false); const [notice, setNotice] = useState('');
+  useEffect(() => { fetch('/api/v1/candidate/portal').then((r) => r.json()).then(setData); }, []);
+  if (!data) return <main className="min-h-screen bg-[#f5f7fb]" />;
+  const save = async (event: React.FormEvent) => { event.preventDefault(); setSaving(true); setNotice(''); const form = new FormData(event.currentTarget as HTMLFormElement); const result = await fetch('/api/v1/candidate/portal', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: data.application.reference, phone: form.get('phone'), address: form.get('location'), linkedInURL: form.get('linkedin'), portfolioURL: form.get('portfolio') }) }); setNotice(result.ok ? 'Profile updated.' : 'We could not update your profile.'); setSaving(false); };
+  return <main className="min-h-screen bg-[#f5f7fb] px-4 py-10"><div className="mx-auto max-w-xl"><Link href="/careers/dashboard" className="text-sm font-semibold text-[#0075de]">Back to dashboard</Link><h1 className="mt-5 text-3xl font-bold text-slate-900">Your profile</h1><p className="mt-2 text-sm text-slate-600">Keep your contact details current for recruitment updates.</p><form onSubmit={save} className="mt-8 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><Field label="Email address" value={data.candidate.email} disabled/><Field label="Phone" name="phone" defaultValue={data.candidate.phone || ''}/><Field label="Location" name="location" defaultValue={data.candidate.location || ''}/><Field label="LinkedIn profile" name="linkedin" defaultValue={data.candidate.linkedInURL || ''}/><Field label="Portfolio" name="portfolio" defaultValue={data.candidate.portfolioURL || ''}/>{notice && <p role="status" className="text-sm text-slate-600">{notice}</p>}<button disabled={saving} className="min-h-11 rounded-xl bg-[#0075de] px-5 text-sm font-semibold text-white disabled:opacity-50">{saving ? 'Saving…' : 'Save changes'}</button></form></div></main>;
+}
+function Field({ label, name, value, defaultValue, disabled }: { label: string; name?: string; value?: string; defaultValue?: string; disabled?: boolean }) { return <label className="block text-sm font-medium text-slate-700">{label}<input name={name} value={value} defaultValue={defaultValue} disabled={disabled} className="mt-1.5 min-h-11 w-full rounded-lg border border-slate-300 px-3 text-sm disabled:bg-slate-50" /></label>; }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, use } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Loader2,
   Calendar,
@@ -18,8 +18,8 @@ import Link from "next/link";
 
 export default function CandidateApplicationPage({ params }: { params: Promise<{ reference: string }> }) {
   const { reference } = use(params);
-  const searchParams = useSearchParams();
-  const emailQuery = searchParams.get("email") || "";
+  const pathname = usePathname();
+  const router = useRouter();
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -46,17 +46,18 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
     fetchApplicationDetails();
     const interval = setInterval(() => fetchApplicationDetails(true), 30000); // Live poll HR updates every 30s
     return () => clearInterval(interval);
-  }, [reference, emailQuery]);
+  }, [reference]);
 
   const fetchApplicationDetails = async (isBackground = false) => {
     try {
       if (!isBackground) setLoading(true);
-      const url = `/api/v1/candidate/portal?reference=${encodeURIComponent(reference)}${emailQuery ? `&email=${encodeURIComponent(emailQuery)}` : ""}`;
+      const url = `/api/v1/candidate/portal?reference=${encodeURIComponent(reference)}`;
       const res = await fetch(url, { cache: "no-store" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed to load application details");
       
       setData(json);
+      if (pathname.startsWith("/careers/application/") && json.application?.id) router.replace(`/careers/applications/${json.application.id}`);
       if (json.candidate) {
         setProfileForm({
           phone: json.candidate.phone || "",
@@ -85,7 +86,6 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
         body: JSON.stringify({
           interviewId: data.interviews[0].id,
           applicationId: data.application.id,
-          email: data.candidate.email,
           reason: rescheduleReason,
           preferredTimes,
         }),
@@ -113,7 +113,6 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
         body: JSON.stringify({
           offerId: data?.offer?.id,
           applicationId: data?.application?.id,
-          email: data?.candidate?.email,
           decision,
           notes: offerNotes,
         }),
@@ -140,7 +139,6 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reference,
-          email: data?.candidate?.email,
           ...profileForm,
         }),
       });

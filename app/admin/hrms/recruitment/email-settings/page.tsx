@@ -11,6 +11,8 @@ interface EmailSettings {
   from_email: string;
   reply_to: string | null;
   enabled: boolean;
+  internal_audit_enabled?: boolean;
+  internal_audit_recipients?: string[];
 }
 
 export default function EmailSettingsPage() {
@@ -20,6 +22,8 @@ export default function EmailSettingsPage() {
     from_email: "noreply@growxlabs.tech",
     reply_to: "hr@growxlabs.tech",
     enabled: true,
+    internal_audit_enabled: true,
+    internal_audit_recipients: ["sai@growxlabs.tech"],
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -208,6 +212,26 @@ export default function EmailSettingsPage() {
               onChange={(e) => setSettings((s) => ({ ...s, reply_to: e.target.value }))}
               placeholder="hr@growxlabs.tech"
               className="w-full h-9 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40"
+            />
+          </div>
+
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xs font-bold text-[var(--text-primary)]">Internal recruitment copies</h3>
+                <p className="mt-1 text-[11px] text-[var(--text-muted)]">Send an internal audit copy of every candidate email. Candidates never see these recipients.</p>
+              </div>
+              <button type="button" onClick={() => setSettings((s) => ({ ...s, internal_audit_enabled: !s.internal_audit_enabled }))} className="shrink-0 text-xs font-bold text-[#0075de]">
+                {settings.internal_audit_enabled !== false ? "Enabled" : "Disabled"}
+              </button>
+            </div>
+            <label className="mt-3 block text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)]">Audit recipients</label>
+            <input
+              type="text"
+              value={(settings.internal_audit_recipients || ["sai@growxlabs.tech"]).join(", ")}
+              onChange={(e) => setSettings((s) => ({ ...s, internal_audit_recipients: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))}
+              placeholder="sai@growxlabs.tech, hr@growxlabs.tech"
+              className="mt-1.5 w-full h-9 px-3 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40"
             />
           </div>
         </div>
