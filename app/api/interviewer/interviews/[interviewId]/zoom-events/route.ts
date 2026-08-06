@@ -11,7 +11,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ int
     const body = await request.json().catch(() => ({}));
     const event = String(body?.event || "");
     if (!allowed.has(event)) return NextResponse.json({ error: "Invalid Zoom event" }, { status: 400 });
-    await logInterviewAccessEvent({ assignmentId: context.assignment.id, interviewId, eventType: event, metadata: { source: "zoom_workspace" } });
+    await logInterviewAccessEvent({ assignmentId: context.assignment.id, interviewId, eventType: event, actionDetails: { source: "zoom_workspace" } });
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     if (error instanceof InterviewerAuthError) return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
