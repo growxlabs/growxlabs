@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  webpack(config) {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "@zoom/download-manager": "./lib/recruitment/zoom-download-manager-shim.ts",
+    };
+    return config;
+  },
+  turbopack: {
+    resolveAlias: {
+      "@zoom/download-manager": "./lib/recruitment/zoom-download-manager-shim.ts",
+    },
+  },
   /** Hides the bottom-left Next.js dev “issues” badge in development (not your app UI). */
   devIndicators: false,
   images: {
