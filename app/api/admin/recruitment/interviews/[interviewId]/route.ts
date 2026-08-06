@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
+import { encryptZoomPasscode, isValidZoomMeetingNumber } from "@/lib/recruitment/zoom";
 
 export async function GET(
   request: Request,
@@ -38,8 +39,9 @@ export async function GET(
       .eq("id", interview.application_id)
       .maybeSingle();
 
+    const { zoom_passcode_encrypted: _encryptedPasscode, ...safeInterview } = interview;
     return NextResponse.json({
-      interview,
+      interview: { ...safeInterview, zoom_passcode_configured: Boolean(_encryptedPasscode) },
       application,
       job: application?.careers_jobs,
     });
@@ -64,7 +66,7 @@ export async function PATCH(
 
     const { interviewId } = await params;
     const body = await request.json();
-    const { scheduledAt, durationMinutes, meetingJoinUrl, instructions, status } = body;
+    const { scheduledAt, durationMinutes, meetingJoinUrl, instructions, status, meetingProvider, zoomMeetingId, zoomPasscode, meetingSdkEnabled } = body;
 
     const updates: any = { updated_at: new Date().toISOString() };
     if (scheduledAt !== undefined) updates.scheduled_at = new Date(scheduledAt).toISOString();
@@ -72,6 +74,17 @@ export async function PATCH(
     if (meetingJoinUrl !== undefined) updates.meeting_join_url = meetingJoinUrl;
     if (instructions !== undefined) updates.instructions = instructions;
     if (status !== undefined) updates.status = status;
+    if (meetingProvider !== undefined) updates.meeting_provider = meetingProvider;
+    if (meetingJoinUrl !== undefined) updates.meeting_join_url = meetingJoinUrl;
+    if (meetingProvider?.toLowerCase() === "zoom") {
+      const normalizedId = String(zoomMeetingId || "").replace(/[\s-]/g, "");
+      if (meetingSdkEnabled && (!isValidZoomMeetingNumber(normalizedId) || !String(zoomPasscode || "").trim())) return NextResponse.json({ error: "A valid Zoom meeting ID and passcode are required to enable Embedded Zoom." }, { status: 400 });
+      updates.zoom_meeting_id = normalizedId || null;
+      if (zoomPasscode) updates.zoom_passcode_encrypted = encryptZoomPasscode(String(zoomPasscode));
+      updates.meeting_sdk_enabled = meetingSdkEnabled === true;
+      updates.zoom_configured_at = new Date().toISOString();
+      updates.zoom_configured_by = token.sub;
+    }
 
     const { data: updated, error } = await supabaseAdmin
       .schema("recruitment")

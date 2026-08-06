@@ -129,6 +129,8 @@ export async function GET(
         timezone: interview.timezone,
         meeting_provider: interview.meeting_provider,
         meeting_join_url: isJoinEnabled ? interview.meeting_join_url : null,
+        meeting_sdk_enabled: interview.meeting_sdk_enabled === true,
+        zoom_meeting_id: interview.meeting_provider === "zoom" ? interview.zoom_meeting_id : null,
         is_join_enabled: isJoinEnabled,
         instructions: interview.instructions,
         status: interview.status,

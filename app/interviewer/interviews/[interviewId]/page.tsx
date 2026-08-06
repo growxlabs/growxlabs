@@ -22,6 +22,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import ZoomEmbeddedMeeting from "@/components/interviewer/ZoomEmbeddedMeeting";
 
 async function fetchInterviewWorkspace(interviewId: string) {
   const res = await fetch(`/api/interviewer/interviews/${interviewId}`, { cache: "no-store" });
@@ -38,6 +39,7 @@ async function fetchInterviewWorkspace(interviewId: string) {
 export default function InterviewerWorkspacePage({ params }: { params: Promise<{ interviewId: string }> }) {
   const { interviewId } = use(params);
   const queryClient = useQueryClient();
+  const recordZoomEvent = (event: string) => { void fetch(`/api/interviewer/interviews/${interviewId}/zoom-events`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ event }) }); };
 
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
@@ -283,7 +285,7 @@ export default function InterviewerWorkspacePage({ params }: { params: Promise<{
               </p>
             </div>
 
-            {interview?.meeting_join_url && interview?.is_join_enabled ? (
+            {interview?.meeting_provider === "zoom" ? <ZoomEmbeddedMeeting interviewId={interviewId} externalJoinUrl={interview?.meeting_join_url} enabled={interview?.meeting_sdk_enabled === true && interview?.is_join_enabled === true} onEvent={recordZoomEvent} /> : interview?.meeting_join_url && interview?.is_join_enabled ? (
               <a
                 href={interview.meeting_join_url}
                 target="_blank"

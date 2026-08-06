@@ -21,6 +21,10 @@ export default function AdminInterviewsPage() {
   const [interviewerEmail, setInterviewerEmail] = useState("");
   const [interviewerName, setInterviewerName] = useState("");
   const [customMeetLink, setCustomMeetLink] = useState("");
+  const [meetingProvider, setMeetingProvider] = useState("google_meet");
+  const [zoomMeetingId, setZoomMeetingId] = useState("");
+  const [zoomPasscode, setZoomPasscode] = useState("");
+  const [meetingSdkEnabled, setMeetingSdkEnabled] = useState(false);
   const [instructions, setInstructions] = useState("");
   const [scheduling, setScheduling] = useState(false);
   const [scheduleMsg, setScheduleMsg] = useState("");
@@ -81,7 +85,11 @@ export default function AdminInterviewsPage() {
           durationMinutes: Number(durationMinutes),
           interviewerEmail,
           interviewerName,
+          meetingProvider,
           customMeetLink,
+          zoomMeetingId,
+          zoomPasscode,
+          meetingSdkEnabled,
           instructions,
         }),
       });
@@ -369,7 +377,9 @@ export default function AdminInterviewsPage() {
 
               {/* Custom Meeting Link */}
               <div>
-                <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Google Meet Link (Optional)</label>
+                <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Meeting provider</label>
+                <select value={meetingProvider} onChange={(e) => setMeetingProvider(e.target.value)} className="mb-3 w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"><option value="google_meet">Google Meet</option><option value="zoom">Zoom</option></select>
+                <label className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">External meeting link (Optional)</label>
                 <input
                   type="url"
                   value={customMeetLink}
@@ -377,6 +387,7 @@ export default function AdminInterviewsPage() {
                   placeholder="https://meet.google.com/fau-nfbw-kfu"
                   className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
                 />
+                {meetingProvider === "zoom" && <div className="mt-3 grid grid-cols-2 gap-3"><input value={zoomMeetingId} onChange={(e) => setZoomMeetingId(e.target.value)} placeholder="Zoom meeting ID" className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)]" /><input value={zoomPasscode} onChange={(e) => setZoomPasscode(e.target.value)} placeholder="Zoom passcode" type="password" className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)]" /><label className="col-span-2 flex items-center gap-2"><input type="checkbox" checked={meetingSdkEnabled} onChange={(e) => setMeetingSdkEnabled(e.target.checked)} /> Enable embedded Zoom SDK</label></div>}
               </div>
 
               {/* Submit Buttons */}

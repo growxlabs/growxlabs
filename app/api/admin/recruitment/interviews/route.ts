@@ -5,6 +5,7 @@ import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
 import { generateAssignmentToken, logInterviewAccessEvent } from "@/lib/recruitment/interviewer-auth";
 import { sendCandidateEmail, sendRecruitmentEmail } from "@/lib/recruitment/email-service";
 import crypto from "crypto";
+import { encryptZoomPasscode, isValidZoomMeetingNumber } from "@/lib/recruitment/zoom";
 
 export async function GET(request: Request) {
   try {
@@ -40,13 +41,15 @@ export async function GET(request: Request) {
     const jobMap = new Map((jobs || []).map((j) => [j.id, j.title]));
 
     const enriched = (interviews || []).map((inv) => {
+      const { zoom_passcode_encrypted: _encryptedPasscode, ...safeInterview } = inv;
       const app = appMap.get(inv.application_id);
       const candidateName = app?.profile?.full_name || app?.candidate_id || inv.candidate_id;
       const candidateEmail = app?.profile?.email || inv.candidate_id;
       const jobTitle = jobMap.get(inv.job_id) || "Specialist";
 
       return {
-        ...inv,
+        ...safeInterview,
+        zoom_passcode_configured: Boolean(_encryptedPasscode),
         candidate_name: candidateName,
         candidate_email: candidateEmail,
         application_reference: app?.application_reference,
@@ -83,10 +86,17 @@ export async function POST(request: Request) {
       accessStartsAt,
       accessExpiresAt,
       instructions,
+      zoomMeetingId,
+      zoomPasscode,
+      meetingSdkEnabled = false,
     } = body;
 
     if (!applicationId || !scheduledAt) {
       return NextResponse.json({ error: "Application ID and Scheduled Time are required" }, { status: 400 });
+    }
+    const normalizedZoomMeetingId = String(zoomMeetingId || "").replace(/[\s-]/g, "");
+    if (String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled && (!isValidZoomMeetingNumber(normalizedZoomMeetingId) || !String(zoomPasscode || "").trim())) {
+      return NextResponse.json({ error: "A valid Zoom meeting ID and passcode are required to enable Embedded Zoom." }, { status: 400 });
     }
 
     // 1. Fetch Candidate details
@@ -126,6 +136,11 @@ export async function POST(request: Request) {
         instructions: instructions || "Review candidate context and complete evaluation scorecard during the call.",
         status: "scheduled",
         created_by: token.sub,
+        zoom_meeting_id: String(meetingProvider).toLowerCase() === "zoom" ? normalizedZoomMeetingId || null : null,
+        zoom_passcode_encrypted: String(meetingProvider).toLowerCase() === "zoom" && zoomPasscode ? encryptZoomPasscode(String(zoomPasscode)) : null,
+        meeting_sdk_enabled: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled === true,
+        zoom_configured_at: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled ? new Date().toISOString() : null,
+        zoom_configured_by: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled ? token.sub : null,
       })
       .select()
       .single();
