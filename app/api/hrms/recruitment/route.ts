@@ -128,8 +128,8 @@ export async function PATCH(request: Request) {
 
     // Determine which email template to send based on new stage
     const STAGE_EMAIL_MAP: Record<string, string> = {
-      // Interview invitations are sent only by the explicit scheduling
-      // endpoint, once date/time/link are known.
+      SCREENING: "stage_update",
+      INTERVIEW: "stage_update",
       ASSESSMENT: "assessment_invite",
       OFFER: "offer_extended",
       HIRED: "stage_update",
@@ -137,7 +137,11 @@ export async function PATCH(request: Request) {
 
     const templateKey = (STAGE_EMAIL_MAP[stageUpper] || "stage_update") as TemplateType;
 
-    if (candidateEmail && stageUpper !== "SCREENING" && stageUpper !== "APPLIED" && stageUpper !== "INTERVIEW") {
+    if (candidateEmail) {
+      const portalLink = application.application_reference
+        ? `https://growxlabs.tech/careers/application/${encodeURIComponent(application.application_reference)}?email=${encodeURIComponent(candidateEmail)}`
+        : "https://growxlabs.tech/careers/portal";
+
       sendCandidateEmail(
         templateKey,
         {
@@ -146,13 +150,15 @@ export async function PATCH(request: Request) {
           companyName: "GrowXLabs",
           currentStage: String(previousStage || "applied").toUpperCase(),
           newStage: stageUpper,
-          portalLink: "https://growxlabs.tech/careers",
+          portalLink,
         },
         candidateEmail,
         candidateId,
         applicationId,
         application.job_id
-      ).catch(() => {});
+      ).catch((err) => {
+        console.error("Failed to send candidate stage email:", err);
+      });
     }
 
     // HR notification for every stage change
