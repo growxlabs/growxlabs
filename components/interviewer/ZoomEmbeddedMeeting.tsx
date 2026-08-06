@@ -20,6 +20,7 @@ export default function ZoomEmbeddedMeeting({ interviewId, externalJoinUrl, enab
       if (!response.ok) throw new Error(credentials.error || "Zoom access is not available.");
       const { default: ZoomMtgEmbedded } = await import("@zoom/meetingsdk/embedded");
       const client = ZoomMtgEmbedded.createClient(); clientRef.current = client;
+      if (!rootRef.current) throw new Error("Zoom root element unavailable.");
       await client.init({ zoomAppRoot: rootRef.current, language: "en-US" });
       setState("joining");
       await client.join({ signature: credentials.signature, sdkKey: credentials.sdkKey, meetingNumber: credentials.meetingNumber, password: credentials.passcode, userName: credentials.userName, userEmail: credentials.userEmail });
