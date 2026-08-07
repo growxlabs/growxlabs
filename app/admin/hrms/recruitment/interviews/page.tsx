@@ -162,7 +162,7 @@ export default function AdminInterviewsPage() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={openScheduleModal}
+            onClick={() => void openScheduleModal()}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-bold uppercase tracking-wider cursor-pointer shadow-sm transition-all"
           >
             <Plus size={15} /> Schedule New Interview
