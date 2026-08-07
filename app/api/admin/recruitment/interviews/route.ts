@@ -111,6 +111,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
 
+    const { data: activeInterview } = await supabaseAdmin
+      .schema("recruitment")
+      .from("interviews")
+      .select("id,status,scheduled_at")
+      .eq("organisation_id", CAREERS_ORGANISATION)
+      .eq("application_id", applicationId)
+      .not("status", "in", "(cancelled,completed,withdrawn)")
+      .maybeSingle();
+    if (activeInterview) {
+      return NextResponse.json({ error: "This application already has an active interview scheduled.", interview: activeInterview }, { status: 409 });
+    }
+
     const candidateName = application.profile?.full_name || application.candidate_id;
     const candidateEmail = application.profile?.email || application.candidate_id;
     const jobTitle = application.careers_jobs?.title || "Specialist";

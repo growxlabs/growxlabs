@@ -6,6 +6,16 @@ import { Loader2, Plus, RefreshCw, Calendar, Clock, Video, ShieldCheck, UserChec
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 
+type SchedulableApplication = {
+  id: string;
+  candidate_id: string;
+  candidate_name: string;
+  job_title: string;
+  application_reference: string;
+  current_stage: string;
+  status: string;
+};
+
 export default function AdminInterviewsPage() {
   const searchParams = useSearchParams();
   const [interviews, setInterviews] = useState<any[]>([]);
@@ -62,11 +72,30 @@ export default function AdminInterviewsPage() {
       setLoadingApps(true);
       const res = await fetch("/api/hrms/recruitment", { cache: "no-store" });
       const data = await res.json();
-      if (res.ok && data.candidates) {
-        setApplications(data.candidates);
-        if (data.candidates.length > 0) {
-          setSelectedAppId(applicationId && data.candidates.some((candidate: any) => candidate.id === applicationId) ? applicationId : data.candidates[0].id);
-        }
+      if (res.ok && Array.isArray(data.jobs)) {
+        const activeInterviewApplicationIds = new Set(
+          interviews
+            .filter((interview) => !["cancelled", "completed", "withdrawn"].includes(String(interview.status || "").toLowerCase()))
+            .map((interview) => String(interview.application_id))
+        );
+        const eligibleApplications: SchedulableApplication[] = data.jobs.flatMap((job: { title?: string; candidates?: Array<Record<string, unknown>> }) =>
+          (job.candidates || []).flatMap((candidate): SchedulableApplication[] => {
+            const id = String(candidate.id || "");
+            const status = String(candidate.status || "active").toLowerCase();
+            if (!id || ["withdrawn", "rejected", "archived"].includes(status) || activeInterviewApplicationIds.has(id)) return [];
+            return [{
+              id,
+              candidate_id: String(candidate.candidate_id || ""),
+              candidate_name: String(candidate.full_name || candidate.candidate_id || "Candidate"),
+              job_title: String(job.title || "Role"),
+              application_reference: String(candidate.application_reference || ""),
+              current_stage: String(candidate.stage || "applied"),
+              status,
+            }];
+          })
+        );
+        setApplications(eligibleApplications);
+        setSelectedAppId(applicationId && eligibleApplications.some((candidate) => candidate.id === applicationId) ? applicationId : eligibleApplications[0]?.id || "");
       }
     } catch (err) {
       console.error("Failed to load candidate applications:", err);
@@ -319,9 +348,9 @@ export default function AdminInterviewsPage() {
                     onChange={(e) => setSelectedAppId(e.target.value)}
                     className="w-full p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--text-primary)] focus:outline-none"
                   >
-                    {applications.map((app: any) => (
+                    {applications.map((app: SchedulableApplication) => (
                       <option key={app.id} value={app.id}>
-                        {app.candidate_name || app.candidate_id} — {app.job_title} ({app.application_reference || "Ref"})
+                        {app.candidate_name} — {app.job_title} ({app.application_reference || "Application"}) · {app.current_stage}
                       </option>
                     ))}
                   </select>
