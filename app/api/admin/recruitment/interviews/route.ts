@@ -6,7 +6,7 @@ import { generateAssignmentToken, logInterviewAccessEvent } from "@/lib/recruitm
 import { sendCandidateEmail, sendRecruitmentEmail } from "@/lib/recruitment/email-service";
 import crypto from "crypto";
 import { encryptZoomPasscode } from "@/lib/recruitment/zoom";
-import { createZoomInterviewMeeting } from "@/lib/recruitment/zoom-api";
+import { createZoomInterviewMeeting, ZoomIntegrationError } from "@/lib/recruitment/zoom-api";
 
 export async function GET(request: Request) {
   try {
@@ -131,7 +131,13 @@ export async function POST(request: Request) {
     let zoomMeeting: Awaited<ReturnType<typeof createZoomInterviewMeeting>> | null = null;
     if (isZoom) {
       try { zoomMeeting = await createZoomInterviewMeeting({ topic: `Interview: ${candidateName} — ${jobTitle}`, startTime: new Date(scheduledAt).toISOString(), durationMinutes: Number(durationMinutes), agenda: instructions }); }
-      catch (error: any) { return NextResponse.json({ error: error?.message || "Zoom is not configured." }, { status: 503 }); }
+      catch (error: any) {
+        if (error instanceof ZoomIntegrationError) {
+          return NextResponse.json({ error: error.message, code: error.code }, { status: 503 });
+        }
+        console.error("[Zoom] Zoom integration not configured or unavailable");
+        return NextResponse.json({ error: "Zoom integration is unavailable.", code: "ZOOM_UNAVAILABLE" }, { status: 503 });
+      }
       meetingJoinUrl = zoomMeeting.join_url;
     } else if (String(meetingProvider).toLowerCase() === "external_custom") {
       if (!customMeetLink) return NextResponse.json({ error: "An external meeting link is required for External / Custom link." }, { status: 400 });
