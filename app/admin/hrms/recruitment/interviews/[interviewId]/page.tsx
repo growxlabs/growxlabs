@@ -10,9 +10,12 @@ export default function AdminInterviewDetailPage({ params }: { params: Promise<{
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [playbook, setPlaybook] = useState<any>(null);
+  const [playbookBusy, setPlaybookBusy] = useState(false);
 
   useEffect(() => {
     fetchDetail();
+    fetch(`/api/admin/recruitment/interviews/${interviewId}/playbook`, { cache: "no-store" }).then((res) => res.json()).then((json) => setPlaybook(json.assignment || null)).catch(() => undefined);
   }, [interviewId]);
 
   const fetchDetail = async () => {
@@ -27,6 +30,22 @@ export default function AdminInterviewDetailPage({ params }: { params: Promise<{
     } finally {
       setLoading(false);
     }
+  };
+
+  const sendPlaybook = async () => {
+    setPlaybookBusy(true);
+    try {
+      const res = await fetch(`/api/admin/recruitment/interviews/${interviewId}/playbook`, { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Unable to send playbook");
+      setPlaybook(json.assignment);
+    } catch (err: any) { window.alert(err.message); } finally { setPlaybookBusy(false); }
+  };
+
+  const withdrawPlaybook = async () => {
+    if (!window.confirm("Withdraw this interview playbook from the candidate?")) return;
+    setPlaybookBusy(true);
+    try { await fetch(`/api/admin/recruitment/interviews/${interviewId}/playbook`, { method: "DELETE" }); setPlaybook(null); } finally { setPlaybookBusy(false); }
   };
 
   if (loading) {
@@ -114,6 +133,14 @@ export default function AdminInterviewDetailPage({ params }: { params: Promise<{
             <span className="font-semibold text-[var(--text-primary)] block">{candidateEmail}</span>
           </div>
         </div>
+      </Card>
+
+      <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div><h2 className="text-sm font-bold">Preparation material</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">Business Development Executive Interview Playbook</p></div>
+          {playbook ? <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-600">{playbook.openedAt ? "Opened" : "Not opened"}</span> : null}
+        </div>
+        {playbook ? <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]"><span>Sent {playbook.sentAt ? new Date(playbook.sentAt).toLocaleString() : "—"}</span>{playbook.lastViewedAt ? <span>Last viewed {new Date(playbook.lastViewedAt).toLocaleString()}</span> : null}<button onClick={() => void withdrawPlaybook()} disabled={playbookBusy} className="ml-auto rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-600">Withdraw</button></div> : <button onClick={() => void sendPlaybook()} disabled={playbookBusy} className="rounded-lg bg-[#0075de] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{playbookBusy ? "Sending…" : "Send Interview Playbook"}</button>}
       </Card>
 
       {/* Assigned Interviewers & Feedbacks */}

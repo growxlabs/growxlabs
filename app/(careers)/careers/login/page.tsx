@@ -21,8 +21,9 @@ export default function CandidateLoginPage() {
   // Reference Lookup State
   const [reference, setReference] = useState("");
   const [refEmail, setRefEmail] = useState("");
+  const [redirectTo, setRedirectTo] = useState("");
 
-  useEffect(() => { if (otpSent) otpInputRef.current?.focus(); }, [otpSent]);
+  useEffect(() => { if (otpSent) otpInputRef.current?.focus(); const value = new URLSearchParams(window.location.search).get("redirect"); if (value?.startsWith("/careers/")) setRedirectTo(value); }, [otpSent]);
 
   const handleSendOtp = async (e: React.FormEvent, emailOverride?: string) => {
     e.preventDefault();
@@ -71,7 +72,7 @@ export default function CandidateLoginPage() {
       if (!res.ok) throw new Error(data.error || "Verification failed");
 
       setMsg("Signed in successfully.");
-      router.replace("/careers/dashboard");
+      router.replace(redirectTo || "/careers/dashboard");
     } catch (err: any) {
       setIsError(true);
       setMsg(err.message || "Invalid OTP code.");

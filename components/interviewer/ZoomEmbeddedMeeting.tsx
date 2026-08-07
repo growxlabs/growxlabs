@@ -23,7 +23,7 @@ export default function ZoomEmbeddedMeeting({ interviewId, externalJoinUrl, enab
       if (!rootRef.current) throw new Error("Zoom root element unavailable.");
       await client.init({ zoomAppRoot: rootRef.current, language: "en-US" });
       setState("joining");
-      await client.join({ signature: credentials.signature, sdkKey: credentials.sdkKey, meetingNumber: credentials.meetingNumber, password: credentials.passcode, userName: credentials.userName, userEmail: credentials.userEmail });
+      await client.join({ signature: credentials.signature, meetingNumber: credentials.meetingNumber, password: credentials.passcode, userName: credentials.userName, userEmail: credentials.userEmail });
       setState("connected"); onEvent?.("zoom_joined");
     } catch (joinError: any) { setState("failed"); setError(joinError?.message || "Unable to join Zoom."); onEvent?.("zoom_join_failed"); }
   };

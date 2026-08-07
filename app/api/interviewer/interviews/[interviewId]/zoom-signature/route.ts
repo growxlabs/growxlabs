@@ -15,7 +15,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ int
     const passcode = decryptZoomPasscode(context.interview.zoom_passcode_encrypted);
     const signature = createZoomSdkSignature(context.interview.zoom_meeting_id, 0);
     await logInterviewAccessEvent({ assignmentId: context.assignment.id, interviewId, userId: context.userId, userEmail: context.userEmail, eventType: "zoom_signature_issued", actionDetails: { provider: "zoom_sdk" } });
-    return NextResponse.json({ sdkKey: config.sdkKey, signature, meetingNumber: context.interview.zoom_meeting_id, passcode, userName: context.userName, userEmail: context.userEmail, role: 0 });
+    return NextResponse.json({ signature, meetingNumber: context.interview.zoom_meeting_id, passcode, userName: context.userName, userEmail: context.userEmail, role: 0, expiresIn: 600 });
   } catch (error: any) {
     if (error instanceof InterviewerAuthError) return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
     return NextResponse.json({ error: error?.message || "Unable to authorize Zoom meeting" }, { status: 500 });

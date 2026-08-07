@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     }
 
     // 2. Fetch Linked Details in Parallel
-    const [historyRes, interviewsRes, messagesRes, offersRes, rescheduleRes, responseRes] = await Promise.all([
+    const [historyRes, interviewsRes, messagesRes, offersRes, rescheduleRes, responseRes, playbooksRes] = await Promise.all([
       supabaseAdmin
         .schema("recruitment")
         .from("application_stage_history")
@@ -86,6 +86,14 @@ export async function GET(request: Request) {
         .eq("application_id", application.id)
         .order("created_at", { ascending: false })
         .limit(1),
+
+      supabaseAdmin
+        .schema("recruitment")
+        .from("candidate_playbooks")
+        .select("assigned_at,published_at,opened_at,last_viewed_at,status,playbook:interview_playbooks(slug,title,subtitle,description,version,updated_at)")
+        .eq("application_id", application.id)
+        .in("status", ["published", "opened"])
+        .order("published_at", { ascending: false }),
     ]);
 
     // 3. Build Stage Timeline with Timestamps
@@ -202,6 +210,10 @@ export async function GET(request: Request) {
       } : null,
       rescheduleRequests: rescheduleRes.data || [],
       documents,
+      playbooks: (playbooksRes.data || []).map((item: any) => ({
+        ...item,
+        playbook: Array.isArray(item.playbook) ? item.playbook[0] : item.playbook,
+      })),
     });
   } catch (error: any) {
     console.error("GET Candidate Portal API Error:", error);

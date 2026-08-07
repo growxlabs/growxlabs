@@ -19,6 +19,7 @@ import { ApplicationDetails } from "@/components/careers/ApplicationDetails";
 import { DocumentsSection } from "@/components/careers/DocumentsSection";
 import { ContactDetails } from "@/components/careers/ContactDetails";
 import { ProfileDrawer } from "@/components/careers/ProfileDrawer";
+import { InterviewPreparation } from "@/components/careers/InterviewPreparation";
 
 export default function CandidateApplicationPage({ params }: { params: Promise<{ reference: string }> }) {
   const { reference } = use(params);
@@ -188,7 +189,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
     );
   }
 
-  const { candidate, application, timeline = [], interviews = [], messages = [], offer, rescheduleRequests = [], documents = [] } = data;
+  const { candidate, application, timeline = [], interviews = [], messages = [], offer, rescheduleRequests = [], documents = [], playbooks = [] } = data;
 
   return (
     <div className={css({ minHeight: '100vh', bg: '#F7F8FA', color: '#111827', colorScheme: 'light', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
@@ -311,6 +312,8 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
                 />
               </section>
             )}
+
+            <InterviewPreparation playbooks={playbooks} applicationId={application.id} />
 
             {/* Activity Timeline */}
             <section className={css({ pb: '32px', borderBottom: '1px solid #E5E7EB' })}>
