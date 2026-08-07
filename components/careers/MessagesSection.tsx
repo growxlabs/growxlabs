@@ -14,8 +14,8 @@ export function MessagesSection({ messages }: MessagesSectionProps) {
       
       {(!messages || messages.length === 0) ? (
         <div>
-          <p className={css({ fontSize: '14px', color: '#6B7280', mb: '4px' })}>No messages yet.</p>
-          <p className={css({ fontSize: '13px', color: '#9CA3AF' })}>Recruitment updates will appear here.</p>
+          <p className={css({ fontSize: '14px', color: '#475569', mb: '4px' })}>No messages yet</p>
+          <p className={css({ fontSize: '13px', color: '#64748B' })}>Updates from the recruitment team will appear here.</p>
         </div>
       ) : (
         <div className={css({ display: 'flex', flexDirection: 'column', gap: '12px' })}>

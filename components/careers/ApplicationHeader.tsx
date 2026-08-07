@@ -40,23 +40,23 @@ export function ApplicationHeader({
   };
 
   return (
-    <div className={css({ bg: 'transparent', pb: '24px' })}>
-      <div className={css({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: '4px' })}>
-        <h1 className={css({ fontSize: '24px', fontWeight: '600', color: '#111827' })}>{jobTitle}</h1>
+    <div className={css({ bg: 'transparent', pb: '24px', borderBottom: '1px solid #E5E7EB' })}>
+      <div className={css({ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '16px', mb: '6px' })}>
+        <h1 className={css({ fontSize: '24px', lineHeight: '1.25', fontWeight: '600', color: '#111827', minWidth: 0 })}>{jobTitle}</h1>
         <span className={`${css({ px: '8px', py: '2px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600' })} ${getBadgeColor(currentStage)}`}>
           {currentStage}
         </span>
       </div>
       
-      <div className={css({ mb: '4px', fontSize: '15px', fontWeight: '500', color: '#374151' })}>
+      <div className={css({ mb: '6px', fontSize: '14px', fontWeight: '600', color: '#374151' })}>
         {candidateName}
       </div>
       
-      <div className={css({ mb: '4px', fontSize: '13px', color: '#6B7280' })}>
+      <div className={css({ mb: '4px', fontSize: '13px', color: '#475569' })}>
         Application <span className={css({ fontFamily: 'monospace' })}>{applicationReference}</span>
       </div>
       
-      <div className={css({ mb: '16px', fontSize: '13px', color: '#9CA3AF' })}>
+      <div className={css({ mb: '16px', fontSize: '12px', color: '#64748B' })}>
         Applied {appliedAt} · Last updated {updatedAt}
       </div>
       
@@ -67,7 +67,7 @@ export function ApplicationHeader({
           fontWeight: '500', 
           border: '1px solid #D1D5DB', 
           borderRadius: '6px', 
-          height: '34px',
+          height: '36px',
           px: '16px',
           bg: 'transparent',
           color: '#111827',

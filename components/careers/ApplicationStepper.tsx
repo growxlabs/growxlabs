@@ -22,7 +22,7 @@ export function ApplicationStepper({ timeline, currentStage }: ApplicationSteppe
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
-        padding: '16px 0',
+        padding: '16px 0 32px',
         md: {
           flexDirection: 'row',
           alignItems: 'flex-start',
@@ -143,7 +143,7 @@ export function ApplicationStepper({ timeline, currentStage }: ApplicationSteppe
                   fontSize: '12px',
                   fontWeight: 500,
                   lineHeight: 1.2,
-                  color: (isCompleted || isCurrent) ? '#111827' : '#9CA3AF',
+                  color: isCurrent ? '#0075de' : isCompleted ? '#334155' : '#64748B',
                 })}
               >
                 {item.label}

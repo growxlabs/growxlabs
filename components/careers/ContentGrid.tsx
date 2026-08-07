@@ -12,14 +12,14 @@ export function ContentGrid({ children }: ContentGridProps) {
     <div className={css({
       display: 'grid',
       gridTemplateColumns: '1fr',
-      gap: '24px',
+      gap: '32px',
       '@media (min-width: 768px)': {
         gridTemplateColumns: 'minmax(0, 1fr) 280px',
-        gap: '32px'
+        gap: '40px'
       },
       '@media (min-width: 1024px)': {
         gridTemplateColumns: 'minmax(0, 1fr) 320px',
-        gap: '40px'
+        gap: '48px'
       }
     })}>
       {children}

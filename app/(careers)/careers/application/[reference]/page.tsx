@@ -194,7 +194,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
     <div className={css({ minHeight: '100vh', bg: '#F7F8FA', color: '#111827', colorScheme: 'light', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
       <CandidatePortalHeader candidateName={candidate.name} candidateEmail={candidate.email} />
 
-      <main className={css({ maxWidth: '1200px', margin: '0 auto', px: '24px', py: '32px' })}>
+      <main className={css({ maxWidth: '1240px', margin: '0 auto', px: '24px', py: '32px', '@media (max-width: 767px)': { px: '16px' } })}>
         {/* Action message */}
         {actionMsg && (
           <div className={css({
@@ -235,7 +235,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
         />
 
         {/* Stepper */}
-        <div className={css({ mb: '40px', borderBottom: '1px solid #E5E7EB', pb: '32px' })}>
+        <div className={css({ mb: '40px', borderBottom: '1px solid #E5E7EB', pb: '8px' })}>
           <ApplicationStepper timeline={timeline} currentStage={application.stage} />
         </div>
 

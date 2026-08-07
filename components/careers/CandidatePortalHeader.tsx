@@ -12,7 +12,7 @@ export function CandidatePortalHeader({ candidateName, candidateEmail }: Candida
     <header
       className={css({
         width: '100%',
-        height: '56px',
+        height: '64px',
         borderBottom: '1px solid #E5E7EB',
         backgroundColor: '#FFFFFF',
         display: 'flex',
@@ -22,10 +22,11 @@ export function CandidatePortalHeader({ candidateName, candidateEmail }: Candida
     >
       <div
         className={css({
-          maxWidth: '1200px',
+          maxWidth: '1240px',
           width: '100%',
           margin: '0 auto',
           padding: '0 24px',
+          '@media (max-width: 767px)': { padding: '0 16px' },
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'

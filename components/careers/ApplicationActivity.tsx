@@ -20,7 +20,8 @@ export function ApplicationActivity({ timeline, interviews, messages }: Applicat
           id: `stage-${t.stage}`,
           type: 'stage',
           date: new Date(t.timestamp),
-          label: `Application moved to ${t.label} · ${new Date(t.timestamp).toLocaleDateString()}`,
+          label: `Application moved to ${t.label}`,
+          timestamp: new Date(t.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
           color: '#6B7280'
         });
       }
@@ -80,7 +81,8 @@ export function ApplicationActivity({ timeline, interviews, messages }: Applicat
                 color: '#374151'
               })}
             >
-              {event.label}
+              <div className={css({ fontWeight: '500', color: '#111827' })}>{event.label}</div>
+              <div className={css({ fontSize: '12px', color: '#64748B', mt: '4px' })}>{event.timestamp}</div>
             </div>
           ))}
         </div>

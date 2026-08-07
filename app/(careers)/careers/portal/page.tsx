@@ -62,7 +62,7 @@ export default function CandidatePortalDashboardPage() {
     <div className={css({ minHeight: '100vh', bg: '#F7F8FA', color: '#111827', colorScheme: 'light', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
       <CandidatePortalHeader candidateName={candidate.name} candidateEmail={candidate.email} />
 
-      <main className={css({ maxWidth: '1200px', margin: '0 auto', px: '24px', py: '32px' })}>
+      <main className={css({ maxWidth: '1240px', margin: '0 auto', px: '24px', py: '32px', '@media (max-width: 767px)': { px: '16px' } })}>
         {/* Page header */}
         <div className={css({ mb: '32px' })}>
           <h1 className={css({ fontSize: '24px', fontWeight: '600', color: '#111827', mb: '4px' })}>
@@ -102,12 +102,14 @@ export default function CandidatePortalDashboardPage() {
                       borderRadius: '8px',
                       p: '20px 24px',
                       mb: '12px',
+                      transition: 'border-color 150ms ease, box-shadow 150ms ease',
+                      _hover: { borderColor: '#CBD5E1', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)' },
                     })}
                   >
                     {/* Title row */}
                     <div className={css({ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', mb: '8px' })}>
                       <div>
-                        <span className={css({ fontSize: '12px', fontWeight: '500', color: '#9CA3AF', fontFamily: 'monospace' })}>{app.reference}</span>
+                        <span className={css({ fontSize: '12px', fontWeight: '500', color: '#64748B', fontFamily: 'monospace' })}>{app.reference}</span>
                         <h3 className={css({ fontSize: '16px', fontWeight: '600', color: '#111827', mt: '2px' })}>{app.jobTitle}</h3>
                       </div>
                       <span className={css({
@@ -125,7 +127,7 @@ export default function CandidatePortalDashboardPage() {
                       </span>
                     </div>
 
-                    <p className={css({ fontSize: '13px', color: '#9CA3AF', mb: '20px' })}>
+                    <p className={css({ fontSize: '13px', color: '#64748B', mb: '20px' })}>
                       Applied {new Date(app.appliedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
 
