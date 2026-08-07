@@ -141,7 +141,7 @@ export default function AdminInterviewsPage() {
         fetchInterviews();
       }, 1200);
     } catch (err: any) {
-      setScheduleMsg("We couldn’t schedule this interview. Please review the details and try again.");
+      setScheduleMsg(`Error: ${err?.message || "Failed to schedule interview."}`);
     } finally {
       setScheduling(false);
     }

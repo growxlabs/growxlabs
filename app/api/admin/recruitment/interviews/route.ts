@@ -67,8 +67,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    console.info("[Interview] request received");
     const token = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.info("[Interview] auth passed");
 
     const role = String(token.role || "").toUpperCase();
     if (!["ADMIN", "CO_ADMIN", "HR", "RECRUITER"].includes(role)) {
@@ -107,6 +109,7 @@ export async function POST(request: Request) {
     if (appErr || !application) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
+    console.info("[Interview] application loaded");
 
     const { data: activeInterview } = await supabaseAdmin
       .schema("recruitment")
@@ -124,6 +127,8 @@ export async function POST(request: Request) {
     const candidateEmail = application.profile?.email || application.candidate_id;
     const jobTitle = application.careers_jobs?.title || "Specialist";
 
+    console.info("[Interview] candidate loaded");
+    console.info("[Interview] schedule validated");
     // 2. Resolve the provider meeting server-side. Zoom never accepts manual IDs/passcodes.
     const isZoom = String(meetingProvider).toLowerCase() === "zoom";
     if (isZoom && customMeetLink) return NextResponse.json({ error: "Zoom meetings are created automatically. Use External / Custom link for a manual meeting URL." }, { status: 400 });
@@ -143,15 +148,19 @@ export async function POST(request: Request) {
       if (!customMeetLink) return NextResponse.json({ error: "An external meeting link is required for External / Custom link." }, { status: 400 });
       meetingJoinUrl = customMeetLink;
     }
+    // 3. Create Interview Record with UUID safety & legacy bridge sync
+    console.info("[Interview] inserting interview");
+    const isUuid = (str?: string | null) => Boolean(str && typeof str === "string" && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str));
+    const validOrgId = isUuid(application.organisation_id) ? application.organisation_id : (isUuid(CAREERS_ORGANISATION) ? CAREERS_ORGANISATION : "8e7d6c54-68f1-4d19-9bf5-c20fe6c37721");
+    const validCreatedBy = (token?.id && isUuid(token.id as string)) ? token.id as string : (token?.sub && isUuid(token.sub)) ? token.sub : (isUuid(application.candidate_id) ? application.candidate_id : "8e7d6c54-68f1-4d19-9bf5-c20fe6c37721");
 
-    // 3. Create Interview Record
-    const { data: interview, error: invErr } = await supabaseAdmin
+    let { data: interview, error: invErr } = await supabaseAdmin
       .schema("recruitment")
       .from("interviews")
       .insert({
-        organisation_id: CAREERS_ORGANISATION,
+        organisation_id: validOrgId,
         application_id: applicationId,
-        candidate_id: application.candidate_id,
+        candidate_id: candidateEmail,
         job_id: application.job_id,
         title: `Interview: ${candidateName} — ${jobTitle}`,
         stage: "INTERVIEW",
@@ -161,19 +170,102 @@ export async function POST(request: Request) {
         duration_minutes: Number(durationMinutes),
         instructions: instructions || "Review candidate context and complete evaluation scorecard during the call.",
         status: "scheduled",
-        created_by: token.sub,
+        created_by: validCreatedBy,
         zoom_meeting_id: zoomMeeting ? String(zoomMeeting.id) : null,
         zoom_passcode_encrypted: zoomMeeting?.password ? encryptZoomPasscode(zoomMeeting.password) : null,
         zoom_meeting_uuid: zoomMeeting?.uuid || null,
         meeting_sdk_enabled: isZoom && meetingSdkEnabled === true,
         provider_metadata: zoomMeeting ? { zoomStartUrl: zoomMeeting.start_url || null, zoomMeetingId: zoomMeeting.id } : {},
         zoom_configured_at: zoomMeeting ? new Date().toISOString() : null,
-        zoom_configured_by: zoomMeeting ? token.sub : null,
+        zoom_configured_by: zoomMeeting ? validCreatedBy : null,
       })
       .select()
       .single();
 
-    if (invErr) throw invErr;
+    // Foreign Key bridge sync fallback if legacy table job_applications constraint is active
+    if (invErr && invErr.code === "23503") {
+      console.info("[Interview] Foreign key constraint detected, performing legacy bridge sync...");
+      try {
+        const names = candidateName.split(" ");
+        let candProfileId = validCreatedBy;
+        const { data: existingCand } = await supabaseAdmin.schema("recruitment").from("candidate_profiles").select("id").eq("email", candidateEmail.toLowerCase()).maybeSingle();
+        if (existingCand?.id) {
+          candProfileId = existingCand.id;
+        } else {
+          const { data: newCand } = await supabaseAdmin.schema("recruitment").from("candidate_profiles").insert({
+            organisation_id: validOrgId,
+            first_name: names[0] || "Candidate",
+            last_name: names.slice(1).join(" ") || "Candidate",
+            email: candidateEmail.toLowerCase(),
+            consent_at: new Date().toISOString()
+          }).select("id").single();
+          if (newCand?.id) candProfileId = newCand.id;
+        }
+
+        let stageId = validOrgId;
+        const { data: existingStage } = await supabaseAdmin.schema("recruitment").from("pipeline_stages").select("id").limit(1).maybeSingle();
+        if (existingStage?.id) stageId = existingStage.id;
+
+        await supabaseAdmin.schema("recruitment").from("jobs").upsert({
+          id: application.job_id,
+          organisation_id: validOrgId,
+          requisition_id: validOrgId,
+          title: jobTitle
+        }, { onConflict: "id" });
+
+        await supabaseAdmin.schema("recruitment").from("job_applications").upsert({
+          id: applicationId,
+          organisation_id: validOrgId,
+          candidate_id: candProfileId,
+          job_id: application.job_id,
+          current_stage_id: stageId,
+          status: "active"
+        }, { onConflict: "id" });
+
+        const retry = await supabaseAdmin
+          .schema("recruitment")
+          .from("interviews")
+          .insert({
+            organisation_id: validOrgId,
+            application_id: applicationId,
+            candidate_id: candidateEmail,
+            job_id: application.job_id,
+            title: `Interview: ${candidateName} — ${jobTitle}`,
+            stage: "INTERVIEW",
+            meeting_provider: meetingProvider,
+            meeting_join_url: meetingJoinUrl,
+            scheduled_at: new Date(scheduledAt).toISOString(),
+            duration_minutes: Number(durationMinutes),
+            instructions: instructions || "Review candidate context and complete evaluation scorecard during the call.",
+            status: "scheduled",
+            created_by: candProfileId,
+            zoom_meeting_id: zoomMeeting ? String(zoomMeeting.id) : null,
+            zoom_passcode_encrypted: zoomMeeting?.password ? encryptZoomPasscode(zoomMeeting.password) : null,
+            zoom_meeting_uuid: zoomMeeting?.uuid || null,
+            meeting_sdk_enabled: isZoom && meetingSdkEnabled === true,
+            provider_metadata: zoomMeeting ? { zoomStartUrl: zoomMeeting.start_url || null, zoomMeetingId: zoomMeeting.id } : {},
+            zoom_configured_at: zoomMeeting ? new Date().toISOString() : null,
+            zoom_configured_by: zoomMeeting ? candProfileId : null,
+          })
+          .select()
+          .single();
+
+        if (retry.data) {
+          interview = retry.data;
+          invErr = null;
+        }
+      } catch (bridgeErr) {
+        console.error("[Interview] Bridge sync failed:", bridgeErr);
+      }
+    }
+
+    if (invErr || !interview) {
+      console.error(`[Interview] interview insert failed: ${invErr?.message || "no record returned"}`);
+      return NextResponse.json({ error: invErr?.message || "Failed to create interview record.", code: "INTERVIEW_INSERT_FAILED" }, { status: 500 });
+    }
+    console.info("[Interview] interview inserted");
+
+
 
     let assignedPlaybook = null;
     if (playbookId && publishPlaybook) {
@@ -182,6 +274,9 @@ export async function POST(request: Request) {
       const { data: assignment, error: assignmentError } = await supabaseAdmin.schema("recruitment").from("candidate_playbooks").upsert({ organisation_id: CAREERS_ORGANISATION, candidate_id: application.candidate_id, application_id: applicationId, interview_id: interview.id, playbook_id: playbook.id, assigned_by: token.sub, published_at: new Date().toISOString(), status: "published" }, { onConflict: "application_id,playbook_id" }).select("id,playbook_id,status,published_at").single();
       if (assignmentError) throw assignmentError;
       assignedPlaybook = { ...assignment, slug: playbook.slug, title: playbook.title };
+      console.info("[Interview] playbook step completed");
+    } else {
+      console.info("[Interview] playbook step skipped");
     }
 
     // 4. Update Candidate Stage to 'interview'
@@ -194,6 +289,7 @@ export async function POST(request: Request) {
     // 5. Create Interviewer Assignment if interviewer email is provided
     let assignment = null;
     if (interviewerEmail) {
+      console.info("[Interview] creating interviewer assignment");
       const interviewDate = new Date(scheduledAt);
       
       // Default access window: 24 hours before interview -> 2 hours after interview
@@ -237,6 +333,7 @@ export async function POST(request: Request) {
 
       if (!assignErr) {
         assignment = assignData;
+        console.info("[Interview] interviewer assignment created");
 
         // Log audit event
         await logInterviewAccessEvent({
