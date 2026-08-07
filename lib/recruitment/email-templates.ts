@@ -123,6 +123,7 @@ export function getDefaultTemplate(templateKey: TemplateType): { subject: string
              <p style="margin-bottom:0;"><strong>Meeting link / office:</strong> {{interviewLink}}</p>
            </div>
            <p><strong>Preparation:</strong> {{preparationInstructions}}</p>
+           {{playbookCta}}
            <p><strong>Questions?</strong> Contact <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
            <p style="text-align:center"><a class="button" href="{{confirmLink}}">Confirm Attendance</a> <a class="button" href="{{rescheduleLink}}">Request Reschedule</a> <a class="button" href="{{declineLink}}">Decline Interview</a></p>
            <p>Please let us know if you need any accommodations or if this time no longer works for you.</p>

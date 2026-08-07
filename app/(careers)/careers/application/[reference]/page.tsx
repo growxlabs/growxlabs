@@ -313,7 +313,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
               </section>
             )}
 
-            <InterviewPreparation playbooks={playbooks} applicationId={application.id} />
+            <InterviewPreparation playbooks={playbooks} applicationId={application.id} interviews={interviews} />
 
             {/* Activity Timeline */}
             <section className={css({ pb: '32px', borderBottom: '1px solid #E5E7EB' })}>

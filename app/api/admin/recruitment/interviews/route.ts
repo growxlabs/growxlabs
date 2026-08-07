@@ -5,7 +5,8 @@ import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
 import { generateAssignmentToken, logInterviewAccessEvent } from "@/lib/recruitment/interviewer-auth";
 import { sendCandidateEmail, sendRecruitmentEmail } from "@/lib/recruitment/email-service";
 import crypto from "crypto";
-import { encryptZoomPasscode, isValidZoomMeetingNumber } from "@/lib/recruitment/zoom";
+import { encryptZoomPasscode } from "@/lib/recruitment/zoom";
+import { createZoomInterviewMeeting } from "@/lib/recruitment/zoom-api";
 
 export async function GET(request: Request) {
   try {
@@ -86,17 +87,13 @@ export async function POST(request: Request) {
       accessStartsAt,
       accessExpiresAt,
       instructions,
-      zoomMeetingId,
-      zoomPasscode,
       meetingSdkEnabled = false,
+      playbookId,
+      publishPlaybook = true,
     } = body;
 
     if (!applicationId || !scheduledAt) {
       return NextResponse.json({ error: "Application ID and Scheduled Time are required" }, { status: 400 });
-    }
-    const normalizedZoomMeetingId = String(zoomMeetingId || "").replace(/[\s-]/g, "");
-    if (String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled && (!isValidZoomMeetingNumber(normalizedZoomMeetingId) || !String(zoomPasscode || "").trim())) {
-      return NextResponse.json({ error: "A valid Zoom meeting ID and passcode are required to enable Embedded Zoom." }, { status: 400 });
     }
 
     // 1. Fetch Candidate details
@@ -127,8 +124,19 @@ export async function POST(request: Request) {
     const candidateEmail = application.profile?.email || application.candidate_id;
     const jobTitle = application.careers_jobs?.title || "Specialist";
 
-    // 2. Set Meeting Link
-    let meetingJoinUrl = customMeetLink || process.env.GOOGLE_MEET_LINK || "https://meet.google.com/fau-nfbw-kfu";
+    // 2. Resolve the provider meeting server-side. Zoom never accepts manual IDs/passcodes.
+    const isZoom = String(meetingProvider).toLowerCase() === "zoom";
+    if (isZoom && customMeetLink) return NextResponse.json({ error: "Zoom meetings are created automatically. Use External / Custom link for a manual meeting URL." }, { status: 400 });
+    let meetingJoinUrl = process.env.GOOGLE_MEET_LINK || "https://meet.google.com/fau-nfbw-kfu";
+    let zoomMeeting: Awaited<ReturnType<typeof createZoomInterviewMeeting>> | null = null;
+    if (isZoom) {
+      try { zoomMeeting = await createZoomInterviewMeeting({ topic: `Interview: ${candidateName} — ${jobTitle}`, startTime: new Date(scheduledAt).toISOString(), durationMinutes: Number(durationMinutes), agenda: instructions }); }
+      catch (error: any) { return NextResponse.json({ error: error?.message || "Zoom is not configured." }, { status: 503 }); }
+      meetingJoinUrl = zoomMeeting.join_url;
+    } else if (String(meetingProvider).toLowerCase() === "external_custom") {
+      if (!customMeetLink) return NextResponse.json({ error: "An external meeting link is required for External / Custom link." }, { status: 400 });
+      meetingJoinUrl = customMeetLink;
+    }
 
     // 3. Create Interview Record
     const { data: interview, error: invErr } = await supabaseAdmin
@@ -148,16 +156,27 @@ export async function POST(request: Request) {
         instructions: instructions || "Review candidate context and complete evaluation scorecard during the call.",
         status: "scheduled",
         created_by: token.sub,
-        zoom_meeting_id: String(meetingProvider).toLowerCase() === "zoom" ? normalizedZoomMeetingId || null : null,
-        zoom_passcode_encrypted: String(meetingProvider).toLowerCase() === "zoom" && zoomPasscode ? encryptZoomPasscode(String(zoomPasscode)) : null,
-        meeting_sdk_enabled: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled === true,
-        zoom_configured_at: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled ? new Date().toISOString() : null,
-        zoom_configured_by: String(meetingProvider).toLowerCase() === "zoom" && meetingSdkEnabled ? token.sub : null,
+        zoom_meeting_id: zoomMeeting ? String(zoomMeeting.id) : null,
+        zoom_passcode_encrypted: zoomMeeting?.password ? encryptZoomPasscode(zoomMeeting.password) : null,
+        zoom_meeting_uuid: zoomMeeting?.uuid || null,
+        meeting_sdk_enabled: isZoom && meetingSdkEnabled === true,
+        provider_metadata: zoomMeeting ? { zoomStartUrl: zoomMeeting.start_url || null, zoomMeetingId: zoomMeeting.id } : {},
+        zoom_configured_at: zoomMeeting ? new Date().toISOString() : null,
+        zoom_configured_by: zoomMeeting ? token.sub : null,
       })
       .select()
       .single();
 
     if (invErr) throw invErr;
+
+    let assignedPlaybook = null;
+    if (playbookId && publishPlaybook) {
+      const { data: playbook } = await supabaseAdmin.schema("recruitment").from("interview_playbooks").select("id,slug,title,status").eq("organisation_id", CAREERS_ORGANISATION).eq("id", String(playbookId)).eq("status", "published").maybeSingle();
+      if (!playbook) return NextResponse.json({ error: "Selected playbook is not published or available." }, { status: 400 });
+      const { data: assignment, error: assignmentError } = await supabaseAdmin.schema("recruitment").from("candidate_playbooks").upsert({ organisation_id: CAREERS_ORGANISATION, candidate_id: application.candidate_id, application_id: applicationId, interview_id: interview.id, playbook_id: playbook.id, assigned_by: token.sub, published_at: new Date().toISOString(), status: "published" }, { onConflict: "application_id,playbook_id" }).select("id,playbook_id,status,published_at").single();
+      if (assignmentError) throw assignmentError;
+      assignedPlaybook = { ...assignment, slug: playbook.slug, title: playbook.title };
+    }
 
     // 4. Update Candidate Stage to 'interview'
     await supabaseAdmin
@@ -258,6 +277,10 @@ export async function POST(request: Request) {
         interviewLink: meetingJoinUrl,
         timeZone: "Asia/Kolkata",
         interviewDuration: String(durationMinutes),
+        interviewerName: interviewerName || "GrowXLabs Recruitment Team",
+        preparationInstructions: assignedPlaybook ? "A preparation guide is available in your candidate portal." : instructions || "Please review your application and be ready to discuss your experience.",
+        portalLink: `${process.env.NEXT_PUBLIC_APP_URL || "https://growxlabs.tech"}/careers/applications/${applicationId}`,
+        playbookCta: assignedPlaybook ? `<p style="text-align:center"><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://growxlabs.tech"}/careers/applications/${applicationId}/playbook/${assignedPlaybook.slug}" style="display:inline-block;padding:10px 16px;background:#0075de;color:#fff;text-decoration:none;border-radius:6px;font-weight:600">View Interview Playbook</a></p>` : "",
       },
       candidateEmail,
       application.candidate_id,
@@ -265,7 +288,7 @@ export async function POST(request: Request) {
       application.job_id
     ).catch(() => {});
 
-    return NextResponse.json({ interview, assignment });
+    return NextResponse.json({ interview, assignment, playbook: assignedPlaybook });
   } catch (error: any) {
     console.error("POST Admin Interviews Error:", error);
     return NextResponse.json({ error: error?.message || "Failed to schedule interview" }, { status: 500 });
