@@ -29,6 +29,7 @@ export async function POST(request: Request) {
 
     const storedHash = String(record?.otp_code_hash || "");
     const hashMatches = storedHash.length === otpHash.length && crypto.timingSafeEqual(Buffer.from(storedHash), Buffer.from(otpHash));
+    console.info("[OTP_VERIFY]", { emailHash: crypto.createHash("sha256").update(email).digest("hex").slice(0, 16), otpRecordFound: Boolean(record), expired: Boolean(record && new Date() > new Date(record.expires_at)), alreadyUsed: Boolean(record?.verified_at), hashMatched: hashMatches });
     if (error || !record || !hashMatches) {
       return NextResponse.json({ error: "Invalid verification code. Please try again." }, { status: 400 });
     }

@@ -33,14 +33,18 @@ export async function POST(request: Request) {
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 mins validity
 
     // Store OTP in database
-    await supabaseAdmin
+    const { data: otpRecord, error: otpInsertError } = await supabaseAdmin
       .schema("recruitment")
       .from("candidate_otps")
       .insert({
         email,
         otp_code_hash: otpHash,
         expires_at: expiresAt,
-      });
+      })
+      .select("id,created_at,expires_at")
+      .single();
+    if (otpInsertError || !otpRecord) throw new Error(otpInsertError?.message || "Unable to store verification code");
+    console.info("[OTP_REQUEST]", { emailHash: crypto.createHash("sha256").update(email).digest("hex").slice(0, 16), otpRecordId: otpRecord.id, createdAt: otpRecord.created_at, expiresAt: otpRecord.expires_at });
 
     // Send OTP via Resend email
     await sendRecruitmentEmail({
