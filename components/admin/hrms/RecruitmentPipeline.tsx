@@ -29,11 +29,20 @@ interface RecruitmentPipelineProps {
   onUpdateStage: (id: string, stage: string) => void;
   updatingCandidateId?: string | null;
   onSelectCandidate?: (candidate: any) => void;
+  onRefresh?: () => void;
+  showRejected?: boolean;
 }
 
-export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandidateId, onSelectCandidate }: RecruitmentPipelineProps) {
+export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandidateId, onRefresh, showRejected }: RecruitmentPipelineProps) {
   const [emailTimelineCandidate, setEmailTimelineCandidate] = useState<any>(null);
   const [selectedCandidateModal, setSelectedCandidateModal] = useState<any>(null);
+  const [rejecting, setRejecting] = useState<any>(null);
+  const [reason, setReason] = useState("");
+  const [note, setNote] = useState("");
+  const [sendEmail, setSendEmail] = useState(true);
+  const reasons = ["Does not meet role requirements", "Insufficient relevant experience", "Communication not suitable", "Interview performance", "Assessment performance", "Availability / joining constraints", "Compensation mismatch", "Position filled", "Candidate withdrew", "Duplicate application", "Other"];
+  const reject = async () => { if (!rejecting || !reason || (reason === "Other" && !note.trim())) return; const response = await fetch(`/api/admin/recruitment/applications/${rejecting.id}/rejection`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason, note, sendEmail, otherReason: reason === "Other" ? note : undefined }) }); if (response.ok) { setRejecting(null); setReason(""); setNote(""); onRefresh?.(); } };
+  const reopen = async (candidate: any) => { if ((await fetch(`/api/admin/recruitment/applications/${candidate.id}/rejection`, { method: "PATCH" })).ok) onRefresh?.(); };
 
   const getNextStage = (current: string) => {
     const idx = STAGES.indexOf(current);
@@ -44,10 +53,10 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
     <>
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-4 min-w-max">
-          {STAGES.map((stage) => {
+          {(showRejected ? ["REJECTED"] : STAGES).map((stage) => {
             const stageCandidates = candidates.filter((c) => {
               const candidateStage = String(c.stage || "APPLIED").trim().toUpperCase().replace(/[\s-]+/g, "_");
-              return candidateStage === stage;
+                      return candidateStage === stage && (showRejected || candidate.status !== "rejected");
             });
             return (
               <div key={stage} className="w-[240px] flex-shrink-0">
@@ -80,7 +89,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                           <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
                           <span className="text-[10px] font-bold text-[var(--text-secondary)]">{candidate.score || 0}</span>
                         </div>
-                        {getNextStage(stage) && (
+                        {!showRejected && getNextStage(stage) && (
                           <button
                             type="button"
                             onClick={() => onUpdateStage(candidate.id, getNextStage(stage)!)}
@@ -91,6 +100,8 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                             {updatingCandidateId === candidate.id ? "Updating..." : "Advance"} <ChevronRight className="h-3 w-3" />
                           </button>
                         )}
+                        {!showRejected && stage !== "HIRED" && <button type="button" onClick={() => setRejecting(candidate)} className="text-[8px] font-bold uppercase text-red-600 hover:underline">Reject</button>}
+                        {showRejected && <button type="button" onClick={() => void reopen(candidate)} className="text-[8px] font-bold uppercase text-[#0075de] hover:underline">Reopen</button>}
                       </div>
 
                       {stage === "INTERVIEW" && (
@@ -254,6 +265,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
           </div>
         </div>
       )}
+      {rejecting && <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 p-4"><div className="w-full max-w-md rounded-xl bg-[var(--card)] p-5 shadow-2xl"><h2 className="text-base font-bold">Reject candidate</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">This removes the application from the active pipeline.</p><label className="mt-4 block text-[10px] font-bold uppercase">Reason *</label><select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs"><option value="">Select reason</option>{reasons.map((item) => <option key={item}>{item}</option>)}</select><label className="mt-3 block text-[10px] font-bold uppercase">Optional internal note</label><textarea value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs" rows={3} /><label className="mt-3 flex items-center gap-2 text-xs"><input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} /> Send rejection email</label><div className="mt-5 flex justify-end gap-2"><button onClick={() => setRejecting(null)} className="rounded-lg border px-4 py-2 text-xs">Cancel</button><button onClick={() => void reject()} disabled={!reason || (reason === "Other" && !note.trim())} className="rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Reject Candidate</button></div></div></div>}
     </>
   );
 }

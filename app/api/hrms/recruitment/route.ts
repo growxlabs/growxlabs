@@ -14,7 +14,7 @@ export async function GET() {
       ? await supabaseAdmin
           .schema("recruitment")
           .from("careers_applications")
-          .select("id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at,resume_path,cover_letter,answers")
+          .select("id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at,resume_path,cover_letter,answers,rejected_at,rejected_by,rejection_reason,rejection_note,rejection_previous_stage")
           .in("job_id", ids)
           .order("submitted_at", { ascending: false })
       : { data: [], error: null };
@@ -39,6 +39,12 @@ export async function GET() {
             stage: normalizeStage(a.current_stage || a.status),
             application_reference: a.application_reference,
             submitted_at: a.submitted_at,
+            status: a.status,
+            rejected_at: a.rejected_at,
+            rejected_by: a.rejected_by,
+            rejection_reason: a.rejection_reason,
+            rejection_note: a.rejection_note,
+            rejection_previous_stage: a.rejection_previous_stage,
           })),
       })),
     });

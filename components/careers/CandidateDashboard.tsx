@@ -79,7 +79,7 @@ export function CandidateDashboard({ candidate, onClose }: CandidateDashboardPro
                     </div>
                   </div>
                   <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-[#0075de] uppercase tracking-wider">
-                    {app.stage || app.status}
+                    {String(app.status || "").toLowerCase() === "rejected" ? "Not selected" : (app.stage || app.status)}
                   </span>
                 </div>
 

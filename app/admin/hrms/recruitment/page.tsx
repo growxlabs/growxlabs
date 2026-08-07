@@ -17,6 +17,7 @@ export default function RecruitmentPage() {
   const [submitError, setSubmitError] = useState("");
   const [updatingCandidateId, setUpdatingCandidateId] = useState<string | null>(null);
   const [stageError, setStageError] = useState("");
+  const [pipelineView, setPipelineView] = useState<"active" | "rejected" | "all">("active");
 
   useEffect(() => { fetchJobs(); }, []);
 
@@ -80,6 +81,7 @@ export default function RecruitmentPage() {
   };
 
   const allCandidates = jobs.flatMap((j: any) => (j.candidates || []).map((c: any) => ({ ...c, job_title: j.title })));
+  const visibleCandidates = allCandidates.filter((candidate: any) => pipelineView === "all" || (pipelineView === "rejected" ? candidate.status === "rejected" : candidate.status !== "rejected"));
   const displayStage = (stage: string) => String(stage || "APPLIED").replace(/[_-]+/g, " ").toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase());
 
   return (
@@ -96,6 +98,9 @@ export default function RecruitmentPage() {
           <button onClick={fetchJobs} className="flex items-center gap-1.5 border border-[var(--border-subtle)] bg-[var(--card)] px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider cursor-pointer" title="Refresh applications"><RefreshCw className="h-3.5 w-3.5" /> Refresh</button>
           <button onClick={() => setShowJobForm(true)} className="flex items-center gap-1.5 bg-[#0075de] hover:bg-[#005bab] text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer"><Plus className="h-3.5 w-3.5" /> Post Job Opening</button>
         </div>
+      </div>
+      <div className="flex gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--card)] p-1 w-fit">
+        {(["active", "rejected", "all"] as const).map((filter) => <button key={filter} onClick={() => setPipelineView(filter)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold uppercase ${pipelineView === filter ? "bg-[#0075de] text-white" : "text-[var(--text-secondary)]"}`}>{filter}</button>)}
       </div>
 
       {loadError && <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">{loadError}</div>}
@@ -157,9 +162,11 @@ export default function RecruitmentPage() {
             </div>
           )}
           <RecruitmentPipeline
-            candidates={allCandidates.map((candidate: any) => ({ ...candidate, interview: interviews.find((interview: any) => interview.application_id === candidate.id) || null }))}
+            candidates={visibleCandidates.map((candidate: any) => ({ ...candidate, interview: interviews.find((interview: any) => interview.application_id === candidate.id) || null }))}
             onUpdateStage={handleUpdateStage}
             updatingCandidateId={updatingCandidateId}
+            onRefresh={fetchJobs}
+            showRejected={pipelineView === "rejected"}
           />
         </>
       )}
