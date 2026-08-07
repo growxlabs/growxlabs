@@ -38,7 +38,7 @@ export function DocumentInspector({
   handleDownloadMp4,
   activeIndex,
 }: DocumentInspectorProps) {
-  const [exportOpen, setExportOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(true);
 
   // Derive active layers count from individual element keys
   const ELEMENT_KEYS = ["category", "headline", "featuredImage", "body", "bullets", "quote", "cta", "logo", "divider", "author"] as const;
@@ -48,8 +48,79 @@ export function DocumentInspector({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-[var(--inspector-bg)] text-[var(--inspector-text)] text-sm">
+      {/* Prominent Export Section at Top */}
       <div className="p-4 border-b border-[var(--inspector-border)]">
-        <h2 className="font-semibold text-[var(--inspector-text)] mb-3">Document</h2>
+        <Collapsible.Root
+          open={exportOpen}
+          onOpenChange={setExportOpen}
+          className="bg-[var(--inspector-surface)] rounded-[var(--radius-row)] border border-[var(--inspector-border)] overflow-hidden"
+        >
+          <Collapsible.Trigger className="w-full flex items-center justify-between p-3 hover:bg-[var(--inspector-surface-hover)] transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 font-semibold text-sm">
+              <Download className="w-4 h-4 text-[#1687f8]" />
+              Export & Download
+            </div>
+            {exportOpen ? (
+              <ChevronUp className="w-4 h-4 text-[var(--inspector-text-muted)]" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-[var(--inspector-text-muted)]" />
+            )}
+          </Collapsible.Trigger>
+          <Collapsible.Content className="p-3 pt-0 flex flex-col gap-2">
+            <button
+              onClick={() => handleDownloadSlideRaster(activeIndex, 'png')}
+              className="w-full flex items-center justify-center gap-2 bg-[#1687f8] hover:bg-[#0b87e3] text-white py-2 px-3 rounded-[var(--radius-control)] font-medium transition-colors mt-1 cursor-pointer"
+            >
+              <ImageIcon className="w-4 h-4" />
+              Download Current Slide (PNG)
+            </button>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <button
+                onClick={() => handleDownloadSlideRaster(activeIndex, 'jpeg')}
+                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors cursor-pointer"
+                title="Download JPEG"
+              >
+                <FileImage className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
+                <span className="text-xs font-medium">JPEG</span>
+              </button>
+              <button
+                onClick={() => handleDownloadSlideSvg(activeIndex)}
+                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors cursor-pointer"
+                title="Download SVG"
+              >
+                <FileCode className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
+                <span className="text-xs font-medium">SVG</span>
+              </button>
+              <button
+                onClick={() => handleDownloadAllSlidesSvg()}
+                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors cursor-pointer"
+                title="Download All SVG"
+              >
+                <Layers className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
+                <span className="text-xs font-medium">All SVGs</span>
+              </button>
+              <button
+                onClick={() => handleDownloadPdf()}
+                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors cursor-pointer"
+                title="Download PDF"
+              >
+                <FileText className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
+                <span className="text-xs font-medium">Full PDF</span>
+              </button>
+            </div>
+            <button
+              onClick={() => handleDownloadMp4()}
+              className="w-full mt-1 flex items-center justify-center gap-2 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors cursor-pointer"
+            >
+              <Video className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
+              <span className="text-xs font-medium">Download MP4 Video</span>
+            </button>
+          </Collapsible.Content>
+        </Collapsible.Root>
+      </div>
+
+      <div className="p-4 border-b border-[var(--inspector-border)]">
+        <h2 className="font-semibold text-[var(--inspector-text)] mb-3">Document Settings</h2>
         
         {/* Canvas dimensions display */}
         <div className="bg-[var(--inspector-surface)] rounded-[var(--radius-row)] p-3 mb-4">
@@ -105,76 +176,6 @@ export function DocumentInspector({
             <ChevronDown className="w-4 h-4 text-[var(--inspector-text-muted)] -rotate-90" />
           </div>
         </button>
-      </div>
-
-      <div className="p-4 flex-1">
-        <Collapsible.Root
-          open={exportOpen}
-          onOpenChange={setExportOpen}
-          className="bg-[var(--inspector-surface)] rounded-[var(--radius-row)] border border-[var(--inspector-border)] overflow-hidden"
-        >
-          <Collapsible.Trigger className="w-full flex items-center justify-between p-3 hover:bg-[var(--inspector-surface-hover)] transition-colors">
-            <div className="flex items-center gap-2 font-medium">
-              <Download className="w-4 h-4" />
-              Export
-            </div>
-            {exportOpen ? (
-              <ChevronUp className="w-4 h-4 text-[var(--inspector-text-muted)]" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-[var(--inspector-text-muted)]" />
-            )}
-          </Collapsible.Trigger>
-          <Collapsible.Content className="p-3 pt-0 flex flex-col gap-2">
-            <button
-              onClick={() => handleDownloadSlideRaster(activeIndex, 'png')}
-              className="w-full flex items-center justify-center gap-2 bg-[var(--inspector-brand)] hover:opacity-90 text-white py-2 px-3 rounded-[var(--radius-control)] font-medium transition-opacity mt-1"
-            >
-              <ImageIcon className="w-4 h-4" />
-              Download PNG (1080×1350)
-            </button>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <button
-                onClick={() => handleDownloadSlideRaster(activeIndex, 'jpeg')}
-                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors"
-                title="Download JPEG"
-              >
-                <FileImage className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
-                <span className="text-xs">JPEG</span>
-              </button>
-              <button
-                onClick={() => handleDownloadSlideSvg(activeIndex)}
-                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors"
-                title="Download SVG"
-              >
-                <FileCode className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
-                <span className="text-xs">SVG</span>
-              </button>
-              <button
-                onClick={() => handleDownloadAllSlidesSvg()}
-                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors"
-                title="Download All SVG"
-              >
-                <Layers className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
-                <span className="text-xs">All SVG</span>
-              </button>
-              <button
-                onClick={() => handleDownloadPdf()}
-                className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors"
-                title="Download PDF"
-              >
-                <FileText className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
-                <span className="text-xs">PDF</span>
-              </button>
-            </div>
-            <button
-              onClick={() => handleDownloadMp4()}
-              className="w-full mt-2 flex items-center justify-center gap-2 p-2 bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] transition-colors"
-            >
-              <Video className="w-4 h-4 text-[var(--inspector-text-secondary)]" />
-              <span className="text-xs font-medium">Download MP4</span>
-            </button>
-          </Collapsible.Content>
-        </Collapsible.Root>
       </div>
     </div>
   );

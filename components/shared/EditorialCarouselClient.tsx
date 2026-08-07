@@ -2159,8 +2159,16 @@ export function EditorialCarouselClient() {
           </button>
 
           <button 
+            onClick={() => handleDownloadSlideRaster(activeSlideIndex, "png")}
+            className="h-[34px] px-3.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Download current slide as PNG image"
+          >
+            <Download size={12} /> Download PNG
+          </button>
+
+          <button 
             onClick={handleDownloadPdf}
-            className="h-[34px] px-3.5 border border-neutral-800 hover:border-neutral-600 rounded-lg text-xs font-semibold text-neutral-200 transition-all flex items-center gap-1.5"
+            className="h-[34px] px-3.5 border border-neutral-800 hover:border-neutral-600 rounded-lg text-xs font-semibold text-neutral-200 transition-all flex items-center gap-1.5 cursor-pointer"
             title="Download full deck PDF document"
           >
             <FileText size={12} /> Export PDF
