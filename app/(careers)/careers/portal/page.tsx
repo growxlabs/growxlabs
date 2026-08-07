@@ -132,10 +132,10 @@ export default function CandidatePortalDashboardPage() {
                     </p>
 
                     {/* Stepper */}
-                    <div className={css({ display: 'flex', alignItems: 'center', mb: '20px', gap: '0' })}>
+                    <div className={css({ display: 'flex', alignItems: 'flex-start', width: '100%', mb: '20px', gap: '0', overflow: 'hidden' })}>
                       {stages.map((stage, index) => (
                         <React.Fragment key={stage}>
-                          <div className={css({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: '0', flex: index === stages.length - 1 ? '0 0 auto' : '0 0 auto' })}>
+                          <div className={css({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: '0', flex: '1' })}>
                             <span className={css({
                               display: 'flex',
                               width: '22px',
@@ -169,7 +169,7 @@ export default function CandidatePortalDashboardPage() {
                             <span className={css({
                               flex: '1',
                               height: '1px',
-                              minWidth: '8px',
+                              minWidth: '4px',
                               bg: index < current ? '#374151' : '#E5E7EB',
                               mx: '4px',
                             })} />

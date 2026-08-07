@@ -235,7 +235,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
         />
 
         {/* Stepper */}
-        <div className={css({ mb: '40px', borderBottom: '1px solid #E5E7EB', pb: '8px' })}>
+        <div className={css({ mb: '40px', borderBottom: '1px solid #E5E7EB', pb: '24px' })}>
           <ApplicationStepper timeline={timeline} currentStage={application.stage} />
         </div>
 

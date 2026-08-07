@@ -22,7 +22,7 @@ export function ApplicationStepper({ timeline, currentStage }: ApplicationSteppe
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'Inter, sans-serif',
-        padding: '16px 0 32px',
+        padding: '16px 0 52px',
         md: {
           flexDirection: 'row',
           alignItems: 'flex-start',
