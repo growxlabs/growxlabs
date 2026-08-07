@@ -163,7 +163,6 @@ export default function CandidateLoginPage() {
                       <Mail size={18} className="absolute left-3.5 top-3.5 text-slate-400" />
                       <input
                         required
-                        ref={otpInputRef}
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -202,14 +201,16 @@ export default function CandidateLoginPage() {
                       <KeyRound size={18} className="absolute left-3.5 top-3.5 text-slate-400" />
                       <input
                         required
+                        ref={otpInputRef}
                         type="text"
                         maxLength={6}
                         value={otpCode}
                         inputMode="numeric"
                         autoComplete="one-time-code"
+                        aria-label="6-digit verification code"
                         onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                         placeholder="123456"
-                        className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-300 text-sm font-mono tracking-widest text-center font-bold focus:outline-none focus:ring-2 focus:ring-[#0075de]"
+                        className="w-full bg-white pl-10 pr-4 py-3 rounded-2xl border border-slate-300 text-sm font-mono tracking-widest text-center font-bold text-slate-900 caret-[#0075de] focus:outline-none focus:ring-2 focus:ring-[#0075de]"
                       />
                     </div>
                   </div>
