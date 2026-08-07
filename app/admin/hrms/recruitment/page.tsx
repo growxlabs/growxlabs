@@ -7,6 +7,7 @@ import { RecruitmentPipeline } from "@/components/admin/hrms/RecruitmentPipeline
 
 export default function RecruitmentPage() {
   const [jobs, setJobs] = useState<any[]>([]);
+  const [interviews, setInterviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [showJobForm, setShowJobForm] = useState(false);
@@ -27,6 +28,11 @@ export default function RecruitmentPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unable to load recruitment data");
       setJobs(data.jobs || []);
+      const interviewResponse = await fetch("/api/admin/recruitment/interviews", { cache: "no-store" });
+      if (interviewResponse.ok) {
+        const interviewData = await interviewResponse.json();
+        setInterviews(interviewData.interviews || []);
+      }
     } catch (e) { console.error(e); setJobs([]); setLoadError("We couldn’t load recruitment information. Please refresh and try again."); } finally { setLoading(false); }
   };
 
@@ -151,7 +157,7 @@ export default function RecruitmentPage() {
             </div>
           )}
           <RecruitmentPipeline
-            candidates={allCandidates}
+            candidates={allCandidates.map((candidate: any) => ({ ...candidate, interview: interviews.find((interview: any) => interview.application_id === candidate.id) || null }))}
             onUpdateStage={handleUpdateStage}
             updatingCandidateId={updatingCandidateId}
           />

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronRight, Star, History, X, FileText, User, ExternalLink, Calendar, Mail, Phone, Briefcase } from "lucide-react";
+import { ChevronRight, Star, History, X, FileText, User, ExternalLink, Calendar, Mail, Phone, Briefcase, Video } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { CandidateEmailTimeline } from "@/components/admin/recruitment/CandidateEmailTimeline";
 
@@ -91,6 +92,16 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                           </button>
                         )}
                       </div>
+
+                      {stage === "INTERVIEW" && (
+                        <div className="border-t border-[var(--border-subtle)] pt-2">
+                          {candidate.interview ? (
+                            <><p className="mb-2 flex items-center gap-1 text-[9px] text-[var(--text-secondary)]"><Video className="h-3 w-3 text-[#0075de]" /> {candidate.interview.scheduled_at ? new Date(candidate.interview.scheduled_at).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Interview scheduled"} · {candidate.interview.meeting_provider || "Meeting"}</p><Link href={`/admin/hrms/recruitment/interviews/${candidate.interview.id}`} className="flex items-center justify-center rounded-md border border-[#0075de] px-2 py-1.5 text-[9px] font-bold text-[#0075de] hover:bg-blue-50">Manage Interview</Link></>
+                          ) : (
+                            <Link href={`/admin/hrms/recruitment/interviews?applicationId=${encodeURIComponent(candidate.id)}`} className="flex items-center justify-center rounded-md bg-[#0075de] px-2 py-1.5 text-[9px] font-bold text-white hover:bg-[#005bab]">Schedule Interview</Link>
+                          )}
+                        </div>
+                      )}
 
                       {/* Card Action Links */}
                       <div className="flex items-center justify-between pt-2 border-t border-[var(--border-subtle)] text-[8px] font-bold uppercase tracking-wider">

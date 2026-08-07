@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2, Plus, RefreshCw, Calendar, Clock, Video, ShieldCheck, UserCheck, ChevronRight, ExternalLink, ShieldAlert, KeyRound, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 
 export default function AdminInterviewsPage() {
+  const searchParams = useSearchParams();
   const [interviews, setInterviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -33,6 +35,10 @@ export default function AdminInterviewsPage() {
     fetchInterviews();
   }, []);
 
+  useEffect(() => {
+    if (searchParams.get("applicationId")) void openScheduleModal(searchParams.get("applicationId") || undefined);
+  }, [searchParams]);
+
   const fetchInterviews = async () => {
     try {
       setLoading(true);
@@ -49,7 +55,7 @@ export default function AdminInterviewsPage() {
     }
   };
 
-  const openScheduleModal = async () => {
+  const openScheduleModal = async (applicationId?: string) => {
     setShowScheduleModal(true);
     setScheduleMsg("");
     try {
@@ -59,7 +65,7 @@ export default function AdminInterviewsPage() {
       if (res.ok && data.candidates) {
         setApplications(data.candidates);
         if (data.candidates.length > 0) {
-          setSelectedAppId(data.candidates[0].id);
+          setSelectedAppId(applicationId && data.candidates.some((candidate: any) => candidate.id === applicationId) ? applicationId : data.candidates[0].id);
         }
       }
     } catch (err) {
