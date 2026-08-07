@@ -15,18 +15,21 @@ export async function POST(request: Request) {
 
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
 
-    // Query OTP record
+    // Always validate against the newest unverified code for this email. This
+    // avoids an older OTP row winning when several codes were requested.
     const { data: record, error } = await supabaseAdmin
       .schema("recruitment")
       .from("candidate_otps")
       .select("*")
       .eq("email", email)
-      .eq("otp_code_hash", otpHash)
+      .is("verified_at", null)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    if (error || !record) {
+    const storedHash = String(record?.otp_code_hash || "");
+    const hashMatches = storedHash.length === otpHash.length && crypto.timingSafeEqual(Buffer.from(storedHash), Buffer.from(otpHash));
+    if (error || !record || !hashMatches) {
       return NextResponse.json({ error: "Invalid verification code. Please try again." }, { status: 400 });
     }
 
