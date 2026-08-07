@@ -2159,7 +2159,7 @@ export function EditorialCarouselClient() {
           </button>
 
           <button 
-            onClick={() => handleDownloadSlideRaster(activeSlideIndex, "png")}
+            onClick={() => handleDownloadSlideRaster(activeIndex, "png")}
             className="h-[34px] px-3.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
             title="Download current slide as PNG image"
           >
