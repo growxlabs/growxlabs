@@ -1,130 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Loader2, Calendar, ChevronRight, Briefcase, FileText, UserCheck, ShieldCheck } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Loader2, Calendar, ChevronRight, Mail, Check } from "lucide-react";
 import Link from "next/link";
 
+const stages = ["Applied", "Under review", "Screening", "Interview", "Assessment", "Offer", "Hired"];
+const stageKeys = ["applied", "under_review", "screening", "interview", "assessment", "offer", "hired"];
+
 export default function CandidatePortalDashboardPage() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchPortalData();
-  }, []);
-
-  const fetchPortalData = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/v1/candidate/portal", { cache: "no-store" });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Failed to load portal data");
-      setData(json);
-    } catch (err: any) {
-      setError(err.message || "Failed to load candidate applications");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStageBadge = (stage: string) => {
-    switch (String(stage).toLowerCase()) {
-      case "hired":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">Hired 🎉</span>;
-      case "offer":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">Offer Extended</span>;
-      case "interview":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">Interview Scheduled</span>;
-      case "assessment":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">Assessment Active</span>;
-      case "screening":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 border border-sky-200">Under Screening</span>;
-      case "rejected":
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800 border border-red-200">Closed</span>;
-      default:
-        return <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700">Applied</span>;
-    }
-  };
-
-  if (loading) {
-    return (
-      <main className="min-h-[75vh] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#0075de]" size={32} />
-      </main>
-    );
-  }
-
-  if (error || !data) {
-    return (
-      <main className="max-w-md mx-auto py-20 px-4 text-center space-y-4">
-        <div className="p-4 bg-red-50 rounded-2xl border border-red-200 text-red-700 text-xs font-medium">
-          {error || "Session expired or application not found."}
-        </div>
-        <Link
-          href="/careers/login"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0075de] text-white text-xs font-bold uppercase tracking-wider"
-        >
-          Return to Candidate Login
-        </Link>
-      </main>
-    );
-  }
-
+  const [data, setData] = useState<any>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
+  useEffect(() => { fetch("/api/v1/candidate/portal", { cache: "no-store" }).then(async (res) => { const json = await res.json(); if (!res.ok) throw new Error(json.error || "Failed to load portal data"); setData(json); }).catch((err) => setError(err.message || "Failed to load candidate applications")).finally(() => setLoading(false)); }, []);
+  if (loading) return <main className="flex min-h-[75vh] items-center justify-center"><Loader2 className="animate-spin text-[#0075de]" size={28} /></main>;
+  if (error || !data) return <main className="mx-auto max-w-md px-4 py-20 text-center"><div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error || "Session expired or application not found."}</div><Link href="/careers/login" className="mt-4 inline-flex rounded-lg bg-[#0075de] px-5 py-2.5 text-xs font-bold text-white">Return to Candidate Login</Link></main>;
   const { candidate, allApplications = [] } = data;
-
-  return (
-      <main className="min-h-screen bg-[#f5f7fb] px-4 py-10">
-      <div className="max-w-5xl mx-auto space-y-8">
-      {/* Welcome Banner */}
-      <div className="bg-white border border-slate-200 text-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm space-y-2">
-        <span className="text-xs font-semibold text-[#0075de]">GrowXLabs Careers</span>
-        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">Welcome, {candidate.name}</h1>
-        <p className="text-sm text-slate-600">
-          Track your applications and next steps.
-        </p>
-      </div>
-
-      {/* Applications List */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">Your applications</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {allApplications.map((app: any) => (
-            <div
-              key={app.id}
-              className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all space-y-4 flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="text-[10px] font-mono font-bold text-[#0075de] tracking-wider block">
-                      {app.reference}
-                    </span>
-                    <h3 className="text-lg font-bold text-slate-900 mt-0.5">{app.jobTitle}</h3>
-                  </div>
-
-                  {getStageBadge(app.stage)}
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <Calendar size={14} />
-                  <span>Applied on {new Date(app.appliedAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100">
-                <Link
-                  href={`/careers/applications/${encodeURIComponent(app.id)}`}
-                  className="inline-flex items-center justify-center gap-1.5 w-full py-3 rounded-xl bg-[#0075de] hover:bg-[#005bab] text-white font-semibold text-sm transition-all shadow-sm"
-                >
-                  View application <ChevronRight size={14} />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      </div>
-    </main>
-  );
+  return <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:py-10"><div className="mx-auto max-w-6xl space-y-6">
+    <header className="border-b border-slate-200 pb-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0075de]">GrowXLabs Careers</p><h1 className="mt-2 text-2xl font-bold tracking-tight">Candidate portal</h1><p className="mt-1 text-sm text-slate-500">Welcome back, {candidate.name}. Review your applications and next steps.</p></header>
+    <section className="space-y-4"><div className="flex items-center justify-between"><h2 className="text-lg font-bold">Applications</h2><span className="text-xs text-slate-500">{allApplications.length} total</span></div>{allApplications.map((app: any) => { const current = Math.max(0, stageKeys.indexOf(String(app.stage || "applied").toLowerCase())); return <article key={app.id} className="space-y-5 border border-slate-200 bg-white p-5 sm:p-6"><div className="flex flex-wrap items-start justify-between gap-3"><div><span className="font-mono text-[10px] font-bold tracking-wider text-[#0075de]">{app.reference}</span><h3 className="mt-1 text-base font-bold">{app.jobTitle}</h3><p className="mt-2 flex items-center gap-2 text-xs text-slate-500"><Calendar size={14}/>Applied on {new Date(app.appliedAt).toLocaleDateString()}</p></div><span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-700">{app.stage || "Applied"}</span></div><div className="overflow-x-auto border-y border-slate-100 py-4"><div className="flex min-w-[640px] items-start">{stages.map((stage, index) => <React.Fragment key={stage}><div className="flex min-w-[88px] flex-1 flex-col items-center gap-2 text-center"><span className={`flex h-6 w-6 items-center justify-center rounded-full border text-[11px] ${index <= current ? "border-[#0075de] bg-[#0075de] text-white" : "border-slate-300 bg-white text-slate-400"}`}>{index < current ? <Check size={13}/> : index + 1}</span><span className={`text-[10px] font-semibold ${index === current ? "text-[#0075de]" : "text-slate-500"}`}>{stage}</span></div>{index < stages.length - 1 && <span className={`mt-3 h-px flex-1 ${index < current ? "bg-[#0075de]" : "bg-slate-200"}`} />}</React.Fragment>)}</div></div><div className="flex justify-end"><Link href={`/careers/applications/${encodeURIComponent(app.id)}`} className="inline-flex items-center gap-1.5 rounded-lg bg-[#0075de] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#005bab]">View application <ChevronRight size={14}/></Link></div></article>})}</section>
+    <section className="border-t border-slate-200 pt-5"><h2 className="flex items-center gap-2 text-base font-bold"><Mail size={16} className="text-slate-500"/>Messages</h2><p className="mt-2 text-sm text-slate-500">No messages yet.</p><p className="text-xs text-slate-400">Updates from the recruitment team will appear here.</p></section>
+  </div></main>;
 }
