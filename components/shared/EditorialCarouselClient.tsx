@@ -1562,9 +1562,9 @@ export function EditorialCarouselClient() {
   const convertSvgToRaster = async (svgString: string, type: "png" | "jpeg"): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-        const svgUrl = URL.createObjectURL(svgBlob);
+        const encodedSvg = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
         const img = new Image();
+        img.crossOrigin = "anonymous";
         img.onload = () => {
           const canvas = document.createElement("canvas");
           canvas.width = CANVAS_WIDTH;
@@ -1578,22 +1578,19 @@ export function EditorialCarouselClient() {
               ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             }
             ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            URL.revokeObjectURL(svgUrl);
             const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
             resolve(dataUrl);
           } else {
-            URL.revokeObjectURL(svgUrl);
             reject(new Error("Canvas context error"));
           }
         };
         img.onerror = (e) => {
-          URL.revokeObjectURL(svgUrl);
           console.error("Raster image decode error event:", e);
           reject(new Error("Image decoding failed"));
         };
         img.width = CANVAS_WIDTH;
         img.height = CANVAS_HEIGHT;
-        img.src = svgUrl;
+        img.src = encodedSvg;
       } catch (err) {
         console.error("Base64 string convert error:", err);
         reject(err);
@@ -1602,9 +1599,10 @@ export function EditorialCarouselClient() {
   };
 
   const handleDownloadSlideSvg = async (idx: number) => {
+    const toastId = toast.loading(`Generating Slide ${idx + 1} SVG...`);
     try {
       const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
-      const svgStr = buildSvgString(slide, idx, true, videoFrameUrl); // Keep font styles inside SVG vector files
+      const svgStr = buildSvgString(slide, idx, true, videoFrameUrl);
       const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -1614,64 +1612,65 @@ export function EditorialCarouselClient() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success(`Exported Slide ${idx + 1} as clean vector SVG!`);
+      toast.success(`Exported Slide ${idx + 1} as clean vector SVG!`, { id: toastId });
     } catch (e) {
-      toast.error("SVG generation failed");
+      console.error(e);
+      toast.error("SVG generation failed", { id: toastId });
     }
   };
 
   const handleDownloadSlideRaster = async (idx: number, type: "png" | "jpeg") => {
+    const toastId = toast.loading(`Exporting Slide ${idx + 1} as ${type.toUpperCase()}...`);
     try {
-      const element = canvasRef.current;
-      if (!element || idx !== activeIndex) {
-        // Fallback to SVG rendering method if element not found or exporting a different slide
-        const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
-        const svgStr = buildSvgString(slide, idx, false, videoFrameUrl); // Bypass CORS security policies by excluding @imports
-        const dataUrl = await convertSvgToRaster(svgStr, type);
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`);
-        return;
-      }
-
-      // Use html2canvas-pro for high-fidelity active slide rendering (supports Tailwind v4 oklch colors)
-      const html2canvas = (await import("html2canvas-pro")).default;
-      
-      // Temporary hide guides and safe area overlays
-      const safeArea = element.querySelector(".border-dashed") as HTMLElement;
-      const grid = element.querySelector(".opacity-\\[0\\.03\\]") as HTMLElement;
-      const safeAreaDisplay = safeArea ? safeArea.style.display : "";
-      const gridDisplay = grid ? grid.style.display : "";
-      
-      if (safeArea) safeArea.style.display = "none";
-      if (grid) grid.style.display = "none";
-
-      const canvas = await html2canvas(element, {
-        scale: 1 / zoomScale,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: "#ffffff",
-      });
-
-      // Restore guides and safe area overlays
-      if (safeArea) safeArea.style.display = safeAreaDisplay;
-      if (grid) grid.style.display = gridDisplay;
-
-      const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
+      // 1. Primary: Use pixel-perfect 1080x1350 SVG-to-raster renderer with base64 converted assets
+      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+      const svgStr = buildSvgString(slide, idx, false, videoFrameUrl);
+      const dataUrl = await convertSvgToRaster(svgStr, type);
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`);
-    } catch (e) {
-      console.error(e);
-      toast.error(`Failed to export slide as ${type.toUpperCase()}`);
+      toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, { id: toastId });
+    } catch (primaryErr) {
+      console.warn("Primary SVG rasterizer failed, trying html2canvas fallback:", primaryErr);
+      try {
+        const element = canvasRef.current;
+        if (!element || idx !== activeIndex) {
+          throw new Error("Canvas ref not available for html2canvas fallback");
+        }
+        const html2canvas = (await import("html2canvas-pro")).default;
+        const safeArea = element.querySelector(".border-dashed") as HTMLElement;
+        const grid = element.querySelector(".opacity-\\[0\\.03\\]") as HTMLElement;
+        const safeAreaDisplay = safeArea ? safeArea.style.display : "";
+        const gridDisplay = grid ? grid.style.display : "";
+        
+        if (safeArea) safeArea.style.display = "none";
+        if (grid) grid.style.display = "none";
+
+        const canvas = await html2canvas(element, {
+          scale: 1 / zoomScale,
+          useCORS: true,
+          allowTaint: false,
+          backgroundColor: "#ffffff",
+        });
+
+        if (safeArea) safeArea.style.display = safeAreaDisplay;
+        if (grid) grid.style.display = gridDisplay;
+
+        const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.${type}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, { id: toastId });
+      } catch (fallbackErr) {
+        console.error("html2canvas fallback also failed:", fallbackErr);
+        toast.error(`Failed to export slide as ${type.toUpperCase()}`, { id: toastId });
+      }
     }
   };
 

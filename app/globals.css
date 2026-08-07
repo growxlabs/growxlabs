@@ -3,6 +3,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
 
+/*
+ * Candidate portal theme boundary.
+ * Careers is a separate public experience from the admin OS, so it must not
+ * inherit the root ThemeProvider's system/dark mode or its global tokens.
+ */
+html:has(.candidate-portal-theme),
+body:has(.candidate-portal-theme) {
+  color-scheme: light;
+  background: #F7F8FA;
+}
+
+.candidate-portal-theme {
+  --background: #F7F8FA;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
+  --muted: #F7F8FA;
+  --muted-foreground: #64748B;
+  --border: #E5E7EB;
+  --input: #FFFFFF;
+  color-scheme: light;
+  min-height: 100vh;
+  background: #F7F8FA;
+  color: #111827;
+}
+
+.candidate-portal-theme,
+.candidate-portal-theme * {
+  color-scheme: light;
+}
+
 @layer reset, base, tokens, recipes, utilities;
 
 @media print {

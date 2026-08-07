@@ -1,3 +1,3 @@
 export default function CareersLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <div className="candidate-portal-theme">{children}</div>;
 }

@@ -191,7 +191,7 @@ export default function CandidateApplicationPage({ params }: { params: Promise<{
   const { candidate, application, timeline = [], interviews = [], messages = [], offer, rescheduleRequests = [], documents = [] } = data;
 
   return (
-    <div className={css({ minHeight: '100vh', bg: '#F7F8FA', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
+    <div className={css({ minHeight: '100vh', bg: '#F7F8FA', color: '#111827', colorScheme: 'light', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
       <CandidatePortalHeader candidateName={candidate.name} candidateEmail={candidate.email} />
 
       <main className={css({ maxWidth: '1200px', margin: '0 auto', px: '24px', py: '32px' })}>
