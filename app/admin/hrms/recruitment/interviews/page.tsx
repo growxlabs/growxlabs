@@ -203,7 +203,7 @@ export default function AdminInterviewsPage() {
               </p>
             </div>
             <button
-              onClick={openScheduleModal}
+              onClick={() => void openScheduleModal()}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0075de] text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
             >
               <Plus size={14} /> Schedule First Interview

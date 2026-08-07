@@ -1,21 +1,238 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, Calendar, ChevronRight, Mail, Check } from "lucide-react";
+import { Loader2, ChevronRight, Check } from "lucide-react";
 import Link from "next/link";
+import { css } from "@/styled-system/css";
+
+import { CandidatePortalHeader } from "@/components/careers/CandidatePortalHeader";
 
 const stages = ["Applied", "Under review", "Screening", "Interview", "Assessment", "Offer", "Hired"];
 const stageKeys = ["applied", "under_review", "screening", "interview", "assessment", "offer", "hired"];
 
 export default function CandidatePortalDashboardPage() {
-  const [data, setData] = useState<any>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
-  useEffect(() => { fetch("/api/v1/candidate/portal", { cache: "no-store" }).then(async (res) => { const json = await res.json(); if (!res.ok) throw new Error(json.error || "Failed to load portal data"); setData(json); }).catch((err) => setError(err.message || "Failed to load candidate applications")).finally(() => setLoading(false)); }, []);
-  if (loading) return <main className="flex min-h-[75vh] items-center justify-center"><Loader2 className="animate-spin text-[#0075de]" size={28} /></main>;
-  if (error || !data) return <main className="mx-auto max-w-md px-4 py-20 text-center"><div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error || "Session expired or application not found."}</div><Link href="/careers/login" className="mt-4 inline-flex rounded-lg bg-[#0075de] px-5 py-2.5 text-xs font-bold text-white">Return to Candidate Login</Link></main>;
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/v1/candidate/portal", { cache: "no-store" })
+      .then(async (res) => {
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Failed to load portal data");
+        setData(json);
+      })
+      .catch((err) => setError(err.message || "Failed to load candidate applications"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={css({ minHeight: '100vh', bg: '#F7F8FA' })}>
+        <CandidatePortalHeader />
+        <main className={css({ display: 'flex', minHeight: '70vh', alignItems: 'center', justifyContent: 'center' })}>
+          <Loader2 className={css({ animation: 'spin 1s linear infinite', color: '#0075de' })} size={28} />
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className={css({ minHeight: '100vh', bg: '#F7F8FA' })}>
+        <CandidatePortalHeader />
+        <main className={css({ maxWidth: '480px', margin: '0 auto', px: '24px', py: '80px', textAlign: 'center' })}>
+          <div className={css({ p: '16px', bg: '#FEF2F2', borderRadius: '8px', border: '1px solid #FECACA', color: '#991B1B', fontSize: '14px', fontWeight: '500', mb: '24px' })}>
+            {error || "Session expired or application not found."}
+          </div>
+          <Link
+            href="/careers/login"
+            className={css({ display: 'inline-flex', px: '20px', py: '10px', borderRadius: '6px', bg: '#0075de', fontSize: '13px', fontWeight: '600', color: 'white', textDecoration: 'none' })}
+          >
+            Return to login
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
   const { candidate, allApplications = [] } = data;
-  return <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:py-10"><div className="mx-auto max-w-6xl space-y-6">
-    <nav className="flex items-center justify-between border-b border-slate-200 pb-4 text-sm"><span className="font-semibold">GrowXLabs <span className="font-normal text-slate-400">/ Careers</span></span><span className="text-slate-500">Candidate Portal · <Link href="mailto:recruitment@growxlabs.tech" className="text-[#0075de]">Help</Link></span></nav>
-    <header className="border-b border-slate-200 bg-white px-5 py-6 sm:px-7"><div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs text-slate-500">Application workspace</p><h1 className="mt-1 text-2xl font-semibold tracking-tight">{allApplications[0]?.jobTitle || "Your applications"}</h1><p className="mt-2 text-sm font-medium">{candidate.name}</p><p className="mt-1 text-xs text-slate-500">{allApplications[0]?.reference || "Candidate account"} · {candidate.email}</p></div><Link href="/careers/profile" className="rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Edit profile</Link></div></header>
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(240px,3fr)]"><section className="space-y-6"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Applications</h2><span className="text-xs text-slate-500">{allApplications.length} total</span></div>{allApplications.map((app: any) => { const current = Math.max(0, stageKeys.indexOf(String(app.stage || "applied").toLowerCase())); return <article key={app.id} className="space-y-5 border-y border-slate-200 bg-white px-4 py-5 sm:px-6"><div className="flex flex-wrap items-start justify-between gap-3"><div><span className="text-xs font-semibold text-slate-500">{app.reference}</span><h3 className="mt-1 text-base font-semibold">{app.jobTitle}</h3><p className="mt-2 flex items-center gap-2 text-xs text-slate-500"><Calendar size={14}/>Applied on {new Date(app.appliedAt).toLocaleDateString()}</p></div><span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-semibold text-slate-700">{app.stage || "Applied"}</span></div><div className="border-y border-slate-100 py-4"><div className="space-y-0 sm:flex sm:items-start">{stages.map((stage, index) => <React.Fragment key={stage}><div className="flex items-center gap-3 py-1 sm:min-w-[78px] sm:flex-1 sm:flex-col sm:gap-2 sm:text-center"><span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] ${index < current ? "border-slate-700 bg-slate-700 text-white" : index === current ? "border-[#0075de] bg-[#0075de] text-white" : "border-slate-300 bg-white text-slate-400"}`}>{index < current ? <Check size={13}/> : index + 1}</span><span className={`text-[11px] font-semibold ${index === current ? "text-[#0075de]" : "text-slate-500"}`}>{stage}</span></div>{index < stages.length - 1 && <span className={`ml-3 block h-4 w-px sm:ml-0 sm:mt-3 sm:h-px sm:flex-1 ${index < current ? "bg-slate-700" : "bg-slate-200"}`} />}</React.Fragment>)}</div></div><div className="flex justify-end"><Link href={`/careers/applications/${encodeURIComponent(app.id)}`} className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">View application <ChevronRight size={14}/></Link></div></article>})}<section className="border-t border-slate-200 pt-5"><h2 className="flex items-center gap-2 text-base font-semibold"><Mail size={16} className="text-slate-500"/>Messages</h2><p className="mt-2 text-sm text-slate-500">No messages yet.</p><p className="text-xs text-slate-400">Updates from the recruitment team will appear here.</p></section></section><aside className="space-y-6"><section className="border-y border-slate-200 bg-white px-4 py-5"><h2 className="text-sm font-semibold">Application details</h2><dl className="mt-4 space-y-3 text-xs"><div className="flex justify-between gap-3"><dt className="text-slate-500">Candidate</dt><dd className="font-medium">{candidate.name}</dd></div><div className="flex justify-between gap-3"><dt className="text-slate-500">Email</dt><dd className="max-w-[150px] truncate font-medium">{candidate.email}</dd></div><div className="flex justify-between gap-3"><dt className="text-slate-500">Applications</dt><dd className="font-medium">{allApplications.length}</dd></div></dl></section><section className="border-y border-slate-200 bg-white px-4 py-5"><h2 className="text-sm font-semibold">Documents</h2><p className="mt-3 text-xs text-slate-500">Documents submitted with your applications are available in the application view.</p></section></aside></div>
-  </div></main>;
+
+  return (
+    <div className={css({ minHeight: '100vh', bg: '#F7F8FA', fontFamily: 'Inter, system-ui, -apple-system, sans-serif' })}>
+      <CandidatePortalHeader candidateName={candidate.name} candidateEmail={candidate.email} />
+
+      <main className={css({ maxWidth: '1200px', margin: '0 auto', px: '24px', py: '32px' })}>
+        {/* Page header */}
+        <div className={css({ mb: '32px' })}>
+          <h1 className={css({ fontSize: '24px', fontWeight: '600', color: '#111827', mb: '4px' })}>
+            Your applications
+          </h1>
+          <p className={css({ fontSize: '14px', color: '#6B7280' })}>
+            {candidate.name} · {candidate.email}
+          </p>
+        </div>
+
+        {/* Applications grid */}
+        <div className={css({
+          display: 'grid',
+          gap: '32px',
+          gridTemplateColumns: '1fr',
+          '@media (min-width: 1024px)': {
+            gridTemplateColumns: 'minmax(0, 1fr) 320px',
+            gap: '40px',
+          }
+        })}>
+          {/* Main content */}
+          <div>
+            <div className={css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: '16px' })}>
+              <h2 className={css({ fontSize: '16px', fontWeight: '600', color: '#111827' })}>Applications</h2>
+              <span className={css({ fontSize: '13px', color: '#9CA3AF' })}>{allApplications.length} total</span>
+            </div>
+
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '1px' })}>
+              {allApplications.map((app: any) => {
+                const current = Math.max(0, stageKeys.indexOf(String(app.stage || "applied").toLowerCase()));
+                return (
+                  <article
+                    key={app.id}
+                    className={css({
+                      bg: 'white',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      p: '20px 24px',
+                      mb: '12px',
+                    })}
+                  >
+                    {/* Title row */}
+                    <div className={css({ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', mb: '8px' })}>
+                      <div>
+                        <span className={css({ fontSize: '12px', fontWeight: '500', color: '#9CA3AF', fontFamily: 'monospace' })}>{app.reference}</span>
+                        <h3 className={css({ fontSize: '16px', fontWeight: '600', color: '#111827', mt: '2px' })}>{app.jobTitle}</h3>
+                      </div>
+                      <span className={css({
+                        display: 'inline-flex',
+                        px: '10px',
+                        py: '3px',
+                        borderRadius: '9999px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        bg: '#F3F4F6',
+                        color: '#374151',
+                        flexShrink: 0,
+                      })}>
+                        {app.stage || "Applied"}
+                      </span>
+                    </div>
+
+                    <p className={css({ fontSize: '13px', color: '#9CA3AF', mb: '20px' })}>
+                      Applied {new Date(app.appliedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+
+                    {/* Stepper */}
+                    <div className={css({ display: 'flex', alignItems: 'center', mb: '20px', gap: '0' })}>
+                      {stages.map((stage, index) => (
+                        <React.Fragment key={stage}>
+                          <div className={css({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', minWidth: '0', flex: index === stages.length - 1 ? '0 0 auto' : '0 0 auto' })}>
+                            <span className={css({
+                              display: 'flex',
+                              width: '22px',
+                              height: '22px',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '9999px',
+                              fontSize: '10px',
+                              fontWeight: '600',
+                              flexShrink: 0,
+                              ...(index < current
+                                ? { bg: '#374151', color: 'white' }
+                                : index === current
+                                  ? { bg: '#0075de', color: 'white' }
+                                  : { bg: 'white', border: '1.5px solid #D1D5DB', color: '#9CA3AF' }),
+                            })}>
+                              {index < current ? <Check size={11} strokeWidth={3} /> : index + 1}
+                            </span>
+                            <span className={css({
+                              fontSize: '10px',
+                              fontWeight: '500',
+                              color: index === current ? '#0075de' : '#9CA3AF',
+                              display: 'none',
+                              '@media (min-width: 640px)': { display: 'block' },
+                              whiteSpace: 'nowrap',
+                            })}>
+                              {stage}
+                            </span>
+                          </div>
+                          {index < stages.length - 1 && (
+                            <span className={css({
+                              flex: '1',
+                              height: '1px',
+                              minWidth: '8px',
+                              bg: index < current ? '#374151' : '#E5E7EB',
+                              mx: '4px',
+                            })} />
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+
+                    {/* View button */}
+                    <div className={css({ display: 'flex', justifyContent: 'flex-end' })}>
+                      <Link
+                        href={`/careers/applications/${encodeURIComponent(app.id)}`}
+                        className={css({
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          color: '#0075de',
+                          textDecoration: 'none',
+                          _hover: { textDecoration: 'underline' },
+                        })}
+                      >
+                        View application <ChevronRight size={14} />
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <aside className={css({ display: 'flex', flexDirection: 'column', gap: '24px' })}>
+            {/* Candidate info */}
+            <div>
+              <h2 className={css({ fontSize: '14px', fontWeight: '600', color: '#111827', mb: '16px' })}>Account</h2>
+              <dl className={css({ display: 'flex', flexDirection: 'column', gap: '12px' })}>
+                <div className={css({ display: 'flex', justifyContent: 'space-between', gap: '12px' })}>
+                  <dt className={css({ fontSize: '13px', color: '#9CA3AF' })}>Name</dt>
+                  <dd className={css({ fontSize: '13px', fontWeight: '500', color: '#111827' })}>{candidate.name}</dd>
+                </div>
+                <div className={css({ display: 'flex', justifyContent: 'space-between', gap: '12px' })}>
+                  <dt className={css({ fontSize: '13px', color: '#9CA3AF' })}>Email</dt>
+                  <dd className={css({ fontSize: '13px', fontWeight: '500', color: '#111827', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>{candidate.email}</dd>
+                </div>
+                <div className={css({ display: 'flex', justifyContent: 'space-between', gap: '12px' })}>
+                  <dt className={css({ fontSize: '13px', color: '#9CA3AF' })}>Applications</dt>
+                  <dd className={css({ fontSize: '13px', fontWeight: '500', color: '#111827' })}>{allApplications.length}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className={css({ borderTop: '1px solid #E5E7EB', pt: '24px' })}>
+              <h2 className={css({ fontSize: '14px', fontWeight: '600', color: '#111827', mb: '8px' })}>Need help?</h2>
+              <p className={css({ fontSize: '13px', color: '#6B7280', lineHeight: '1.5' })}>
+                Contact the recruitment team at{' '}
+                <a href="mailto:recruitment@growxlabs.tech" className={css({ color: '#0075de', textDecoration: 'none' })}>
+                  recruitment@growxlabs.tech
+                </a>
+              </p>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+  );
 }
