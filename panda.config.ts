@@ -5,6 +5,7 @@ export default defineConfig({
   include: [
     "./components/onboarding/**/*.{ts,tsx}",
     "./components/document/**/*.{ts,tsx}",
+    "./app/(careers)/careers/**/*.{ts,tsx}",
   ],
   exclude: [],
   outdir: "styled-system",
