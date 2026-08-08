@@ -61,7 +61,7 @@ export default function ActivateAccountPage() {
     } finally { setSaving(false); }
   }
 
-  return <main className="flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-12 text-[#152033] sm:px-6 sm:py-16 lg:px-12 lg:py-20">
+  return <main className="mt-20 flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-12 text-[#152033] sm:px-6 sm:py-16 lg:px-12 lg:py-20">
     <section className="mx-auto grid w-full max-w-[1200px] overflow-hidden rounded-2xl border border-[#dfe3e8] bg-white lg:grid-cols-[.92fr_1.08fr]">
       <div className="border-b border-[#dfe3e8] bg-[#f8fafc] p-7 sm:p-10 lg:border-b-0 lg:border-r lg:p-12">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-[#0075de]"><ShieldCheck size={20}/></div>
