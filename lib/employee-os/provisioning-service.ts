@@ -7,16 +7,17 @@ import type { ConvertCandidateInput, WorkspaceStatus } from "./types";
 export class EmployeeProvisioningError extends Error {
   constructor(public code: string, message: string, public status = 400) { super(message); }
 }
-type ConversionResult = { employeeId: string; identityId: string; roleId: string; onboardingStateId: string; workspaceStatus: WorkspaceStatus; existing: boolean; activationEmail: "sent"|"pending" };
+type ActivationEmailResult = { attempted: true; sent: boolean; messageId?: string; errorCode?: string };
+type ConversionResult = { employeeId: string; identityId: string; roleId: string; onboardingStateId: string; workspaceStatus: WorkspaceStatus; existing: boolean; activationEmail: ActivationEmailResult };
 function safeDatabaseFailure(code:string){return new EmployeeProvisioningError(code,"Employee provisioning could not be completed safely",500)}
 function escapeHtml(value:string){return value.replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]!))}
-async function ensureActivationInvitation(input:{organisationId:string;userId:string;identityId:string;email:string;name:string}){
+async function ensureActivationInvitation(input:{organisationId:string;userId:string;identityId:string;email:string;name:string;force?:boolean}):Promise<ActivationEmailResult>{
   const open=await supabaseAdmin.schema("identity").from("invitations").select("id,delivered_at").eq("organisation_id",input.organisationId).eq("user_id",input.userId).is("accepted_at",null).gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(1).maybeSingle();
-  if(open.data?.delivered_at)return"sent" as const;
+  if(open.data?.delivered_at && !input.force)return { attempted: true, sent: true };
   if(open.data)await supabaseAdmin.schema("identity").from("invitations").update({expires_at:new Date().toISOString(),delivery_error:"superseded_for_safe_retry"}).eq("id",open.data.id).eq("organisation_id",input.organisationId);
   const token=randomBytes(32).toString("base64url"),created=await supabaseAdmin.schema("identity").from("invitations").insert({organisation_id:input.organisationId,user_id:input.userId,token_hash:createHash("sha256").update(token).digest("hex"),expires_at:new Date(Date.now()+72*3600000).toISOString()}).select("id").single();
   if(created.error)throw safeDatabaseFailure("activation_create_failed");
-  if(!process.env.RESEND_API_KEY){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_provider_not_configured"}).eq("id",created.data.id);return"pending" as const}
+  if(!process.env.RESEND_API_KEY){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_provider_not_configured"}).eq("id",created.data.id);return { attempted: true, sent: false, errorCode: "EMAIL_PROVIDER_NOT_CONFIGURED" }}
   const base=(process.env.NEXTAUTH_URL||"https://growxlabs.tech").replace(/\/$/,""),activationUrl=`${base}/activate/${token}`,employeeName=escapeHtml(input.name),sent=await new Resend(process.env.RESEND_API_KEY).emails.send({from:process.env.RESEND_FROM_EMAIL||"GrowXLabs People <noreply@growxlabs.tech>",to:input.email,subject:"Activate your GrowXLabs employee workspace",html:`<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><title>Activate your GrowXLabs employee workspace</title></head>
@@ -65,8 +66,9 @@ async function ensureActivationInvitation(input:{organisationId:string;userId:st
   </table>
 </body>
 </html>`});
-  if(sent.error){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_delivery_failed"}).eq("id",created.data.id);return"pending" as const}
-  await supabaseAdmin.schema("identity").from("invitations").update({delivered_at:new Date().toISOString(),delivery_error:null}).eq("id",created.data.id);return"sent" as const;
+  if(sent.error){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_delivery_failed"}).eq("id",created.data.id);return { attempted: true, sent: false, errorCode: "ACTIVATION_EMAIL_FAILED" }}
+  await supabaseAdmin.schema("identity").from("invitations").update({delivered_at:new Date().toISOString(),delivery_error:null}).eq("id",created.data.id);
+  return { attempted: true, sent: true, messageId: sent.data?.id };
 }
 
 function names(fullName: string) {
@@ -144,4 +146,15 @@ export async function provisionEmployee(identityId: string, organisationId: stri
   if (error) throw safeDatabaseFailure("provisioning_failed");
   await supabaseAdmin.schema("audit").from("events").insert({ organisation_id: organisationId, actor_user_id: actorUserId, entity_type: "employee_identity", entity_id: identityId, action: "employee_workspace_provisioned", new_value: { employeeId: data.employee_id, workspaceStatus: data.workspace_status }, request_id: crypto.randomUUID() });
   return data;
+}
+
+export async function reissueEmployeeActivation(employeeId: string, organisationId: string, actorUserId: string) {
+  const { data: identity } = await supabaseAdmin.schema("identity").from("employee_identities").select("id,auth_user_id,email,workspace_status").eq("employee_id", employeeId).eq("organisation_id", organisationId).maybeSingle();
+  if (!identity) throw new EmployeeProvisioningError("employee_not_found", "Employee workspace was not found", 404);
+  if (identity.workspace_status === "suspended") throw new EmployeeProvisioningError("employee_suspended", "Suspended employees cannot receive activation links", 409);
+  const { data: employee } = await supabaseAdmin.schema("people").from("employees").select("first_name,last_name").eq("id", employeeId).eq("organisation_id", organisationId).single();
+  if (!employee) throw new EmployeeProvisioningError("employee_not_found", "Employee was not found", 404);
+  const activationEmail = await ensureActivationInvitation({ organisationId, userId: identity.auth_user_id, identityId: identity.id, email: identity.email, name: `${employee.first_name} ${employee.last_name}`.trim(), force: true });
+  await supabaseAdmin.schema("audit").from("events").insert({ organisation_id: organisationId, actor_user_id: actorUserId, entity_type: "employee_identity", entity_id: identity.id, action: activationEmail.sent ? "employee_activation_reissued" : "employee_activation_email_failed", new_value: { employeeId, email: identity.email, sent: activationEmail.sent, messageId: activationEmail.messageId, errorCode: activationEmail.errorCode }, request_id: crypto.randomUUID() });
+  return { employeeId, workspaceStatus: identity.workspace_status as WorkspaceStatus, activationEmail };
 }

@@ -14,9 +14,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ app
   try {
     const { applicationId } = await params;
     const result = await convertCandidateToEmployee({ ...parsed.data, applicationId, organisationId: CAREERS_ORGANISATION, actorUserId: token.sub });
-    return Response.json({ conversion: result }, { status: result.existing ? 200 : 201 });
+    return Response.json({ success: true, conversion: result }, { status: result.existing ? 200 : 201 });
   } catch (error) {
-    if (error instanceof EmployeeProvisioningError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
+    if (error instanceof EmployeeProvisioningError) return Response.json({ success: false, error: { code: error.code, message: error.message } }, { status: error.status });
     console.error("[Employee OS] conversion failed", error); return Response.json({ error: "Employee conversion failed" }, { status: 500 });
   }
 }
