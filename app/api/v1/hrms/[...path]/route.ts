@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
+import { z } from "zod";
 
 const PUBLIC_PREFIXES = [
   "identity/invitations",
@@ -38,9 +40,65 @@ function upstreamErrorCode(status: number) {
   return "PEOPLE_SERVICE_UNAVAILABLE";
 }
 
+const referenceCreateSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  code: z.string().trim().min(1).max(50).transform(value => value.toUpperCase()),
+  description: z.string().trim().max(1000).optional(),
+  level: z.number().int().min(1).max(100).optional(),
+});
+const referenceStatusSchema = z.object({ status: z.enum(["active", "inactive", "archived"]) });
+
+async function handleVercelPeopleReferences(request: NextRequest, path: string[], requestId: string) {
+  if (path[0] !== "people" || !["departments", "designations"].includes(path[1] || "")) return null;
+  const entity = path[1] as "departments" | "designations";
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return apiError(401, "UNAUTHENTICATED", "Your session has expired. Sign in again.", requestId);
+  if (!["ADMIN", "CO_ADMIN", "HR"].includes(String(session.user.role).toUpperCase())) return apiError(403, "FORBIDDEN", "People administration access is required.", requestId);
+  const organisationId = CAREERS_ORGANISATION;
+  if (!z.uuid().safeParse(organisationId).success) return apiError(503, "ORGANISATION_CONTEXT_MISSING", "The organisation is not configured.", requestId);
+  const db = supabaseAdmin.schema("people").from(entity);
+
+  if (request.method === "GET" && path.length === 2) {
+    const page = Math.max(1, Number(request.nextUrl.searchParams.get("page")) || 1);
+    const pageSize = Math.min(100, Math.max(1, Number(request.nextUrl.searchParams.get("pageSize")) || 50));
+    let query = db.select("*", { count: "exact" }).eq("organisation_id", organisationId).is("deleted_at", null).order("name").range((page - 1) * pageSize, page * pageSize - 1);
+    const status = request.nextUrl.searchParams.get("status");
+    const search = request.nextUrl.searchParams.get("q")?.trim();
+    if (["active", "inactive", "archived"].includes(status || "")) query = query.eq("status", status!);
+    if (search) query = query.or(`name.ilike.%${search.replace(/[%_,()]/g, "") }%,code.ilike.%${search.replace(/[%_,()]/g, "")}%`);
+    const { data, error, count } = await query;
+    if (error) { console.error(JSON.stringify({ request_id: requestId, route: request.nextUrl.pathname, code: error.code })); return apiError(500, "PEOPLE_REFERENCE_READ_FAILED", "Departments and designations could not be loaded.", requestId); }
+    return Response.json({ items: data || [], total: count || 0 }, { headers: { "X-Request-Id": requestId, "Cache-Control": "no-store" } });
+  }
+
+  if (request.method === "POST" && path.length === 2) {
+    const parsed = referenceCreateSchema.safeParse(await request.json().catch(() => null));
+    if (!parsed.success) return apiError(400, "INVALID_REFERENCE", "A valid name and code are required.", requestId);
+    const payload = { organisation_id: organisationId, name: parsed.data.name, code: parsed.data.code, status: "active", ...(parsed.data.description ? { description: parsed.data.description } : {}), ...(entity === "designations" && parsed.data.level ? { level: parsed.data.level } : {}) };
+    const { data, error } = await db.insert(payload).select("*").single();
+    if (error) { const duplicate = error.code === "23505"; return apiError(duplicate ? 409 : 500, duplicate ? "REFERENCE_CODE_EXISTS" : "PEOPLE_REFERENCE_CREATE_FAILED", duplicate ? "That code already exists." : "The record could not be created.", requestId); }
+    return Response.json(data, { status: 201, headers: { "X-Request-Id": requestId } });
+  }
+
+  if (request.method === "PATCH" && path.length === 4 && path[3] === "status" && z.uuid().safeParse(path[2]).success) {
+    const parsed = referenceStatusSchema.safeParse(await request.json().catch(() => null));
+    if (!parsed.success) return apiError(400, "INVALID_STATUS", "A valid status is required.", requestId);
+    const version = Number(request.headers.get("if-match")?.replaceAll('"', ""));
+    let query = db.update({ status: parsed.data.status, deleted_at: parsed.data.status === "archived" ? new Date().toISOString() : null }).eq("id", path[2]).eq("organisation_id", organisationId);
+    if (Number.isInteger(version)) query = query.eq("version", version);
+    const { data, error } = await query.select("*").maybeSingle();
+    if (error) return apiError(500, "PEOPLE_REFERENCE_UPDATE_FAILED", "The status could not be saved.", requestId);
+    if (!data) return apiError(409, "REFERENCE_VERSION_CONFLICT", "This record changed. Refresh and try again.", requestId);
+    return Response.json(data, { headers: { "X-Request-Id": requestId } });
+  }
+  return apiError(404, "NOT_FOUND", "People reference route not found.", requestId);
+}
+
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
   const { path } = await context.params;
+  const localPeopleResponse = await handleVercelPeopleReferences(request, path, requestId);
+  if (localPeopleResponse) return localPeopleResponse;
   const publicRequest = isPublicPath(path, request.method);
 
   let base: string;

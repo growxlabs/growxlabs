@@ -13,7 +13,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ app
   if (!parsed.success) return Response.json({ error: "Valid employee code, department, designation, and joining date are required", details: parsed.error.flatten() }, { status: 400 });
   try {
     const { applicationId } = await params;
-    const result = await convertCandidateToEmployee({ ...parsed.data, applicationId, organisationId: String(token.organisation_id || CAREERS_ORGANISATION), actorUserId: token.sub });
+    const result = await convertCandidateToEmployee({ ...parsed.data, applicationId, organisationId: CAREERS_ORGANISATION, actorUserId: token.sub });
     return Response.json({ conversion: result }, { status: result.existing ? 200 : 201 });
   } catch (error) {
     if (error instanceof EmployeeProvisioningError) return Response.json({ error: error.message, code: error.code }, { status: error.status });
