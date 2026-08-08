@@ -61,8 +61,8 @@ export default function ActivateAccountPage() {
     } finally { setSaving(false); }
   }
 
-  return <main className="flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-12 text-[#152033] sm:px-6 lg:px-8 lg:py-16">
-    <section className="mx-auto grid w-full max-w-[1120px] overflow-hidden rounded-[10px] border border-[#dfe3e8] bg-white lg:grid-cols-[.92fr_1.08fr]">
+  return <main className="flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-8 text-[#152033] sm:px-6 sm:py-12 lg:px-12 lg:py-16">
+    <section className="mx-auto grid w-full max-w-[1200px] overflow-hidden rounded-[10px] border border-[#dfe3e8] bg-white lg:grid-cols-[.92fr_1.08fr]">
       <div className="border-b border-[#dfe3e8] bg-[#f8fafc] p-7 sm:p-10 lg:border-b-0 lg:border-r lg:p-12">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-[#0075de]"><ShieldCheck size={20}/></div>
         <p className="mt-8 text-[10px] font-bold uppercase tracking-[.18em] text-[#0075de]">GrowXLabs</p>
@@ -77,19 +77,19 @@ export default function ActivateAccountPage() {
         </div>
       </div>
 
-      <div className="flex min-h-[560px] items-center p-7 sm:p-10 lg:p-12">
+      <div className="flex min-h-[560px] items-start p-7 sm:p-10 lg:min-h-[520px] lg:p-12">
         {state === "done" ? <div className="w-full text-center" aria-live="polite">
           <CheckCircle2 className="mx-auto text-emerald-600" size={38}/>
           <h2 className="mt-6 text-3xl font-black tracking-tight text-[#101828]">Account activated</h2>
           <p className="mt-3 text-sm text-[#596579]">Your GrowXLabs workspace is ready.</p>
           <Link href="/login" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-[#0075de] px-6 text-xs font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
-        </div> : state === "unavailable" ? <div className="w-full text-center" role="alert">
+        </div> : state === "unavailable" ? <div className="w-full pt-2 text-center lg:pt-0" role="alert">
           <CircleAlert className="mx-auto text-amber-600" size={36}/>
           <h2 className="mt-6 text-3xl font-black tracking-tight text-[#101828]">Activation link unavailable</h2>
           <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#596579]">This activation link is invalid or has expired.</p>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#596579]">Contact your GrowXLabs administrator for a new invitation.</p>
           <Link href="/login" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg border border-[#cfd5dd] bg-white px-6 text-xs font-bold text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
-        </div> : <div className="w-full">
+        </div> : <div className="w-full max-w-[560px]">
           <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#0075de]">Identity activation</p>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-[#101828]">Activate your account</h2>
           <p className="mt-3 max-w-lg text-sm leading-6 text-[#596579]">Create a secure password to finish setting up your GrowXLabs employee workspace.</p>
