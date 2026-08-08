@@ -17,7 +17,54 @@ async function ensureActivationInvitation(input:{organisationId:string;userId:st
   const token=randomBytes(32).toString("base64url"),created=await supabaseAdmin.schema("identity").from("invitations").insert({organisation_id:input.organisationId,user_id:input.userId,token_hash:createHash("sha256").update(token).digest("hex"),expires_at:new Date(Date.now()+72*3600000).toISOString()}).select("id").single();
   if(created.error)throw safeDatabaseFailure("activation_create_failed");
   if(!process.env.RESEND_API_KEY){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_provider_not_configured"}).eq("id",created.data.id);return"pending" as const}
-  const base=(process.env.NEXTAUTH_URL||"https://growxlabs.tech").replace(/\/$/,""),sent=await new Resend(process.env.RESEND_API_KEY).emails.send({from:process.env.RESEND_FROM_EMAIL||"GrowXLabs People <noreply@growxlabs.tech>",to:input.email,subject:"Activate your GrowXLabs employee workspace",html:`<p>Hello ${escapeHtml(input.name)},</p><p>Your GrowXLabs employee workspace is ready for activation.</p><p><a href="${base}/activate/${token}">Activate your employee account</a></p><p>This one-time link expires in 72 hours.</p>`});
+  const base=(process.env.NEXTAUTH_URL||"https://growxlabs.tech").replace(/\/$/,""),activationUrl=`${base}/activate/${token}`,employeeName=escapeHtml(input.name),sent=await new Resend(process.env.RESEND_API_KEY).emails.send({from:process.env.RESEND_FROM_EMAIL||"GrowXLabs People <noreply@growxlabs.tech>",to:input.email,subject:"Activate your GrowXLabs employee workspace",html:`<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><title>Activate your GrowXLabs employee workspace</title></head>
+<body style="margin:0;padding:0;background:#f3f5f7;color:#172033;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your GrowXLabs employee workspace is ready for secure activation.</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#f3f5f7;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" width="620" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:620px;background:#ffffff;border:1px solid #dfe4ea;">
+        <tr><td style="padding:24px 36px;background:#101828;border-bottom:3px solid #0878d1;">
+          <div style="font-size:21px;line-height:28px;font-weight:700;letter-spacing:-.2px;color:#ffffff;">GrowXLabs</div>
+          <div style="margin-top:3px;font-size:10px;line-height:16px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:#a9c8e7;">People &amp; Employee Identity</div>
+        </td></tr>
+        <tr><td style="padding:38px 36px 30px;">
+          <div style="font-size:11px;line-height:18px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#0878d1;">Employee Workspace</div>
+          <h1 style="margin:12px 0 0;font-size:27px;line-height:36px;font-weight:700;letter-spacing:-.5px;color:#101828;">Welcome to GrowXLabs, ${employeeName}</h1>
+          <p style="margin:18px 0 0;font-size:15px;line-height:24px;color:#475467;">Your employee workspace has been prepared.</p>
+          <p style="margin:8px 0 0;font-size:15px;line-height:24px;color:#475467;">Use the secure activation link below to create your password and activate your GrowXLabs employee account.</p>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-top:26px;"><tr><td bgcolor="#0878d1" style="border-radius:6px;">
+            <a href="${activationUrl}" style="display:inline-block;padding:13px 22px;font-size:14px;line-height:20px;font-weight:700;color:#ffffff;text-decoration:none;border:1px solid #0878d1;border-radius:6px;">Activate Employee Workspace</a>
+          </td></tr></table>
+          <p style="margin:14px 0 0;font-size:12px;line-height:19px;color:#667085;">Activation link expires in 72 hours.</p>
+        </td></tr>
+        <tr><td style="padding:0 36px;"><div style="height:1px;background:#e4e7ec;line-height:1px;">&nbsp;</div></td></tr>
+        <tr><td style="padding:28px 36px;">
+          <div style="font-size:11px;line-height:18px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#344054;">Account details</div>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:16px;width:100%;border-collapse:collapse;">
+            <tr><td width="42%" style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:12px;line-height:18px;color:#667085;">Employee</td><td style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:13px;line-height:19px;font-weight:700;color:#101828;">${employeeName}</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:12px;line-height:18px;color:#667085;">Role</td><td style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:13px;line-height:19px;font-weight:700;color:#101828;">Business Development Executive</td></tr>
+            <tr><td style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:12px;line-height:18px;color:#667085;">Workspace</td><td style="padding:11px 0;border-bottom:1px solid #eaecf0;font-size:13px;line-height:19px;font-weight:700;color:#101828;">GrowXLabs Employee OS</td></tr>
+            <tr><td style="padding:11px 0;font-size:12px;line-height:18px;color:#667085;">Status</td><td style="padding:11px 0;font-size:13px;line-height:19px;font-weight:700;color:#087443;">Ready for activation</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:0 36px;"><div style="height:1px;background:#e4e7ec;line-height:1px;">&nbsp;</div></td></tr>
+        <tr><td style="padding:28px 36px;">
+          <div style="font-size:11px;line-height:18px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#344054;">Security notice</div>
+          <p style="margin:12px 0 0;font-size:13px;line-height:21px;color:#475467;">This is a one-time activation link. Do not forward or share this email.</p>
+          <p style="margin:7px 0 0;font-size:13px;line-height:21px;color:#475467;">If you did not expect this invitation, contact the GrowXLabs People team.</p>
+        </td></tr>
+        <tr><td style="padding:22px 36px;background:#f8fafc;border-top:1px solid #e4e7ec;">
+          <div style="font-size:12px;line-height:19px;font-weight:700;color:#344054;">GrowXLabs People</div>
+          <div style="margin-top:2px;font-size:12px;line-height:19px;color:#667085;"><a href="mailto:sai@growxlabs.tech" style="color:#0878d1;text-decoration:none;">sai@growxlabs.tech</a></div>
+          <div style="margin-top:13px;font-size:11px;line-height:18px;color:#98a2b3;">&copy; 2026 GrowXLabs</div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`});
   if(sent.error){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_delivery_failed"}).eq("id",created.data.id);return"pending" as const}
   await supabaseAdmin.schema("identity").from("invitations").update({delivered_at:new Date().toISOString(),delivery_error:null}).eq("id",created.data.id);return"sent" as const;
 }
