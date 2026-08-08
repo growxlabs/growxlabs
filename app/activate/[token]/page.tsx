@@ -61,8 +61,8 @@ export default function ActivateAccountPage() {
     } finally { setSaving(false); }
   }
 
-  return <main className="flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-8 text-[#152033] sm:px-6 sm:py-12 lg:px-12 lg:py-16">
-    <section className="mx-auto grid w-full max-w-[1200px] overflow-hidden rounded-[10px] border border-[#dfe3e8] bg-white lg:grid-cols-[.92fr_1.08fr]">
+  return <main className="flex min-h-[calc(100vh-210px)] items-center bg-[#f6f7f9] px-4 py-12 text-[#152033] sm:px-6 sm:py-16 lg:px-12 lg:py-20">
+    <section className="mx-auto grid w-full max-w-[1200px] overflow-hidden rounded-2xl border border-[#dfe3e8] bg-white lg:grid-cols-[.92fr_1.08fr]">
       <div className="border-b border-[#dfe3e8] bg-[#f8fafc] p-7 sm:p-10 lg:border-b-0 lg:border-r lg:p-12">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-[#0075de]"><ShieldCheck size={20}/></div>
         <p className="mt-8 text-[10px] font-bold uppercase tracking-[.18em] text-[#0075de]">GrowXLabs</p>
@@ -77,7 +77,7 @@ export default function ActivateAccountPage() {
         </div>
       </div>
 
-      <div className="flex min-h-[560px] items-start p-7 sm:p-10 lg:min-h-[520px] lg:p-12">
+      <div className="flex min-h-[560px] items-start p-7 sm:p-10 lg:min-h-[520px] lg:p-14">
         {state === "done" ? <div className="w-full text-center" aria-live="polite">
           <CheckCircle2 className="mx-auto text-emerald-600" size={38}/>
           <h2 className="mt-6 text-3xl font-black tracking-tight text-[#101828]">Account activated</h2>
