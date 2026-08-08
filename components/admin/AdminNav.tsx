@@ -60,6 +60,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Database,
     items: [
       { name: "CRM Hub", href: "/admin/crm", icon: Database },
+      { name: "Sales Team", href: "/admin/crm/team", icon: Users },
       { name: "Companies", href: "/admin/companies", icon: Building2 },
       { name: "Contacts", href: "/admin/contacts", icon: Users },
       { name: "Deals Pipeline", href: "/admin/deals", icon: DollarSign },

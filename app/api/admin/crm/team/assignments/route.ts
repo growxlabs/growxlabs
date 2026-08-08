@@ -1,0 +1,3 @@
+import { z } from "zod";import { adminSalesResponse,assignSalesLeads } from "@/lib/employee-os/admin-sales-control";
+const schema=z.object({leadIds:z.array(z.uuid()).min(1).max(100),employeeId:z.uuid(),priority:z.enum(["low","medium","high","urgent"]).optional(),assignmentNote:z.string().trim().max(1000).optional(),initialDueAt:z.iso.datetime().optional()});
+export async function POST(request:Request){try{const parsed=schema.safeParse(await request.json());if(!parsed.success)return Response.json({error:"Invalid assignment request"},{status:422});return Response.json(await assignSalesLeads(parsed.data))}catch(error){return adminSalesResponse(error)}}

@@ -1,0 +1,2 @@
+import { EmptyState,EmploymentNav,PageHeader } from "@/components/workspace/WorkspaceUI";
+export default function AssetsPage(){return <><PageHeader eyebrow="My Employment" title="Assets" description="Equipment reliably assigned to your employee identity."/><EmploymentNav/><EmptyState>Asset ownership is not yet reliably mapped to the canonical employee identity, so no asset records are shown.</EmptyState></>}

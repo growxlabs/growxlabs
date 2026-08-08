@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { createFollowUp } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function POST(r:Request,{params}:{params:Promise<{leadId:string}>}){try{return Response.json({followup:await createFollowUp(await requireActiveEmployeeContext(),(await params).leadId,await r.json())},{status:201})}catch(e){return salesError(e)}}

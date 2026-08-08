@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getEmployeeWorkQueue } from "@/lib/employee-os/work-queue";import { PageHeader } from "@/components/workspace/WorkspaceUI";import { WorkQueue } from "@/components/workspace/WorkQueue";
+export default async function WorkPage(){const employee=await requireActiveEmployeeContext();return <><PageHeader eyebrow="My Work" title="Today" description="Your operational queue, ordered by what needs attention next."/><WorkQueue initial={await getEmployeeWorkQueue(employee,"today")}/></>}

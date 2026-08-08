@@ -1,0 +1,2 @@
+import Link from "next/link";import { EmploymentNav,PageHeader } from "@/components/workspace/WorkspaceUI";
+export default function LearningPage(){return <><PageHeader eyebrow="My Employment" title="Learning" description="Assigned learning uses the existing GrowXLabs learning workspace."/><EmploymentNav/><Link href="/me/learning" className="text-sm font-medium text-blue-700 hover:underline">Open assigned learning</Link></>}

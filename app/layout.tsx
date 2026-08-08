@@ -1,6 +1,5 @@
 import React from "react";
 
-import { Plus_Jakarta_Sans, Playfair_Display, Lora, Outfit } from "next/font/google";
 import { GlobalBackground } from "@/components/layout/GlobalBackground";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -13,31 +12,6 @@ import Script from "next/script";
 import { PHProvider } from "@/components/providers/PostHogProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import "./globals.css";
-
-const sans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const serif = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const lora = Lora({
-  subsets: ["latin"],
-  variable: "--font-lora",
-  display: "swap",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-outfit",
-  display: "swap",
-});
 
 export const metadata = {
   metadataBase: new URL('https://growxlabs.tech'),
@@ -66,7 +40,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable} ${lora.variable} ${outfit.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         {/* 🧠 MASTER AEO KNOWLEDGE GRAPH (Verified Architecture) */}
         <script

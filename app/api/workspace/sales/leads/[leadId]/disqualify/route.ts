@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { disqualifyLead } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function POST(r:Request,{params}:{params:Promise<{leadId:string}>}){try{return Response.json({qualification:await disqualifyLead(await requireActiveEmployeeContext(),(await params).leadId,await r.json())})}catch(e){return salesError(e)}}

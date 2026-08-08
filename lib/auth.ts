@@ -124,6 +124,26 @@ export const authOptions: AuthOptions = {
         token.allowed_paths = user.allowed_paths || [];
         token.organisation_id = user.organisation_id || process.env.DEFAULT_ORGANISATION_ID;
         token.permissions = user.permissions || [];
+        const employeeOrganisationId = user.organisation_id || process.env.DEFAULT_ORGANISATION_ID;
+        if (employeeOrganisationId) {
+          const { data: employeeIdentity } = await supabaseAdmin.schema("identity").from("employee_identities")
+            .select("id,employee_id,workspace_status").eq("auth_user_id", user.id).eq("organisation_id", employeeOrganisationId).maybeSingle();
+          if (employeeIdentity) {
+            token.identityId = employeeIdentity.id;
+            token.employeeId = employeeIdentity.employee_id;
+            token.workspaceStatus = employeeIdentity.workspace_status;
+            const { data: assignedRoles } = await supabaseAdmin.schema("identity").from("user_roles").select("role_id").eq("organisation_id", employeeOrganisationId).eq("user_id", user.id);
+            const roleIds = (assignedRoles || []).map(assignment => assignment.role_id);
+            if (roleIds.length) {
+              const { data: grants } = await supabaseAdmin.schema("identity").from("role_permissions").select("permission_id").eq("organisation_id", employeeOrganisationId).in("role_id", roleIds);
+              const permissionIds = [...new Set((grants || []).map(grant => grant.permission_id))];
+              if (permissionIds.length) {
+                const { data: capabilities } = await supabaseAdmin.schema("identity").from("permissions").select("key").in("id", permissionIds);
+                token.permissions = [...new Set([...(token.permissions || []), ...(capabilities || []).map(capability => capability.key)])];
+              }
+            }
+          }
+        }
       }
 
       // Block and invalidate co-admin sessions
@@ -162,6 +182,9 @@ export const authOptions: AuthOptions = {
         session.user.allowed_paths = token.allowed_paths || [];
         session.user.organisation_id = token.organisation_id;
         session.user.permissions = token.permissions || [];
+        session.user.identityId = token.identityId;
+        session.user.employeeId = token.employeeId;
+        session.user.workspaceStatus = token.workspaceStatus;
       }
       return session;
     },

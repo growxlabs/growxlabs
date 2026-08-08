@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { updateQualification } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function PATCH(r:Request,{params}:{params:Promise<{leadId:string}>}){try{return Response.json({qualification:await updateQualification(await requireActiveEmployeeContext(),(await params).leadId,await r.json())})}catch(e){return salesError(e)}}

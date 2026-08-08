@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getMeetings } from "@/lib/employee-os/sales-service";import { SalesHeader } from "@/components/workspace/SalesUI";import { MeetingCenter } from "@/components/workspace/MeetingCenter";
+export default async function MeetingsPage(){return <><SalesHeader title="Discovery meetings" description="Prepare, join and record outcomes for discovery meetings in your assigned pipeline."/><MeetingCenter initial={await getMeetings(await requireActiveEmployeeContext())}/></>}

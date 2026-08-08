@@ -1,0 +1,3 @@
+import { z } from "zod";import { adminSalesResponse,reviewSalesHandoff } from "@/lib/employee-os/admin-sales-control";
+const schema=z.object({action:z.enum(["accept","request_clarification"]),internalOwnerEmployeeId:z.uuid().optional(),message:z.string().trim().max(2000).optional()});
+export async function POST(request:Request,{params}:{params:Promise<{handoffId:string}>}){try{const parsed=schema.safeParse(await request.json());if(!parsed.success)return Response.json({error:"Invalid review request"},{status:422});return Response.json(await reviewSalesHandoff({handoffId:(await params).handoffId,...parsed.data}))}catch(error){return adminSalesResponse(error)}}

@@ -9,6 +9,9 @@ declare module "next-auth" {
       organisation_id?: string;
       permissions?: string[];
       allowed_paths?: string[];
+      identityId?: string;
+      employeeId?: string;
+      workspaceStatus?: "pending" | "provisioning" | "active" | "suspended" | "failed";
     } & DefaultSession["user"];
   }
 
@@ -18,6 +21,9 @@ declare module "next-auth" {
     organisation_id?: string;
     permissions?: string[];
     allowed_paths?: string[];
+    identityId?: string;
+    employeeId?: string;
+    workspaceStatus?: "pending" | "provisioning" | "active" | "suspended" | "failed";
   }
 }
 
@@ -28,5 +34,8 @@ declare module "next-auth/jwt" {
     organisation_id?: string;
     permissions?: string[];
     allowed_paths?: string[];
+    identityId?: string;
+    employeeId?: string;
+    workspaceStatus?: "pending" | "provisioning" | "active" | "suspended" | "failed";
   }
 }

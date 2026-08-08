@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { updateMeetingPreparation } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function PATCH(r:Request,{params}:{params:Promise<{meetingId:string}>}){try{const b=await r.json();return Response.json({meeting:await updateMeetingPreparation(await requireActiveEmployeeContext(),(await params).meetingId,String(b.notes||""))})}catch(e){return salesError(e)}}

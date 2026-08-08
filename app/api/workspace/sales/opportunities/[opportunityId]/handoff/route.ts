@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { handoffOpportunity } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function POST(r:Request,{params}:{params:Promise<{opportunityId:string}>}){try{return Response.json({handoff:await handoffOpportunity(await requireActiveEmployeeContext(),(await params).opportunityId,await r.json())},{status:201})}catch(e){return salesError(e)}}

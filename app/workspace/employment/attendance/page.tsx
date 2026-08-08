@@ -1,0 +1,2 @@
+import { EmploymentNav,PageHeader } from "@/components/workspace/WorkspaceUI"; import { AttendanceSelfService } from "@/components/workspace/AttendanceSelfService";
+export default function AttendancePage(){return <><PageHeader eyebrow="My Employment" title="Attendance" description="Your attendance record for today. Data is resolved from your authenticated employee identity."/><EmploymentNav/><AttendanceSelfService/></>}

@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700;800&family=Inter:wght@400;500;700;800;900&display=swap');
 @import "tailwindcss";
+
+:root {
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-lora: Lora, Georgia, "Times New Roman", serif;
+  --font-outfit: Outfit, "Segoe UI", Arial, sans-serif;
+}
 @custom-variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
 

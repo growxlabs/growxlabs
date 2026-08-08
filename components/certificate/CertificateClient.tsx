@@ -1,23 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Cormorant_Garamond, Cinzel, Montserrat } from "next/font/google";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "600"],
-  style: ["normal", "italic"],
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-});
+const cormorant = { className: "font-serif" };
+const cinzel = { className: "font-serif" };
+const montserrat = { className: "font-sans" };
 
 interface CertificateClientProps {
   cert: {

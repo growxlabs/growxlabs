@@ -1,16 +1,8 @@
 "use client";
 
 import { FormEvent, useState, useEffect } from "react";
-import { Alfa_Slab_One, DM_Sans } from "next/font/google";
-
-const alfa = Alfa_Slab_One({
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-});
+const alfa = { className: "font-serif" };
+const dmSans = { className: "font-sans" };
 
 let audioCtx: AudioContext | null = null;
 let ambientOsc: OscillatorNode | null = null;

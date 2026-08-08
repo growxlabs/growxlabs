@@ -2,12 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { CheckCircle2, ShieldCheck, Award, Calendar, GraduationCap } from "lucide-react";
-import { Cinzel, Montserrat } from "next/font/google";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["600", "700"] });
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500", "600"] });
+const cinzel = { className: "font-serif" };
+const montserrat = { className: "font-sans" };
 
 export default async function VerifyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: certId } = await params;

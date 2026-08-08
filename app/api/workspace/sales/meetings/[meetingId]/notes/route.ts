@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { completeMeetingNotes } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function POST(r:Request,{params}:{params:Promise<{meetingId:string}>}){try{return Response.json({meeting:await completeMeetingNotes(await requireActiveEmployeeContext(),(await params).meetingId,await r.json())})}catch(e){return salesError(e)}}

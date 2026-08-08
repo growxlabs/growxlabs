@@ -13,6 +13,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Lead } from "@/types";
+import { AdminLeadAssignment } from "@/components/admin/crm/AdminLeadAssignment";
+import { AdminLeadSalesContext } from "@/components/admin/crm/AdminLeadSalesContext";
 
 export default function LeadDetailsPage() {
   const router = useRouter();
@@ -379,6 +381,8 @@ export default function LeadDetailsPage() {
 
         {/* Sidebar */}
         <div className="space-y-8">
+           <AdminLeadAssignment leadId={id} />
+           <AdminLeadSalesContext leadId={id} />
            <Card className="p-8 border-white/5 bg-white/[0.05] rounded-2xl border-l-4 border-white/40 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5">
                  <Target size={80} />

@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getAssignedLeads } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function GET(request:Request){try{const c=await requireActiveEmployeeContext(),u=new URL(request.url);return Response.json({leads:await getAssignedLeads(c,{status:u.searchParams.get("status")||undefined,priority:u.searchParams.get("priority")||undefined,query:u.searchParams.get("q")||undefined})})}catch(e){return salesError(e)}}

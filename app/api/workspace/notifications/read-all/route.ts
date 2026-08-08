@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { supabaseAdmin } from "@/lib/supabase/admin";
+export async function POST(){try{const e=await requireActiveEmployeeContext();const {error}=await supabaseAdmin.schema("notifications").from("notifications").update({read_at:new Date().toISOString()}).eq("organisation_id",e.organisationId).eq("recipient_user_id",e.authUserId).is("read_at",null);if(error)throw error;return Response.json({success:true})}catch{return Response.json({error:"Notifications could not be updated"},{status:500})}}

@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getAccessibleOpportunity } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function GET(_:Request,{params}:{params:Promise<{opportunityId:string}>}){try{return Response.json({opportunity:await getAccessibleOpportunity(await requireActiveEmployeeContext(),(await params).opportunityId)})}catch(e){return salesError(e)}}

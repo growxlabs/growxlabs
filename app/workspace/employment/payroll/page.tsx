@@ -1,0 +1,2 @@
+import { EmptyState,EmploymentNav,PageHeader } from "@/components/workspace/WorkspaceUI";
+export default function PayrollPage(){return <><PageHeader eyebrow="My Employment" title="Payroll" description="Published payslips and payroll documents for your employee record."/><EmploymentNav/><EmptyState>No securely published employee payslips are available. Organisation payroll runs and configuration are never exposed here.</EmptyState></>}

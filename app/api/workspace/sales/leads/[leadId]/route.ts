@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getAccessibleLead } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function GET(_:Request,{params}:{params:Promise<{leadId:string}>}){try{const c=await requireActiveEmployeeContext();return Response.json({lead:await getAccessibleLead(c,(await params).leadId)})}catch(e){return salesError(e)}}

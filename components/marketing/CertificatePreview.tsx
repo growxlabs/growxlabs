@@ -2,10 +2,9 @@
 
 import { motion } from "framer-motion";
 import { QrCode } from "lucide-react";
-import { Cinzel } from "next/font/google";
 import Image from "next/image";
 
-const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "600", "700"] });
+const cinzel = { className: "font-serif" };
 
 export function CertificatePreview() {
   return (

@@ -1,0 +1,2 @@
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { updateFollowUp } from "@/lib/employee-os/sales-service";import { salesError } from "@/lib/employee-os/sales-api";
+export async function PATCH(r:Request,{params}:{params:Promise<{followupId:string}>}){try{return Response.json({followup:await updateFollowUp(await requireActiveEmployeeContext(),(await params).followupId,await r.json())})}catch(e){return salesError(e)}}

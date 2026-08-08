@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronRight, Star, History, X, FileText, User, ExternalLink, Calendar, Mail, Phone, Briefcase, Video } from "lucide-react";
+import { ChevronRight, Star, History, X, FileText, User, ExternalLink, Mail, Phone, Video } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { CandidateEmailTimeline } from "@/components/admin/recruitment/CandidateEmailTimeline";
@@ -40,6 +40,18 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [sendEmail, setSendEmail] = useState(true);
+  const [converting, setConverting] = useState<any>(null);
+  const [conversion, setConversion] = useState({ employeeCode: "", departmentId: "", designationId: "", managerEmployeeId: "", joiningDate: new Date().toISOString().slice(0, 10), roleId: "" });
+  const [conversionResult, setConversionResult] = useState<any>(null);
+  const [conversionError, setConversionError] = useState("");
+  const convert = async () => {
+    if (!converting) return;
+    setConversionError("");
+    const response = await fetch(`/api/admin/recruitment/applications/${converting.id}/convert-to-employee`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...conversion, managerEmployeeId: conversion.managerEmployeeId || null, roleId: conversion.roleId || null }) });
+    const body = await response.json();
+    if (!response.ok) return setConversionError(body.error || "Conversion failed");
+    setConversionResult(body.conversion); onRefresh?.();
+  };
   const reasons = ["Does not meet role requirements", "Insufficient relevant experience", "Communication not suitable", "Interview performance", "Assessment performance", "Availability / joining constraints", "Compensation mismatch", "Position filled", "Candidate withdrew", "Duplicate application", "Other"];
   const reject = async () => { if (!rejecting || !reason || (reason === "Other" && !note.trim())) return; const response = await fetch(`/api/admin/recruitment/applications/${rejecting.id}/rejection`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason, note, sendEmail, otherReason: reason === "Other" ? note : undefined }) }); if (response.ok) { setRejecting(null); setReason(""); setNote(""); onRefresh?.(); } };
   const reopen = async (candidate: any) => { if ((await fetch(`/api/admin/recruitment/applications/${candidate.id}/rejection`, { method: "PATCH" })).ok) onRefresh?.(); };
@@ -56,7 +68,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
           {(showRejected ? ["REJECTED"] : STAGES).map((stage) => {
             const stageCandidates = candidates.filter((c) => {
               const candidateStage = String(c.stage || "APPLIED").trim().toUpperCase().replace(/[\s-]+/g, "_");
-                      return candidateStage === stage && (showRejected || candidate.status !== "rejected");
+              return candidateStage === stage && (showRejected || c.status !== "rejected");
             });
             return (
               <div key={stage} className="w-[240px] flex-shrink-0">
@@ -101,6 +113,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                           </button>
                         )}
                         {!showRejected && stage !== "HIRED" && <button type="button" onClick={() => setRejecting(candidate)} className="text-[8px] font-bold uppercase text-red-600 hover:underline">Reject</button>}
+                        {!showRejected && stage === "HIRED" && <button type="button" onClick={() => { setConverting(candidate); setConversionResult(null); setConversionError(""); }} className="text-[8px] font-bold uppercase text-emerald-600 hover:underline">Convert to Employee</button>}
                         {showRejected && <button type="button" onClick={() => void reopen(candidate)} className="text-[8px] font-bold uppercase text-[#0075de] hover:underline">Reopen</button>}
                       </div>
 
@@ -266,6 +279,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
         </div>
       )}
       {rejecting && <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 p-4"><div className="w-full max-w-md rounded-xl bg-[var(--card)] p-5 shadow-2xl"><h2 className="text-base font-bold">Reject candidate</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">This removes the application from the active pipeline.</p><label className="mt-4 block text-[10px] font-bold uppercase">Reason *</label><select value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs"><option value="">Select reason</option>{reasons.map((item) => <option key={item}>{item}</option>)}</select><label className="mt-3 block text-[10px] font-bold uppercase">Optional internal note</label><textarea value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs" rows={3} /><label className="mt-3 flex items-center gap-2 text-xs"><input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} /> Send rejection email</label><div className="mt-5 flex justify-end gap-2"><button onClick={() => setRejecting(null)} className="rounded-lg border px-4 py-2 text-xs">Cancel</button><button onClick={() => void reject()} disabled={!reason || (reason === "Other" && !note.trim())} className="rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Reject Candidate</button></div></div></div>}
+      {converting && <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 p-4"><div className="w-full max-w-lg rounded-xl bg-[var(--card)] p-5 shadow-2xl"><div className="flex justify-between"><div><h2 className="text-base font-bold">Convert to Employee</h2><p className="mt-1 text-xs text-[var(--text-secondary)]">{converting.full_name} · Workspace remains pending until provisioning succeeds.</p></div><button onClick={() => setConverting(null)}><X className="h-4 w-4" /></button></div>{conversionResult ? <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-900"><p className="font-bold">Employee created</p><p>Identity provisioned: {conversionResult.identityId}</p><p>Role assigned: {conversionResult.roleId}</p><p>Workspace status: {conversionResult.workspaceStatus}</p><p>Onboarding initialized: {conversionResult.onboardingStateId}</p></div> : <><div className="mt-5 grid grid-cols-2 gap-3">{[{key:"employeeCode",label:"Employee code"},{key:"departmentId",label:"Department ID"},{key:"designationId",label:"Designation ID"},{key:"managerEmployeeId",label:"Manager ID (optional)"},{key:"joiningDate",label:"Joining date",type:"date"},{key:"roleId",label:"Role ID (optional; defaults to BDE)"}].map(field=><label key={field.key} className="text-[10px] font-bold uppercase">{field.label}<input type={field.type||"text"} value={(conversion as any)[field.key]} onChange={e=>setConversion({...conversion,[field.key]:e.target.value})} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case" /></label>)}</div>{conversionError&&<p className="mt-3 text-xs text-red-600">{conversionError}</p>}<div className="mt-5 flex justify-end"><button onClick={()=>void convert()} disabled={!conversion.employeeCode||!conversion.departmentId||!conversion.designationId||!conversion.joiningDate} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Convert to Employee</button></div></>}</div></div>}
     </>
   );
 }
