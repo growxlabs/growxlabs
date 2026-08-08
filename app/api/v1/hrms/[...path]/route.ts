@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextRequest } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const PUBLIC_PREFIXES = [
   "identity/invitations",
@@ -128,6 +129,11 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
     const responseHeaders = new Headers(response.headers);
     responseHeaders.set("X-Request-Id", response.headers.get("x-request-id") || requestId);
     responseHeaders.set("Cache-Control", "no-store");
+    if(publicRequest&&response.ok&&path[0]==="identity"&&path[1]==="invitations"&&path.at(-1)==="accept"){
+      const payload=await response.json() as {userId?:string;status?:string};
+      if(payload.userId){const activated=await supabaseAdmin.schema("identity").from("employee_identities").update({workspace_status:"active",provisioning_error:null,provisioned_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("auth_user_id",payload.userId).neq("workspace_status","suspended").select("id,organisation_id").maybeSingle();if(activated.data)await supabaseAdmin.schema("audit").from("events").insert({organisation_id:activated.data.organisation_id,actor_user_id:payload.userId,entity_type:"employee_identity",entity_id:activated.data.id,action:"workspace_activated",new_value:{source:"employee_activation"},request_id:requestId})}
+      return Response.json(payload,{status:response.status,headers:responseHeaders});
+    }
     return new Response(response.body, { status: response.status, headers: responseHeaders });
   } catch (error) {
     const timeout = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");

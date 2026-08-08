@@ -13,6 +13,7 @@ export type EmployeeContext = {
   employmentStatus: string; joiningDate: string; workLocation: string | null;
 };
 export type EmployeeContextResult = { state: "active"; employee: EmployeeContext } | { state: "unavailable" | "invalid" | Exclude<WorkspaceStatus, "active">; employee?: Partial<EmployeeContext> };
+export class EmployeeContextError extends Error { constructor(public status:number,public code:string,message:string){super(message)} }
 
 export const resolveEmployeeContext = cache(async (): Promise<EmployeeContextResult> => {
   const session = await getServerSession(authOptions);
@@ -59,6 +60,6 @@ export const resolveEmployeeContext = cache(async (): Promise<EmployeeContextRes
 
 export async function requireActiveEmployeeContext(): Promise<EmployeeContext> {
   const result = await resolveEmployeeContext();
-  if (result.state !== "active") throw new Error("Active employee workspace required");
+  if (result.state !== "active") throw new EmployeeContextError(403,`workspace_${result.state}`,"Active employee workspace required");
   return result.employee;
 }

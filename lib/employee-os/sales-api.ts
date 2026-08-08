@@ -1,2 +1,4 @@
 import { SalesAccessError } from "./sales-service";
-export function salesError(error:unknown){if(error instanceof SalesAccessError)return Response.json({error:error.message},{status:error.status});console.error("[Employee Sales]",error);return Response.json({error:"Sales request could not be completed"},{status:500})}
+import { EmployeeContextError } from "./context";
+export function employeeApiError(error:unknown){if(error instanceof EmployeeContextError)return Response.json({error:error.message,code:error.code},{status:error.status});return Response.json({error:"Employee operation could not be completed",code:"employee_operation_failed"},{status:500})}
+export function salesError(error:unknown){if(error instanceof EmployeeContextError)return employeeApiError(error);if(error instanceof SalesAccessError)return Response.json({error:error.message,code:error.status===403?"permission_denied":"sales_request_invalid"},{status:error.status});console.error("[Employee Sales]",error instanceof Error?{name:error.name}:"unknown_error");return Response.json({error:"Sales request could not be completed",code:"sales_operation_failed"},{status:500})}

@@ -4,6 +4,7 @@ import { R2StorageService } from "@/lib/command-center/artifacts/r2-storage";
 import { validateProductionConfiguration } from "@/lib/command-center/production/config";
 import { CommandCenterError, errorResponse, requestIdFrom } from "@/lib/command-center/production/errors";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { validateEmployeeOSProductionConfiguration } from "@/lib/employee-os/production-readiness";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 10;
@@ -21,11 +22,13 @@ export async function GET(request: Request): Promise<Response> {
   const timeout = setTimeout(() => controller.abort(), 3_000);
   const started = Date.now();
   try {
-    const [database, storage] = await Promise.all([
+    const [database, storage,employeeOS] = await Promise.all([
       checkDatabase(),
       R2StorageService.readiness(controller.signal),
+      checkEmployeeOS(),
     ]);
-    const ready = configuration.ready && database.ready && storage;
+    const employeeConfiguration=validateEmployeeOSProductionConfiguration();
+    const ready = configuration.ready && database.ready && storage&&employeeOS.ready&&employeeConfiguration.ready;
     return Response.json({
       status: ready ? "READY" : "NOT_READY",
       requestId,
@@ -40,6 +43,7 @@ export async function GET(request: Request): Promise<Response> {
         },
         database: { ready: database.ready },
         objectStorage: { ready: storage },
+        employeeOS:{ready:employeeOS.ready,configurationReady:employeeConfiguration.ready,missingKeys:employeeConfiguration.missing,invalidKeys:employeeConfiguration.invalid,optionalMissing:employeeConfiguration.optionalMissing},
       },
       durationMs: Date.now() - started,
       timestamp: new Date().toISOString(),
@@ -51,6 +55,8 @@ export async function GET(request: Request): Promise<Response> {
     clearTimeout(timeout);
   }
 }
+
+async function checkEmployeeOS(){try{const checks=await Promise.all([supabaseAdmin.schema("identity").from("employee_identities").select("id").limit(1),supabaseAdmin.schema("recruitment").from("employee_conversions").select("id").limit(1),supabaseAdmin.from("lead_qualifications").select("id").limit(1),supabaseAdmin.from("sales_followups").select("id").limit(1),supabaseAdmin.from("sales_handoffs").select("id").limit(1)]);return{ready:checks.every(check=>!check.error)}}catch{return{ready:false}}}
 
 async function checkDatabase(): Promise<{ ready: boolean; migrationCompatible: boolean }> {
   try {
