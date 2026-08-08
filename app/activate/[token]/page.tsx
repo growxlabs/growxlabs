@@ -24,7 +24,11 @@ export default function ActivateAccountPage() {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || data.error);
+      if (!response.ok) {
+        const structured = data?.error;
+        const message = typeof structured === "object" ? structured?.message : structured;
+        throw new Error(data?.detail || message || "Account activation failed.");
+      }
       setDone(true);
     } catch (activationError) {
       setError(activationError instanceof Error ? activationError.message : "Activation failed");

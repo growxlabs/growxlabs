@@ -5,6 +5,8 @@ import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
 import { z } from "zod";
+import { createHash } from "node:crypto";
+import bcrypt from "bcryptjs";
 
 const PUBLIC_PREFIXES = [
   "identity/invitations",
@@ -47,6 +49,27 @@ const referenceCreateSchema = z.object({
   level: z.number().int().min(1).max(100).optional(),
 });
 const referenceStatusSchema = z.object({ status: z.enum(["active", "inactive", "archived"]) });
+const activationSchema = z.object({ password: z.string().min(12).max(128) });
+
+async function handleVercelActivation(request: NextRequest, path: string[], requestId: string) {
+  if (request.method !== "POST" || path.length !== 4 || path[0] !== "identity" || path[1] !== "invitations" || path[3] !== "accept") return null;
+  const parsed = activationSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return apiError(400, "INVALID_PASSWORD", "Use a password of at least 12 characters.", requestId);
+  const tokenHash = createHash("sha256").update(path[2]).digest("hex");
+  const passwordHash = await bcrypt.hash(parsed.data.password, 12);
+  const accepted = await supabaseAdmin.schema("identity").rpc("accept_employee_invitation", { p_token_hash: tokenHash, p_password_hash: passwordHash });
+  const result = Array.isArray(accepted.data) ? accepted.data[0] : accepted.data;
+  if (accepted.error || !result?.user_id || !result?.organisation_id) {
+    console.warn(JSON.stringify({ request_id: requestId, route: request.nextUrl.pathname, code: accepted.error?.code || "INVITATION_INVALID" }));
+    return apiError(400, "INVITATION_INVALID", "This activation link is invalid, expired, or already used.", requestId);
+  }
+  const activated = await supabaseAdmin.schema("identity").from("employee_identities")
+    .update({ workspace_status: "active", provisioning_error: null, provisioned_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("auth_user_id", result.user_id).eq("organisation_id", result.organisation_id).neq("workspace_status", "suspended").select("id").maybeSingle();
+  if (activated.error || !activated.data) return apiError(500, "WORKSPACE_ACTIVATION_FAILED", "The account was accepted, but the workspace could not be activated.", requestId);
+  await supabaseAdmin.schema("audit").from("events").insert({ organisation_id: result.organisation_id, actor_user_id: result.user_id, entity_type: "employee_identity", entity_id: activated.data.id, action: "workspace_activated", new_value: { source: "employee_activation" }, request_id: requestId });
+  return Response.json({ userId: result.user_id, status: "active" }, { headers: { "X-Request-Id": requestId, "Cache-Control": "no-store" } });
+}
 
 async function handleVercelPeopleReferences(request: NextRequest, path: string[], requestId: string) {
   if (path[0] !== "people" || !["departments", "designations"].includes(path[1] || "")) return null;
@@ -97,6 +120,8 @@ async function handleVercelPeopleReferences(request: NextRequest, path: string[]
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
   const { path } = await context.params;
+  const activationResponse = await handleVercelActivation(request, path, requestId);
+  if (activationResponse) return activationResponse;
   const localPeopleResponse = await handleVercelPeopleReferences(request, path, requestId);
   if (localPeopleResponse) return localPeopleResponse;
   const publicRequest = isPublicPath(path, request.method);
