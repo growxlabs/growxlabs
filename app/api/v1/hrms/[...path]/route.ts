@@ -58,15 +58,48 @@ async function handleVercelActivation(request: NextRequest, path: string[], requ
   const tokenHash = createHash("sha256").update(path[2]).digest("hex");
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
   const accepted = await supabaseAdmin.schema("identity").rpc("accept_employee_invitation", { p_token_hash: tokenHash, p_password_hash: passwordHash });
-  const result = Array.isArray(accepted.data) ? accepted.data[0] : accepted.data;
-  if (accepted.error || !result?.user_id || !result?.organisation_id) {
-    console.warn(JSON.stringify({ request_id: requestId, route: request.nextUrl.pathname, code: accepted.error?.code || "INVITATION_INVALID" }));
-    return apiError(400, "INVITATION_INVALID", "This activation link is invalid, expired, or already used.", requestId);
+  let result = Array.isArray(accepted.data) ? accepted.data[0] : accepted.data;
+  let fallbackInvitationId: string | null = null;
+  if (accepted.error?.code === "42702") {
+    const now = new Date().toISOString();
+    const invitation = await supabaseAdmin.schema("identity").from("invitations")
+      .select("id,user_id,organisation_id").eq("token_hash", tokenHash).is("accepted_at", null).gt("expires_at", now).maybeSingle();
+    if (invitation.error || !invitation.data) {
+      return apiError(400, "INVITATION_INVALID", "This activation link is invalid, expired, or already used.", requestId);
+    }
+    const activatedUser = await supabaseAdmin.schema("identity").from("users").update({
+      status: "active", password_hash: passwordHash, activated_at: now, suspended_at: null,
+      failed_login_count: 0, locked_until: null, updated_at: now,
+    }).eq("id", invitation.data.user_id).eq("organisation_id", invitation.data.organisation_id).select("id").maybeSingle();
+    if (activatedUser.error || !activatedUser.data) {
+      return apiError(500, "ACTIVATION_FAILED", "Employee activation could not update the identity account. Please try again.", requestId);
+    }
+    result = { user_id: invitation.data.user_id, organisation_id: invitation.data.organisation_id };
+    fallbackInvitationId = invitation.data.id;
+  }
+  if (accepted.error) {
+    console.warn(JSON.stringify({ request_id: requestId, route: request.nextUrl.pathname, code: accepted.error.code || "INVITATION_INVALID", fallback: Boolean(result) }));
+    if (result) {
+      // The compatibility path above repaired the identity update.
+    } else
+    if (accepted.error.code === "P0001" && accepted.error.message === "invalid_invitation") {
+      return apiError(400, "INVITATION_INVALID", "This activation link is invalid, expired, or already used.", requestId);
+    } else {
+      return apiError(500, "ACTIVATION_FAILED", "Employee activation could not be completed. Please try again.", requestId);
+    }
+  }
+  if (!result?.user_id || !result?.organisation_id) {
+    return apiError(500, "ACTIVATION_FAILED", "Employee activation returned an invalid result. Please try again.", requestId);
   }
   const activated = await supabaseAdmin.schema("identity").from("employee_identities")
     .update({ workspace_status: "active", provisioning_error: null, provisioned_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("auth_user_id", result.user_id).eq("organisation_id", result.organisation_id).neq("workspace_status", "suspended").select("id").maybeSingle();
   if (activated.error || !activated.data) return apiError(500, "WORKSPACE_ACTIVATION_FAILED", "The account was accepted, but the workspace could not be activated.", requestId);
+  if (fallbackInvitationId) {
+    const consumed = await supabaseAdmin.schema("identity").from("invitations").update({ accepted_at: new Date().toISOString() })
+      .eq("id", fallbackInvitationId).is("accepted_at", null).select("id").maybeSingle();
+    if (consumed.error || !consumed.data) return apiError(409, "INVITATION_ALREADY_USED", "This activation link has already been used.", requestId);
+  }
   await supabaseAdmin.schema("audit").from("events").insert({ organisation_id: result.organisation_id, actor_user_id: result.user_id, entity_type: "employee_identity", entity_id: activated.data.id, action: "workspace_activated", new_value: { source: "employee_activation" }, request_id: requestId });
   return Response.json({ userId: result.user_id, status: "active" }, { headers: { "X-Request-Id": requestId, "Cache-Control": "no-store" } });
 }

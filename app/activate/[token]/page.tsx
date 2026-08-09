@@ -17,7 +17,7 @@ function getErrorMessage(payload: unknown) {
     const message = (body.error as { message?: unknown }).message;
     if (typeof message === "string") return message;
   }
-  return "We couldn't activate your account. Please try again.";
+  return "We couldn't activate your account. Please try again. If the problem continues, contact the GrowXLabs People team.";
 }
 
 function getErrorCode(payload: unknown) {
