@@ -26,25 +26,28 @@ export const authOptions: AuthOptions = {
 
         // 1. Vercel-native employee identity authentication.
         let userData = null;
-        const organisationId = process.env.DEFAULT_ORGANISATION_ID;
-        if (organisationId) {
-          const { data: identityUser, error: identityLookupError } = await supabaseAdmin.schema("identity").from("users")
-            .select("id,email,display_name,password_hash,status,locked_until")
-            .eq("organisation_id", organisationId).eq("email", emailLower).maybeSingle();
+        let organisationId = process.env.DEFAULT_ORGANISATION_ID;
+        {
+          const { data: identityUsers, error: identityLookupError } = await supabaseAdmin.schema("identity").from("users")
+            .select("id,organisation_id,email,display_name,password_hash,status,locked_until")
+            .eq("email", emailLower).eq("status", "active").limit(10);
           if (identityLookupError) console.error("Employee identity login lookup failed.", { code: identityLookupError.code });
-          const locked = identityUser?.locked_until && new Date(identityUser.locked_until).getTime() > Date.now();
-          if (identityUser?.status === "active" && identityUser.password_hash && !locked) {
+          for (const identityUser of identityUsers || []) {
+            const locked = identityUser.locked_until && new Date(identityUser.locked_until).getTime() > Date.now();
+            if (!identityUser.password_hash || locked) continue;
             const passwordValid = await bcrypt.compare(credentials.password, identityUser.password_hash);
             if (passwordValid) {
+              organisationId = identityUser.organisation_id;
               userData = {
                 id: identityUser.id,
                 email: identityUser.email,
                 name: identityUser.display_name || identityUser.email,
                 role: "EMPLOYEE",
-                organisation_id: organisationId,
+                organisation_id: identityUser.organisation_id,
                 permissions: [],
               };
-              await supabaseAdmin.schema("identity").from("users").update({ failed_login_count: 0, locked_until: null, updated_at: new Date().toISOString() }).eq("id", identityUser.id).eq("organisation_id", organisationId);
+              await supabaseAdmin.schema("identity").from("users").update({ failed_login_count: 0, locked_until: null, updated_at: new Date().toISOString() }).eq("id", identityUser.id).eq("organisation_id", identityUser.organisation_id);
+              break;
             }
           }
         }
