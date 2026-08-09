@@ -82,13 +82,13 @@ export default function ActivateAccountPage() {
           <CheckCircle2 className="mx-auto text-emerald-600" size={38}/>
           <h2 className="mt-6 text-3xl font-black tracking-tight text-[#101828]">Account activated</h2>
           <p className="mt-3 text-sm text-[#596579]">Your GrowXLabs workspace is ready.</p>
-          <Link href="/login" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-[#0075de] px-6 text-xs font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
+          <Link href="/login?callbackUrl=/workspace" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg bg-[#0075de] px-6 text-xs font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
         </div> : state === "unavailable" ? <div className="w-full pt-2 text-center lg:pt-0" role="alert">
           <CircleAlert className="mx-auto text-amber-600" size={36}/>
           <h2 className="mt-6 text-3xl font-black tracking-tight text-[#101828]">Activation link unavailable</h2>
           <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-[#596579]">This activation link is invalid or has expired.</p>
           <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#596579]">Contact your GrowXLabs administrator for a new invitation.</p>
-          <Link href="/login" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg border border-[#cfd5dd] bg-white px-6 text-xs font-bold text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
+          <Link href="/login?callbackUrl=/workspace" className="mt-8 inline-flex h-11 items-center justify-center rounded-lg border border-[#cfd5dd] bg-white px-6 text-xs font-bold text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2">Continue to sign in</Link>
         </div> : <div className="w-full max-w-[560px]">
           <p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#0075de]">Identity activation</p>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-[#101828]">Activate your account</h2>

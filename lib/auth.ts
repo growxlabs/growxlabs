@@ -24,8 +24,32 @@ export const authOptions: AuthOptions = {
 
         const emailLower = credentials.email.toLowerCase().trim();
 
-        // 1. New service-oriented Identity foundation.
+        // 1. Vercel-native employee identity authentication.
         let userData = null;
+        const organisationId = process.env.DEFAULT_ORGANISATION_ID;
+        if (organisationId) {
+          const { data: identityUser, error: identityLookupError } = await supabaseAdmin.schema("identity").from("users")
+            .select("id,email,display_name,password_hash,status,locked_until")
+            .eq("organisation_id", organisationId).eq("email", emailLower).maybeSingle();
+          if (identityLookupError) console.error("Employee identity login lookup failed.", { code: identityLookupError.code });
+          const locked = identityUser?.locked_until && new Date(identityUser.locked_until).getTime() > Date.now();
+          if (identityUser?.status === "active" && identityUser.password_hash && !locked) {
+            const passwordValid = await bcrypt.compare(credentials.password, identityUser.password_hash);
+            if (passwordValid) {
+              userData = {
+                id: identityUser.id,
+                email: identityUser.email,
+                name: identityUser.display_name || identityUser.email,
+                role: "EMPLOYEE",
+                organisation_id: organisationId,
+                permissions: [],
+              };
+              await supabaseAdmin.schema("identity").from("users").update({ failed_login_count: 0, locked_until: null, updated_at: new Date().toISOString() }).eq("id", identityUser.id).eq("organisation_id", organisationId);
+            }
+          }
+        }
+
+        // 2. Dedicated Identity service remains available during migration.
         let identityURL = "";
         try {
           identityURL = requiredHrmsGatewayURL();
@@ -33,8 +57,7 @@ export const authOptions: AuthOptions = {
           // Credentials authentication can continue through the legacy database
           // path while the dedicated Identity service is not configured.
         }
-        const organisationId = process.env.DEFAULT_ORGANISATION_ID;
-        if (identityURL && organisationId) {
+        if (!userData && identityURL && organisationId) {
           try {
             const identityResponse = await fetch(`${identityURL.replace(/\/$/, "")}/v1/identity/sessions`, {
               method: "POST",
@@ -58,7 +81,7 @@ export const authOptions: AuthOptions = {
           }
         }
 
-        // 2. Legacy login remains available during gradual migration.
+        // 3. Legacy login remains available during gradual migration.
         const { data: user, error } = await supabaseAdmin
           .from("users")
           .select("*")
@@ -78,7 +101,7 @@ export const authOptions: AuthOptions = {
           }
         }
 
-        // 3. If not found or invalid in 'users', try legacy team members.
+        // 4. If not found or invalid in 'users', try legacy team members.
         if (!userData) {
           const { data: member, error: memberError } = await supabaseAdmin
             .from("team_members")
