@@ -67,8 +67,9 @@ export async function GET(request: Request) {
       supabaseAdmin
         .schema("recruitment")
         .from("offers")
-        .select("id,status,start_date,salary,offer_letter_url,created_at")
+        .select("id,status,start_date,salary,offer_letter_url,issued_at,created_at")
         .eq("application_id", application.id)
+        .in("status", ["issued", "sent", "accepted", "declined", "rejected"])
         .order("created_at", { ascending: false })
         .limit(1),
 

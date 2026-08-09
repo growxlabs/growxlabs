@@ -106,6 +106,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
 
+    if (stage === "hired") {
+      const { data: acceptedOffer } = await supabaseAdmin.schema("recruitment").from("offers")
+        .select("id").eq("application_id", applicationId).eq("organisation_id", CAREERS_ORGANISATION)
+        .eq("status", "accepted").maybeSingle();
+      if (!acceptedOffer) return NextResponse.json({ error: "The candidate must accept an issued offer before moving to Hired." }, { status: 409 });
+    }
+
     const previousStage = application.current_stage;
 
     const { data, error } = await supabaseAdmin

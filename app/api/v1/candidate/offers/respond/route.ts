@@ -29,7 +29,22 @@ export async function POST(request: Request) {
     const candidateName = appData.profile?.full_name || email;
     const jobTitle = (appData.careers_jobs as any)?.title || "Specialist";
 
-    // Insert Candidate Offer Response
+    if (!offerId) return NextResponse.json({ error: "A valid issued offer is required." }, { status: 400 });
+    const { data: offer, error: offerErr } = await supabaseAdmin
+      .schema("recruitment").from("offers")
+      .select("id,status,expires_at,application_id,candidate_id")
+      .eq("id", offerId).eq("application_id", applicationId)
+      .eq("organisation_id", CAREERS_ORGANISATION).maybeSingle();
+    if (offerErr || !offer || !["issued", "sent"].includes(offer.status)) {
+      return NextResponse.json({ error: "This offer is unavailable or has already received a response." }, { status: 409 });
+    }
+    if (offer.expires_at && new Date(offer.expires_at) <= new Date()) {
+      await supabaseAdmin.schema("recruitment").from("offers").update({ status: "expired", updated_at: new Date().toISOString() }).eq("id", offer.id);
+      await supabaseAdmin.schema("recruitment").from("offer_audit").insert({ organisation_id: CAREERS_ORGANISATION, offer_id: offer.id, action: "offer_expired", metadata: { channel: "candidate_portal" } });
+      return NextResponse.json({ error: "This offer has expired. Please contact the GrowXLabs People team." }, { status: 409 });
+    }
+
+    // Insert immutable Candidate Offer Response
     const { data: responseRecord, error: insertErr } = await supabaseAdmin
       .schema("recruitment")
       .from("candidate_offer_responses")
@@ -45,6 +60,19 @@ export async function POST(request: Request) {
       .single();
 
     if (insertErr) throw insertErr;
+
+    const respondedAt = new Date().toISOString();
+    await supabaseAdmin.schema("recruitment").from("offers").update({
+      status: decision === "accepted" ? "accepted" : "rejected",
+      accepted_at: decision === "accepted" ? respondedAt : null,
+      declined_at: decision === "rejected" ? respondedAt : null,
+      updated_at: respondedAt,
+    }).eq("id", offer.id).in("status", ["issued", "sent"]);
+    await supabaseAdmin.schema("recruitment").from("offer_audit").insert({
+      organisation_id: CAREERS_ORGANISATION, offer_id: offer.id,
+      action: decision === "accepted" ? "offer_accepted" : "offer_declined",
+      metadata: { channel: "candidate_portal" },
+    });
 
     // Update Application Stage based on decision
     const nextStage = decision === "accepted" ? "hired" : "rejected";

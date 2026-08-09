@@ -12,4 +12,6 @@ export interface ConvertCandidateInput {
   joiningDate: string;
   roleId?: string | null;
   actorUserId: string;
+  offerOverride?: boolean;
+  offerOverrideReason?: string;
 }

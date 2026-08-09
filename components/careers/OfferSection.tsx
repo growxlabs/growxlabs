@@ -35,7 +35,14 @@ export function OfferSection({
         <div className={css({ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #E5E7EB' })}>
           <span className={css({ fontSize: '14px', color: '#6B7280' })}>Start date</span>
           <span className={css({ fontSize: '14px', fontWeight: 500, color: '#111827' })}>
-            {offer.startDate || 'TBD'}
+            {offer.start_date ? new Date(offer.start_date).toLocaleDateString() : offer.startDate || 'TBD'}
+          </span>
+        </div>
+
+        <div className={css({ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #E5E7EB' })}>
+          <span className={css({ fontSize: '14px', color: '#6B7280' })}>Issued / status</span>
+          <span className={css({ fontSize: '14px', fontWeight: 500, color: '#111827', textTransform: 'capitalize' })}>
+            {offer.issued_at ? new Date(offer.issued_at).toLocaleDateString() : 'Not issued'} · {offer.status === 'sent' ? 'Issued' : offer.status === 'rejected' ? 'Declined' : offer.status}
           </span>
         </div>
 
@@ -67,7 +74,7 @@ export function OfferSection({
           </div>
         )}
 
-        {!offer.candidate_response ? (
+        {!offer.candidate_response?.decision ? (
           <div className={css({ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' })}>
             <div className={css({ display: 'flex', flexDirection: 'column', gap: '6px' })}>
               <label className={css({ fontSize: '13px', fontWeight: 500, color: '#374151' })}>
@@ -147,10 +154,10 @@ export function OfferSection({
             <span className={css({ 
               fontSize: '13px', 
               fontWeight: 600, 
-              color: offer.candidate_response === 'accepted' ? '#059669' : '#DC2626',
+              color: offer.candidate_response?.decision === 'accepted' ? '#059669' : '#DC2626',
               textTransform: 'capitalize'
             })}>
-              {offer.candidate_response}
+              {offer.candidate_response?.decision}
             </span>
           </div>
         )}

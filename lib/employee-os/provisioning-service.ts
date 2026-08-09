@@ -88,6 +88,11 @@ export async function convertCandidateToEmployee(input: ConvertCandidateInput): 
     .select("id,candidate_id,organisation_id,profile,current_stage,status").eq("id", input.applicationId).eq("organisation_id", input.organisationId).maybeSingle();
   if (applicationError || !application) throw new EmployeeProvisioningError("application_not_found", "Candidate application not found", 404);
   if (String(application.current_stage).toLowerCase() !== "hired" && String(application.status).toLowerCase() !== "hired") throw new EmployeeProvisioningError("candidate_not_hired", "Only a hired or offer-accepted candidate can be converted", 409);
+  const { data: acceptedResponse, error: offerLookupError } = await supabaseAdmin.schema("recruitment").from("candidate_offer_responses").select("id").eq("application_id", input.applicationId).eq("decision", "accepted").limit(1).maybeSingle();
+  if (offerLookupError && offerLookupError.code !== "42P01") throw safeDatabaseFailure("offer_lookup_failed");
+  const { data: acceptedOffer, error: acceptedOfferError } = await supabaseAdmin.schema("recruitment").from("offers").select("id").eq("application_id", input.applicationId).eq("status", "accepted").limit(1).maybeSingle();
+  if (acceptedOfferError && acceptedOfferError.code !== "42P01") throw safeDatabaseFailure("offer_lookup_failed");
+  if (!acceptedResponse && !acceptedOffer && !input.offerOverride) throw new EmployeeProvisioningError("offer_required", "An accepted offer is required before converting this candidate. Use the Admin override only with a documented reason.", 409);
   const profile = (application.profile || {}) as Record<string, unknown>;
   const email = String(profile.email || application.candidate_id || "").trim().toLowerCase();
   if (!email.includes("@")) throw new EmployeeProvisioningError("candidate_email_required", "Candidate email is required");
@@ -135,7 +140,12 @@ export async function convertCandidateToEmployee(input: ConvertCandidateInput): 
   }
   const conversion = await supabaseAdmin.schema("recruitment").from("employee_conversions").upsert({ organisation_id: input.organisationId, application_id: input.applicationId, candidate_id: application.candidate_id, employee_id: employee.id, identity_id: identity.id, role_id: roleId, onboarding_state_id: onboarding.id, converted_by: input.actorUserId }, { onConflict: "organisation_id,application_id" });
   if (conversion.error) throw safeDatabaseFailure("conversion_record_failed");
+  if (acceptedOffer?.id) {
+    const { data: offerDocument } = await supabaseAdmin.schema("recruitment").from("offers").select("document_id").eq("id", acceptedOffer.id).maybeSingle();
+    if (offerDocument?.document_id) await supabaseAdmin.schema("documents").from("documents").update({ owner_entity_type: "employee", owner_entity_id: employee.id }).eq("id", offerDocument.document_id).eq("organisation_id", input.organisationId).eq("owner_entity_type", "offer");
+  }
   await audit(input, "employee_role_assigned", "employee", employee.id, { roleId });
+  if (input.offerOverride) await audit(input, "offer_override_used", "candidate", input.applicationId, { employeeId: employee.id, reason: input.offerOverrideReason });
   await audit(input, "candidate_converted_to_employee", "candidate", input.applicationId, { employeeId: employee.id, identityId: identity.id });
   const activationEmail=await ensureActivationInvitation({organisationId:input.organisationId,userId:user.id,identityId:identity.id,email,name:fullName});
   return { employeeId: employee.id, identityId: identity.id, roleId, onboardingStateId: onboarding.id, workspaceStatus: identity.workspace_status as WorkspaceStatus, existing: false,activationEmail };
