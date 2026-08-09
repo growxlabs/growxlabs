@@ -20,6 +20,8 @@ export async function GET() {
       : { data: [], error: null };
     if (applicationResult.error) throw applicationResult.error;
     const applications = applicationResult.data || [];
+    const { data: conversions } = applications.length ? await supabaseAdmin.schema("recruitment").from("employee_conversions").select("application_id,employee_id").in("application_id", applications.map((application) => application.id)) : { data: [] as any[] };
+    const conversionMap = new Map((conversions || []).map((conversion) => [conversion.application_id, conversion.employee_id]));
     const normalizeStage = (value: unknown) => String(value || "applied").trim().toUpperCase().replace(/[\s-]+/g, "_");
     return NextResponse.json({
       jobs: (jobs || []).map((job) => ({
@@ -45,6 +47,7 @@ export async function GET() {
             rejection_reason: a.rejection_reason,
             rejection_note: a.rejection_note,
             rejection_previous_stage: a.rejection_previous_stage,
+            employee_id: conversionMap.get(a.id) || null,
           })),
       })),
     });

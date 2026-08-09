@@ -71,6 +71,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
   const reasons = ["Does not meet role requirements", "Insufficient relevant experience", "Communication not suitable", "Interview performance", "Assessment performance", "Availability / joining constraints", "Compensation mismatch", "Position filled", "Candidate withdrew", "Duplicate application", "Other"];
   const reject = async () => { if (!rejecting || !reason || (reason === "Other" && !note.trim())) return; const response = await fetch(`/api/admin/recruitment/applications/${rejecting.id}/rejection`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason, note, sendEmail, otherReason: reason === "Other" ? note : undefined }) }); if (response.ok) { setRejecting(null); setReason(""); setNote(""); onRefresh?.(); } };
   const reopen = async (candidate: any) => { if ((await fetch(`/api/admin/recruitment/applications/${candidate.id}/rejection`, { method: "PATCH" })).ok) onRefresh?.(); };
+  const resendForCandidate = async (candidate: any) => { const response = await fetch(`/api/admin/employees/${candidate.employee_id}/activation/reissue`, { method: "POST" }); window.alert(response.ok ? "A new activation email was sent." : "The activation email could not be reissued."); };
 
   const getNextStage = (current: string) => {
     const idx = STAGES.indexOf(current);
@@ -117,7 +118,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                           <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
                           <span className="text-[10px] font-bold text-[var(--text-secondary)]">{candidate.score || 0}</span>
                         </div>
-                        {!showRejected && getNextStage(stage) && (
+                        {!showRejected && stage === "HIRED" && candidate.employee_id ? <button type="button" onClick={() => void resendForCandidate(candidate)} className="text-[8px] font-bold uppercase text-amber-600 hover:underline">Resend activation</button> : !showRejected && getNextStage(stage) && (
                           <button
                             type="button"
                             onClick={() => onUpdateStage(candidate.id, getNextStage(stage)!)}
