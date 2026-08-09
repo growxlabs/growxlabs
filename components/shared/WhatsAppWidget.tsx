@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { usePathname } from '@/navigation-client';
+import { isEmployeeWorkspaceRoute } from '@/lib/routes/application-shell';
 
 export function WhatsAppWidget() {
   const [isHovered, setIsHovered] = useState(false);
@@ -15,6 +16,7 @@ export function WhatsAppWidget() {
                            pathname?.includes('/dashboard') ||
                            pathname?.includes('/careers') ||
                            pathname?.startsWith('/activate/') ||
+                           isEmployeeWorkspaceRoute(pathname) ||
                            pathname === '/onboarding';
 
   // International format for Indian number: 918185958336

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { X, ShieldCheck, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { isEmployeeWorkspaceRoute } from "@/lib/routes/application-shell";
 
 interface CookiePreferences {
   essential: boolean;
@@ -12,6 +14,7 @@ interface CookiePreferences {
 }
 
 export function CookieConsent() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -101,6 +104,8 @@ export function CookieConsent() {
       />
     </div>
   );
+
+  if (isEmployeeWorkspaceRoute(pathname)) return null;
 
   return (
     <AnimatePresence>

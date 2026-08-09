@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { ActivationHeader } from "@/components/activation/ActivationHeader";
 import { ActivationFooter } from "@/components/activation/ActivationFooter";
+import { isEmployeeWorkspaceRoute } from "@/lib/routes/application-shell";
 
 const Footer = dynamic(() => import("@/components/layout/Footer").then(mod => mod.Footer), {
   ssr: true,
@@ -61,6 +62,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isArchitecture = normalizedPath.includes("/architecture");
   const isDocumentAssessment = normalizedPath === "/onboarding";
   const isActivation = normalizedPath.startsWith("/activate/");
+  const isEmployeeWorkspace = isEmployeeWorkspaceRoute(normalizedPath);
   
   const isCheckoutPage = normalizedPath.includes("/checkout");
   
@@ -69,7 +71,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     return <div className="flex min-h-dvh flex-col bg-white text-slate-900"><ActivationHeader/><main className="flex-1">{children}</main><ActivationFooter/></div>;
   }
 
-  if (isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment) {
+  if (isEmployeeWorkspace || isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment) {
     return <>{children}</>;
   }
 
