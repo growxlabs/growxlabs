@@ -5,6 +5,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
+import { ActivationHeader } from "@/components/activation/ActivationHeader";
+import { ActivationFooter } from "@/components/activation/ActivationFooter";
 
 const Footer = dynamic(() => import("@/components/layout/Footer").then(mod => mod.Footer), {
   ssr: true,
@@ -58,10 +60,15 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isWishGame = normalizedPath.includes("/wish-game");
   const isArchitecture = normalizedPath.includes("/architecture");
   const isDocumentAssessment = normalizedPath === "/onboarding";
+  const isActivation = normalizedPath.startsWith("/activate/");
   
   const isCheckoutPage = normalizedPath.includes("/checkout");
   
   // Document-mode routes supply their own formal header and footer.
+  if (isActivation) {
+    return <div className="flex min-h-dvh flex-col bg-white text-slate-900"><ActivationHeader/><main className="flex-1">{children}</main><ActivationFooter/></div>;
+  }
+
   if (isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment) {
     return <>{children}</>;
   }

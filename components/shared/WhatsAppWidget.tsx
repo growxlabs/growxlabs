@@ -14,6 +14,7 @@ export function WhatsAppWidget() {
                            pathname?.includes('/client') || 
                            pathname?.includes('/dashboard') ||
                            pathname?.includes('/careers') ||
+                           pathname?.startsWith('/activate/') ||
                            pathname === '/onboarding';
 
   // International format for Indian number: 918185958336
