@@ -16,7 +16,8 @@ export async function employeeWorkItems(context: EmployeeContext): Promise<WorkI
   return items.sort((a,b)=>Date.parse(a.dueAt||"9999-12-31")-Date.parse(b.dueAt||"9999-12-31"));
 }
 export async function employeeNotifications(context: EmployeeContext, limit = 20) {
-  const { data } = await supabaseAdmin.schema("notifications").from("notifications").select("id,template_key,payload,created_at,read_at").eq("organisation_id", context.organisationId).eq("recipient_user_id", context.authUserId).order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await supabaseAdmin.schema("notifications").from("notifications").select("id,template_key,payload,created_at,read_at").eq("organisation_id", context.organisationId).eq("recipient_user_id", context.authUserId).order("created_at", { ascending: false }).limit(limit);
+  if (error && error.code !== "PGRST106") console.error("Employee notifications could not be loaded.", { code: error.code });
   return data || [];
 }
 export async function employeeDocuments(context: EmployeeContext) {
