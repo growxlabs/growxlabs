@@ -98,6 +98,15 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     doc.text(rows, left, y);
     y += rows.length * (size + 4);
   };
+  const metadata = (value: string) => {
+    doc.setFont("courier", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(90, 101, 115);
+    const wrapped = doc.splitTextToSize(value, right - left);
+    ensure(wrapped.length * 12 + 8);
+    doc.text(wrapped, left, y);
+    y += wrapped.length * 12;
+  };
   const rule = (gap = 16) => {
     ensure(gap + 1);
     doc.setDrawColor(210, 216, 224);
@@ -110,7 +119,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     y += 12;
     doc.setFillColor(243, 246, 249);
     doc.rect(left, y - 15, right - left, 22, "F");
-    text(heading, 10.5, true, [8, 55, 92]);
+    text(`// ${heading}`, 10.5, true, [8, 55, 92]);
     y += 6;
   };
   const rows = (items: Array<[string, string]>) => {
@@ -135,21 +144,17 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
   };
   doc.setFillColor(8, 55, 92);
   doc.rect(0, 0, 595, 7, "F");
-  text("GrowXLabs", 21, true, [8, 55, 92]);
-  text("OFFER OF EMPLOYMENT", 17, true, [31, 41, 55]);
-  text(
-    `${date(issuedAt)}   ·   PRIVATE & CONFIDENTIAL`,
-    8.5,
-    true,
-    [90, 101, 115],
-  );
+  text("{ GROWXLABS }", 21, true, [8, 55, 92]);
+  text("// OFFER OF EMPLOYMENT", 17, true, [31, 41, 55]);
+  metadata(`{ PRIVATE & CONFIDENTIAL }   ·   ${date(issuedAt).toUpperCase()}`);
   y += 7;
   rows([
-    ["Offer reference", snapshot.offerReference || "GrowXLabs offer"],
-    ["Application", snapshot.applicationReference || "—"],
+    ["{ OFFER REF }", snapshot.offerReference || "GrowXLabs offer"],
+    ["[ APPLICATION ]", snapshot.applicationReference || "—"],
     ["Version", snapshot.version ? `v${snapshot.version}` : "Current"],
     ["Issued date", date(issuedAt)],
   ]);
+  metadata("// END OF DOCUMENT REFERENCE");
   y += 12;
   rule(10);
   text(snapshot.candidateName, 12, true, [31, 41, 55]);
@@ -184,6 +189,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     ["Work location", snapshot.workLocation],
     ["Joining date", date(snapshot.joiningDate)],
   ]);
+  metadata("// END OF ROLE & ENGAGEMENT");
   section("COMPENSATION & INCENTIVES");
   const compensation =
     snapshot.compensationModel ||
@@ -212,11 +218,13 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
       ? [["Payment terms", snapshot.paymentTerms] as [string, string]]
       : []),
   ]);
+  metadata("// END OF COMPENSATION");
   section("WORKING ARRANGEMENT");
   rows([
     ["Probation", `${snapshot.probationDays} days`],
     ["Offer valid until", date(snapshot.expiresAt)],
   ]);
+  metadata("// END OF TERMS");
   section("CONFIDENTIALITY & INTELLECTUAL PROPERTY");
   text(snapshot.terms.confidentialityIp, 10.5);
   y += 5;
@@ -230,7 +238,8 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
   text(snapshot.terms.acceptanceInstructions, 10.5);
   y += 10;
   ensure(125);
-  text("For GrowXLabs", 10.5, true, [31, 41, 55]);
+  section("AUTHORIZATION");
+  text("FOR GROWXLABS", 10.5, true, [31, 41, 55]);
   y += 28;
   doc.setDrawColor(70, 80, 90);
   doc.line(left, y, left + 170, y);
@@ -244,7 +253,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
   );
   text("GrowXLabs", 9, false, [90, 101, 115]);
   text(`Date: ${date(issuedAt)}`, 9, false, [90, 101, 115]);
-  section("ACCEPTANCE OF OFFER");
+  section("CANDIDATE ACCEPTANCE");
   text(
     snapshot.acceptedAt
       ? `Accepted digitally by ${snapshot.candidateName} on ${date(snapshot.acceptedAt)}. This acceptance is recorded against the immutable offer version shown above.`
@@ -276,11 +285,11 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     doc.setFontSize(8);
     doc.setTextColor(110, 120, 130);
     doc.text(
-      `GrowXLabs  ·  growxlabs.tech  ·  ${snapshot.offerReference || "Offer"}  ·  Private & Confidential`,
+      `{ GROWXLABS }  ·  growxlabs.tech  ·  ${snapshot.offerReference || "Offer"}  ·  PRIVATE & CONFIDENTIAL`,
       left,
       798,
     );
-    doc.text(`Page ${page} of ${total}`, right, 798, { align: "right" });
+    doc.text(`PAGE ${page} / ${total}`, right, 798, { align: "right" });
   }
   const bytes = Buffer.from(doc.output("arraybuffer"));
   return {
