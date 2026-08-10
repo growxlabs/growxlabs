@@ -19,7 +19,7 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
     ["salaryAmount", "Compensation"], ["probationDays", "Probation"],
     ["noticePeriodDays", "Notice period"], ["expiresAt", "Offer validity"],
   ];
-  for (const [key, label] of required) if (value[key] === undefined || value[key] === null || value[key] === "") missing.push(label);
+  for (const [key, label] of required) if (value[key] === undefined || value[key] === null || value[key] === "" || (key === "salaryAmount" && Number(value[key]) <= 0)) missing.push(label);
   const terms = value.terms || ({} as OfferSnapshot["terms"]);
   if (!terms.workingTerms?.trim()) missing.push("Approved working terms");
   if (!terms.confidentialityIp?.trim()) missing.push("Approved confidentiality / IP wording");

@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -79,10 +78,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ of
   let objectExists = false;
   const existingObject = await supabaseAdmin.storage.from(bucket).download(objectKey);
   if (!existingObject.error && existingObject.data) {
+    // The object key is the canonical storage identity for this offer/version.
+    // Do not compare against a freshly generated checksum here: the PDF contains
+    // a generated date, so a retry would otherwise look like a false conflict.
+    // A key scoped by organisation + offer id + version cannot belong to another
+    // offer/version without a storage/data-integrity violation.
     objectExists = true;
-    const existingBytes = Buffer.from(await existingObject.data.arrayBuffer());
-    const existingChecksum = crypto.createHash("sha256").update(existingBytes).digest("hex");
-    if (existingChecksum !== pdf.checksum && current.status === "approved") return Response.json({ error: "A conflicting document already exists for this offer version. The offer has not been issued. Contact HR before retrying." }, { status: 409 });
   }
   if (!objectExists) {
     const stored = await supabaseAdmin.storage.from(bucket).upload(objectKey, pdf.bytes, { contentType: "application/pdf", upsert: false });
