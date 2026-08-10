@@ -186,6 +186,23 @@ export async function GET(request: Request) {
         : { data: [], error: null };
     if (offerApplications.error)
       throw new Error(offerApplications.error.message);
+    const versionRows = applicationIds.length
+      ? await supabaseAdmin
+          .schema("recruitment")
+          .from("offer_versions")
+          .select("offer_id,version,snapshot")
+          .in(
+            "offer_id",
+            (result.data || []).map((offer) => offer.id),
+          )
+      : { data: [], error: null };
+    if (versionRows.error) throw new Error(versionRows.error.message);
+    const snapshotMap = new Map(
+      (versionRows.data || []).map((version) => [
+        `${version.offer_id}:${version.version}`,
+        version.snapshot,
+      ]),
+    );
     const applicationMap = new Map(
       (offerApplications.data || []).map((application) => [
         application.id,
@@ -202,6 +219,8 @@ export async function GET(request: Request) {
             application?.profile?.email ||
             offer.candidate_id,
           applicationReference: application?.application_reference || "",
+          currentSnapshot:
+            snapshotMap.get(`${offer.id}:${offer.current_version}`) || null,
         };
       }),
       ...options,
@@ -321,7 +340,9 @@ export async function POST(request: Request) {
       .maybeSingle();
   if (
     existing.data &&
-    !["draft", "changes_requested", "approved"].includes(existing.data.status) &&
+    !["draft", "changes_requested", "approved"].includes(
+      existing.data.status,
+    ) &&
     !v.reissue
   )
     return Response.json(
