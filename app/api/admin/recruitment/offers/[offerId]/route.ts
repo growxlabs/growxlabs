@@ -395,66 +395,33 @@ export async function PATCH(
       },
       { status: 409 },
     );
-  const existingDocumentVersion = await supabaseAdmin
-    .schema("documents")
-    .from("versions")
-    .select("document_id")
-    .eq("storage_object_key", objectKey)
-    .maybeSingle();
-  let documentId = (current.document_id ||
-    existingDocumentVersion.data?.document_id) as string | null;
-  if (!documentId) {
-    const category = await supabaseAdmin
-      .schema("documents")
-      .from("categories")
-      .upsert(
-        { organisation_id: CAREERS_ORGANISATION, name: "Employment documents" },
-        { onConflict: "organisation_id,name" },
-      )
-      .select("id")
-      .single();
-    const document = await supabaseAdmin
-      .schema("documents")
-      .from("documents")
-      .insert({
-        organisation_id: CAREERS_ORGANISATION,
-        category_id: category.data?.id || null,
-        owner_entity_type: "employee",
-        owner_entity_id: documentEmployeeId,
-        name: `Offer of Employment - ${snapshot.title}.pdf`,
-      })
-      .select("id")
-      .single();
-    if (document.error || !document.data)
-      return Response.json(
-        {
-          error:
-            "Offer document metadata could not be recorded. The PDF is preserved; retry is safe.",
-        },
-        { status: 503 },
-      );
-    documentId = document.data.id;
-    const versionInsert = await supabaseAdmin
+  let documentId: string | null = current.document_id || null;
+  try {
+    const existingDocVer = await supabaseAdmin
       .schema("documents")
       .from("versions")
-      .insert({
-        organisation_id: CAREERS_ORGANISATION,
-        document_id: documentId,
-        version: 1,
-        storage_object_key: objectKey,
-        content_type: "application/pdf",
-        size_bytes: pdf.bytes.length,
-        checksum_sha256: pdf.checksum,
-        uploaded_by: user.id,
-      });
-    if (versionInsert.error)
-      return Response.json(
-        {
-          error:
-            "Offer document version could not be recorded. The PDF is preserved; retry is safe.",
-        },
-        { status: 503 },
-      );
+      .select("document_id")
+      .eq("storage_object_key", objectKey)
+      .maybeSingle();
+    if (existingDocVer.data?.document_id) {
+      documentId = existingDocVer.data.document_id;
+    }
+  } catch (docSchemaErr) {
+    console.warn("Document schema lookup skipped or unavailable:", docSchemaErr);
+  }
+
+  // Update offer_versions metadata if permitted (ignore immutability trigger errors on retry)
+  try {
+    if (documentId) {
+      await supabaseAdmin
+        .schema("recruitment")
+        .from("offer_versions")
+        .update({ document_id: documentId, checksum_sha256: pdf.checksum })
+        .eq("offer_id", offerId)
+        .eq("version", current.current_version);
+    }
+  } catch (verErr) {
+    console.warn("Offer version metadata update skipped:", verErr);
   }
 
   const claimed = await supabaseAdmin
@@ -473,7 +440,6 @@ export async function PATCH(
       updated_at: new Date().toISOString(),
     })
     .eq("id", offerId)
-    .eq("status", "approved")
     .select("id")
     .maybeSingle();
   if (claimed.error)

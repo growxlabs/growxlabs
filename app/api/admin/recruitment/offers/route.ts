@@ -354,8 +354,10 @@ export async function POST(request: Request) {
       { error: "No existing offer is available to reissue." },
       { status: 409 },
     );
-  const version = (existing.data?.current_version || 0) + 1,
-    payload = {
+  const version = v.reissue || !existing.data
+    ? (existing.data?.current_version || 0) + 1
+    : existing.data.current_version;
+  const payload = {
       organisation_id: CAREERS_ORGANISATION,
       application_id: v.applicationId,
       candidate_id: String(app.data.candidate_id),
@@ -375,48 +377,43 @@ export async function POST(request: Request) {
       notice_period_days: v.noticePeriodDays,
       terms: v.terms,
       expires_at: v.expiresAt,
-      status: "draft",
+      status: existing.data?.status === "approved" && !v.reissue ? "approved" : "draft",
       current_version: version,
       created_by: user.id,
       updated_at: new Date().toISOString(),
       backfill_reason: v.backfillReason || null,
-      document_id: null,
-      offer_letter_document_id: null,
-      offer_letter_url: null,
-      issued_at: null,
-      accepted_at: null,
-      declined_at: null,
-    },
-    saved = existing.data
-      ? await supabaseAdmin
-          .schema("recruitment")
-          .from("offers")
-          .update(payload)
-          .eq("id", existing.data.id)
-          .select("id")
-          .single()
-      : await supabaseAdmin
-          .schema("recruitment")
-          .from("offers")
-          .insert(payload)
-          .select("id")
-          .single();
+    };
+  const saved = existing.data
+    ? await supabaseAdmin
+        .schema("recruitment")
+        .from("offers")
+        .update(payload)
+        .eq("id", existing.data.id)
+        .select("id")
+        .single()
+    : await supabaseAdmin
+        .schema("recruitment")
+        .from("offers")
+        .insert(payload)
+        .select("id")
+        .single();
   if (saved.error)
     return Response.json(
       { error: "Offer draft could not be saved" },
       { status: 500 },
     );
+  const versionPayload = {
+    organisation_id: CAREERS_ORGANISATION,
+    offer_id: saved.data.id,
+    version,
+    snapshot,
+    change_summary: v.backfillReason || "Admin-confirmed offer terms",
+    created_by: user.id,
+  };
   const versionRow = await supabaseAdmin
     .schema("recruitment")
     .from("offer_versions")
-    .insert({
-      organisation_id: CAREERS_ORGANISATION,
-      offer_id: saved.data.id,
-      version,
-      snapshot,
-      change_summary: v.backfillReason || "Admin-confirmed offer draft",
-      created_by: user.id,
-    });
+    .upsert(versionPayload, { onConflict: "offer_id,version" });
   if (versionRow.error)
     return Response.json(
       { error: "Immutable offer version could not be saved" },

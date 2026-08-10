@@ -135,42 +135,49 @@ export default function OfferWorkspace() {
   }
   function hydrateOffer(item: Offer) {
     const snapshot = item.currentSnapshot || {};
+    const deptId = departments.find((x) => x.name === snapshot.departmentName || x.name === (item as any).department_name)?.id;
+    const desigId = designations.find((x) => x.name === snapshot.title || x.name === item.title)?.id;
     setForm((v) => ({
       ...v,
       applicationId: item.application_id,
       title: snapshot.title || item.title || v.title,
-      departmentId:
-        departments.find((x) => x.name === snapshot.departmentName)?.id ||
-        v.departmentId,
-      designationId:
-        designations.find((x) => x.name === snapshot.title)?.id ||
-        v.designationId,
-      employmentType: snapshot.employmentType || v.employmentType,
-      workLocation: snapshot.workLocation || v.workLocation,
-      joiningDate: snapshot.joiningDate || v.joiningDate,
+      departmentId: deptId || (item as any).department_id || v.departmentId,
+      designationId: desigId || (item as any).designation_id || v.designationId,
+      managerEmployeeId: (item as any).manager_employee_id || v.managerEmployeeId,
+      employmentType: snapshot.employmentType || (item as any).employment_type || v.employmentType,
+      workLocation: snapshot.workLocation || (item as any).work_location || v.workLocation,
+      joiningDate: snapshot.joiningDate || (item as any).start_date || v.joiningDate,
       salaryAmount:
-        snapshot.salaryAmount == null
-          ? v.salaryAmount
-          : String(snapshot.salaryAmount),
-      salaryCurrency: snapshot.salaryCurrency || v.salaryCurrency,
+        snapshot.salaryAmount != null
+          ? String(snapshot.salaryAmount)
+          : item.salary != null
+          ? String(item.salary)
+          : v.salaryAmount,
+      salaryCurrency: snapshot.salaryCurrency || item.currency || v.salaryCurrency,
       probationDays:
-        snapshot.probationDays == null
-          ? v.probationDays
-          : String(snapshot.probationDays),
+        snapshot.probationDays != null
+          ? String(snapshot.probationDays)
+          : (item as any).probation_days != null
+          ? String((item as any).probation_days)
+          : v.probationDays,
       noticePeriodDays:
-        snapshot.noticePeriodDays == null
-          ? v.noticePeriodDays
-          : String(snapshot.noticePeriodDays),
+        snapshot.noticePeriodDays != null
+          ? String(snapshot.noticePeriodDays)
+          : (item as any).notice_period_days != null
+          ? String((item as any).notice_period_days)
+          : v.noticePeriodDays,
       expiresAt: snapshot.expiresAt
         ? String(snapshot.expiresAt).slice(0, 16)
+        : (item as any).expires_at
+        ? String((item as any).expires_at).slice(0, 16)
         : v.expiresAt,
-      candidateAddress: snapshot.candidateAddress || v.candidateAddress,
-      workingTerms: snapshot.terms?.workingTerms || v.workingTerms,
+      candidateAddress: snapshot.candidateAddress || (item as any).candidate_address || v.candidateAddress,
+      workingTerms: snapshot.terms?.workingTerms || (item as any).terms?.workingTerms || v.workingTerms,
       confidentialityIp:
-        snapshot.terms?.confidentialityIp || v.confidentialityIp,
-      termination: snapshot.terms?.termination || v.termination,
+        snapshot.terms?.confidentialityIp || (item as any).terms?.confidentialityIp || v.confidentialityIp,
+      termination: snapshot.terms?.termination || (item as any).terms?.termination || v.termination,
       acceptanceInstructions:
-        snapshot.terms?.acceptanceInstructions || v.acceptanceInstructions,
+        snapshot.terms?.acceptanceInstructions || (item as any).terms?.acceptanceInstructions || v.acceptanceInstructions,
     }));
   }
   useEffect(() => {
@@ -180,8 +187,11 @@ export default function OfferWorkspace() {
     const id = params.get("applicationId");
     const existing = items.find((item) => item.application_id === id);
     if (id && applications.some((application) => application.id === id)) {
-      chooseApplication(id);
-      if (existing) hydrateOffer(existing);
+      if (existing) {
+        hydrateOffer(existing);
+      } else {
+        chooseApplication(id);
+      }
       setForm((v) => ({
         ...v,
         backfillReason:
@@ -376,11 +386,23 @@ export default function OfferWorkspace() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-2">
+                    {["draft", "approved"].includes(item.status) && (
+                      <button
+                        onClick={() => {
+                          setReissue(false);
+                          hydrateOffer(item);
+                          setOpen(true);
+                        }}
+                        className="rounded border px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-50"
+                      >
+                        Edit offer
+                      </button>
+                    )}
                     {item.status === "draft" && (
                       <button
                         disabled={busy}
                         onClick={() => void action(item.id, "approve")}
-                        className="flex items-center gap-1 rounded border px-2 py-1 text-[10px] font-bold"
+                        className="flex items-center gap-1 rounded border border-emerald-300 bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-800"
                       >
                         <ShieldCheck size={11} />
                         Approve
@@ -390,18 +412,18 @@ export default function OfferWorkspace() {
                       <button
                         disabled={busy}
                         onClick={() => void action(item.id, "issue")}
-                        className="flex items-center gap-1 rounded bg-[#0075de] px-2 py-1 text-[10px] font-bold text-white"
+                        className="flex items-center gap-1 rounded bg-[#0075de] px-2 py-1 text-[10px] font-bold text-white hover:bg-blue-600"
                       >
                         <Send size={11} />
-                        Issue
+                        Issue offer
                       </button>
                     )}
                     {["sent", "accepted"].includes(item.status) && (
                       <a
-                        className="rounded border px-2 py-1 text-[10px] font-bold"
+                        className="rounded border px-2 py-1 text-[10px] font-bold hover:bg-slate-50"
                         href={`/api/admin/recruitment/offers/${item.id}`}
                       >
-                        Document
+                        View document
                       </a>
                     )}
                     {item.status === "sent" && (
@@ -419,16 +441,12 @@ export default function OfferWorkspace() {
                       <button
                         onClick={() => {
                           setReissue(true);
-                          setForm({
-                            ...blank,
-                            applicationId: item.application_id,
-                            title: item.title,
-                          });
+                          hydrateOffer(item);
                           setOpen(true);
                         }}
-                        className="rounded border px-2 py-1 text-[10px] font-bold"
+                        className="rounded border px-2 py-1 text-[10px] font-bold text-purple-700 hover:bg-purple-50"
                       >
-                        New version
+                        Create revision
                       </button>
                     )}
                   </div>
