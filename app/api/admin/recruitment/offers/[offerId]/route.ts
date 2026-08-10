@@ -395,7 +395,14 @@ export async function PATCH(
       },
       { status: 409 },
     );
-  let documentId = current.document_id as string | null;
+  const existingDocumentVersion = await supabaseAdmin
+    .schema("documents")
+    .from("versions")
+    .select("document_id")
+    .eq("storage_object_key", objectKey)
+    .maybeSingle();
+  let documentId = (current.document_id ||
+    existingDocumentVersion.data?.document_id) as string | null;
   if (!documentId) {
     const category = await supabaseAdmin
       .schema("documents")
