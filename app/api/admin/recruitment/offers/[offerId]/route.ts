@@ -360,6 +360,31 @@ export async function PATCH(
       return Response.json({ error: storageErrorMessage() }, { status: 503 });
   }
 
+  // Candidate-stage tracking is independent of the employee document system.
+  // This table accepts the careers candidate identity and canonical object key.
+  const candidateDocument = await supabaseAdmin
+    .schema("recruitment")
+    .from("candidate_documents")
+    .select("id")
+    .eq("candidate_id", current.candidate_id)
+    .eq("document_type", "offer")
+    .eq("storage_path", objectKey)
+    .limit(1)
+    .maybeSingle();
+  if (!candidateDocument.data?.id) {
+    const tracked = await supabaseAdmin
+      .schema("recruitment")
+      .from("candidate_documents")
+      .insert({
+        candidate_id: current.candidate_id,
+        document_type: "offer",
+        name: `GrowXLabs Offer ${offerReference} v${current.current_version}`,
+        storage_path: objectKey,
+      });
+    if (tracked.error)
+      console.warn("Candidate offer tracking could not be recorded:", tracked.error);
+  }
+
   // An issued offer belongs to the candidate until it is accepted and the
   // candidate is converted. Provisioning later transfers this same document
   // to the employee; issuance must never require a premature employee record.
@@ -425,14 +450,11 @@ export async function PATCH(
         throw createdVersion.error;
     }
   } catch (docSchemaErr) {
-    console.error("Offer document registration failed:", docSchemaErr);
-    return Response.json(
-      {
-        error:
-          "The offer PDF was prepared, but its candidate document record could not be completed. The offer was not issued; retry is safe.",
-      },
-      { status: 503 },
-    );
+    // The shared employee document registry may enforce employee ownership.
+    // It is enriched after acceptance/conversion and must not block a valid
+    // candidate-stage offer that already has canonical storage identity.
+    console.warn("Deferred shared document registration until conversion:", docSchemaErr);
+    documentId = null;
   }
 
   // Update offer_versions metadata if permitted (ignore immutability trigger errors on retry)
