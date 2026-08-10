@@ -120,7 +120,7 @@ export function RecruitmentPipeline({ candidates, onUpdateStage, updatingCandida
                           <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
                           <span className="text-[10px] font-bold text-[var(--text-secondary)]">{candidate.score || 0}</span>
                         </div>
-                        {!showRejected && stage === "HIRED" && candidate.employee_id ? <button type="button" onClick={() => void resendForCandidate(candidate)} className="text-[8px] font-bold uppercase text-amber-600 hover:underline">Resend activation</button> : !showRejected && getNextStage(stage) && (
+                        {!showRejected && stage === "HIRED" && candidate.employee_id ? <button type="button" onClick={() => void resendForCandidate(candidate)} className="text-[8px] font-bold uppercase text-amber-600 hover:underline">Resend activation</button> : !showRejected && stage !== "OFFER" && getNextStage(stage) && (
                           <button
                             type="button"
                             onClick={() => onUpdateStage(candidate.id, getNextStage(stage)!)}
