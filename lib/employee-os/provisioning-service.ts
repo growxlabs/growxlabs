@@ -143,7 +143,7 @@ export async function convertCandidateToEmployee(input: ConvertCandidateInput): 
   if (conversion.error) throw safeDatabaseFailure("conversion_record_failed");
   if (acceptedOffer?.id) {
     const { data: offerDocument } = await supabaseAdmin.schema("recruitment").from("offers").select("document_id").eq("id", acceptedOffer.id).maybeSingle();
-    if (offerDocument?.document_id) await supabaseAdmin.schema("documents").from("documents").update({ owner_entity_type: "employee", owner_entity_id: employee.id }).eq("id", offerDocument.document_id).eq("organisation_id", input.organisationId).eq("owner_entity_type", "offer");
+    if (offerDocument?.document_id) await supabaseAdmin.schema("documents").from("documents").update({ owner_entity_type: "employee", owner_entity_id: employee.id }).eq("id", offerDocument.document_id).eq("organisation_id", input.organisationId).in("owner_entity_type", ["offer", "candidate", "candidate_application"]);
   }
   await audit(input, "employee_role_assigned", "employee", employee.id, { roleId });
   if (input.offerOverride) await audit(input, "offer_override_used", "candidate", input.applicationId, { employeeId: employee.id, reason: input.offerOverrideReason });

@@ -360,54 +360,9 @@ export async function PATCH(
       return Response.json({ error: storageErrorMessage() }, { status: 503 });
   }
 
-  const conversion = current.employee_id
-    ? { data: { employee_id: current.employee_id } }
-    : await supabaseAdmin
-        .schema("recruitment")
-        .from("employee_conversions")
-        .select("employee_id")
-        .eq("application_id", current.application_id)
-        .maybeSingle();
-  const employeeId = conversion.data?.employee_id || null;
-  const recoveredEmployee = employeeId
-    ? null
-    : await (async () => {
-        const application = await supabaseAdmin
-          .schema("recruitment")
-          .from("careers_applications")
-          .select("profile")
-          .eq("id", current.application_id)
-          .maybeSingle();
-        const email = String(application.data?.profile?.email || "")
-          .trim()
-          .toLowerCase();
-        if (!email) return null;
-        const identity = await supabaseAdmin
-          .schema("identity")
-          .from("users")
-          .select("id")
-          .eq("organisation_id", CAREERS_ORGANISATION)
-          .eq("email", email)
-          .maybeSingle();
-        if (!identity.data?.id) return null;
-        return supabaseAdmin
-          .schema("people")
-          .from("employees")
-          .select("id")
-          .eq("organisation_id", CAREERS_ORGANISATION)
-          .eq("user_id", identity.data.id)
-          .is("deleted_at", null)
-          .maybeSingle();
-      })();
-  const documentEmployeeId = employeeId || recoveredEmployee?.data?.id || null;
-  if (!documentEmployeeId)
-    return Response.json(
-      {
-        error:
-          "The existing employee link could not be recovered. The offer has not been issued; no duplicate employee was created.",
-      },
-      { status: 409 },
-    );
+  // An issued offer belongs to the candidate until it is accepted and the
+  // candidate is converted. Provisioning later transfers this same document
+  // to the employee; issuance must never require a premature employee record.
   let documentId: string | null = current.document_id || null;
   try {
     const existingDocVer = await supabaseAdmin
@@ -419,8 +374,65 @@ export async function PATCH(
     if (existingDocVer.data?.document_id) {
       documentId = existingDocVer.data.document_id;
     }
+    if (!documentId) {
+      const documentName = `GrowXLabs Offer ${offerReference} v${current.current_version}`;
+      const existingCandidateDocument = await supabaseAdmin
+        .schema("documents")
+        .from("documents")
+        .select("id")
+        .eq("organisation_id", CAREERS_ORGANISATION)
+        .eq("owner_entity_type", "candidate_application")
+        .eq("owner_entity_id", current.application_id)
+        .eq("name", documentName)
+        .is("deleted_at", null)
+        .maybeSingle();
+      if (existingCandidateDocument.error)
+        throw existingCandidateDocument.error;
+      if (existingCandidateDocument.data?.id) {
+        documentId = existingCandidateDocument.data.id;
+      } else {
+        const createdDocument = await supabaseAdmin
+          .schema("documents")
+          .from("documents")
+          .insert({
+            organisation_id: CAREERS_ORGANISATION,
+            owner_entity_type: "candidate_application",
+            owner_entity_id: current.application_id,
+            name: documentName,
+          })
+          .select("id")
+          .single();
+        if (createdDocument.error) throw createdDocument.error;
+        documentId = createdDocument.data.id;
+      }
+      const createdVersion = await supabaseAdmin
+        .schema("documents")
+        .from("versions")
+        .insert({
+          organisation_id: CAREERS_ORGANISATION,
+          document_id: documentId,
+          version: 1,
+          storage_object_key: objectKey,
+          content_type: "application/pdf",
+          size_bytes: pdf.bytes.length,
+          checksum_sha256: pdf.checksum,
+          uploaded_by: user.id,
+        });
+      if (
+        createdVersion.error &&
+        !/already exists|duplicate|unique/i.test(createdVersion.error.message)
+      )
+        throw createdVersion.error;
+    }
   } catch (docSchemaErr) {
-    console.warn("Document schema lookup skipped or unavailable:", docSchemaErr);
+    console.error("Offer document registration failed:", docSchemaErr);
+    return Response.json(
+      {
+        error:
+          "The offer PDF was prepared, but its candidate document record could not be completed. The offer was not issued; retry is safe.",
+      },
+      { status: 503 },
+    );
   }
 
   // Update offer_versions metadata if permitted (ignore immutability trigger errors on retry)
@@ -444,7 +456,7 @@ export async function PATCH(
       status: "sent",
       issued_at: current.issued_at || issuedAt.toISOString(),
       document_ready_at: current.document_ready_at || issuedAt.toISOString(),
-      employee_id: documentEmployeeId,
+      employee_id: current.employee_id || null,
       document_id: documentId,
       offer_letter_document_id: documentId,
       offer_letter_url: `/api/v1/candidate/offers/${offerId}/document`,
