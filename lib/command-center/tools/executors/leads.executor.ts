@@ -85,12 +85,7 @@ export const queryLeadsExecutor: ToolExecutor<z.infer<typeof QueryLeadsSchema>, 
       if (data && data.length > 0) return data;
     } catch (_e) {}
 
-    try {
-      const { data: crmData } = await supabaseAdmin.from("crm_leads").select("*").limit(limit);
-      return crmData || [];
-    } catch (_e) {
-      return [];
-    }
+    return [];
   }
 };
 
@@ -112,26 +107,14 @@ export const createLeadExecutor: ToolExecutor<z.infer<typeof CreateLeadSchema>, 
         website_url: input.website_url || null,
         notes: input.notes || null,
         status: "new",
-        lead_score: 5
+        lead_score: 5,
+        organisation_id: process.env.DEFAULT_ORGANISATION_ID,
+        source: "manual_admin"
       }])
       .select()
       .single();
 
     if (error) throw error;
-
-    try {
-      await supabaseAdmin
-        .from("crm_leads")
-        .insert([{
-          business_name: input.business_name,
-          contact_name: input.name || input.business_name,
-          email: input.email,
-          phone: input.phone,
-          city: input.city,
-          status: "new",
-          source: "command_center"
-        }]);
-    } catch (_e) {}
 
     return data;
   }

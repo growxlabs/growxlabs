@@ -1,11 +1,12 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Lead } from "@/types";
 import crypto from "crypto";
+import { upsertCanonicalLead } from "@/lib/leads/canonical";
 
 const APIFY_TOKEN = process.env.APIFY_API_TOKEN;
 
 export class ScrapingService {
-  static async scrapeLeads(city: string, category: string, options: { radius?: number, maxResults?: number } = {}) {
+  static async scrapeLeads(organisationId:string,city: string, category: string, options: { radius?: number, maxResults?: number } = {}) {
     if (APIFY_TOKEN && APIFY_TOKEN !== "your_apify_token_here") {
       // 1. Run Apify logic...
       // Target Small/Local businesses for better conversion
@@ -97,25 +98,8 @@ export class ScrapingService {
             created_at: new Date().toISOString()
           };
 
-          const { data: existing } = await supabaseAdmin
-            .from("leads")
-            .select("id")
-            .eq("business_name", lead.business_name)
-            .maybeSingle();
-
-          if (!existing) {
-            const { data, error } = await supabaseAdmin
-              .from("leads")
-              .insert([lead])
-              .select()
-              .single();
-
-            if (!error && data) {
-              processedLeads.push(data);
-            } else if (error) {
-              console.error("LEAD SAVE FAILURE:", error.message);
-            }
-          }
+          const result=await upsertCanonicalLead(organisationId,{businessName:lead.business_name,phone:lead.phone,city,source:"apify",sourceTool:"apify",notes:lead.notes,customFields:{google_rating:googleRating,reviews_count:reviewsCount,lead_score:score}});
+          processedLeads.push(result.lead);
         }
 
         console.log(`SUCCESS (Apify): Captured ${processedLeads.length} High-Potential Leads.`);
@@ -127,11 +111,11 @@ export class ScrapingService {
     } else {
       // 2. Run Free Overpass API Logic
       console.log(`Running free Overpass API local lead scrape for ${category} in ${city}...`);
-      return await this.scrapeOverpassLeads(city, category, options);
+      return await this.scrapeOverpassLeads(organisationId,city, category, options);
     }
   }
 
-  private static async scrapeOverpassLeads(city: string, category: string, options: { radius?: number, maxResults?: number } = {}) {
+  private static async scrapeOverpassLeads(organisationId:string,city: string, category: string, options: { radius?: number, maxResults?: number } = {}) {
     const limit = options.maxResults || 50;
     
     // Map UI category to OSM tags
@@ -217,26 +201,8 @@ out body ${limit};`;
           created_at: new Date().toISOString()
         };
 
-        // Check if lead already exists in DB
-        const { data: existing } = await supabaseAdmin
-          .from("leads")
-          .select("id")
-          .eq("business_name", lead.business_name)
-          .maybeSingle();
-
-        if (!existing) {
-          const { data, error } = await supabaseAdmin
-            .from("leads")
-            .insert([lead])
-            .select()
-            .single();
-
-          if (!error && data) {
-            processedLeads.push(data);
-          } else if (error) {
-            console.error("LEAD SAVE FAILURE:", error.message);
-          }
-        }
+        const saved=await upsertCanonicalLead(organisationId,{businessName:lead.business_name,phone:lead.phone,city,source:"other",sourceTool:"overpass",notes:lead.notes,customFields:{lead_score:score}});
+        processedLeads.push(saved.lead);
       }
 
       console.log(`Overpass scrape finished. Found ${elements.length} raw, saved ${processedLeads.length} high-potential leads.`);

@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { ScrapingService } from "@/services/scraping.service";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
+    const session=await getServerSession(authOptions),user=session?.user;
+    if(!user?.id||!user.organisation_id||user.role!=="ADMIN")return NextResponse.json({error:"Admin access required"},{status:403});
     const { city, category, radius, maxResults } = await req.json();
 
     if (!city || !category) {
@@ -18,7 +22,7 @@ export async function POST(req: Request) {
     for (const c of cities) {
       for (const cat of categories) {
         try {
-          const leads = await ScrapingService.scrapeLeads(c, cat, {
+          const leads = await ScrapingService.scrapeLeads(user.organisation_id,c, cat, {
             radius: radius || 100,
             maxResults: maxResults || 100
           });

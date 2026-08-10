@@ -1,106 +1,15 @@
 import { getServerSession } from "next-auth/next";
-import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { upsertCanonicalLead } from "@/lib/leads/canonical";
 
-type Row = Record<string, unknown>;
-const text = (value: unknown) => typeof value === "string" ? value : "";
-const keyFor = (row: Row) => text(row.email).trim().toLowerCase() || text(row.business_name || row.name).trim().toLowerCase();
-async function findByIdentity(table: "crm_leads" | "leads", row: Row) {
-  const email = text(row.email).trim();
-  if (email) { const result = await supabaseAdmin.from(table).select("id").eq("email", email).limit(1).maybeSingle(); if (result.data) return result.data; }
-  const business = text(row.business_name || row.name).trim();
-  if (business) return (await supabaseAdmin.from(table).select("id").ilike("business_name", business).limit(1).maybeSingle()).data;
-  return null;
-}
+async function requireAdmin(){const session=await getServerSession(authOptions);const user=session?.user;if(!user?.id)return null;const allowed=["ADMIN"].includes(user.role)||user.permissions?.some(p=>["sales.team.view","sales.assignment.manage"].includes(p));return allowed&&user.organisation_id?user:null}
+const fail=(message:string,status:number)=>Response.json({error:message},{status});
 
-function normalize(row: Row, source: "crm" | "leads") {
-  return {
-    ...row,
-    _source: source,
-    contact_name: row.contact_name || row.name || row.business_name,
-    score: row.score ?? row.lead_score ?? 0,
-    status: row.status || "new",
-  };
-}
+export async function GET(request:Request){const user=await requireAdmin();if(!user)return fail("Admin sales access required",403);const organisationId=user.organisation_id!;const url=new URL(request.url),page=Math.max(1,Number(url.searchParams.get("page"))||1),limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit"))||50)),from=(page-1)*limit;let query=supabaseAdmin.from("leads").select("*",{count:"exact"}).eq("organisation_id",organisationId).is("deleted_at",null).order("created_at",{ascending:false}).range(from,from+limit-1);for(const key of ["status","source","priority"] as const){const value=url.searchParams.get(key);if(value&&value!=="all")query=query.eq(key,value)}const assigned=url.searchParams.get("assigned_employee_id");if(assigned==="unassigned")query=query.is("assigned_employee_id",null);else if(assigned)query=query.eq("assigned_employee_id",assigned);const search=(url.searchParams.get("q")||"").replace(/[^a-zA-Z0-9@.\- +]/g,"").slice(0,100);if(search)query=query.or(`business_name.ilike.%${search}%,contact_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);const {data,error,count}=await query;if(error)return fail("Unable to load lead pool",500);return Response.json({leads:data||[],page,limit,total:count||0})}
 
-async function requireSession() {
-  const session = await getServerSession(authOptions);
-  if (!session) throw new Error("Unauthorized");
-  return session;
-}
+export async function POST(request:Request){const user=await requireAdmin();if(!user)return fail("Admin sales access required",403);try{const body=await request.json();const result=await upsertCanonicalLead(user.organisation_id!,{businessName:body.business_name,contactName:body.contact_name,email:body.email,phone:body.phone,websiteUrl:body.website_url,linkedinUrl:body.linkedin_url,instagramUrl:body.instagram_url,city:body.city,state:body.state,country:body.country,source:"manual_admin",priority:body.priority,status:body.status,notes:body.notes,customFields:body.custom_fields,createdBy:user.id});return Response.json(result,{status:result.outcome==="created"?201:200})}catch(error){return fail(error instanceof Error?error.message:"Unable to create lead",400)}}
 
-export async function GET(req: Request) {
-  try {
-    const session = await requireSession();
-    const { role, id } = session.user as { role?: string; id?: string };
-    const { searchParams } = new URL(req.url);
-    const assignedTo = searchParams.get("assigned_to");
-    let crmQuery = supabaseAdmin.from("crm_leads").select("*, assigned_to_member:team_members(name)").order("created_at", { ascending: false });
-    let mainQuery = supabaseAdmin.from("leads").select("*").order("created_at", { ascending: false });
-    if (role === "crm_agent") { crmQuery = crmQuery.eq("assigned_to", id); mainQuery = mainQuery.eq("assigned_to", id); }
-    else if (assignedTo && assignedTo !== "all") { crmQuery = crmQuery.eq("assigned_to", assignedTo); mainQuery = mainQuery.eq("assigned_to", assignedTo); }
-    const [{ data: crmRows, error: crmError }, { data: mainRows, error: mainError }] = await Promise.all([crmQuery, mainQuery]);
-    if (crmError && mainError) throw crmError;
-    const merged = new Map<string, Record<string, unknown>>();
-    for (const row of (mainRows || []) as Row[]) { const normalized = normalize(row, "leads"); merged.set(keyFor(normalized) || `leads:${text(row.id)}`, normalized); }
-    for (const row of (crmRows || []) as Row[]) { const normalized = normalize(row, "crm"); merged.set(keyFor(normalized) || `crm:${text(row.id)}`, normalized); }
-    return NextResponse.json({ leads: [...merged.values()].sort((a, b) => new Date(text(b.created_at)).getTime() - new Date(text(a.created_at)).getTime()) });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to load CRM leads" }, { status: error instanceof Error && error.message === "Unauthorized" ? 401 : 500 }); }
-}
+export async function PATCH(request:Request){const user=await requireAdmin();if(!user)return fail("Admin sales access required",403);const id=new URL(request.url).searchParams.get("id");if(!id)return fail("Lead ID required",400);const body=await request.json();if(body.status&&!new Set(["new","contacted","engaged","qualified","disqualified"]).has(body.status))return fail("Invalid operational lead status",422);if(body.priority&&!new Set(["low","medium","high","urgent"]).has(body.priority))return fail("Invalid priority",422);const allowed=["business_name","contact_name","contact_title","email","phone","website_url","linkedin_url","instagram_url","city","state","country","status","priority","notes","custom_fields"],updates=Object.fromEntries(Object.entries(body).filter(([key])=>allowed.includes(key)));updates.updated_at=new Date().toISOString();const {data,error}=await supabaseAdmin.from("leads").update(updates).eq("id",id).eq("organisation_id",user.organisation_id).is("deleted_at",null).select("*").maybeSingle();if(error||!data)return fail("Lead not found or update rejected",404);return Response.json({lead:data})}
 
-export async function POST(req: Request) {
-  try {
-    await requireSession();
-    const body = await req.json();
-    const input = { business_name: body.business_name, contact_name: body.contact_name || body.business_name, email: body.email || null, phone: body.phone || null, city: body.city || null, status: body.status || "new", assigned_to: body.assigned_to || null };
-    const [main, crm] = await Promise.all([
-      supabaseAdmin.from("leads").insert({ business_name: input.business_name, name: input.contact_name, email: input.email, phone: input.phone, city: input.city, status: input.status, assigned_to: input.assigned_to }).select().maybeSingle(),
-      supabaseAdmin.from("crm_leads").insert(input).select().maybeSingle(),
-    ]);
-    if (main.error && crm.error) throw crm.error;
-    return NextResponse.json({ lead: crm.data || main.data, synchronized: !main.error && !crm.error, warnings: [main.error, crm.error].filter(Boolean).map((error) => error?.message) }, { status: 201 });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to create CRM lead" }, { status: 400 }); }
-}
-
-export async function PATCH(req: Request) {
-  try {
-    await requireSession();
-    const id = new URL(req.url).searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-    const body = await req.json();
-    const crmExisting = await supabaseAdmin.from("crm_leads").select("id,business_name,email").eq("id", id).maybeSingle();
-    const mainExisting = await supabaseAdmin.from("leads").select("id,business_name,email").eq("id", id).maybeSingle();
-    const crmMatch = crmExisting.data || (mainExisting.data ? await findByIdentity("crm_leads", mainExisting.data) : null);
-    const mainMatch = mainExisting.data || (crmExisting.data ? await findByIdentity("leads", crmExisting.data) : null);
-    const crmUpdates: Row = { ...body }; delete crmUpdates.id;
-    const mainUpdates: Row = {};
-    if (body.status) mainUpdates.status = body.status;
-    if (body.assigned_to !== undefined) mainUpdates.assigned_to = body.assigned_to;
-    if (body.contact_name) mainUpdates.name = body.contact_name;
-    for (const key of ["email", "phone", "city", "notes"]) if (body[key] !== undefined) mainUpdates[key] = body[key];
-    if (body.score !== undefined) mainUpdates.lead_score = body.score;
-    const results = await Promise.all([
-      crmMatch?.id ? supabaseAdmin.from("crm_leads").update(crmUpdates).eq("id", crmMatch.id).select().maybeSingle() : Promise.resolve({ data: null, error: null }),
-      mainMatch?.id ? supabaseAdmin.from("leads").update(mainUpdates).eq("id", mainMatch.id).select().maybeSingle() : Promise.resolve({ data: null, error: null }),
-    ]);
-    const errors = results.map((result) => result.error).filter(Boolean);
-    if (errors.length === 2) throw errors[0];
-    return NextResponse.json({ lead: results[0].data || results[1].data });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to update CRM lead" }, { status: 400 }); }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    await requireSession();
-    const id = new URL(req.url).searchParams.get("id");
-    if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
-    const crm = await supabaseAdmin.from("crm_leads").select("id,business_name,email").eq("id", id).maybeSingle();
-    const main = await supabaseAdmin.from("leads").select("id,business_name,email").eq("id", id).maybeSingle();
-    const crmMatch = crm.data || (main.data ? await findByIdentity("crm_leads", main.data) : null);
-    const mainMatch = main.data || (crm.data ? await findByIdentity("leads", crm.data) : null);
-    const [crmDeleted, mainDeleted] = await Promise.all([crmMatch?.id ? supabaseAdmin.from("crm_leads").delete().eq("id", crmMatch.id) : Promise.resolve({ error: null }), mainMatch?.id ? supabaseAdmin.from("leads").delete().eq("id", mainMatch.id) : Promise.resolve({ error: null })]);
-    if (crmDeleted.error && mainDeleted.error) throw crmDeleted.error;
-    return NextResponse.json({ success: true });
-  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to delete CRM lead" }, { status: 400 }); }
-}
+export async function DELETE(request:Request){const user=await requireAdmin();if(!user)return fail("Admin sales access required",403);const id=new URL(request.url).searchParams.get("id");if(!id)return fail("Lead ID required",400);const {data,error}=await supabaseAdmin.from("leads").update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",id).eq("organisation_id",user.organisation_id).is("deleted_at",null).select("id").maybeSingle();if(error||!data)return fail("Lead not found",404);return Response.json({success:true})}

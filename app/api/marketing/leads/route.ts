@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { upsertCanonicalLead } from "@/lib/leads/canonical";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const MOCK_LEADS = [
   {
@@ -59,6 +62,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session=await getServerSession(authOptions),user=session?.user;
+    if(!user?.id||!user.organisation_id||user.role!=="ADMIN")return NextResponse.json({error:"Admin access required"},{status:403});
     const body = await req.json();
     const { action, leadId } = body;
 
@@ -75,35 +80,18 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Lead not found in marketing database" }, { status: 404 });
       }
 
-      // 2. Insert into CRM Tables
-      const { data: crmLead, error: crmErr } = await supabaseAdmin
-        .from("crm_leads")
-        .insert([{
-          business_name: mLead.business_name || mLead.name,
-          contact_name: mLead.name,
-          email: mLead.email,
-          phone: mLead.phone,
-          source: "Marketing Hub Manual Sync",
-          score: Math.max(mLead.score, 50),
-          status: "new",
-          priority: "medium",
-          notes: "Manually pushed from Marketing Hub by team member."
-        }])
-        .select()
-        .single();
-
-      if (crmErr) throw crmErr;
+      const canonical=await upsertCanonicalLead(user.organisation_id,{businessName:mLead.business_name||mLead.name,contactName:mLead.name,email:mLead.email,phone:mLead.phone,source:"manual_admin",sourceTool:"marketing_hub",priority:"medium",notes:"Manually pushed from Marketing Hub by an administrator.",customFields:{marketing_score:Math.max(mLead.score,50)},createdBy:user.id});
 
       // 3. Update marketing lead status
       await supabaseAdmin
         .from("marketing_leads")
         .update({
-          crm_lead_id: crmLead.id,
+          crm_lead_id: canonical.lead.id,
           status: "MQL"
         })
         .eq("id", leadId);
 
-      return NextResponse.json({ success: true, crmLeadId: crmLead.id });
+      return NextResponse.json({ success: true, canonicalLeadId: canonical.lead.id });
     }
 
     // Standard Create Marketing Lead

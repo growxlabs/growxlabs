@@ -1,0 +1,6 @@
+import test from "node:test";import assert from "node:assert/strict";import fs from "node:fs";
+const ui=fs.readFileSync("components/admin/onboarding/OfferWorkspace.tsx","utf8"),api=fs.readFileSync("app/api/admin/recruitment/offers/route.ts","utf8");
+test("offer form never asks HR for raw identifiers",()=>{for(const label of ["Application ID","Department ID","Designation ID","Manager Employee ID","Organisation ID","Candidate ID"])assert.ok(!ui.includes(label),label)});
+test("offer form uses canonical human selectors",()=>{for(const label of ["Select candidate application","Select department","Select designation","Search employee…","Employment type","Offer valid until"])assert.ok(ui.includes(label),label)});
+test("API resolves names while storing canonical ids",()=>{for(const token of ["department_id:v.departmentId","designation_id:v.designationId","manager_employee_id:v.managerEmployeeId","department.data.name","manager.data.first_name","application_reference"])assert.ok(api.includes(token),token)});
+test("recovery reason remains internal audit context",()=>{assert.ok(ui.includes("Recovery record"));assert.ok(!ui.includes("Backfill reason"));assert.ok(api.includes("backfill_reason:v.backfillReason"))});

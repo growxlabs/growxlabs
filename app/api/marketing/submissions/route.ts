@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { upsertCanonicalLead } from "@/lib/leads/canonical";
 
 export async function POST(req: Request) {
   try {
@@ -159,59 +160,11 @@ export async function POST(req: Request) {
     const finalScore = marketingLead.score || leadScore;
     if (finalScore >= 50) {
       try {
-        // Find an active crm_agent from team_members
-        let assignedAgentId = null;
-        const { data: agents } = await supabaseAdmin
-          .from("team_members")
-          .select("id")
-          .eq("is_active", true)
-          .eq("role", "crm_agent")
-          .limit(5);
-        
-        if (agents && agents.length > 0) {
-          // Assign to a random agent
-          assignedAgentId = agents[Math.floor(Math.random() * agents.length)].id;
-        }
-
-        // Handoff to main leads & crm_leads tables (CRM integration)
-        // 1. Insert into leads table
-        const { data: newCRMBaseLead } = await supabaseAdmin
-          .from("leads")
-          .insert([{
-            business_name: business_name || finalName,
-            name: finalName,
-            email,
-            phone,
-            status: "new",
-            lead_score: finalScore,
-            source: "Marketing Hub Form",
-            assigned_to: assignedAgentId
-          }])
-          .select("id")
-          .maybeSingle();
-
-        // 2. Insert into crm_leads table
-        const { data: newCRMLead, error: crmErr } = await supabaseAdmin
-          .from("crm_leads")
-          .insert([{
-            business_name: business_name || finalName,
-            contact_name: finalName,
-            email,
-            phone,
-            source: "Marketing Hub Form",
-            score: finalScore,
-            status: "new",
-            priority: finalScore >= 70 ? "high" : "medium",
-            assigned_to: assignedAgentId,
-            notes: "Automatically qualified by Marketing Hub scoring engine. Breakdown: " + scoreBreakdown.map(i => i.reason).join("; ")
-          }])
-          .select()
-          .single();
-
-        if (crmErr) throw crmErr;
-
-        if (newCRMLead) {
-          crmLeadId = newCRMLead.id;
+        const organisationId=process.env.DEFAULT_ORGANISATION_ID;
+        if(!organisationId)throw new Error("DEFAULT_ORGANISATION_ID is required for website lead capture");
+        const canonical=await upsertCanonicalLead(organisationId,{businessName:business_name||finalName,contactName:finalName,email,phone,source:"website",sourceTool:"marketing_form",sourceUrl:formId,priority:finalScore>=70?"high":"medium",notes:"Automatically qualified by Marketing Hub scoring engine. Breakdown: "+scoreBreakdown.map(i=>i.reason).join("; "),customFields:{marketing_score:finalScore}});
+        if (canonical.lead) {
+          crmLeadId = canonical.lead.id;
           syncedToCRM = true;
 
           // Update marketing lead status & relation ID
@@ -228,21 +181,10 @@ export async function POST(req: Request) {
             marketingLead.status = "MQL";
           }
 
-          // Insert activities
-          await supabaseAdmin.from("lead_activities").insert([{
-            lead_id: crmLeadId,
-            team_member_id: assignedAgentId,
-            activity_type: "Qualification",
-            notes: "Marketing Qualified Lead (MQL) handed off to CRM.",
-            outcome: "Lead Sync Success"
-          }]);
         }
       } catch (crmHandoffErr: any) {
         console.log("CRM tables insertion failed/skipped: ", crmHandoffErr.message);
-        // Simulate successful sync
-        syncedToCRM = true;
-        crmLeadId = crypto.randomUUID();
-        marketingLead.status = "MQL";
+        syncedToCRM = false;
         marketingLead.crm_lead_id = crmLeadId;
       }
     }

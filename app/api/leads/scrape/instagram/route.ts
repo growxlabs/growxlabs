@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
+import { upsertCanonicalLead } from "@/lib/leads/canonical";
 
 // List of ignored Instagram paths that are not usernames
 const IGNORED_PATHS = new Set([
@@ -19,6 +20,8 @@ export async function POST(req: Request) {
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const organisationId=String((token as any).organisation_id||process.env.DEFAULT_ORGANISATION_ID||"");
+    if(!organisationId||String((token as any).role)!=="ADMIN")return NextResponse.json({error:"Admin organisation access required"},{status:403});
 
     const { niche, city, emailDomain } = await req.json();
 
@@ -101,34 +104,8 @@ export async function POST(req: Request) {
     // Save/check leads in Supabase
     const savedLeads: any[] = [];
     for (const lead of leads) {
-      const { data: existing } = await supabaseAdmin
-        .from("leads")
-        .select("id")
-        .eq("business_name", lead.business_name)
-        .maybeSingle();
-
-      if (!existing) {
-        const { data, error } = await supabaseAdmin
-          .from("leads")
-          .insert([lead])
-          .select()
-          .single();
-
-        if (!error && data) {
-          savedLeads.push(data);
-        } else if (error) {
-          console.error("INSTAGRAM LEAD SAVE FAILURE:", error.message);
-        }
-      } else {
-        const { data: fullLead } = await supabaseAdmin
-          .from("leads")
-          .select("*")
-          .eq("id", existing.id)
-          .single();
-        if (fullLead) {
-          savedLeads.push({ ...fullLead, alreadyExists: true });
-        }
-      }
+      const saved=await upsertCanonicalLead(organisationId,{businessName:lead.business_name,contactName:lead.name,email:lead.email,phone:lead.phone,instagramUrl:lead.website_url,city:lead.city,source:"instagram",sourceTool:methodUsed,sourceUrl:lead.website_url,notes:lead.notes,customFields:{implementation:"search_discovery_not_direct_instagram_api"}});
+      savedLeads.push({...saved.lead,alreadyExists:saved.outcome!=="created"});
     }
 
     console.log(`Instagram X-Ray Scrape completed using ${methodUsed}: Saved/Retrieved ${savedLeads.length} leads.`);

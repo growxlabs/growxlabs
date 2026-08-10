@@ -31,7 +31,7 @@ interface Lead {
   linkedin_url?: string;
   has_website?: boolean;
   score?: number;
-  status: 'new' | 'contacted' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost';
+  status: 'new' | 'contacted' | 'engaged' | 'qualified' | 'disqualified';
   priority?: 'low' | 'medium' | 'high';
   assigned_to?: string;
   notes?: string;
@@ -190,37 +190,15 @@ export default function AdminCRMPage() {
     }
   };
 
-  // Sync update to BOTH tables (crm_leads + leads)
+  // Phase 7: the API updates canonical public.leads only.
   const handleUpdateLead = async (id: string, updates: Partial<Lead>) => {
     try {
-      // 1. Update crm_leads
       const resCrm = await fetch(`/api/crm/leads?id=${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
       });
-      if (!resCrm.ok) throw new Error("Failed to update CRM table");
-
-      // 2. Synchronize translation fields to main leads table
-      const mainUpdates: Record<string, any> = {};
-      if (updates.status) mainUpdates.status = updates.status;
-      if (updates.assigned_to) mainUpdates.assigned_to = updates.assigned_to;
-      if (updates.contact_name) mainUpdates.name = updates.contact_name;
-      if (updates.email) mainUpdates.email = updates.email;
-      if (updates.phone) mainUpdates.phone = updates.phone;
-      if (updates.city) mainUpdates.city = updates.city;
-      if (updates.notes) mainUpdates.notes = updates.notes;
-      if (updates.score) mainUpdates.lead_score = updates.score;
-
-      const resMain = await fetch(`/api/leads/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(mainUpdates)
-      });
-      
-      if (!resMain.ok) {
-        console.warn("Main lead sync non-fatal warning:", await resMain.text());
-      }
+      if (!resCrm.ok) throw new Error("Failed to update lead");
 
       showToast("Lead updated successfully");
       fetchLeads();
@@ -490,9 +468,9 @@ export default function AdminCRMPage() {
 
   // KPI calculations
   const totalLeads = leads.length;
-  const qualifiedCount = leads.filter(l => ['contacted', 'proposal', 'negotiation', 'closed_won'].includes(l.status)).length;
+  const qualifiedCount = leads.filter(l => ['engaged', 'qualified'].includes(l.status)).length;
   const newCount = leads.filter(l => l.status === 'new').length;
-  const closedWonCount = leads.filter(l => l.status === 'closed_won').length;
+  const closedWonCount = leads.filter(l => l.status === 'qualified').length;
   
   // Pipeline deal value sum (fallback to dummy defaults if null)
   const pipelineValue = leads.reduce((sum, lead) => sum + (Number(lead.deal_value) || 0), 0) || (leads.length * 6800);
@@ -628,7 +606,7 @@ export default function AdminCRMPage() {
                       <span>All</span>
                       {!statusFilter && <Check size={11} className="text-[var(--primary)]" />}
                     </button>
-                    {['new', 'contacted', 'proposal', 'negotiation', 'closed_won', 'closed_lost'].map((st) => (
+                    {['new', 'contacted', 'engaged', 'qualified', 'disqualified'].map((st) => (
                       <button key={st} onClick={() => { setStatusFilter(st); setShowStatusDropdown(false); setCurrentPage(1); }} className="w-full px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-2)] font-medium flex items-center justify-between uppercase text-[10px] tracking-wider cursor-pointer">
                         <span>{st.replace("_", " ")}</span>
                         {statusFilter === st && <Check size={11} className="text-[var(--primary)]" />}
@@ -846,10 +824,9 @@ export default function AdminCRMPage() {
                         {
                           new: "text-blue-700 bg-blue-50 border-blue-100",
                           contacted: "text-emerald-700 bg-emerald-50 border-emerald-100",
-                          proposal: "text-purple-700 bg-purple-50 border-purple-100",
-                          negotiation: "text-amber-700 bg-amber-50 border-amber-100",
-                          closed_won: "text-green-700 bg-green-50 border-green-100",
-                          closed_lost: "text-red-700 bg-red-50 border-red-100"
+                          engaged: "text-purple-700 bg-purple-50 border-purple-100",
+                          qualified: "text-green-700 bg-green-50 border-green-100",
+                          disqualified: "text-red-700 bg-red-50 border-red-100"
                         }[lead.status] || "text-neutral-700 bg-neutral-50 border-neutral-100"
                       )}>
                         {lead.status.replace("_", " ")}
@@ -900,7 +877,7 @@ export default function AdminCRMPage() {
                               Mark Contacted
                             </button>
                             <button 
-                              onClick={() => { handleUpdateLead(lead.id!, { status: 'proposal' }); setActiveActionMenuId(null); }}
+                              onClick={() => { handleUpdateLead(lead.id!, { status: 'qualified' }); setActiveActionMenuId(null); }}
                               className="w-full text-left px-3 py-1.5 text-xs text-[#111827] hover:bg-slate-50 font-medium"
                             >
                               Send Proposal
@@ -1025,10 +1002,9 @@ export default function AdminCRMPage() {
                       >
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>
-                        <option value="proposal">Proposal</option>
-                        <option value="negotiation">Negotiation</option>
-                        <option value="closed_won">Closed Won</option>
-                        <option value="closed_lost">Closed Lost</option>
+                        <option value="engaged">Engaged</option>
+                        <option value="qualified">Qualified</option>
+                        <option value="disqualified">Disqualified</option>
                       </select>
                     </div>
 
@@ -1184,13 +1160,13 @@ export default function AdminCRMPage() {
               {/* Drawer Footer Actions */}
               <div className="p-4 border-t border-[#e6e6e6] bg-[#f6f5f4]/60 flex gap-2">
                 <Button 
-                  onClick={() => handleUpdateLead(selectedLead.id!, { status: 'closed_won' })} 
+                  onClick={() => handleUpdateLead(selectedLead.id!, { status: 'qualified' })}
                   className="flex-1 h-9 bg-[#1aae39] hover:bg-[#1aae39]/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
                 >
                   Mark Won
                 </Button>
                 <Button 
-                  onClick={() => handleUpdateLead(selectedLead.id!, { status: 'closed_lost' })} 
+                  onClick={() => handleUpdateLead(selectedLead.id!, { status: 'disqualified' })}
                   className="flex-1 h-9 bg-white border border-[#e6e6e6] hover:bg-slate-50 text-slate-700 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
                 >
                   Mark Lost

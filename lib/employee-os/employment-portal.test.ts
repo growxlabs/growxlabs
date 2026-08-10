@@ -1,0 +1,8 @@
+import test from "node:test";import assert from "node:assert/strict";import fs from "node:fs";
+const read=(path:string)=>fs.readFileSync(path,"utf8");
+test("all employee modules use canonical identity filters",()=>{const data=read("lib/employee-os/workspace-data.ts");for(const token of ["context.employeeId","context.organisationId","employee_attendance_snapshot","employee_leave_snapshot","employee_learning_snapshot","employee_assets_snapshot"])assert.ok(data.includes(token),token)});
+test("leave request stays inside Employee OS",()=>{const page=read("app/workspace/employment/leave/page.tsx");assert.ok(page.includes("LeaveSelfService"));assert.ok(!page.includes("/people/leave/request"))});
+test("old learning route is not linked",()=>{assert.ok(!read("app/workspace/employment/learning/page.tsx").includes("/me/learning"))});
+test("offer documents are linked without exposing another employee",()=>{const data=read("lib/employee-os/workspace-data.ts"),download=read("app/api/workspace/documents/[documentId]/route.ts");assert.ok(data.includes('.eq("employee_id",context.employeeId)'));assert.ok(download.includes(".eq('employee_id',context.employeeId)"));assert.ok(download.includes("Document not found"))});
+test("attendance and leave mutations bind actor to employee",()=>{const sql=read("platform/hrms/migrations/0039_employee_os_completion.sql");assert.match(sql,/user_id=p_actor_user_id/);assert.match(sql,/x\.employee_id=p_employee_id/);assert.match(sql,/e\.employee_id=p_employee_id/)});
+test("private schema bridges are service role only",()=>{const sql=read("platform/hrms/migrations/0039_employee_os_completion.sql");assert.match(sql,/REVOKE ALL[\s\S]+FROM PUBLIC/);assert.match(sql,/GRANT EXECUTE[\s\S]+TO service_role/)});
