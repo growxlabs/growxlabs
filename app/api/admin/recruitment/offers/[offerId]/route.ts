@@ -356,6 +356,45 @@ export async function PATCH(
         .eq("application_id", current.application_id)
         .maybeSingle();
   const employeeId = conversion.data?.employee_id || null;
+  const recoveredEmployee = employeeId
+    ? null
+    : await (async () => {
+        const application = await supabaseAdmin
+          .schema("recruitment")
+          .from("careers_applications")
+          .select("profile")
+          .eq("id", current.application_id)
+          .maybeSingle();
+        const email = String(application.data?.profile?.email || "")
+          .trim()
+          .toLowerCase();
+        if (!email) return null;
+        const identity = await supabaseAdmin
+          .schema("identity")
+          .from("users")
+          .select("id")
+          .eq("organisation_id", CAREERS_ORGANISATION)
+          .eq("email", email)
+          .maybeSingle();
+        if (!identity.data?.id) return null;
+        return supabaseAdmin
+          .schema("people")
+          .from("employees")
+          .select("id")
+          .eq("organisation_id", CAREERS_ORGANISATION)
+          .eq("user_id", identity.data.id)
+          .is("deleted_at", null)
+          .maybeSingle();
+      })();
+  const documentEmployeeId = employeeId || recoveredEmployee?.data?.id || null;
+  if (!documentEmployeeId)
+    return Response.json(
+      {
+        error:
+          "The existing employee link could not be recovered. The offer has not been issued; no duplicate employee was created.",
+      },
+      { status: 409 },
+    );
   let documentId = current.document_id as string | null;
   if (!documentId) {
     const category = await supabaseAdmin
@@ -373,8 +412,8 @@ export async function PATCH(
       .insert({
         organisation_id: CAREERS_ORGANISATION,
         category_id: category.data?.id || null,
-        owner_entity_type: employeeId ? "employee" : "candidate",
-        owner_entity_id: employeeId || current.candidate_id,
+        owner_entity_type: "employee",
+        owner_entity_id: documentEmployeeId,
         name: `Offer of Employment - ${snapshot.title}.pdf`,
       })
       .select("id")
@@ -418,7 +457,7 @@ export async function PATCH(
       status: "sent",
       issued_at: current.issued_at || issuedAt.toISOString(),
       document_ready_at: current.document_ready_at || issuedAt.toISOString(),
-      employee_id: employeeId,
+      employee_id: documentEmployeeId,
       document_id: documentId,
       offer_letter_document_id: documentId,
       offer_letter_url: `/api/v1/candidate/offers/${offerId}/document`,
