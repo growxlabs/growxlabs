@@ -89,7 +89,7 @@ export async function convertCandidateToEmployee(input: ConvertCandidateInput): 
   if (applicationError || !application) throw new EmployeeProvisioningError("application_not_found", "Candidate application not found", 404);
   if (String(application.current_stage).toLowerCase() !== "hired" && String(application.status).toLowerCase() !== "hired") throw new EmployeeProvisioningError("candidate_not_hired", "Only a hired or offer-accepted candidate can be converted", 409);
   const { data: acceptedResponse, error: offerLookupError } = await supabaseAdmin.schema("recruitment").from("candidate_offer_responses").select("id").eq("application_id", input.applicationId).eq("decision", "accepted").limit(1).maybeSingle();
-  if (offerLookupError && offerLookupError.code !== "42P01") throw safeDatabaseFailure("offer_lookup_failed");
+  if (offerLookupError && !["42P01", "PGRST205"].includes(offerLookupError.code)) throw safeDatabaseFailure("offer_lookup_failed");
   const { data: acceptedOffer, error: acceptedOfferError } = await supabaseAdmin.schema("recruitment").from("offers").select("id").eq("application_id", input.applicationId).eq("status", "accepted").limit(1).maybeSingle();
   if (acceptedOfferError && acceptedOfferError.code !== "42P01") throw safeDatabaseFailure("offer_lookup_failed");
   if (!acceptedResponse && !acceptedOffer && !input.offerOverride) throw new EmployeeProvisioningError("offer_required", "An accepted offer is required before converting this candidate. Use the Admin override only with a documented reason.", 409);

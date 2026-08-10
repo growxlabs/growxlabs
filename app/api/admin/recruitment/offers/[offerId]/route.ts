@@ -57,31 +57,39 @@ export async function GET(
   const offer = await supabaseAdmin
     .schema("recruitment")
     .from("offers")
-    .select("document_id,title")
+    .select("document_id,title,current_version,application_id,candidate_id")
     .eq("id", offerId)
     .eq("organisation_id", CAREERS_ORGANISATION)
     .maybeSingle();
-  if (!offer.data?.document_id)
-    return Response.json(
-      { error: "Offer document is unavailable" },
-      { status: 404 },
-    );
-  const version = await supabaseAdmin
-    .schema("documents")
-    .from("versions")
-    .select("storage_object_key")
-    .eq("document_id", offer.data.document_id)
-    .order("version", { ascending: false })
-    .limit(1)
+  if (!offer.data)
+    return Response.json({ error: "Offer not found" }, { status: 404 });
+
+  const app = await supabaseAdmin
+    .schema("recruitment")
+    .from("careers_applications")
+    .select("profile")
+    .eq("id", offer.data.application_id)
     .maybeSingle();
-  if (!version.data)
-    return Response.json(
-      { error: "Offer document is unavailable" },
-      { status: 404 },
-    );
+
+  let storageKey = `offers/${CAREERS_ORGANISATION}/${offerId}/v${offer.data.current_version}-${safe(app.data?.profile?.full_name || "Candidate")}.pdf`;
+  try {
+    if (offer.data.document_id) {
+      const version = await supabaseAdmin
+        .schema("documents")
+        .from("versions")
+        .select("storage_object_key")
+        .eq("document_id", offer.data.document_id)
+        .order("version", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (version.data?.storage_object_key) storageKey = version.data.storage_object_key;
+    }
+  } catch (err) {
+    console.warn("Using canonical offer storage key fallback:", err);
+  }
   const signed = await supabaseAdmin.storage
     .from(bucket)
-    .createSignedUrl(version.data.storage_object_key, 300, {
+    .createSignedUrl(storageKey, 300, {
       download: `${safe(offer.data.title || "GrowXLabs-Offer")}.pdf`,
     });
   if (signed.error)

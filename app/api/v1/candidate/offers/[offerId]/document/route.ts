@@ -25,9 +25,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ offe
     .maybeSingle();
   if (String(app.data?.profile?.email || offer.data.candidate_id).toLowerCase() !== session.email)
     return Response.json({ error: "Access denied" }, { status: 403 });
-  if (!offer.data.document_id)
-    return Response.json({ error: "Offer document is unavailable" }, { status: 404 });
-
   let storageKey = `offers/${CAREERS_ORGANISATION}/${offerId}/v${offer.data.current_version}-${safe(app.data?.profile?.full_name || "Candidate")}.pdf`;
   try {
     const file = await supabaseAdmin

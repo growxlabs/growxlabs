@@ -41,6 +41,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Application not found. Verification failed." }, { status: 404 });
     }
 
+    const fetchResponse = async () => {
+      try {
+        return await supabaseAdmin
+          .schema("recruitment")
+          .from("candidate_offer_responses")
+          .select("id,decision,notes,responded_at")
+          .eq("application_id", application.id)
+          .order("created_at", { ascending: false })
+          .limit(1);
+      } catch (err) {
+        return { data: null, error: null };
+      }
+    };
+
     // 2. Fetch Linked Details in Parallel
     const [historyRes, interviewsRes, messagesRes, offersRes, rescheduleRes, responseRes, playbooksRes] = await Promise.all([
       supabaseAdmin
@@ -80,13 +94,7 @@ export async function GET(request: Request) {
         .eq("application_id", application.id)
         .order("created_at", { ascending: false }),
 
-      supabaseAdmin
-        .schema("recruitment")
-        .from("candidate_offer_responses")
-        .select("id,decision,notes,responded_at")
-        .eq("application_id", application.id)
-        .order("created_at", { ascending: false })
-        .limit(1),
+      fetchResponse(),
 
       supabaseAdmin
         .schema("recruitment")
@@ -101,12 +109,12 @@ export async function GET(request: Request) {
     const stageHistory = historyRes.data || [];
     const timeline = [
       { stage: "applied", label: "Applied", timestamp: application.submitted_at, completed: true },
-      { stage: "under_review", label: "Under Review", timestamp: stageHistory.find((h) => h.to_stage === "under_review")?.created_at || null, completed: false },
-      { stage: "screening", label: "Screening", timestamp: stageHistory.find((h) => h.to_stage === "screening")?.created_at || null, completed: false },
-      { stage: "interview", label: "Interview Scheduled", timestamp: stageHistory.find((h) => h.to_stage === "interview")?.created_at || null, completed: false },
-      { stage: "assessment", label: "Assessment", timestamp: stageHistory.find((h) => h.to_stage === "assessment")?.created_at || null, completed: false },
-      { stage: "offer", label: "Offer", timestamp: stageHistory.find((h) => h.to_stage === "offer")?.created_at || null, completed: false },
-      { stage: "hired", label: "Hired", timestamp: stageHistory.find((h) => h.to_stage === "hired")?.created_at || null, completed: false },
+      { stage: "under_review", label: "Under Review", timestamp: stageHistory.find((h: any) => h.to_stage === "under_review")?.created_at || null, completed: false },
+      { stage: "screening", label: "Screening", timestamp: stageHistory.find((h: any) => h.to_stage === "screening")?.created_at || null, completed: false },
+      { stage: "interview", label: "Interview Scheduled", timestamp: stageHistory.find((h: any) => h.to_stage === "interview")?.created_at || null, completed: false },
+      { stage: "assessment", label: "Assessment", timestamp: stageHistory.find((h: any) => h.to_stage === "assessment")?.created_at || null, completed: false },
+      { stage: "offer", label: "Offer", timestamp: stageHistory.find((h: any) => h.to_stage === "offer")?.created_at || null, completed: false },
+      { stage: "hired", label: "Hired", timestamp: stageHistory.find((h: any) => h.to_stage === "hired")?.created_at || null, completed: false },
     ];
 
     const currentStageIdx = timeline.findIndex((t) => t.stage === String(application.current_stage).toLowerCase());

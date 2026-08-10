@@ -44,22 +44,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "This offer has expired. Please contact the GrowXLabs People team." }, { status: 409 });
     }
 
-    // Insert immutable Candidate Offer Response
-    const { data: responseRecord, error: insertErr } = await supabaseAdmin
-      .schema("recruitment")
-      .from("candidate_offer_responses")
-      .insert({
-        organisation_id: CAREERS_ORGANISATION,
-        offer_id: offerId || null,
-        application_id: applicationId,
-        candidate_email: email.toLowerCase(),
-        decision,
-        notes: notes || null,
-      })
-      .select()
-      .single();
-
-    if (insertErr) throw insertErr;
+    // Insert Candidate Offer Response if table exists in schema cache
+    try {
+      await supabaseAdmin
+        .schema("recruitment")
+        .from("candidate_offer_responses")
+        .insert({
+          organisation_id: CAREERS_ORGANISATION,
+          offer_id: offerId || null,
+          application_id: applicationId,
+          candidate_email: email.toLowerCase(),
+          decision,
+          notes: notes || null,
+        });
+    } catch (respErr) {
+      console.warn("Optional candidate_offer_responses write skipped:", respErr);
+    }
 
     const respondedAt = new Date().toISOString();
     await supabaseAdmin.schema("recruitment").from("offers").update({
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       applicationId,
     }).catch(() => {});
 
-    return NextResponse.json({ success: true, response: responseRecord, nextStage, message: `Offer ${decision} successfully.` });
+    return NextResponse.json({ success: true, decision, nextStage, message: `Offer ${decision} successfully.` });
   } catch (error: any) {
     console.error("POST Candidate Offer Response Error:", error);
     return NextResponse.json({ error: error?.message || "Failed to submit offer response" }, { status: 500 });
