@@ -23,6 +23,7 @@ export function OfferSection({
   if (!offer) return null;
 
   const offerLetter = documents.find(d => d.type === 'offer_letter' || d.name.toLowerCase().includes('offer'));
+  const terms = offer.snapshot?.terms;
 
   return (
     <div className={css({ display: 'flex', flexDirection: 'column', gap: '20px' })}>
@@ -71,6 +72,22 @@ export function OfferSection({
               <Download size={14} />
               Download
             </a>
+          </div>
+        )}
+
+        {terms && (
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '18px', paddingTop: '8px' })}>
+            {[
+              ['Working terms', terms.workingTerms],
+              ['Confidentiality & intellectual property', terms.confidentialityIp],
+              [/intern/i.test(offer.snapshot?.employmentType || '') ? 'Ending the internship' : 'Ending the engagement', terms.termination],
+              ['Acceptance', terms.acceptanceInstructions],
+            ].filter(([, value]) => Boolean(value)).map(([label, value]) => (
+              <section key={label} className={css({ borderTop: '1px solid #E5E7EB', paddingTop: '14px' })}>
+                <h3 className={css({ fontSize: '12px', fontWeight: 700, color: '#075a9c', textTransform: 'uppercase', letterSpacing: '.06em' })}>{label}</h3>
+                <p className={css({ marginTop: '8px', whiteSpace: 'pre-line', fontSize: '14px', lineHeight: 1.7, color: '#4B5563' })}>{value}</p>
+              </section>
+            ))}
           </div>
         )}
 

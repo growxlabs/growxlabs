@@ -41,6 +41,21 @@ type Employee = {
   designation: string;
   employee_number: string;
 };
+type OfferTermTemplate = {
+  templateId: string;
+  templateVersionId: string;
+  templateName: string;
+  templateVersion: number;
+  engagementType: string;
+  employmentType: string;
+  designationId: string | null;
+  terms: {
+    workingTerms: string;
+    confidentialityIp: string;
+    termination: string;
+    acceptanceInstructions: string;
+  };
+};
 const blank = {
   applicationId: "",
   title: "",
@@ -52,6 +67,13 @@ const blank = {
   joiningDate: "",
   salaryAmount: "",
   salaryCurrency: "INR",
+  compensationType: "Fixed",
+  stipendPeriod: "",
+  incentiveType: "",
+  incentiveValue: "",
+  incentiveBasis: "",
+  paymentTiming: "",
+  compensationNotes: "",
   probationDays: "90",
   noticePeriodDays: "30",
   expiresAt: "",
@@ -61,6 +83,8 @@ const blank = {
   confidentialityIp: "",
   termination: "",
   acceptanceInstructions: "",
+  offerTermTemplateName: "",
+  offerTermTemplateVersion: "",
 };
 const inputClass =
   "h-11 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] px-3 text-xs text-[var(--text-primary)] outline-none focus:border-[#0075de] focus:ring-2 focus:ring-[#0075de]/15";
@@ -71,6 +95,7 @@ export default function OfferWorkspace() {
     [departments, setDepartments] = useState<Option[]>([]),
     [designations, setDesignations] = useState<Option[]>([]),
     [employees, setEmployees] = useState<Employee[]>([]),
+    [offerTermTemplates, setOfferTermTemplates] = useState<OfferTermTemplate[]>([]),
     [open, setOpen] = useState(false),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
@@ -92,6 +117,7 @@ export default function OfferWorkspace() {
     setDepartments(b.departments || []);
     setDesignations(b.designations || []);
     setEmployees(b.employees || []);
+    setOfferTermTemplates(b.offerTermTemplates || []);
   }
   function chooseApplication(id: string, source = applications) {
     const a = source.find((x) => x.id === id);
@@ -115,22 +141,29 @@ export default function OfferWorkspace() {
           x.name.toLowerCase() === titleKey ||
           Boolean(titleCode && x.code?.toLowerCase() === titleCode),
       );
+    const employmentType = ["Full-time", "Part-time", "Contract", "Internship"].includes(a.employmentType)
+      ? a.employmentType
+      : /intern/i.test(a.employmentType)
+        ? "Internship"
+        : "Full-time";
+    const template = offerTermTemplates.find(
+      (item) => item.employmentType === employmentType && (!item.designationId || item.designationId === designation?.id),
+    );
     setForm((v) => ({
       ...v,
       applicationId: id,
       title: a.title || v.title,
       departmentId: department?.id || v.departmentId,
       designationId: designation?.id || v.designationId,
-      employmentType: [
-        "Full-time",
-        "Part-time",
-        "Contract",
-        "Internship",
-      ].includes(a.employmentType)
-        ? a.employmentType
-        : v.employmentType,
+      employmentType,
       workLocation: a.location || v.workLocation,
       candidateAddress: a.candidateAddress || v.candidateAddress,
+      workingTerms: template?.terms.workingTerms || "",
+      confidentialityIp: template?.terms.confidentialityIp || "",
+      termination: template?.terms.termination || "",
+      acceptanceInstructions: template?.terms.acceptanceInstructions || "",
+      offerTermTemplateName: template?.templateName || "",
+      offerTermTemplateVersion: template ? String(template.templateVersion) : "",
     }));
   }
   function hydrateOffer(item: Offer) {
@@ -154,6 +187,13 @@ export default function OfferWorkspace() {
           ? String(item.salary)
           : v.salaryAmount,
       salaryCurrency: snapshot.salaryCurrency || item.currency || v.salaryCurrency,
+      compensationType: snapshot.compensationModel || v.compensationType,
+      stipendPeriod: snapshot.stipendPeriod || v.stipendPeriod,
+      incentiveType: snapshot.incentiveType || v.incentiveType,
+      incentiveValue: snapshot.incentiveValue != null ? String(snapshot.incentiveValue) : v.incentiveValue,
+      incentiveBasis: snapshot.incentiveStructure || v.incentiveBasis,
+      paymentTiming: snapshot.paymentTerms || v.paymentTiming,
+      compensationNotes: snapshot.compensationNotes || v.compensationNotes,
       probationDays:
         snapshot.probationDays != null
           ? String(snapshot.probationDays)
@@ -178,6 +218,8 @@ export default function OfferWorkspace() {
       termination: snapshot.terms?.termination || (item as any).terms?.termination || v.termination,
       acceptanceInstructions:
         snapshot.terms?.acceptanceInstructions || (item as any).terms?.acceptanceInstructions || v.acceptanceInstructions,
+      offerTermTemplateName: snapshot.offerTermTemplate?.name || "Historical offer snapshot",
+      offerTermTemplateVersion: snapshot.offerTermTemplate?.version ? String(snapshot.offerTermTemplate.version) : "",
     }));
   }
   useEffect(() => {
@@ -201,7 +243,7 @@ export default function OfferWorkspace() {
       }));
       setOpen(true);
     }
-  }, [applications, departments, designations, items, params]);
+  }, [applications, departments, designations, items, offerTermTemplates, params]);
   const application = applications.find((x) => x.id === form.applicationId),
     filteredDesignations = designations.filter(
       (x) =>
@@ -220,6 +262,22 @@ export default function OfferWorkspace() {
           .slice(0, 30),
       [employees, managerSearch],
     );
+  function applyResolvedTemplate(next: typeof blank, employmentType: string, designationId: string) {
+    const template = offerTermTemplates
+      .filter((item) => item.employmentType === employmentType && (!item.designationId || item.designationId === designationId))
+      .sort((a, b) => Number(Boolean(b.designationId)) - Number(Boolean(a.designationId)))[0];
+    return {
+      ...next,
+      employmentType,
+      designationId,
+      workingTerms: template?.terms.workingTerms || "",
+      confidentialityIp: template?.terms.confidentialityIp || "",
+      termination: template?.terms.termination || "",
+      acceptanceInstructions: template?.terms.acceptanceInstructions || "",
+      offerTermTemplateName: template?.templateName || "",
+      offerTermTemplateVersion: template ? String(template.templateVersion) : "",
+    };
+  }
   async function create(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
@@ -228,18 +286,13 @@ export default function OfferWorkspace() {
       ...form,
       reissue,
       salaryAmount: Number(form.salaryAmount),
+      incentiveValue: form.incentiveValue === "" ? null : Number(form.incentiveValue),
       probationDays: Number(form.probationDays),
       noticePeriodDays: Number(form.noticePeriodDays),
       expiresAt: new Date(form.expiresAt).toISOString(),
       managerEmployeeId: form.managerEmployeeId || null,
       candidateAddress: form.candidateAddress || null,
       backfillReason: form.backfillReason || null,
-      terms: {
-        workingTerms: form.workingTerms,
-        confidentialityIp: form.confidentialityIp,
-        termination: form.termination,
-        acceptanceInstructions: form.acceptanceInstructions,
-      },
     };
     const r = await fetch("/api/admin/recruitment/offers", {
         method: "POST",
@@ -566,9 +619,7 @@ export default function OfferWorkspace() {
                 <select
                   required
                   value={form.designationId}
-                  onChange={(e) =>
-                    setForm({ ...form, designationId: e.target.value })
-                  }
+                  onChange={(e) => setForm(applyResolvedTemplate(form, form.employmentType, e.target.value))}
                   className="input"
                 >
                   <option value="">Select designation</option>
@@ -604,9 +655,7 @@ export default function OfferWorkspace() {
               <Field label="Employment type">
                 <select
                   value={form.employmentType}
-                  onChange={(e) =>
-                    setForm({ ...form, employmentType: e.target.value })
-                  }
+                  onChange={(e) => setForm(applyResolvedTemplate(form, e.target.value, form.designationId))}
                   className="input"
                 >
                   {["Full-time", "Part-time", "Contract", "Internship"].map(
@@ -649,6 +698,11 @@ export default function OfferWorkspace() {
               </Field>
             </Section>
             <Section title="Compensation">
+              <Field label="Compensation type">
+                <select value={form.compensationType} onChange={(e) => setForm({ ...form, compensationType: e.target.value })} className="input">
+                  <option>Fixed</option><option>Incentive-based</option><option>Fixed plus incentive</option>
+                </select>
+              </Field>
               <Field label="Annual compensation">
                 <input
                   required
@@ -675,6 +729,14 @@ export default function OfferWorkspace() {
                   <option>EUR</option>
                 </select>
               </Field>
+              <Field label="Stipend period"><input value={form.stipendPeriod} onChange={(e) => setForm({ ...form, stipendPeriod: e.target.value })} placeholder="Monthly, one-time, or not applicable" className="input" /></Field>
+              {/incentive/i.test(form.compensationType) && <>
+                <Field label="Incentive type"><input required value={form.incentiveType} onChange={(e) => setForm({ ...form, incentiveType: e.target.value })} placeholder="Per qualified meeting, percentage, milestone" className="input" /></Field>
+                <Field label="Incentive value"><input type="number" min="0" value={form.incentiveValue} onChange={(e) => setForm({ ...form, incentiveValue: e.target.value })} className="input" /></Field>
+                <Field label="Incentive basis"><textarea required value={form.incentiveBasis} onChange={(e) => setForm({ ...form, incentiveBasis: e.target.value })} placeholder="State exactly when an incentive is earned" className="input min-h-20 py-3" /></Field>
+                <Field label="Payment timing"><input required value={form.paymentTiming} onChange={(e) => setForm({ ...form, paymentTiming: e.target.value })} placeholder="For example: paid monthly after validation" className="input" /></Field>
+              </>}
+              <Field label="Compensation notes"><textarea value={form.compensationNotes} onChange={(e) => setForm({ ...form, compensationNotes: e.target.value })} className="input min-h-20 py-3" /></Field>
             </Section>
             <Section title="Employment terms">
               <Field label="Probation period">
@@ -719,34 +781,31 @@ export default function OfferWorkspace() {
                 />
               </Field>
             </Section>
-            <details className="mt-6 rounded-xl border p-4">
-              <summary className="cursor-pointer text-xs font-bold uppercase tracking-wider">
-                Additional approved terms
-              </summary>
+            <section className="mt-6 rounded-xl border p-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider">
+                Additional offer terms
+              </h3>
               <p className="mt-2 text-xs text-[var(--text-secondary)]">
-                Use only People-approved wording. Legal wording is never
-                generated automatically.
+                Template: {form.offerTermTemplateName
+                  ? `${form.offerTermTemplateName}${form.offerTermTemplateVersion ? ` — v${form.offerTermTemplateVersion}` : ""}`
+                  : "No approved template resolved"}
               </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-5 space-y-5">
                 {[
                   ["workingTerms", "Working terms"],
-                  ["confidentialityIp", "Confidentiality and IP"],
-                  ["termination", "Termination"],
-                  ["acceptanceInstructions", "Acceptance instructions"],
+                  ["confidentialityIp", "Confidentiality & intellectual property"],
+                  ["termination", /intern/i.test(form.employmentType) ? "Ending the internship" : "Ending the engagement"],
+                  ["acceptanceInstructions", "Acceptance"],
                 ].map(([key, label]) => (
-                  <Field key={key} label={label}>
-                    <textarea
-                      required
-                      value={(form as any)[key]}
-                      onChange={(e) =>
-                        setForm({ ...form, [key]: e.target.value })
-                      }
-                      className="input min-h-24 py-3"
-                    />
-                  </Field>
+                  <div key={key}>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#075a9c]">{label}</h4>
+                    <p className="mt-2 whitespace-pre-line rounded-lg bg-[var(--surface-2)] p-3 text-xs leading-6 text-[var(--text-secondary)]">
+                      {(form as any)[key] || "This approved section has not been configured."}
+                    </p>
+                  </div>
                 ))}
               </div>
-            </details>
+            </section>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"

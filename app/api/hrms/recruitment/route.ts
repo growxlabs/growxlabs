@@ -10,6 +10,7 @@ import {
   sendHrNotification,
 } from "@/lib/recruitment/email-service";
 import { TemplateType } from "@/lib/recruitment/email-templates";
+import { resolveApprovedOfferTerms } from "@/lib/recruitment/offer-terms";
 
 export async function GET() {
   try {
@@ -262,6 +263,13 @@ export async function PATCH(request: Request) {
               .maybeSingle()
           : { data: null };
         const profile = (application.profile || {}) as Record<string, any>;
+        const resolvedOfferTerms = designation?.id
+          ? await resolveApprovedOfferTerms({
+              organisationId: CAREERS_ORGANISATION,
+              employmentType: job?.employment_type || "Full-time",
+              designationId: designation.id,
+            })
+          : null;
         const { error: draftError } = await supabaseAdmin
           .schema("recruitment")
           .from("offers")
@@ -280,16 +288,7 @@ export async function PATCH(request: Request) {
             currency: "INR",
             start_date: null,
             status: "draft",
-            terms: {
-              workingTerms:
-                "Approved working terms will be confirmed before sending.",
-              confidentialityIp:
-                "Confidentiality and intellectual property terms apply.",
-              termination:
-                "Termination follows the approved notice period and applicable policy.",
-              acceptanceInstructions:
-                "Review the complete offer and accept or decline it through the candidate portal.",
-            },
+            terms: resolvedOfferTerms?.terms || {},
           });
         if (draftError && draftError.code !== "23505") throw draftError;
       }

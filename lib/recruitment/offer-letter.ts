@@ -1,6 +1,13 @@
 import "server-only";
+
 import crypto from "node:crypto";
 import { jsPDF } from "jspdf";
+
+export const GROWXLABS_OFFER_SIGNATORY = {
+  name: "Pujala Sai Varshith",
+  title: "Authorized Signatory",
+  company: "GrowXLabs",
+} as const;
 
 export type OfferSnapshot = {
   candidateName: string;
@@ -20,11 +27,22 @@ export type OfferSnapshot = {
   applicationReference?: string;
   version?: number;
   compensationModel?: string;
-  incentiveStructure?: string;
-  paymentTerms?: string;
+  stipendPeriod?: string | null;
+  incentiveType?: string | null;
+  incentiveValue?: number | null;
+  incentiveStructure?: string | null;
+  paymentTerms?: string | null;
+  compensationNotes?: string | null;
   signatoryName?: string;
   signatoryTitle?: string;
   acceptedAt?: string | null;
+  offerTermTemplate?: {
+    id: string;
+    versionId: string;
+    name: string;
+    version: number;
+    engagementType: string;
+  };
   terms: {
     workingTerms: string;
     confidentialityIp: string;
@@ -56,6 +74,11 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
     )
       missing.push(label);
   const terms = value.terms || ({} as OfferSnapshot["terms"]);
+  if (!value.offerTermTemplate?.versionId)
+    missing.push("Approved offer terms template");
+  if (!value.compensationModel?.trim()) missing.push("Compensation type");
+  if (/incentive/i.test(value.compensationModel || "") && !value.incentiveStructure?.trim())
+    missing.push("Incentive basis");
   if (!terms.workingTerms?.trim()) missing.push("Approved working terms");
   if (!terms.confidentialityIp?.trim())
     missing.push("Approved confidentiality / IP wording");
@@ -68,10 +91,10 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
 
 export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
-  const left = 58,
-    right = 537,
+  const left = 64,
+    right = 531,
     bottom = 748;
-  let y = 58;
+  let y = 54;
   const date = (value: string | Date) =>
     new Date(value).toLocaleDateString("en-IN", {
       day: "2-digit",
@@ -115,12 +138,17 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     y += gap;
   };
   const section = (heading: string) => {
-    ensure(32);
-    y += 12;
-    doc.setFillColor(243, 246, 249);
-    doc.rect(left, y - 15, right - left, 22, "F");
-    text(`// ${heading}`, 10.5, true, [8, 55, 92]);
-    y += 6;
+    ensure(38);
+    y += 15;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(8, 55, 92);
+    doc.text(heading.toUpperCase(), left, y);
+    y += 8;
+    doc.setDrawColor(8, 55, 92);
+    doc.setLineWidth(1);
+    doc.line(left, y, right, y);
+    y += 17;
   };
   const rows = (items: Array<[string, string]>) => {
     const labelWidth = 150;
@@ -131,10 +159,11 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
       );
       ensure(Math.max(22, wrapped.length * 13) + 5);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9.5);
+      doc.setFontSize(8.5);
       doc.setTextColor(90, 101, 115);
-      doc.text(label, left, y);
+      doc.text(label.toUpperCase(), left, y);
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
       doc.setTextColor(31, 41, 55);
       doc.text(wrapped, left + labelWidth, y);
       y += Math.max(22, wrapped.length * 13);
@@ -143,20 +172,24 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     });
   };
   doc.setFillColor(8, 55, 92);
-  doc.rect(0, 0, 595, 7, "F");
-  text("{ GROWXLABS }", 21, true, [8, 55, 92]);
-  text("// OFFER OF EMPLOYMENT", 17, true, [31, 41, 55]);
-  metadata(`{ PRIVATE & CONFIDENTIAL }   ·   ${date(issuedAt).toUpperCase()}`);
-  y += 7;
+  doc.rect(0, 0, 595, 9, "F");
+  text("GROWXLABS", 20, true, [8, 55, 92]);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(90, 101, 115);
+  doc.text("People & Culture  |  growxlabs.tech", right, 58, { align: "right" });
+  y += 8;
+  rule(26);
+  text("OFFER OF ENGAGEMENT", 17, true, [31, 41, 55]);
+  y += 3;
+  metadata(`PRIVATE & CONFIDENTIAL  |  ${date(issuedAt).toUpperCase()}`);
+  y += 10;
   rows([
-    ["{ OFFER REF }", snapshot.offerReference || "GrowXLabs offer"],
-    ["[ APPLICATION ]", snapshot.applicationReference || "—"],
-    ["Version", snapshot.version ? `v${snapshot.version}` : "Current"],
-    ["Issued date", date(issuedAt)],
+    ["Offer reference", snapshot.offerReference || "GrowXLabs offer"],
+    ["Application reference", snapshot.applicationReference || "—"],
   ]);
-  metadata("// END OF DOCUMENT REFERENCE");
-  y += 12;
-  rule(10);
+  y += 8;
+  rule(22);
   text(snapshot.candidateName, 12, true, [31, 41, 55]);
   if (snapshot.candidateAddress) {
     y += 3;
@@ -164,7 +197,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
   }
   y += 5;
   text(
-    `Subject: Offer of Employment — ${snapshot.title}`,
+    `Subject: Offer of Engagement — ${snapshot.title}`,
     12,
     true,
     [8, 55, 92],
@@ -180,17 +213,16 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     10.5,
   );
   y += 8;
-  section("ROLE & ENGAGEMENT");
+  section("Position and engagement details");
   rows([
-    ["Designation", snapshot.title],
+    ["Position", snapshot.title],
     ["Department", snapshot.departmentName],
-    ["Engagement type", snapshot.employmentType],
-    ["Reporting manager", snapshot.reportingManager || "Not assigned"],
+    ["Engagement", snapshot.employmentType],
+    ["Reporting manager", snapshot.reportingManager || "To be assigned"],
     ["Work location", snapshot.workLocation],
     ["Joining date", date(snapshot.joiningDate)],
   ]);
-  metadata("// END OF ROLE & ENGAGEMENT");
-  section("COMPENSATION & INCENTIVES");
+  section("Compensation and incentives");
   const compensation =
     snapshot.compensationModel ||
     (snapshot.salaryAmount > 0
@@ -206,6 +238,15 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
           ] as [string, string],
         ]
       : []),
+    ...(snapshot.stipendPeriod
+      ? [["Stipend period", snapshot.stipendPeriod] as [string, string]]
+      : []),
+    ...(snapshot.incentiveType
+      ? [["Incentive type", snapshot.incentiveType] as [string, string]]
+      : []),
+    ...(snapshot.incentiveValue != null
+      ? [["Incentive value", `${snapshot.salaryCurrency} ${snapshot.incentiveValue.toLocaleString("en-IN")}`] as [string, string]]
+      : []),
     ...(snapshot.incentiveStructure
       ? [
           ["Incentive structure", snapshot.incentiveStructure] as [
@@ -220,46 +261,47 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     ...(snapshot.paymentTerms
       ? [["Payment terms", snapshot.paymentTerms] as [string, string]]
       : []),
+    ...(snapshot.compensationNotes
+      ? [["Notes", snapshot.compensationNotes] as [string, string]]
+      : []),
     ...(snapshot.salaryAmount === 0 && !snapshot.paymentTerms
       ? [["Fixed stipend", "Not applicable"] as [string, string]]
       : []),
   ]);
-  metadata("// END OF COMPENSATION");
-  section("WORKING ARRANGEMENT");
+  section("Employment terms");
   rows([
     ["Probation", `${snapshot.probationDays} days`],
+    ["Notice period", `${snapshot.noticePeriodDays} days`],
     ["Offer valid until", date(snapshot.expiresAt)],
   ]);
-  metadata("// END OF TERMS");
-  section("CONFIDENTIALITY & INTELLECTUAL PROPERTY");
+  section("Confidentiality and intellectual property");
   text(snapshot.terms.confidentialityIp, 10.5);
   y += 5;
-  section("NOTICE / DISCONTINUATION");
+  section("Notice and discontinuation");
   text(snapshot.terms.termination, 10.5);
   y += 5;
-  section("WORKING TERMS");
+  section("Working terms");
   text(snapshot.terms.workingTerms, 10.5);
   y += 5;
-  section("ACCEPTANCE");
+  section("Acceptance of offer");
   text(snapshot.terms.acceptanceInstructions, 10.5);
   y += 10;
   ensure(125);
-  section("AUTHORIZATION");
-  text("FOR GROWXLABS", 10.5, true, [31, 41, 55]);
+  section("For GrowXLabs");
   y += 28;
   doc.setDrawColor(70, 80, 90);
   doc.line(left, y, left + 170, y);
   y += 17;
-  text(snapshot.signatoryName || "Authorized Signatory", 10, true);
+  text(snapshot.signatoryName || GROWXLABS_OFFER_SIGNATORY.name, 10, true);
   text(
-    snapshot.signatoryTitle || "Authorized Signatory",
+    snapshot.signatoryTitle || GROWXLABS_OFFER_SIGNATORY.title,
     9,
     false,
     [90, 101, 115],
   );
-  text("GrowXLabs", 9, false, [90, 101, 115]);
+  text(GROWXLABS_OFFER_SIGNATORY.company, 9, false, [90, 101, 115]);
   text(`Date: ${date(issuedAt)}`, 9, false, [90, 101, 115]);
-  section("CANDIDATE ACCEPTANCE");
+  section("Candidate acceptance");
   text(
     snapshot.acceptedAt
       ? `Accepted digitally by ${snapshot.candidateName} on ${date(snapshot.acceptedAt)}. This acceptance is recorded against the immutable offer version shown above.`
@@ -291,7 +333,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     doc.setFontSize(8);
     doc.setTextColor(110, 120, 130);
     doc.text(
-      `{ GROWXLABS }  ·  growxlabs.tech  ·  ${snapshot.offerReference || "Offer"}  ·  PRIVATE & CONFIDENTIAL`,
+      `GrowXLabs  |  growxlabs.tech  |  ${snapshot.offerReference || "Offer"}  |  Private & Confidential`,
       left,
       798,
     );

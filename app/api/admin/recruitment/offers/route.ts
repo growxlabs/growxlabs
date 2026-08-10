@@ -2,14 +2,9 @@ import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
-import { missingOfferInputs } from "@/lib/recruitment/offer-letter";
+import { GROWXLABS_OFFER_SIGNATORY, missingOfferInputs } from "@/lib/recruitment/offer-letter";
+import { listApprovedOfferTerms, resolveApprovedOfferTerms } from "@/lib/recruitment/offer-terms";
 const roles = new Set(["ADMIN", "HR", "RECRUITER"]),
-  terms = z.object({
-    workingTerms: z.string().trim().default(""),
-    confidentialityIp: z.string().trim().default(""),
-    termination: z.string().trim().default(""),
-    acceptanceInstructions: z.string().trim().default(""),
-  }),
   input = z.object({
     applicationId: z.uuid(),
     title: z.string().trim().min(1),
@@ -26,11 +21,17 @@ const roles = new Set(["ADMIN", "HR", "RECRUITER"]),
     joiningDate: z.iso.date(),
     salaryAmount: z.number().nonnegative(),
     salaryCurrency: z.string().trim().length(3).default("INR"),
+    compensationType: z.enum(["Fixed", "Incentive-based", "Fixed plus incentive"]),
+    stipendPeriod: z.string().trim().nullable().optional(),
+    incentiveType: z.string().trim().nullable().optional(),
+    incentiveValue: z.number().nonnegative().nullable().optional(),
+    incentiveBasis: z.string().trim().nullable().optional(),
+    paymentTiming: z.string().trim().nullable().optional(),
+    compensationNotes: z.string().trim().nullable().optional(),
     probationDays: z.number().int().nonnegative(),
     noticePeriodDays: z.number().int().nonnegative(),
     expiresAt: z.iso.datetime(),
     candidateAddress: z.string().trim().nullable().optional(),
-    terms,
     backfillReason: z.string().trim().nullable().optional(),
     reissue: z.boolean().optional(),
   });
@@ -76,6 +77,7 @@ async function directories(applicationId?: string) {
     employment,
     applications,
     requestedApplication,
+    offerTermTemplates,
   ] = await Promise.all([
     supabaseAdmin
       .schema("people")
@@ -115,6 +117,7 @@ async function directories(applicationId?: string) {
       .order("submitted_at", { ascending: false })
       .limit(250),
     applicationQuery,
+    listApprovedOfferTerms(CAREERS_ORGANISATION),
   ]);
   const failed = [
     departments,
@@ -149,6 +152,7 @@ async function directories(applicationId?: string) {
         ) || "Employee",
     })),
     applications: allApplications.map(presentApplication),
+    offerTermTemplates,
   };
 }
 export async function GET(request: Request) {
@@ -308,6 +312,16 @@ export async function POST(request: Request) {
       { error: "Choose a valid reporting manager." },
       { status: 422 },
     );
+  const resolvedTerms = await resolveApprovedOfferTerms({
+    organisationId: CAREERS_ORGANISATION,
+    employmentType: v.employmentType,
+    designationId: v.designationId,
+  });
+  if (!resolvedTerms)
+    return Response.json(
+      { error: `No approved offer terms template is available for ${v.employmentType} and the selected designation.` },
+      { status: 422 },
+    );
   const candidateName = String(
       app.data.profile?.full_name || app.data.candidate_id,
     ),
@@ -326,10 +340,26 @@ export async function POST(request: Request) {
       joiningDate: v.joiningDate,
       salaryAmount: v.salaryAmount,
       salaryCurrency: v.salaryCurrency.toUpperCase(),
+      compensationModel: v.compensationType,
+      stipendPeriod: v.stipendPeriod || null,
+      incentiveType: v.incentiveType || null,
+      incentiveValue: v.incentiveValue ?? null,
+      incentiveStructure: v.incentiveBasis || null,
+      paymentTerms: v.paymentTiming || null,
+      compensationNotes: v.compensationNotes || null,
       probationDays: v.probationDays,
       noticePeriodDays: v.noticePeriodDays,
       expiresAt: v.expiresAt,
-      terms: v.terms,
+      signatoryName: GROWXLABS_OFFER_SIGNATORY.name,
+      signatoryTitle: GROWXLABS_OFFER_SIGNATORY.title,
+      offerTermTemplate: {
+        id: resolvedTerms.templateId,
+        versionId: resolvedTerms.templateVersionId,
+        name: resolvedTerms.templateName,
+        version: resolvedTerms.templateVersion,
+        engagementType: resolvedTerms.engagementType,
+      },
+      terms: resolvedTerms.terms,
     },
     missing = missingOfferInputs(snapshot),
     existing = await supabaseAdmin
@@ -354,9 +384,9 @@ export async function POST(request: Request) {
       { error: "No existing offer is available to reissue." },
       { status: 409 },
     );
-  const version = v.reissue || !existing.data
-    ? (existing.data?.current_version || 0) + 1
-    : existing.data.current_version;
+  // Every save creates a new immutable snapshot. Updating the existing
+  // offer_versions row would violate the append-only history contract.
+  const version = (existing.data?.current_version || 0) + 1;
   const payload = {
       organisation_id: CAREERS_ORGANISATION,
       application_id: v.applicationId,
@@ -372,12 +402,20 @@ export async function POST(request: Request) {
       salary: v.salaryAmount,
       salary_offered: v.salaryAmount,
       currency: v.salaryCurrency.toUpperCase(),
+      compensation_type: v.compensationType,
+      fixed_stipend: v.salaryAmount,
+      stipend_period: v.stipendPeriod || null,
+      incentive_type: v.incentiveType || null,
+      incentive_value: v.incentiveValue ?? null,
+      incentive_basis: v.incentiveBasis || null,
+      payment_timing: v.paymentTiming || null,
+      compensation_notes: v.compensationNotes || null,
       start_date: v.joiningDate,
       probation_days: v.probationDays,
       notice_period_days: v.noticePeriodDays,
-      terms: v.terms,
+      terms: resolvedTerms.terms,
       expires_at: v.expiresAt,
-      status: existing.data?.status === "approved" && !v.reissue ? "approved" : "draft",
+      status: "draft",
       current_version: version,
       created_by: user.id,
       updated_at: new Date().toISOString(),
@@ -413,7 +451,7 @@ export async function POST(request: Request) {
   const versionRow = await supabaseAdmin
     .schema("recruitment")
     .from("offer_versions")
-    .upsert(versionPayload, { onConflict: "offer_id,version" });
+    .insert(versionPayload);
   if (versionRow.error)
     return Response.json(
       { error: "Immutable offer version could not be saved" },

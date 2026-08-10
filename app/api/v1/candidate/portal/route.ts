@@ -81,7 +81,7 @@ export async function GET(request: Request) {
       supabaseAdmin
         .schema("recruitment")
         .from("offers")
-        .select("id,status,start_date,salary,offer_letter_url,issued_at,created_at")
+        .select("id,status,start_date,salary,currency,current_version,offer_letter_url,issued_at,created_at")
         .eq("application_id", application.id)
         .in("status", ["issued", "sent", "accepted", "declined", "rejected"])
         .order("created_at", { ascending: false })
@@ -170,6 +170,15 @@ export async function GET(request: Request) {
     }
 
     const offerData = offersRes.data?.[0] || null;
+    const offerVersion = offerData
+      ? await supabaseAdmin
+          .schema("recruitment")
+          .from("offer_versions")
+          .select("snapshot")
+          .eq("offer_id", offerData.id)
+          .eq("version", offerData.current_version)
+          .maybeSingle()
+      : { data: null, error: null };
     if (offerData?.offer_letter_url) {
       documents.push({
         id: "offer_letter",
@@ -215,6 +224,7 @@ export async function GET(request: Request) {
       messages: messagesRes.data || [],
       offer: offerData ? {
         ...offerData,
+        snapshot: offerVersion.data?.snapshot || null,
         candidate_response: responseRes.data?.[0] || null,
       } : null,
       rescheduleRequests: rescheduleRes.data || [],
