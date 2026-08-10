@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { EmailAction, EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields, escapeGrowXLabsEmailHtml } from "@/lib/email/growxlabs-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -26,20 +27,7 @@ export async function POST(req: Request) {
       from: "GrowX Labs Billing <billing@growxlabs.tech>",
       to: targetEmail,
       subject: `Invoice ${invoice.invoice_number || invoice.id.slice(0, 8).toUpperCase()} from GrowX Labs`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2 style="color: #0D1B4B;">Invoice from GrowX Labs</h2>
-          <p>Hello ${invoice.users ? invoice.users.name : 'Client'},</p>
-          <p>An invoice has been generated for your project: <strong>${invoice.description || 'Project Services'}</strong>.</p>
-          <p><strong>Amount Due: $${Number(invoice.amount).toLocaleString()}</strong></p>
-          <p><strong>Due Date: ${invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A'}</strong></p>
-          <br />
-          <a href="${invoice.pdf_url}" style="background: #0D1B4B; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin-right: 10px;">View Invoice PDF</a>
-          <br />
-          <p>Status: ${invoice.status.toUpperCase()}</p>
-          <p>Thank you for choosing GrowX Labs.</p>
-        </div>
-      `
+      html: GrowXLabsEmailLayout({ context: "INVOICE", reference: invoice.invoice_number || invoice.id.slice(0, 8).toUpperCase(), content: `<p>Hello ${escapeGrowXLabsEmailHtml(invoice.users?.name || "Client")},</p><p>An invoice has been generated for <strong>${escapeGrowXLabsEmailHtml(invoice.description || "Project Services")}</strong>.</p>${EmailSection("INVOICE DETAILS", growxlabsEmailFields([["Amount due", `$${Number(invoice.amount).toLocaleString()}`], ["Due date", invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "N/A"], ["Status", String(invoice.status).toUpperCase()]]))}${invoice.pdf_url ? EmailAction("VIEW INVOICE PDF", invoice.pdf_url) : ""}<p>Thank you for choosing GrowXLabs.</p>`, footerNote: "BILLING COMMUNICATION · PRIVATE & CONFIDENTIAL" })
     });
 
     return NextResponse.json({ success: true });

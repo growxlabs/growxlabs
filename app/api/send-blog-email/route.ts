@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 export async function POST(request: Request) {
   try {
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
           from: "GrowX Labs <blogs@growxlabs.tech>",
           to: sub.email,
           subject: `Your Wish Led You Here — ${post.title} | GrowX Labs`,
-          html: `
+          html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0d0d0c; color: #f4f4f5; border: 1px solid #1f1f23; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);">
               <div style="height: 4px; background: linear-gradient(90deg, #CC1F1F, #ff5757, #7f1d1d);"></div>
               
@@ -110,7 +111,7 @@ export async function POST(request: Request) {
                 </p>
               </div>
             </div>
-          `
+          `, { context: "EDITORIAL", reference: post.title, footerNote: "EDITORIAL COMMUNICATION" })
         });
 
         // 4. Log to email_logs

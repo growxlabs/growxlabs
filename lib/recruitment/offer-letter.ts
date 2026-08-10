@@ -52,7 +52,7 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
       value[key] === undefined ||
       value[key] === null ||
       value[key] === "" ||
-      (key === "salaryAmount" && Number(value[key]) <= 0)
+      (key === "salaryAmount" && Number(value[key]) < 0)
     )
       missing.push(label);
   const terms = value.terms || ({} as OfferSnapshot["terms"]);
@@ -214,8 +214,14 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
           ],
         ]
       : []),
+    ...(snapshot.salaryAmount === 0 && !snapshot.incentiveStructure
+      ? [["Incentive structure", "See the approved Working Terms section"] as [string, string]]
+      : []),
     ...(snapshot.paymentTerms
       ? [["Payment terms", snapshot.paymentTerms] as [string, string]]
+      : []),
+    ...(snapshot.salaryAmount === 0 && !snapshot.paymentTerms
+      ? [["Fixed stipend", "Not applicable"] as [string, string]]
       : []),
   ]);
   metadata("// END OF COMPENSATION");

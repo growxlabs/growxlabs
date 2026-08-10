@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from 'resend';
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
       from: 'GrowX Labs <contact@growxlabs.tech>',
       to: [email],
       subject: `Accelerating ${lead.business_name || lead.name}'s Digital Strategy`,
-      html: `
+      html: ensureGrowXLabsEmailLayout(`
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px;">
           <h2 style="font-weight: 900; letter-spacing: -0.05em;">GrowX Labs</h2>
           <p>Hello,</p>
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
           <hr style="border: none; border-top: 1px solid #eee; margin: 40px 0;">
           <p style="color: #888; font-size: 12px;">GrowX Labs | High-Performance Engineering</p>
         </div>
-      `
+      `, { context: "GROWTH OPPORTUNITY", reference: lead.business_name || lead.name, footerNote: "BUSINESS COMMUNICATION" })
     });
 
     if (emailError) {

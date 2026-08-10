@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
 import { Resend } from "resend";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 export async function POST(request: Request) {
   try {
@@ -147,7 +148,7 @@ export async function POST(request: Request) {
       to: [candidateEmail],
       bcc: bccList,
       subject: subject,
-      html: htmlContent,
+      html: ensureGrowXLabsEmailLayout(htmlContent, { context: "ASSESSMENT INVITATION", footerNote: "RECRUITMENT COMMUNICATION · PRIVATE & CONFIDENTIAL" }),
     });
 
     if (emailError) {

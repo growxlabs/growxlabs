@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields, escapeGrowXLabsEmailHtml } from "@/lib/email/growxlabs-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -30,23 +31,7 @@ export async function POST(req: Request) {
       from: "GrowX Labs Partnerships <partners@growxlabs.tech>",
       to: targetEmail,
       subject: `Project Proposal: ${proposal.business_name} x GrowX Labs`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2 style="color: #0D1B4B;">GrowX Labs | Proposal</h2>
-          <p>Hello ${proposal.client_name},</p>
-          <p>It was a pleasure discussing your vision for <strong>${proposal.business_name}</strong>.</p>
-          <p>We've prepared a comprehensive technical proposal to solve your digital bottlenecks and accelerate your growth.</p>
-          <br />
-          <p><strong>Package Recommended:</strong> ${proposal.selected_package.toUpperCase()}</p>
-          <p><strong>Validity:</strong> 7 Days</p>
-          <br />
-          <p>You can review the full breakdown and next steps in the attached proposal.</p>
-          <p>Looking forward to building something extraordinary together.</p>
-          <br />
-          <p>Best Regards,</p>
-          <p><strong>Varshith Pujala</strong><br />GrowX Labs Engineering</p>
-        </div>
-      `
+      html: GrowXLabsEmailLayout({ context: "PROJECT PROPOSAL", reference: proposal.business_name, content: `<p>Hello ${escapeGrowXLabsEmailHtml(proposal.client_name)},</p><p>It was a pleasure discussing your vision for <strong>${escapeGrowXLabsEmailHtml(proposal.business_name)}</strong>.</p><p>We have prepared a technical proposal covering the recommended approach and next steps.</p>${EmailSection("PROPOSAL DETAILS", growxlabsEmailFields([["Recommended package", String(proposal.selected_package || "").toUpperCase()], ["Validity", "7 days"]]))}<p>Please review the complete proposal provided with this communication.</p><p>Regards,<br><strong>GrowXLabs Engineering</strong></p>`, footerNote: "PARTNERSHIP COMMUNICATION · PRIVATE & CONFIDENTIAL" })
     });
 
     return NextResponse.json({ success: true });

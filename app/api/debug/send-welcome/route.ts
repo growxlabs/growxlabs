@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from 'resend';
 import fs from 'fs';
 import path from 'path';
+import { ensureGrowXLabsEmailLayout } from '@/lib/email/growxlabs-layout';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -14,7 +15,7 @@ export async function GET() {
       from: 'GrowXLabsTech <onboarding@growxlabs.tech>',
       to: 'saivarshith8284@gmail.com',
       subject: 'Welcome to GrowXLabsTech 🚀',
-      html: html.replace('[Client Name]', 'Sai Varshith').replace('[Project Name]', 'Your Project'),
+      html: ensureGrowXLabsEmailLayout(html.replace('[Client Name]', 'Sai Varshith').replace('[Project Name]', 'Your Project'), { context: 'CLIENT WELCOME', reference: 'YOUR PROJECT', footerNote: 'CLIENT COMMUNICATION · PRIVATE & CONFIDENTIAL' }),
     });
 
     if (error) {

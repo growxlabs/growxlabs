@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
 import { Resend } from "resend";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 function getEmailContent(name: string, role: string, status: string) {
   let subject = "";
@@ -178,7 +179,7 @@ export async function POST(request: Request) {
             to: [data.email],
             ...(bccList.length > 0 ? { bcc: bccList } : {}),
             subject: subject,
-            html: html,
+            html: ensureGrowXLabsEmailLayout(html, { context: "APPLICATION UPDATE", reference: String(id), footerNote: "RECRUITMENT COMMUNICATION · PRIVATE & CONFIDENTIAL" }),
           });
         } catch { /* swallow email error */ }
       }

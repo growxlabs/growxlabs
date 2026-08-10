@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 import { getToken } from "next-auth/jwt";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 export async function POST(req: Request) {
   try {
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
       bcc: bccList,
       subject: subject,
       text: body || undefined,
-      html: html || (body ? body.replace(/\n/g, "<br />") : ""),
+      html: ensureGrowXLabsEmailLayout(html || (body ? body.replace(/\n/g, "<br />") : ""), { context: "COMMUNICATION", preheader: subject, footerNote: "PRIVATE & CONFIDENTIAL" }),
       attachments: formattedAttachments
     });
 

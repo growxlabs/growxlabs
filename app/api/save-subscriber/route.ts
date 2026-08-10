@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
           from: 'One Wish Willow <onboarding@growxlabs.tech>',
           to: [email],
           subject: 'You have entered the Gate... 🕯️',
-          html: `
+          html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: 'Courier New', Courier, monospace; max-width: 600px; margin: auto; padding: 40px 20px; background-color: #0d0d0d; color: #f5f3ee; border: 3px double #CC1F1F; border-radius: 8px;">
               <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #CC1F1F; font-size: 28px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;">One Wish Willow</h1>
@@ -86,7 +87,7 @@ export async function POST(request: Request) {
                 <p>GrowXLabsTech | High-Performance Engineering</p>
               </div>
             </div>
-          `
+          `, { context: "SUBSCRIPTION CONFIRMED", reference: "ONE WISH WILLOW", footerNote: "EDITORIAL COMMUNICATION" })
         });
 
         if (emailError) {

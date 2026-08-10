@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { CAREERS_ORGANISATION } from '@/lib/careers/jobs';
+import { ensureGrowXLabsEmailLayout } from '@/lib/email/growxlabs-layout';
 import { 
   TemplateType, 
   TemplateVariables, 
@@ -57,7 +58,11 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
       from,
       to: options.to,
       subject: options.subject,
-      html: options.html,
+      html: ensureGrowXLabsEmailLayout(options.html, {
+        context: String(options.templateKey || 'RECRUITMENT').replace(/_/g, ' '),
+        reference: String(options.metadata?.variables?.applicationRef || options.metadata?.applicationRef || '').trim() || undefined,
+        footerNote: 'RECRUITMENT COMMUNICATION · PRIVATE & CONFIDENTIAL',
+      }),
       replyTo: settings.reply_to || undefined,
       tags: [
         { name: 'source', value: 'recruitment_system' },
@@ -102,7 +107,7 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
             from,
             to: recipients,
             subject: `[Internal Copy] ${options.subject}`,
-            html: auditHtml,
+            html: ensureGrowXLabsEmailLayout(auditHtml, { context: 'INTERNAL RECRUITMENT COPY', reference: options.applicationId, footerNote: 'INTERNAL · PRIVATE & CONFIDENTIAL' }),
             replyTo: settings.reply_to || undefined,
             tags: [{ name: 'source', value: 'recruitment_audit' }],
           });
@@ -232,7 +237,7 @@ export async function sendTestEmail(toEmail: string): Promise<EmailResult> {
       from: `${settings.from_name || 'GrowXLabs'} <${settings.from_email || 'noreply@growxlabs.tech'}>`,
       to: toEmail,
       subject: 'GrowXLabs Recruitment System - Test Email',
-      html: '<p>This is a test email to verify that the Resend integration is working correctly.</p>'
+      html: ensureGrowXLabsEmailLayout('<p>This is a test email to verify that the Resend integration is working correctly.</p>', { context: 'EMAIL SYSTEM TEST', footerNote: 'INTERNAL COMMUNICATION' })
     });
 
     if (response.error) {

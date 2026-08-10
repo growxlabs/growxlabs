@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 import type { ConvertCandidateInput, WorkspaceStatus } from "./types";
 
 export class EmployeeProvisioningError extends Error {
@@ -18,7 +19,7 @@ async function ensureActivationInvitation(input:{organisationId:string;userId:st
   const token=randomBytes(32).toString("base64url"),created=await supabaseAdmin.schema("identity").from("invitations").insert({organisation_id:input.organisationId,user_id:input.userId,token_hash:createHash("sha256").update(token).digest("hex"),expires_at:new Date(Date.now()+72*3600000).toISOString()}).select("id").single();
   if(created.error)throw safeDatabaseFailure("activation_create_failed");
   if(!process.env.RESEND_API_KEY){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_provider_not_configured"}).eq("id",created.data.id);return { attempted: true, sent: false, errorCode: "EMAIL_PROVIDER_NOT_CONFIGURED" }}
-  const base=(process.env.NEXTAUTH_URL||"https://growxlabs.tech").replace(/\/$/,""),activationUrl=`${base}/activate/${token}`,employeeName=escapeHtml(input.name),sent=await new Resend(process.env.RESEND_API_KEY).emails.send({from:process.env.RESEND_FROM_EMAIL||"GrowXLabs People <noreply@growxlabs.tech>",to:input.email,subject:"Activate your GrowXLabs employee workspace",html:`<!doctype html>
+  const base=(process.env.NEXTAUTH_URL||"https://growxlabs.tech").replace(/\/$/,""),activationUrl=`${base}/activate/${token}`,employeeName=escapeHtml(input.name),sent=await new Resend(process.env.RESEND_API_KEY).emails.send({from:process.env.RESEND_FROM_EMAIL||"GrowXLabs People <noreply@growxlabs.tech>",to:input.email,subject:"Activate your GrowXLabs employee workspace",html:ensureGrowXLabsEmailLayout(`<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="x-apple-disable-message-reformatting"><title>Activate your GrowXLabs employee workspace</title></head>
 <body style="margin:0;padding:0;background:#f3f5f7;color:#172033;font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
@@ -65,7 +66,7 @@ async function ensureActivationInvitation(input:{organisationId:string;userId:st
     </td></tr>
   </table>
 </body>
-</html>`});
+</html>`, { context: "EMPLOYEE WORKSPACE ACTIVATION", reference: "EMPLOYEE OS", footerNote: "PEOPLE & EMPLOYEE IDENTITY · PRIVATE & CONFIDENTIAL" })});
   if(sent.error){await supabaseAdmin.schema("identity").from("invitations").update({delivery_error:"email_delivery_failed"}).eq("id",created.data.id);return { attempted: true, sent: false, errorCode: "ACTIVATION_EMAIL_FAILED" }}
   await supabaseAdmin.schema("identity").from("invitations").update({delivered_at:new Date().toISOString(),delivery_error:null}).eq("id",created.data.id);
   return { attempted: true, sent: true, messageId: sent.data?.id };

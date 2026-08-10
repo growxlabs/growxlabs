@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { RazorpayService } from "@/lib/services/razorpay.service";
 import { Resend } from "resend";
+import { EmailAction, EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields } from "@/lib/email/growxlabs-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -104,14 +105,7 @@ export async function POST(req: Request) {
             from: "GrowX Labs <welcome@growxlabs.tech>",
             to: invoice.clients.email,
             subject: "Welcome to GrowX Labs - Next Steps",
-            html: `
-              <div style="font-family: sans-serif; padding: 20px;">
-                <h1 style="color: #000;">Payment Confirmed.</h1>
-                <p>Welcome to the family. Your project is now officially ACTIVE.</p>
-                <p>Please complete the onboarding form to help us start the engineering phase:</p>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}/onboarding" style="background: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0;">Start Onboarding</a>
-              </div>
-            `
+            html: GrowXLabsEmailLayout({ context: "PAYMENT CONFIRMED", reference: invoice.invoice_number || payment.id, content: `<p>Your payment has been confirmed and your project is now active.</p>${EmailSection("PAYMENT", growxlabsEmailFields([["Status", "Confirmed"], ["Project", invoice.clients.business_name]]))}<p>Please complete onboarding so the engineering team can begin the next phase.</p>${EmailAction("START ONBOARDING", `${process.env.NEXT_PUBLIC_APP_URL || "https://growxlabs.tech"}/onboarding`)}`, footerNote: "FINANCE & PROJECT COMMUNICATION · PRIVATE & CONFIDENTIAL" })
           });
         }
       }

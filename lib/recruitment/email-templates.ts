@@ -10,6 +10,7 @@ export const TEMPLATE_TYPES = [
   'interview_access_extended',
   'interview_access_revoked'
 ] as const;
+import { growxlabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
 export type TemplateType = typeof TEMPLATE_TYPES[number];
 
@@ -41,7 +42,8 @@ export interface TemplateVariables {
 }
 
 export function wrapInHtmlLayout(content: string, preheader: string = 'Message from GrowXLabs'): string {
-  return `<!DOCTYPE html>
+  return growxlabsEmailLayout({ context: preheader, preheader, content, footerNote: "Recruitment communication · PRIVATE & CONFIDENTIAL" }); /* legacy wrapper retained for saved templates */
+  /* return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -86,7 +88,7 @@ export function wrapInHtmlLayout(content: string, preheader: string = 'Message f
   </div>
   </div>
 </body>
-</html>`;
+</html>`; */
 }
 
 export function getDefaultTemplate(templateKey: TemplateType): { subject: string; html: string } {

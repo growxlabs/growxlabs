@@ -362,7 +362,10 @@ export function RecruitmentPipeline({
                           </button>
                         ) : (
                           !showRejected &&
-                          stage !== "OFFER" &&
+                          (stage !== "OFFER" ||
+                            String(
+                              candidate.offer?.status || "",
+                            ).toLowerCase() === "accepted") &&
                           getNextStage(stage) && (
                             <button
                               type="button"
@@ -393,12 +396,25 @@ export function RecruitmentPipeline({
                           </button>
                         )}
                         {!showRejected && stage === "OFFER" && (
-                          <Link
-                            href={`/admin/offers?applicationId=${encodeURIComponent(candidate.id)}&title=${encodeURIComponent(candidate.job_title || "")}`}
-                            className="text-[8px] font-bold uppercase text-emerald-700 hover:underline"
-                          >
-                            Prepare Offer
-                          </Link>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[8px] font-bold uppercase text-emerald-700">
+                              {String(
+                                candidate.offer?.status || "draft",
+                              ).toLowerCase() === "accepted"
+                                ? "Offer accepted"
+                                : String(
+                                      candidate.offer?.status || "draft",
+                                    ).toLowerCase() === "sent"
+                                  ? "Sent"
+                                  : "Offer ready"}
+                            </span>
+                            <Link
+                              href={`/admin/offers?applicationId=${encodeURIComponent(candidate.id)}&title=${encodeURIComponent(candidate.job_title || "")}`}
+                              className="text-[8px] font-bold uppercase text-emerald-700 hover:underline"
+                            >
+                              View Offer
+                            </Link>
+                          </div>
                         )}
                         {!showRejected &&
                           stage === "HIRED" &&
@@ -792,15 +808,109 @@ export function RecruitmentPipeline({
               </div>
             ) : (
               <>
-                {conversionLoading ? <p className="mt-5 text-xs text-[var(--text-secondary)]">Resolving approved offer and employee data…</p> : <div className="mt-5 grid grid-cols-2 gap-3">
-                  <label className="text-[10px] font-bold uppercase">Employee code<input readOnly value={conversion.employeeCode} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-2)] p-2 text-xs normal-case" /></label>
-                  <label className="text-[10px] font-bold uppercase">Department<select value={conversion.departmentId} onChange={e=>setConversion({...conversion,departmentId:e.target.value})} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"><option value="">Select department</option>{conversionOptions.departments.map((item:any)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-                  <label className="text-[10px] font-bold uppercase">Designation<select value={conversion.designationId} onChange={e=>setConversion({...conversion,designationId:e.target.value})} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"><option value="">Select designation</option>{conversionOptions.designations.map((item:any)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-                  <label className="text-[10px] font-bold uppercase">Reporting manager<select value={conversion.managerEmployeeId} onChange={e=>setConversion({...conversion,managerEmployeeId:e.target.value})} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"><option value="">No reporting manager</option>{conversionOptions.employees.map((item:any)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-                  <label className="text-[10px] font-bold uppercase">Joining date<input type="date" value={conversion.joiningDate} onChange={e=>setConversion({...conversion,joiningDate:e.target.value})} className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case" /></label>
-                  <div className="text-[10px] font-bold uppercase">Workspace role<div className="mt-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-2)] p-2 text-xs normal-case">{conversionOptions.roleName}</div></div>
-                  {conversionOptions.offerStatus && <p className="col-span-2 text-[10px] text-[var(--text-secondary)]">Offer source: {String(conversionOptions.offerStatus).toUpperCase()} · version {conversionOptions.offerVersion || "current"}</p>}
-                </div>}
+                {conversionLoading ? (
+                  <p className="mt-5 text-xs text-[var(--text-secondary)]">
+                    Resolving approved offer and employee data…
+                  </p>
+                ) : (
+                  <div className="mt-5 grid grid-cols-2 gap-3">
+                    <label className="text-[10px] font-bold uppercase">
+                      Employee code
+                      <input
+                        readOnly
+                        value={conversion.employeeCode}
+                        className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-2)] p-2 text-xs normal-case"
+                      />
+                    </label>
+                    <label className="text-[10px] font-bold uppercase">
+                      Department
+                      <select
+                        value={conversion.departmentId}
+                        onChange={(e) =>
+                          setConversion({
+                            ...conversion,
+                            departmentId: e.target.value,
+                          })
+                        }
+                        className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"
+                      >
+                        <option value="">Select department</option>
+                        {conversionOptions.departments.map((item: any) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-[10px] font-bold uppercase">
+                      Designation
+                      <select
+                        value={conversion.designationId}
+                        onChange={(e) =>
+                          setConversion({
+                            ...conversion,
+                            designationId: e.target.value,
+                          })
+                        }
+                        className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"
+                      >
+                        <option value="">Select designation</option>
+                        {conversionOptions.designations.map((item: any) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-[10px] font-bold uppercase">
+                      Reporting manager
+                      <select
+                        value={conversion.managerEmployeeId}
+                        onChange={(e) =>
+                          setConversion({
+                            ...conversion,
+                            managerEmployeeId: e.target.value,
+                          })
+                        }
+                        className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"
+                      >
+                        <option value="">No reporting manager</option>
+                        {conversionOptions.employees.map((item: any) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-[10px] font-bold uppercase">
+                      Joining date
+                      <input
+                        type="date"
+                        value={conversion.joiningDate}
+                        onChange={(e) =>
+                          setConversion({
+                            ...conversion,
+                            joiningDate: e.target.value,
+                          })
+                        }
+                        className="mt-1 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-2 text-xs normal-case"
+                      />
+                    </label>
+                    <div className="text-[10px] font-bold uppercase">
+                      Workspace role
+                      <div className="mt-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-2)] p-2 text-xs normal-case">
+                        {conversionOptions.roleName}
+                      </div>
+                    </div>
+                    {conversionOptions.offerStatus && (
+                      <p className="col-span-2 text-[10px] text-[var(--text-secondary)]">
+                        Offer source:{" "}
+                        {String(conversionOptions.offerStatus).toUpperCase()} ·
+                        version {conversionOptions.offerVersion || "current"}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {conversionError && (
                   <p className="mt-3 text-xs text-red-600">{conversionError}</p>
                 )}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
 import { Resend } from "resend";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 import crypto from "crypto";
 
 // Helper to sign JWT using Node's crypto module
@@ -279,7 +280,7 @@ export async function POST(request: Request) {
       to: [candidateEmail],
       bcc: bccList,
       subject: subject,
-      html: htmlContent,
+      html: ensureGrowXLabsEmailLayout(htmlContent, { context: "INTERVIEW SCHEDULED", footerNote: "RECRUITMENT COMMUNICATION · PRIVATE & CONFIDENTIAL" }),
     });
 
     if (emailError) {

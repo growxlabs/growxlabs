@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PDFService } from "@/lib/services/pdf.service";
 import { getBaseUrl } from "@/lib/utils";
 import { Resend } from "resend";
+import { EmailAction, EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields, escapeGrowXLabsEmailHtml } from "@/lib/email/growxlabs-layout";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -57,14 +58,7 @@ export async function POST(req: Request) {
       from: "GrowX Labs Partners <partners@growxlabs.tech>",
       to: client.email,
       subject: `Partnership Agreement: ${data.service_type}`,
-      html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2 style="color: #000;">Hello ${client.name},</h2>
-          <p>We've prepared the partnership agreement for your upcoming project with GrowX Labs.</p>
-          <p>You can review and accept the agreement directly via the link below:</p>
-          <a href="${appUrl}/agreements/${agreement.id}" style="background: #00b894; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0; font-weight: bold;">Review & Sign Agreement</a>
-        </div>
-      `,
+      html: GrowXLabsEmailLayout({ context: "PARTNERSHIP AGREEMENT", reference: agreement.id, content: `<p>Hello ${escapeGrowXLabsEmailHtml(client.name)},</p><p>We have prepared the partnership agreement for your upcoming project with GrowXLabs.</p>${EmailSection("AGREEMENT DETAILS", growxlabsEmailFields([["Service", data.service_type], ["Status", "Ready for review"]]))}<p>Please review and accept the agreement using the secure link below.</p>${EmailAction("REVIEW & SIGN AGREEMENT", `${appUrl}/agreements/${agreement.id}`)}`, footerNote: "PARTNERSHIP COMMUNICATION · PRIVATE & CONFIDENTIAL" }),
       attachments: [{ filename: 'agreement.pdf', path: pdfUrl }]
     });
 

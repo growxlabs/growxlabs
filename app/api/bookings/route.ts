@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Resend } from "resend";
+import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 import crypto from "crypto";
 
 // Helper to sign JWT using Node's crypto module
@@ -263,7 +264,7 @@ export async function POST(req: Request) {
           from: "GrowX Labs <sai@growxlabs.tech>", 
           to: [email],
           subject: "Strategy Call Confirmed | GrowX Labs",
-          html: `
+          html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e4e4e7; border-radius: 12px; color: #18181b; background-color: #ffffff;">
               <h2 style="font-size: 24px; font-weight: 800; letter-spacing: -0.05em; margin-bottom: 20px; color: #000;">GrowX Labs</h2>
               <p>Hi <strong>${name}</strong>,</p>
@@ -283,7 +284,7 @@ export async function POST(req: Request) {
               <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 30px 0;">
               <p style="color: #a1a1aa; font-size: 12px; text-align: center; margin: 0;">GrowX Labs | High-Performance Digital Systems & AI Infrastructure</p>
             </div>
-          `
+          `, { context: "STRATEGY CALL CONFIRMED", footerNote: "CLIENT COMMUNICATION · PRIVATE & CONFIDENTIAL" })
         });
 
         // 2. Send booking alert email to admin
@@ -291,7 +292,7 @@ export async function POST(req: Request) {
           from: "GrowX Labs Alerts <sai@growxlabs.tech>", 
           to: ["sai@growxlabs.tech"],
           subject: `🗓️ New Strategy Call: ${name}`,
-          html: `
+          html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e4e4e7; border-radius: 12px; color: #18181b; background-color: #ffffff;">
               <h2 style="font-size: 20px; font-weight: 800; color: #000; margin-bottom: 20px;">🗓️ New Strategy Call Booked</h2>
               <p>Hello Sai,</p>
@@ -308,7 +309,7 @@ export async function POST(req: Request) {
               
               <p style="font-size: 14px;"><strong>Client Notes/Concept:</strong><br><span style="color: #71717a; font-style: italic;">"${notes || "None provided"}"</span></p>
             </div>
-          `
+          `, { context: "NEW STRATEGY CALL", footerNote: "INTERNAL NOTIFICATION · PRIVATE & CONFIDENTIAL" })
         });
       } catch (emailErr) {
         console.error("Failed to send booking notification email via Resend:", emailErr);

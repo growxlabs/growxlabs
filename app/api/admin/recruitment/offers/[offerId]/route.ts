@@ -318,8 +318,12 @@ export async function PATCH(
       },
       { status: 409 },
     );
+  const applicationRecord=await supabaseAdmin.schema("recruitment").from("careers_applications").select("application_reference").eq("id",current.application_id).eq("organisation_id",CAREERS_ORGANISATION).maybeSingle();
+  const applicationReference=String(applicationRecord.data?.application_reference||"");
+  const offerReference=/^GXL-APP-/i.test(applicationReference)?applicationReference.replace(/^GXL-APP-/i,"GXL-OFFER-"):`GXL-OFFER-${new Date().getFullYear()}-${String(current.current_version).padStart(5,"0")}`;
+  const documentSnapshot:OfferSnapshot={...snapshot,applicationReference,offerReference,version:current.current_version,compensationModel:snapshot.compensationModel||(snapshot.salaryAmount===0?"Incentive-based":"Fixed compensation")};
   const issuedAt = new Date();
-  const pdf = generateOfferPdf(snapshot, issuedAt);
+  const pdf = generateOfferPdf(documentSnapshot, issuedAt);
   const objectKey = `offers/${CAREERS_ORGANISATION}/${offerId}/v${current.current_version}-${safe(snapshot.candidateName)}.pdf`;
 
   try {

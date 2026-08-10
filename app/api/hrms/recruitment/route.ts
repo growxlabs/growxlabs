@@ -1,12 +1,24 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { CAREERS_ORGANISATION, nextJobReference, slugify } from "@/lib/careers/jobs";
-import { sendCandidateEmail, sendHrNotification } from "@/lib/recruitment/email-service";
+import {
+  CAREERS_ORGANISATION,
+  nextJobReference,
+  slugify,
+} from "@/lib/careers/jobs";
+import {
+  sendCandidateEmail,
+  sendHrNotification,
+} from "@/lib/recruitment/email-service";
 import { TemplateType } from "@/lib/recruitment/email-templates";
 
 export async function GET() {
   try {
-    const { data: jobs, error } = await supabaseAdmin.schema("recruitment").from("careers_jobs").select("*").eq("organisation_id", CAREERS_ORGANISATION).order("created_at", { ascending: false });
+    const { data: jobs, error } = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_jobs")
+      .select("*")
+      .eq("organisation_id", CAREERS_ORGANISATION)
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
     const ids = (jobs || []).map((job) => job.id);
@@ -14,15 +26,50 @@ export async function GET() {
       ? await supabaseAdmin
           .schema("recruitment")
           .from("careers_applications")
-          .select("id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at,resume_path,cover_letter,answers,rejected_at,rejected_by,rejection_reason,rejection_note,rejection_previous_stage")
+          .select(
+            "id,job_id,candidate_id,profile,current_stage,status,application_reference,submitted_at,resume_path,cover_letter,answers,rejected_at,rejected_by,rejection_reason,rejection_note,rejection_previous_stage",
+          )
           .in("job_id", ids)
           .order("submitted_at", { ascending: false })
       : { data: [], error: null };
     if (applicationResult.error) throw applicationResult.error;
     const applications = applicationResult.data || [];
-    const { data: conversions } = applications.length ? await supabaseAdmin.schema("recruitment").from("employee_conversions").select("application_id,employee_id").in("application_id", applications.map((application) => application.id)) : { data: [] as any[] };
-    const conversionMap = new Map((conversions || []).map((conversion) => [conversion.application_id, conversion.employee_id]));
-    const normalizeStage = (value: unknown) => String(value || "applied").trim().toUpperCase().replace(/[\s-]+/g, "_");
+    const { data: offers } = applications.length
+      ? await supabaseAdmin
+          .schema("recruitment")
+          .from("offers")
+          .select(
+            "application_id,status,current_version,issued_at,accepted_at,declined_at,updated_at",
+          )
+          .in(
+            "application_id",
+            applications.map((application) => application.id),
+          )
+      : { data: [] as any[] };
+    const offerMap = new Map(
+      (offers || []).map((offer) => [offer.application_id, offer]),
+    );
+    const { data: conversions } = applications.length
+      ? await supabaseAdmin
+          .schema("recruitment")
+          .from("employee_conversions")
+          .select("application_id,employee_id")
+          .in(
+            "application_id",
+            applications.map((application) => application.id),
+          )
+      : { data: [] as any[] };
+    const conversionMap = new Map(
+      (conversions || []).map((conversion) => [
+        conversion.application_id,
+        conversion.employee_id,
+      ]),
+    );
+    const normalizeStage = (value: unknown) =>
+      String(value || "applied")
+        .trim()
+        .toUpperCase()
+        .replace(/[\s-]+/g, "_");
     return NextResponse.json({
       jobs: (jobs || []).map((job) => ({
         ...job,
@@ -48,38 +95,71 @@ export async function GET() {
             rejection_note: a.rejection_note,
             rejection_previous_stage: a.rejection_previous_stage,
             employee_id: conversionMap.get(a.id) || null,
+            offer: offerMap.get(a.id) || null,
           })),
       })),
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch recruitment data" }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch recruitment data" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const requirements = Array.isArray(body.requirements) ? body.requirements : String(body.requirements || "").split(",").map((x) => x.trim()).filter(Boolean);
+    const requirements = Array.isArray(body.requirements)
+      ? body.requirements
+      : String(body.requirements || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
     const openAt = body.applications_open_at || null;
     const closeAt = body.applications_close_at || null;
-    if (openAt && closeAt && new Date(closeAt) <= new Date(openAt)) return NextResponse.json({ error: "Closing time must be after opening time" }, { status: 400 });
-    const status = openAt && new Date(openAt) > new Date() ? "scheduled" : "published";
-    const { data: job, error } = await supabaseAdmin.schema("recruitment").from("careers_jobs").insert({
-      organisation_id: CAREERS_ORGANISATION, title: body.title, slug: slugify(body.slug || body.title), job_reference: await nextJobReference(),
-      department: body.department || null,
-      description: body.description || "", summary: body.summary || body.description || "", requirements, responsibilities: body.responsibilities || [],
-      compensation_text: body.salary_range || body.compensation_text || null, location: body.location || "India", employment_type: body.employment_type || "Full-time",
-      workplace_type: body.workplace_type || "On-site", application_questions: body.application_questions || [],
-      applications_open_at: openAt, applications_close_at: closeAt, application_limit: body.application_limit || null,
-      close_when_limit_reached: Boolean(body.close_when_limit_reached), status, published_at: status === "published" ? new Date().toISOString() : null,
-    })
+    if (openAt && closeAt && new Date(closeAt) <= new Date(openAt))
+      return NextResponse.json(
+        { error: "Closing time must be after opening time" },
+        { status: 400 },
+      );
+    const status =
+      openAt && new Date(openAt) > new Date() ? "scheduled" : "published";
+    const { data: job, error } = await supabaseAdmin
+      .schema("recruitment")
+      .from("careers_jobs")
+      .insert({
+        organisation_id: CAREERS_ORGANISATION,
+        title: body.title,
+        slug: slugify(body.slug || body.title),
+        job_reference: await nextJobReference(),
+        department: body.department || null,
+        description: body.description || "",
+        summary: body.summary || body.description || "",
+        requirements,
+        responsibilities: body.responsibilities || [],
+        compensation_text: body.salary_range || body.compensation_text || null,
+        location: body.location || "India",
+        employment_type: body.employment_type || "Full-time",
+        workplace_type: body.workplace_type || "On-site",
+        application_questions: body.application_questions || [],
+        applications_open_at: openAt,
+        applications_close_at: closeAt,
+        application_limit: body.application_limit || null,
+        close_when_limit_reached: Boolean(body.close_when_limit_reached),
+        status,
+        published_at: status === "published" ? new Date().toISOString() : null,
+      })
       .select()
       .single();
 
     if (error) throw error;
     return NextResponse.json({ job }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to create job opening" }, { status: 400 });
+    return NextResponse.json(
+      { error: error.message || "Failed to create job opening" },
+      { status: 400 },
+    );
   }
 }
 
@@ -87,33 +167,133 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json();
     const applicationId = String(body.applicationId || "").trim();
-    const stage = String(body.stage || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
-    const allowedStages = new Set(["applied", "screening", "interview", "assessment", "offer", "hired"]);
+    const stage = String(body.stage || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_");
+    const allowedStages = new Set([
+      "applied",
+      "screening",
+      "interview",
+      "assessment",
+      "offer",
+      "hired",
+    ]);
 
     if (!applicationId || !allowedStages.has(stage)) {
-      return NextResponse.json({ error: "A valid applicationId and stage are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "A valid applicationId and stage are required" },
+        { status: 400 },
+      );
     }
 
     const { data: application, error: lookupError } = await supabaseAdmin
       .schema("recruitment")
       .from("careers_applications")
-      .select("id, organisation_id, candidate_id, profile, job_id, current_stage, application_reference")
+      .select(
+        "id, organisation_id, candidate_id, profile, job_id, current_stage, application_reference",
+      )
       .eq("id", applicationId)
       .maybeSingle();
 
     if (lookupError) throw lookupError;
     if (!application || application.organisation_id !== CAREERS_ORGANISATION) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     if (stage === "hired") {
-      const { data: acceptedOffer } = await supabaseAdmin.schema("recruitment").from("offers")
-        .select("id").eq("application_id", applicationId).eq("organisation_id", CAREERS_ORGANISATION)
-        .eq("status", "accepted").maybeSingle();
-      if (!acceptedOffer) return NextResponse.json({ error: "The candidate must accept an issued offer before moving to Hired." }, { status: 409 });
+      const { data: acceptedOffer } = await supabaseAdmin
+        .schema("recruitment")
+        .from("offers")
+        .select("id")
+        .eq("application_id", applicationId)
+        .eq("organisation_id", CAREERS_ORGANISATION)
+        .eq("status", "accepted")
+        .maybeSingle();
+      if (!acceptedOffer)
+        return NextResponse.json(
+          {
+            error:
+              "The candidate must accept an issued offer before moving to Hired.",
+          },
+          { status: 409 },
+        );
     }
 
     const previousStage = application.current_stage;
+
+    if (
+      stage === "offer" &&
+      String(previousStage || "").toLowerCase() !== "offer"
+    ) {
+      const { data: existingOffer } = await supabaseAdmin
+        .schema("recruitment")
+        .from("offers")
+        .select("id")
+        .eq("application_id", applicationId)
+        .eq("organisation_id", CAREERS_ORGANISATION)
+        .maybeSingle();
+      if (!existingOffer) {
+        const { data: job } = await supabaseAdmin
+          .schema("recruitment")
+          .from("careers_jobs")
+          .select("id,title,department,location,employment_type")
+          .eq("id", application.job_id)
+          .maybeSingle();
+        const { data: department } = job?.department
+          ? await supabaseAdmin
+              .schema("people")
+              .from("departments")
+              .select("id,name")
+              .eq("organisation_id", CAREERS_ORGANISATION)
+              .ilike("name", job.department)
+              .maybeSingle()
+          : { data: null };
+        const { data: designation } = job?.title
+          ? await supabaseAdmin
+              .schema("people")
+              .from("designations")
+              .select("id,name")
+              .eq("organisation_id", CAREERS_ORGANISATION)
+              .ilike("name", job.title)
+              .maybeSingle()
+          : { data: null };
+        const profile = (application.profile || {}) as Record<string, any>;
+        const { error: draftError } = await supabaseAdmin
+          .schema("recruitment")
+          .from("offers")
+          .insert({
+            application_id: application.id,
+            candidate_id: application.candidate_id,
+            organisation_id: CAREERS_ORGANISATION,
+            job_id: application.job_id,
+            title: job?.title || "Offer",
+            department_id: department?.id || null,
+            designation_id: designation?.id || null,
+            employment_type: job?.employment_type || "Full-time",
+            work_location: job?.location || "India",
+            salary: 0,
+            salary_offered: 0,
+            currency: "INR",
+            start_date: null,
+            status: "draft",
+            terms: {
+              workingTerms:
+                "Approved working terms will be confirmed before sending.",
+              confidentialityIp:
+                "Confidentiality and intellectual property terms apply.",
+              termination:
+                "Termination follows the approved notice period and applicable policy.",
+              acceptanceInstructions:
+                "Review the complete offer and accept or decline it through the candidate portal.",
+            },
+          });
+        if (draftError && draftError.code !== "23505") throw draftError;
+      }
+    }
 
     const { data, error } = await supabaseAdmin
       .schema("recruitment")
@@ -128,7 +308,8 @@ export async function PATCH(request: Request) {
 
     // Fire-and-forget: Send stage-appropriate email to candidate + HR notification
     const candidateEmail = application.profile?.email;
-    const candidateName = application.profile?.full_name || application.candidate_id;
+    const candidateName =
+      application.profile?.full_name || application.candidate_id;
     const candidateId = application.candidate_id;
 
     // Fetch job title for email context
@@ -151,7 +332,8 @@ export async function PATCH(request: Request) {
       HIRED: "stage_update",
     };
 
-    const templateKey = (STAGE_EMAIL_MAP[stageUpper] || "stage_update") as TemplateType;
+    const templateKey = (STAGE_EMAIL_MAP[stageUpper] ||
+      "stage_update") as TemplateType;
 
     if (candidateEmail) {
       const portalLink = application.id
@@ -172,7 +354,7 @@ export async function PATCH(request: Request) {
         candidateEmail,
         candidateId,
         applicationId,
-        application.job_id
+        application.job_id,
       ).catch((err) => {
         console.error("Failed to send candidate stage email:", err);
       });
@@ -189,6 +371,9 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ application: data });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to update candidate stage" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "Failed to update candidate stage" },
+      { status: 500 },
+    );
   }
 }
