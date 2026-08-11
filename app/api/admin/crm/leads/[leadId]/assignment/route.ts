@@ -112,6 +112,7 @@ export async function POST(
   const updated = await supabaseAdmin
     .from("leads")
     .update({
+      organisation_id: org,
       assigned_employee_id: employee.data.id,
       assigned_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -122,15 +123,13 @@ export async function POST(
     .single();
   if (updated.error)
     return Response.json({ error: "Assignment failed" }, { status: 500 });
-  await supabaseAdmin
-    .from("lead_assignment_history")
-    .insert({
-      organisation_id: org,
-      lead_id: leadId,
-      previous_employee_id: lead.data.assigned_employee_id,
-      assigned_employee_id: employee.data.id,
-      assigned_by: session.user.id,
-    });
+  await supabaseAdmin.from("lead_assignment_history").insert({
+    organisation_id: org,
+    lead_id: leadId,
+    previous_employee_id: lead.data.assigned_employee_id,
+    assigned_employee_id: employee.data.id,
+    assigned_by: session.user.id,
+  });
   await supabaseAdmin
     .schema("notifications")
     .from("notifications")
