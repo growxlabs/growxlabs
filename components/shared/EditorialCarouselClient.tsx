@@ -1,32 +1,32 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  Download, 
-  ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  Trash2, 
-  Settings, 
-  Palette, 
-  Edit3, 
-  RefreshCw, 
-  Check, 
-  Info, 
-  Type, 
-  LayoutGrid, 
-  Upload, 
-  Layers as LayersIcon, 
-  Lock, 
-  Unlock, 
-  Eye, 
-  EyeOff, 
-  Maximize2, 
-  Minimize2, 
-  Copy, 
-  Grid, 
-  AlignLeft, 
-  AlignCenter, 
+import {
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Trash2,
+  Settings,
+  Palette,
+  Edit3,
+  RefreshCw,
+  Check,
+  Info,
+  Type,
+  LayoutGrid,
+  Upload,
+  Layers as LayersIcon,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  Maximize2,
+  Minimize2,
+  Copy,
+  Grid,
+  AlignLeft,
+  AlignCenter,
   AlignRight,
   FileText,
   FolderOpen,
@@ -44,7 +44,7 @@ import {
   Smartphone,
   Eye as ViewIcon,
   MousePointer,
-  Hand
+  Hand,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
@@ -52,7 +52,11 @@ import { InspectorPanel } from "../editor/inspector/InspectorPanel";
 
 const isVideo = (url?: string) => {
   if (!url) return false;
-  return url.match(/\.(mp4|webm|ogg|mov|m4v|mp1|mp2|mpeg|mpg|avi|mkv|flv|wmv|3gp)($|\?)/i) !== null || url.startsWith("data:video/");
+  return (
+    url.match(
+      /\.(mp4|webm|ogg|mov|m4v|mp1|mp2|mpeg|mpg|avi|mkv|flv|wmv|3gp)($|\?)/i,
+    ) !== null || url.startsWith("data:video/")
+  );
 };
 
 const stripHtmlTags = (str?: string) => {
@@ -127,7 +131,11 @@ interface CtaElementStyle extends ElementStyle {
 interface Slide {
   id: string;
   category: ElementStyle & { text: string };
-  headline: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
+  headline: ElementStyle & {
+    text: string;
+    maxLines: number;
+    autoScale: boolean;
+  };
   featuredImage: ImageElementStyle;
   body: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
   bullets: BulletElementStyle;
@@ -147,7 +155,17 @@ interface Slide {
   };
 }
 
-type ElementKey = "category" | "headline" | "featuredImage" | "body" | "bullets" | "quote" | "cta" | "logo" | "divider" | "author";
+type ElementKey =
+  | "category"
+  | "headline"
+  | "featuredImage"
+  | "body"
+  | "bullets"
+  | "quote"
+  | "cta"
+  | "logo"
+  | "divider"
+  | "author";
 
 // ==========================================
 // CONSTANTS & INITIAL DATA
@@ -164,11 +182,18 @@ const SAFE_RIGHT = 72;
 const SAFE_WIDTH = CANVAS_WIDTH - SAFE_LEFT - SAFE_RIGHT; // 936px
 
 const DEFAULT_FONTS = [
-  { name: "Inter", value: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" },
+  {
+    name: "Inter",
+    value: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  },
   { name: "Outfit", value: "'Outfit', sans-serif" },
   { name: "SF Mono", value: "'SF Mono', 'Fira Code', monospace" },
   { name: "Playfair Display", value: "'Playfair Display', serif" },
-  { name: "Neue Haas Grotesk", value: "'Neue Haas Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }
+  {
+    name: "Neue Haas Grotesk",
+    value:
+      "'Neue Haas Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  },
 ];
 
 const DEFAULT_SLIDE = (index: number): Slide => ({
@@ -191,7 +216,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     color: "#888888",
     fontWeight: "800",
     uppercase: true,
-    zIndex: 10
+    zIndex: 10,
   },
   headline: {
     text: "Moonshot built the world's largest open model",
@@ -212,7 +237,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     fontWeight: "900",
     maxLines: 3,
     autoScale: true,
-    zIndex: 11
+    zIndex: 11,
   },
   featuredImage: {
     mediaUrl: "",
@@ -238,7 +263,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     letterSpacing: 0,
     color: "#000000",
     fontWeight: "normal",
-    zIndex: 5
+    zIndex: 5,
   },
   body: {
     text: `Kimi K3 is a 2.8 trillion parameter Mixture-of-Experts model, the largest open-weight AI system ever released. It runs a 1M token context, handles text and images, and lands close to the Western frontier.`,
@@ -259,7 +284,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     fontWeight: "400",
     maxLines: 6,
     autoScale: true,
-    zIndex: 12
+    zIndex: 12,
   },
   bullets: {
     bulletStyle: "check",
@@ -267,7 +292,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     items: [
       "2.8 Trillion parameters Mixture-of-Experts",
       "Native 1 Million token context window",
-      "Multi-modal: supports text and image inputs"
+      "Multi-modal: supports text and image inputs",
     ],
     x: SAFE_LEFT,
     y: 990,
@@ -284,7 +309,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     letterSpacing: 0,
     color: "#111827",
     fontWeight: "500",
-    zIndex: 13
+    zIndex: 13,
   },
   quote: {
     text: "This model marks a turning point in open-source AI capabilities.",
@@ -308,7 +333,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     color: "#000000",
     fontWeight: "700",
     zIndex: 14,
-    padding: 24
+    padding: 24,
   },
   cta: {
     text: "Read the Full Report",
@@ -332,7 +357,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     color: "#ffffff",
     fontWeight: "700",
     zIndex: 15,
-    padding: 16
+    padding: 16,
   },
   logo: {
     logoUrl: "",
@@ -351,7 +376,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     letterSpacing: 0,
     color: "#000000",
     fontWeight: "normal",
-    zIndex: 8
+    zIndex: 8,
   },
   divider: {
     color: "#e5e7eb",
@@ -370,7 +395,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     lineHeight: 1,
     letterSpacing: 0,
     fontWeight: "normal",
-    zIndex: 4
+    zIndex: 4,
   },
   author: {
     name: "Sai Varshith Naidu",
@@ -390,7 +415,7 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     letterSpacing: 0,
     color: "#374151",
     fontWeight: "600",
-    zIndex: 9
+    zIndex: 9,
   },
   footer: {
     brandName: "GrowxLabs",
@@ -399,8 +424,8 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     pageNumberEnabled: true,
     opacity: 1,
     color: "#000000",
-    align: "left"
-  }
+    align: "left",
+  },
 });
 
 // ==========================================
@@ -415,15 +440,23 @@ const TEMPLATE_PRESETS = [
     setup: (slide: Slide): Slide => ({
       ...slide,
       category: { ...slide.category, text: "AI NEWS", visible: true },
-      headline: { ...slide.headline, text: "Moonshot built the world's largest open model", visible: true },
+      headline: {
+        ...slide.headline,
+        text: "Moonshot built the world's largest open model",
+        visible: true,
+      },
       featuredImage: { ...slide.featuredImage, visible: true },
-      body: { ...slide.body, text: "Kimi K3 is a 2.8 trillion parameter Mixture-of-Experts model, the largest open-weight AI system ever released.", visible: true },
+      body: {
+        ...slide.body,
+        text: "Kimi K3 is a 2.8 trillion parameter Mixture-of-Experts model, the largest open-weight AI system ever released.",
+        visible: true,
+      },
       bullets: { ...slide.bullets, visible: false },
       quote: { ...slide.quote, visible: false },
       cta: { ...slide.cta, visible: false },
       author: { ...slide.author, visible: false },
-      divider: { ...slide.divider, visible: false }
-    })
+      divider: { ...slide.divider, visible: false },
+    }),
   },
   {
     id: "research",
@@ -432,13 +465,21 @@ const TEMPLATE_PRESETS = [
     setup: (slide: Slide): Slide => ({
       ...slide,
       category: { ...slide.category, text: "RESEARCH STUDY", visible: true },
-      headline: { ...slide.headline, text: "Decentralized Training Runs Over Heterogeneous Networks", visible: true },
+      headline: {
+        ...slide.headline,
+        text: "Decentralized Training Runs Over Heterogeneous Networks",
+        visible: true,
+      },
       featuredImage: { ...slide.featuredImage, visible: false },
-      body: { ...slide.body, text: "Our empirical study shows decentralized networks can achieve up to 84% baseline efficiency under model compression pipelines.", visible: true },
+      body: {
+        ...slide.body,
+        text: "Our empirical study shows decentralized networks can achieve up to 84% baseline efficiency under model compression pipelines.",
+        visible: true,
+      },
       bullets: { ...slide.bullets, visible: true },
       quote: { ...slide.quote, visible: false },
-      cta: { ...slide.cta, visible: false }
-    })
+      cta: { ...slide.cta, visible: false },
+    }),
   },
   {
     id: "services",
@@ -447,13 +488,21 @@ const TEMPLATE_PRESETS = [
     setup: (slide: Slide): Slide => ({
       ...slide,
       category: { ...slide.category, text: "CORE SERVICES", visible: true },
-      headline: { ...slide.headline, text: "End-to-End AI Engineering & Agent Orchestration", visible: true },
+      headline: {
+        ...slide.headline,
+        text: "End-to-End AI Engineering & Agent Orchestration",
+        visible: true,
+      },
       featuredImage: { ...slide.featuredImage, visible: true, height: 350 },
-      body: { ...slide.body, text: "We configure multi-agent networks, clean pipeline nodes, and build high-performance search infrastructures tailored to your CRM workflow.", visible: true },
+      body: {
+        ...slide.body,
+        text: "We configure multi-agent networks, clean pipeline nodes, and build high-performance search infrastructures tailored to your CRM workflow.",
+        visible: true,
+      },
       bullets: { ...slide.bullets, visible: false },
       quote: { ...slide.quote, visible: false },
-      cta: { ...slide.cta, visible: true }
-    })
+      cta: { ...slide.cta, visible: true },
+    }),
   },
   {
     id: "quote",
@@ -462,46 +511,66 @@ const TEMPLATE_PRESETS = [
     setup: (slide: Slide): Slide => ({
       ...slide,
       category: { ...slide.category, text: "EDITORIAL QUOTE", visible: true },
-      headline: { ...slide.headline, text: "What our team says about pipeline safety:", visible: true },
+      headline: {
+        ...slide.headline,
+        text: "What our team says about pipeline safety:",
+        visible: true,
+      },
       featuredImage: { ...slide.featuredImage, visible: false },
       body: { ...slide.body, visible: false },
       bullets: { ...slide.bullets, visible: false },
       quote: { ...slide.quote, visible: true },
-      cta: { ...slide.cta, visible: false }
-    })
-  }
+      cta: { ...slide.cta, visible: false },
+    }),
+  },
 ];
 
 export function EditorialCarouselClient() {
   const { resolvedTheme, setTheme } = useTheme();
   const [slides, setSlides] = useState<Slide[]>([DEFAULT_SLIDE(0)]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedElement, setSelectedElement] = useState<ElementKey | null>(null);
+  const [selectedElement, setSelectedElement] = useState<ElementKey | null>(
+    null,
+  );
   const [isFooterSelected, setIsFooterSelected] = useState(false);
   const [editorMode, setEditorMode] = useState<"fixed" | "free">("fixed");
-  
+
   // Viewport & Infinite Canvas Control
   const [zoomScale, setZoomScale] = useState(0.48);
   const [showGrid, setShowGrid] = useState(true);
   const [showSafeArea, setShowSafeArea] = useState(true);
   const [showGuides, setShowGuides] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-  
+
   const [pan, setPan] = useState({ x: 120, y: 80 });
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select");
   const [showLeftPanel, setShowLeftPanel] = useState(true);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; index: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    index: number;
+  } | null>(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isPanning, setIsPanning] = useState(false);
 
   // Viewport & Canvas refs
   const viewportRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const dragStartRef = useRef<{ startX: number; startY: number; elemX: number; elemY: number } | null>(null);
-  const resizeStartRef = useRef<{ startX: number; startY: number; elemW: number; elemH: number } | null>(null);
+  const dragStartRef = useRef<{
+    startX: number;
+    startY: number;
+    elemX: number;
+    elemY: number;
+  } | null>(null);
+  const resizeStartRef = useRef<{
+    startX: number;
+    startY: number;
+    elemW: number;
+    elemH: number;
+  } | null>(null);
 
   // App states for history
   const [history, setHistory] = useState<Slide[][]>([]);
@@ -516,7 +585,7 @@ export function EditorialCarouselClient() {
 
   const handleUndo = () => {
     if (historyIndex > 0) {
-      setHistoryIndex(prev => prev - 1);
+      setHistoryIndex((prev) => prev - 1);
       setSlides(JSON.parse(JSON.stringify(history[historyIndex - 1])));
       toast.success("Undo successful");
     }
@@ -524,7 +593,7 @@ export function EditorialCarouselClient() {
 
   const handleRedo = () => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(prev => prev + 1);
+      setHistoryIndex((prev) => prev + 1);
       setSlides(JSON.parse(JSON.stringify(history[historyIndex + 1])));
     }
   };
@@ -541,10 +610,10 @@ export function EditorialCarouselClient() {
     const defaultZoom = 0.48;
     const artboardWidth = 1080 * defaultZoom;
     const artboardHeight = 1350 * defaultZoom;
-    
+
     setPan({
       x: Math.max(20, (rect.width - artboardWidth) / 2),
-      y: Math.max(20, (rect.height - artboardHeight) / 2)
+      y: Math.max(20, (rect.height - artboardHeight) / 2),
     });
     setZoomScale(defaultZoom);
   }, []);
@@ -563,7 +632,7 @@ export function EditorialCarouselClient() {
     setZoomScale(clampedZoom);
     setPan({
       x: (rect.width - 1080 * clampedZoom) / 2,
-      y: (rect.height - 1350 * clampedZoom) / 2
+      y: (rect.height - 1350 * clampedZoom) / 2,
     });
   };
 
@@ -571,37 +640,41 @@ export function EditorialCarouselClient() {
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    
+
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      
+
       if (e.ctrlKey || e.metaKey) {
         const zoomFactor = 1.05;
-        const newZoom = e.deltaY > 0 ? zoomScale / zoomFactor : zoomScale * zoomFactor;
+        const newZoom =
+          e.deltaY > 0 ? zoomScale / zoomFactor : zoomScale * zoomFactor;
         const clampedZoom = Math.min(Math.max(0.15, newZoom), 3.0);
-        
+
         const rect = viewport.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-        
+
         const worldX = (mouseX - pan.x) / zoomScale;
         const worldY = (mouseY - pan.y) / zoomScale;
-        
+
         const newPanX = mouseX - worldX * clampedZoom;
         const newPanY = mouseY - worldY * clampedZoom;
-        
+
         setZoomScale(clampedZoom);
         setPan({ x: newPanX, y: newPanY });
       } else {
         const panSpeed = 0.8;
         if (e.shiftKey) {
-          setPan(prev => ({ ...prev, x: prev.x - e.deltaY * panSpeed }));
+          setPan((prev) => ({ ...prev, x: prev.x - e.deltaY * panSpeed }));
         } else {
-          setPan(prev => ({ x: prev.x - e.deltaX * panSpeed, y: prev.y - e.deltaY * panSpeed }));
+          setPan((prev) => ({
+            x: prev.x - e.deltaX * panSpeed,
+            y: prev.y - e.deltaY * panSpeed,
+          }));
         }
       }
     };
-    
+
     viewport.addEventListener("wheel", handleWheel, { passive: false });
     return () => {
       viewport.removeEventListener("wheel", handleWheel);
@@ -612,42 +685,50 @@ export function EditorialCarouselClient() {
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
         return;
       }
-      
+
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
-      
+
       if (e.key === " " && !isSpacePressed) {
         e.preventDefault();
         setIsSpacePressed(true);
       }
-      
+
       if (isCmdOrCtrl && e.key.toLowerCase() === "z" && !e.shiftKey) {
         e.preventDefault();
         handleUndo();
       }
-      
-      if (isCmdOrCtrl && ((e.key.toLowerCase() === "z" && e.shiftKey) || e.key.toLowerCase() === "y")) {
+
+      if (
+        isCmdOrCtrl &&
+        ((e.key.toLowerCase() === "z" && e.shiftKey) ||
+          e.key.toLowerCase() === "y")
+      ) {
         e.preventDefault();
         handleRedo();
       }
-      
+
       if (isCmdOrCtrl && (e.key === "=" || e.key === "+")) {
         e.preventDefault();
-        setZoomScale(prev => Math.min(3.0, prev + 0.05));
+        setZoomScale((prev) => Math.min(3.0, prev + 0.05));
       }
-      
+
       if (isCmdOrCtrl && e.key === "-") {
         e.preventDefault();
-        setZoomScale(prev => Math.max(0.15, prev - 0.05));
+        setZoomScale((prev) => Math.max(0.15, prev - 0.05));
       }
-      
+
       if (isCmdOrCtrl && e.key === "0") {
         e.preventDefault();
         handleFitToScreen();
       }
-      
+
       if (e.key === "Delete" || e.key === "Backspace") {
         if (selectedElement) {
           e.preventDefault();
@@ -661,19 +742,19 @@ export function EditorialCarouselClient() {
           toast.success("Removed footer layer");
         }
       }
-      
+
       if (e.key === "Escape") {
         e.preventDefault();
         setSelectedElement(null);
         setIsFooterSelected(false);
         setContextMenu(null);
       }
-      
+
       if (isCmdOrCtrl && e.key.toLowerCase() === "s") {
         e.preventDefault();
         toast.success("Design saved successfully!");
       }
-      
+
       if (isCmdOrCtrl && e.key.toLowerCase() === "d") {
         e.preventDefault();
         duplicateSlide(activeIndex);
@@ -686,18 +767,28 @@ export function EditorialCarouselClient() {
         setIsPanning(false);
       }
     };
-    
+
     window.addEventListener("keydown", handleGlobalKeyDown);
     window.addEventListener("keyup", handleGlobalKeyUp);
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
       window.removeEventListener("keyup", handleGlobalKeyUp);
     };
-  }, [isSpacePressed, selectedElement, isFooterSelected, activeIndex, slides, historyIndex, history]);
+  }, [
+    isSpacePressed,
+    selectedElement,
+    isFooterSelected,
+    activeIndex,
+    slides,
+    historyIndex,
+    history,
+  ]);
 
   // Left panel collapse settings
-  const [leftTab, setLeftTab] = useState<"slides" | "templates" | "brand">("slides");
-  
+  const [leftTab, setLeftTab] = useState<"slides" | "templates" | "brand">(
+    "slides",
+  );
+
   // App states
   const [projectName, setProjectName] = useState("GrowXLabs Editorial Post");
   const [isEditingProjectName, setIsEditingProjectName] = useState(false);
@@ -706,7 +797,7 @@ export function EditorialCarouselClient() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     let localUrl = "";
     try {
       // 1. Create a local preview immediately for instant UI feedback
@@ -725,21 +816,20 @@ export function EditorialCarouselClient() {
 
       const res = await fetch("/api/upload", {
         method: "POST",
-        body: formData
+        body: formData,
       });
 
-      if (!res.ok) {
-        throw new Error("Server responded with error status");
-      }
-
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Media upload failed");
+      }
       if (!data.url) {
         throw new Error("No URL returned from server");
       }
 
       // 3. Update the slide element with the persistent public URL from Supabase
       updateSlideElement("featuredImage", { mediaUrl: data.url });
-      
+
       // Clean up the local blob preview URL since we now have the permanent link
       if (localUrl) {
         try {
@@ -749,10 +839,18 @@ export function EditorialCarouselClient() {
         }
       }
 
-      toast.success("Asset saved to database successfully!", { id: uploadToast });
+      toast.success("Asset saved to database successfully!", {
+        id: uploadToast,
+      });
     } catch (err) {
       console.error("Database upload failed:", err);
-      toast.error("Failed to store media in database, using local session preview.", { id: uploadToast });
+      // Never leave a blob URL in the editor after persistence fails. Blob URLs
+      // disappear on reload and must not be treated as saved media references.
+      updateSlideElement("featuredImage", { mediaUrl: "" });
+      toast.error(
+        err instanceof Error ? err.message : "Media could not be saved",
+        { id: uploadToast },
+      );
     }
   };
 
@@ -767,7 +865,8 @@ export function EditorialCarouselClient() {
   // Load Google Fonts stylesheet dynamically on webpage
   useEffect(() => {
     const link = document.createElement("link");
-    link.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
     return () => {
@@ -779,7 +878,7 @@ export function EditorialCarouselClient() {
   useEffect(() => {
     if (editorMode === "fixed") {
       const updated = { ...activeSlide };
-      
+
       // Strict Grid Offsets
       updated.category.x = SAFE_LEFT;
       updated.category.y = SAFE_TOP;
@@ -795,19 +894,24 @@ export function EditorialCarouselClient() {
       updated.featuredImage.height = 470;
 
       updated.body.x = SAFE_LEFT;
-      updated.body.y = updated.featuredImage.y + updated.featuredImage.height + 40;
+      updated.body.y =
+        updated.featuredImage.y + updated.featuredImage.height + 40;
       updated.body.width = SAFE_WIDTH;
 
       updated.quote.x = SAFE_LEFT;
-      updated.quote.y = updated.featuredImage.y + updated.featuredImage.height + 40;
+      updated.quote.y =
+        updated.featuredImage.y + updated.featuredImage.height + 40;
       updated.quote.width = SAFE_WIDTH;
 
       updated.bullets.x = SAFE_LEFT;
-      updated.bullets.y = updated.body.y + (updated.body.visible ? updated.body.height + 20 : 0);
+      updated.bullets.y =
+        updated.body.y + (updated.body.visible ? updated.body.height + 20 : 0);
       updated.bullets.width = SAFE_WIDTH;
 
       updated.cta.x = SAFE_LEFT;
-      updated.cta.y = updated.bullets.y + (updated.bullets.visible ? updated.bullets.height + 20 : 40);
+      updated.cta.y =
+        updated.bullets.y +
+        (updated.bullets.visible ? updated.bullets.height + 20 : 40);
 
       updated.logo.x = SAFE_LEFT;
       updated.logo.y = SAFE_TOP;
@@ -819,12 +923,14 @@ export function EditorialCarouselClient() {
       updated.author.x = SAFE_LEFT;
       updated.author.y = 770;
 
-      setSlides(prev => prev.map((s, i) => i === activeIndex ? updated : s));
+      setSlides((prev) =>
+        prev.map((s, i) => (i === activeIndex ? updated : s)),
+      );
     }
   }, [
-    activeSlide.category.height, 
+    activeSlide.category.height,
     activeSlide.category.visible,
-    activeSlide.headline.height, 
+    activeSlide.headline.height,
     activeSlide.headline.visible,
     activeSlide.featuredImage.height,
     activeSlide.featuredImage.visible,
@@ -832,8 +938,8 @@ export function EditorialCarouselClient() {
     activeSlide.body.visible,
     activeSlide.bullets.height,
     activeSlide.bullets.visible,
-    editorMode, 
-    activeIndex
+    editorMode,
+    activeIndex,
   ]);
 
   // ==========================================
@@ -847,8 +953,8 @@ export function EditorialCarouselClient() {
         ...s,
         [key]: {
           ...s[key],
-          ...updates
-        }
+          ...updates,
+        },
       };
     });
     setSlides(newSlides);
@@ -862,15 +968,19 @@ export function EditorialCarouselClient() {
         ...s,
         footer: {
           ...s.footer,
-          ...updates
-        }
+          ...updates,
+        },
       };
     });
     setSlides(newSlides);
     saveHistory(newSlides);
   };
 
-  const renderColorPicker = (label: string, value: string, onChange: (val: string) => void) => {
+  const renderColorPicker = (
+    label: string,
+    value: string,
+    onChange: (val: string) => void,
+  ) => {
     return (
       <div className="flex gap-2 items-center text-left">
         <input
@@ -897,7 +1007,7 @@ export function EditorialCarouselClient() {
         startX: e.clientX,
         startY: e.clientY,
         elemX: pan.x,
-        elemY: pan.y
+        elemY: pan.y,
       };
       document.addEventListener("mousemove", handleViewportMouseMove);
       document.addEventListener("mouseup", handleViewportMouseUp);
@@ -910,7 +1020,7 @@ export function EditorialCarouselClient() {
     const dy = e.clientY - dragStartRef.current.startY;
     setPan({
       x: dragStartRef.current.elemX + dx,
-      y: dragStartRef.current.elemY + dy
+      y: dragStartRef.current.elemY + dy,
     });
   };
 
@@ -928,12 +1038,12 @@ export function EditorialCarouselClient() {
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === index) return;
-    
+
     const reordered = [...slides];
     const item = reordered[draggedIndex];
     reordered.splice(draggedIndex, 1);
     reordered.splice(index, 0, item);
-    
+
     setDraggedIndex(index);
     setSlides(reordered);
     setActiveIndex(index);
@@ -949,7 +1059,7 @@ export function EditorialCarouselClient() {
     setContextMenu({
       x: e.clientX,
       y: e.clientY,
-      index
+      index,
     });
   };
 
@@ -957,13 +1067,15 @@ export function EditorialCarouselClient() {
     if (!showShortcutsModal) return null;
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99] flex items-center justify-center p-4">
-        <div 
+        <div
           className="bg-white dark:bg-[#111214] border border-neutral-200 dark:border-[rgba(255,255,255,0.08)] rounded-[18px] w-full max-w-md p-6 shadow-2xl animate-fade"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center pb-3 border-b border-neutral-200 dark:border-[rgba(255,255,255,0.06)] mb-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 dark:text-[#1687f8] tracking-widest">Keyboard Shortcuts</h2>
-            <button 
+            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 dark:text-[#1687f8] tracking-widest">
+              Keyboard Shortcuts
+            </h2>
+            <button
               onClick={() => setShowShortcutsModal(false)}
               className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/10 px-2.5 py-1 rounded-lg transition-all text-xs font-bold"
             >
@@ -980,13 +1092,23 @@ export function EditorialCarouselClient() {
               { keys: ["Ctrl/Cmd", "-"], desc: "Zoom Out" },
               { keys: ["Ctrl/Cmd", "0"], desc: "Fit to screen view" },
               { keys: ["Delete / Backspace"], desc: "Delete selected layer" },
-              { keys: ["Escape"], desc: "Clear active selection" }
+              { keys: ["Escape"], desc: "Clear active selection" },
             ].map((shortcut, sIdx) => (
-              <div key={sIdx} className="flex justify-between items-center text-xs py-1.5 border-b border-neutral-100 dark:border-neutral-900 last:border-b-0">
-                <span className="text-neutral-500 dark:text-neutral-400 font-medium">{shortcut.desc}</span>
+              <div
+                key={sIdx}
+                className="flex justify-between items-center text-xs py-1.5 border-b border-neutral-100 dark:border-neutral-900 last:border-b-0"
+              >
+                <span className="text-neutral-500 dark:text-neutral-400 font-medium">
+                  {shortcut.desc}
+                </span>
                 <div className="flex gap-1">
                   {shortcut.keys.map((k, kIdx) => (
-                    <kbd key={kIdx} className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded font-mono text-[10px] font-bold text-neutral-800 dark:text-neutral-200 shadow-sm">{k}</kbd>
+                    <kbd
+                      key={kIdx}
+                      className="px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded font-mono text-[10px] font-bold text-neutral-800 dark:text-neutral-200 shadow-sm"
+                    >
+                      {k}
+                    </kbd>
                   ))}
                 </div>
               </div>
@@ -1029,9 +1151,11 @@ export function EditorialCarouselClient() {
   };
 
   const applyPreset = (presetId: string) => {
-    const preset = TEMPLATE_PRESETS.find(p => p.id === presetId);
+    const preset = TEMPLATE_PRESETS.find((p) => p.id === presetId);
     if (!preset) return;
-    const newSlides = slides.map((s, i) => i === activeIndex ? preset.setup(s) : s);
+    const newSlides = slides.map((s, i) =>
+      i === activeIndex ? preset.setup(s) : s,
+    );
     setSlides(newSlides);
     saveHistory(newSlides);
     toast.success(`Applied ${preset.name} template layout`);
@@ -1045,19 +1169,19 @@ export function EditorialCarouselClient() {
     if (e.button !== 0) return;
     setSelectedElement(key);
     setIsFooterSelected(false);
-    
+
     if (editorMode === "fixed") return;
-    
+
     const elem = activeSlide[key];
     if (elem.locked) return;
 
     e.stopPropagation();
-    
+
     dragStartRef.current = {
       startX: e.clientX,
       startY: e.clientY,
       elemX: elem.x,
-      elemY: elem.y
+      elemY: elem.y,
     };
 
     document.addEventListener("mousemove", handleElementMouseMove);
@@ -1069,13 +1193,19 @@ export function EditorialCarouselClient() {
 
     const dx = (e.clientX - dragStartRef.current.startX) / zoomScale;
     const dy = (e.clientY - dragStartRef.current.startY) / zoomScale;
-    
+
     let newX = Math.round(dragStartRef.current.elemX + dx);
     let newY = Math.round(dragStartRef.current.elemY + dy);
 
     if (showGuides) {
       if (Math.abs(newX - SAFE_LEFT) < 10) newX = SAFE_LEFT;
-      if (Math.abs((newX + activeSlide[selectedElement].width) - (CANVAS_WIDTH - SAFE_RIGHT)) < 10) {
+      if (
+        Math.abs(
+          newX +
+            activeSlide[selectedElement].width -
+            (CANVAS_WIDTH - SAFE_RIGHT),
+        ) < 10
+      ) {
         newX = CANVAS_WIDTH - SAFE_RIGHT - activeSlide[selectedElement].width;
       }
     }
@@ -1096,7 +1226,7 @@ export function EditorialCarouselClient() {
     setIsFooterSelected(false);
 
     if (editorMode === "fixed") return;
-    
+
     const elem = activeSlide[key];
     if (elem.locked) return;
 
@@ -1104,7 +1234,7 @@ export function EditorialCarouselClient() {
       startX: e.clientX,
       startY: e.clientY,
       elemW: elem.width,
-      elemH: elem.height
+      elemH: elem.height,
     };
 
     document.addEventListener("mousemove", handleResizeMouseMove);
@@ -1133,15 +1263,28 @@ export function EditorialCarouselClient() {
   // EXPORT ENGINE
   // ==========================================
 
-  const buildSvgString = (slide: Slide, index: number, includeFonts = true, videoFrameUrl?: string) => {
-    const fontsMarkup = includeFonts ? DEFAULT_FONTS.map(f => 
-      `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');`
-    ).join("\n") : "";
+  const buildSvgString = (
+    slide: Slide,
+    index: number,
+    includeFonts = true,
+    videoFrameUrl?: string,
+  ) => {
+    const fontsMarkup = includeFonts
+      ? DEFAULT_FONTS.map(
+          (f) =>
+            `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');`,
+        ).join("\n")
+      : "";
 
     const renderTextMarkup = (el: ElementStyle & { text: string }) => {
       if (!el.visible) return "";
       const textTransform = el.uppercase ? "uppercase" : "none";
-      const alignClass = el.align === "center" ? "text-center justify-center" : el.align === "right" ? "text-right justify-end" : "text-left justify-start";
+      const alignClass =
+        el.align === "center"
+          ? "text-center justify-center"
+          : el.align === "right"
+            ? "text-right justify-end"
+            : "text-left justify-start";
       return `
         <div style="
           position: absolute;
@@ -1172,9 +1315,14 @@ export function EditorialCarouselClient() {
 
     const renderImageMarkup = (el: ImageElementStyle) => {
       if (!el.visible) return "";
-      const borderStyle = el.borderWidth > 0 ? `border: ${el.borderWidth}px solid ${el.borderColor};` : "";
-      const shadowStyle = el.shadowEnabled ? "box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);" : "";
-      
+      const borderStyle =
+        el.borderWidth > 0
+          ? `border: ${el.borderWidth}px solid ${el.borderColor};`
+          : "";
+      const shadowStyle = el.shadowEnabled
+        ? "box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);"
+        : "";
+
       const isVideoAsset = isVideo(el.mediaUrl);
       const bgColor = el.color || "transparent";
 
@@ -1195,17 +1343,21 @@ export function EditorialCarouselClient() {
           ${borderStyle}
           ${shadowStyle}
         ">
-          ${el.mediaUrl ? (
-            isVideoAsset ? `
+          ${
+            el.mediaUrl
+              ? isVideoAsset
+                ? `
               <img src="${videoFrameUrl || el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
-            ` : `
+            `
+                : `
               <img src="${el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
             `
-          ) : `
+              : `
             <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); display: flex; align-items: center; justify-content: center; color: #475569; font-family: sans-serif; font-weight: bold; font-size: 24px;">
               Featured Asset
             </div>
-          `}
+          `
+          }
         </div>
       `;
     };
@@ -1229,12 +1381,16 @@ export function EditorialCarouselClient() {
           z-index: ${el.zIndex || 1};
         ">
           <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: ${el.spacing}px;">
-            ${el.items.map((item, idx) => `
+            ${el.items
+              .map(
+                (item, idx) => `
               <li style="display: flex; align-items: flex-start; gap: 10px;">
                 <span style="color: #000000; font-weight: bold;">${el.bulletStyle === "check" ? "✔" : el.bulletStyle === "number" ? `${idx + 1}.` : "•"}</span>
                 <span>${item}</span>
               </li>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </ul>
         </div>
       `;
@@ -1310,16 +1466,22 @@ export function EditorialCarouselClient() {
           opacity: ${el.opacity};
           z-index: ${el.zIndex || 1};
         ">
-          ${el.logoUrl ? `
+          ${
+            el.logoUrl
+              ? `
             <img src="${el.logoUrl}" style="width:100%; height:100%; object-fit:contain;" />
-          ` : `
+          `
+              : `
             <div style="width:100%; height:100%; border-radius:50%; background:#0075de; color:white; display:flex; align-items:center; justify-content:center; font-family:sans-serif; font-weight:bold; font-size:12px;">GX</div>
-          `}
+          `
+          }
         </div>
       `;
     };
 
-    const renderDividerMarkup = (el: ElementStyle & { color: string; thickness: number }) => {
+    const renderDividerMarkup = (
+      el: ElementStyle & { color: string; thickness: number },
+    ) => {
       if (!el.visible) return "";
       return `
         <div style="
@@ -1335,7 +1497,9 @@ export function EditorialCarouselClient() {
       `;
     };
 
-    const renderAuthorMarkup = (el: ElementStyle & { name: string; avatarUrl: string }) => {
+    const renderAuthorMarkup = (
+      el: ElementStyle & { name: string; avatarUrl: string },
+    ) => {
       if (!el.visible) return "";
       return `
         <div style="
@@ -1363,7 +1527,10 @@ export function EditorialCarouselClient() {
     };
 
     const renderFooterMarkup = () => {
-      const pageNumStr = String(index + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      const pageNumStr =
+        String(index + 1).padStart(2, "0") +
+        " / " +
+        String(slides.length).padStart(2, "0");
       return `
         <div style="
           position: absolute;
@@ -1383,11 +1550,15 @@ export function EditorialCarouselClient() {
           <span style="font-weight: 800; font-size: 16px;">
             ${slide.footer.brandName ? `[${slide.footer.brandName}]` : ""}
           </span>
-          ${slide.footer.pageNumberEnabled ? `
+          ${
+            slide.footer.pageNumberEnabled
+              ? `
             <span style="font-weight: 500; font-size: 16px; opacity: 0.6;">
               ${pageNumStr}
             </span>
-          ` : ""}
+          `
+              : ""
+          }
         </div>
       `;
     };
@@ -1449,19 +1620,28 @@ export function EditorialCarouselClient() {
     }
   };
 
-  const prepareSlideForExport = async (slide: Slide, idx: number): Promise<{ slide: Slide; videoFrameUrl?: string }> => {
+  const prepareSlideForExport = async (
+    slide: Slide,
+    idx: number,
+  ): Promise<{ slide: Slide; videoFrameUrl?: string }> => {
     const cloned = JSON.parse(JSON.stringify(slide)) as Slide;
-    
+
     // 1. Get and convert video frame if video
     let videoFrameDataUrl = "";
-    if (cloned.featuredImage.visible && cloned.featuredImage.mediaUrl && isVideo(cloned.featuredImage.mediaUrl)) {
+    if (
+      cloned.featuredImage.visible &&
+      cloned.featuredImage.mediaUrl &&
+      isVideo(cloned.featuredImage.mediaUrl)
+    ) {
       const frameUrl = await getSlideVideoFrame(cloned, idx);
       if (frameUrl) {
         videoFrameDataUrl = await toDataUrl(frameUrl);
       }
     } else if (cloned.featuredImage.visible && cloned.featuredImage.mediaUrl) {
       // Convert normal image to data URL
-      cloned.featuredImage.mediaUrl = await toDataUrl(cloned.featuredImage.mediaUrl);
+      cloned.featuredImage.mediaUrl = await toDataUrl(
+        cloned.featuredImage.mediaUrl,
+      );
     }
 
     // 2. Convert logo to data URL
@@ -1477,15 +1657,24 @@ export function EditorialCarouselClient() {
     return { slide: cloned, videoFrameUrl: videoFrameDataUrl };
   };
 
-  const getSlideVideoFrame = async (slide: Slide, idx: number): Promise<string> => {
-    if (!slide.featuredImage.visible || !slide.featuredImage.mediaUrl || !isVideo(slide.featuredImage.mediaUrl)) {
+  const getSlideVideoFrame = async (
+    slide: Slide,
+    idx: number,
+  ): Promise<string> => {
+    if (
+      !slide.featuredImage.visible ||
+      !slide.featuredImage.mediaUrl ||
+      !isVideo(slide.featuredImage.mediaUrl)
+    ) {
       return "";
     }
-    
+
     // 1. Try to capture from the live video element in the DOM if this is the active slide
     if (idx === activeIndex) {
       try {
-        const liveVideo = canvasRef.current?.querySelector("video") as HTMLVideoElement;
+        const liveVideo = canvasRef.current?.querySelector(
+          "video",
+        ) as HTMLVideoElement;
         if (liveVideo) {
           const canvas = document.createElement("canvas");
           canvas.width = liveVideo.videoWidth || 1080;
@@ -1497,7 +1686,10 @@ export function EditorialCarouselClient() {
           }
         }
       } catch (err) {
-        console.warn("Failed to capture live DOM video frame, falling back to background loading:", err);
+        console.warn(
+          "Failed to capture live DOM video frame, falling back to background loading:",
+          err,
+        );
       }
     }
 
@@ -1517,7 +1709,7 @@ export function EditorialCarouselClient() {
       if (videoSrc.startsWith("http")) {
         videoSrc = `/api/proxy-image?url=${encodeURIComponent(videoSrc)}`;
       }
-      
+
       video.onloadedmetadata = () => {
         video.currentTime = Math.min(0.5, video.duration || 0);
       };
@@ -1531,20 +1723,29 @@ export function EditorialCarouselClient() {
           if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL("image/png");
-            try { document.body.removeChild(video); } catch (e) {}
+            try {
+              document.body.removeChild(video);
+            } catch (e) {}
             resolve(dataUrl);
             return;
           }
         } catch (err) {
           console.error("Error drawing background video frame:", err);
         }
-        try { document.body.removeChild(video); } catch (e) {}
+        try {
+          document.body.removeChild(video);
+        } catch (e) {}
         resolve("");
       };
 
       video.onerror = () => {
-        console.error("Error loading video in background for frame capture:", slide.featuredImage.mediaUrl);
-        try { document.body.removeChild(video); } catch (e) {}
+        console.error(
+          "Error loading video in background for frame capture:",
+          slide.featuredImage.mediaUrl,
+        );
+        try {
+          document.body.removeChild(video);
+        } catch (e) {}
         resolve("");
       };
 
@@ -1553,16 +1754,22 @@ export function EditorialCarouselClient() {
 
       // Set timeout of 4 seconds so we don't hang the export forever if the video fails to load
       setTimeout(() => {
-        try { document.body.removeChild(video); } catch (e) {}
+        try {
+          document.body.removeChild(video);
+        } catch (e) {}
         resolve("");
       }, 4000);
     });
   };
 
-  const convertSvgToRaster = async (svgString: string, type: "png" | "jpeg"): Promise<string> => {
+  const convertSvgToRaster = async (
+    svgString: string,
+    type: "png" | "jpeg",
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
       try {
-        const encodedSvg = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+        const encodedSvg =
+          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
@@ -1601,7 +1808,10 @@ export function EditorialCarouselClient() {
   const handleDownloadSlideSvg = async (idx: number) => {
     const toastId = toast.loading(`Generating Slide ${idx + 1} SVG...`);
     try {
-      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+      const { slide, videoFrameUrl } = await prepareSlideForExport(
+        slides[idx],
+        idx,
+      );
       const svgStr = buildSvgString(slide, idx, true, videoFrameUrl);
       const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -1612,18 +1822,28 @@ export function EditorialCarouselClient() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success(`Exported Slide ${idx + 1} as clean vector SVG!`, { id: toastId });
+      toast.success(`Exported Slide ${idx + 1} as clean vector SVG!`, {
+        id: toastId,
+      });
     } catch (e) {
       console.error(e);
       toast.error("SVG generation failed", { id: toastId });
     }
   };
 
-  const handleDownloadSlideRaster = async (idx: number, type: "png" | "jpeg") => {
-    const toastId = toast.loading(`Exporting Slide ${idx + 1} as ${type.toUpperCase()}...`);
+  const handleDownloadSlideRaster = async (
+    idx: number,
+    type: "png" | "jpeg",
+  ) => {
+    const toastId = toast.loading(
+      `Exporting Slide ${idx + 1} as ${type.toUpperCase()}...`,
+    );
     try {
       // 1. Primary: Use pixel-perfect 1080x1350 SVG-to-raster renderer with base64 converted assets
-      const { slide, videoFrameUrl } = await prepareSlideForExport(slides[idx], idx);
+      const { slide, videoFrameUrl } = await prepareSlideForExport(
+        slides[idx],
+        idx,
+      );
       const svgStr = buildSvgString(slide, idx, false, videoFrameUrl);
       const dataUrl = await convertSvgToRaster(svgStr, type);
       const link = document.createElement("a");
@@ -1632,9 +1852,14 @@ export function EditorialCarouselClient() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, { id: toastId });
+      toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, {
+        id: toastId,
+      });
     } catch (primaryErr) {
-      console.warn("Primary SVG rasterizer failed, trying html2canvas fallback:", primaryErr);
+      console.warn(
+        "Primary SVG rasterizer failed, trying html2canvas fallback:",
+        primaryErr,
+      );
       try {
         const element = canvasRef.current;
         if (!element || idx !== activeIndex) {
@@ -1642,10 +1867,12 @@ export function EditorialCarouselClient() {
         }
         const html2canvas = (await import("html2canvas-pro")).default;
         const safeArea = element.querySelector(".border-dashed") as HTMLElement;
-        const grid = element.querySelector(".opacity-\\[0\\.03\\]") as HTMLElement;
+        const grid = element.querySelector(
+          ".opacity-\\[0\\.03\\]",
+        ) as HTMLElement;
         const safeAreaDisplay = safeArea ? safeArea.style.display : "";
         const gridDisplay = grid ? grid.style.display : "";
-        
+
         if (safeArea) safeArea.style.display = "none";
         if (grid) grid.style.display = "none";
 
@@ -1666,10 +1893,14 @@ export function EditorialCarouselClient() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, { id: toastId });
+        toast.success(`Exported Slide ${idx + 1} as ${type.toUpperCase()}!`, {
+          id: toastId,
+        });
       } catch (fallbackErr) {
         console.error("html2canvas fallback also failed:", fallbackErr);
-        toast.error(`Failed to export slide as ${type.toUpperCase()}`, { id: toastId });
+        toast.error(`Failed to export slide as ${type.toUpperCase()}`, {
+          id: toastId,
+        });
       }
     }
   };
@@ -1681,19 +1912,26 @@ export function EditorialCarouselClient() {
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "px",
-        format: [CANVAS_WIDTH, CANVAS_HEIGHT]
+        format: [CANVAS_WIDTH, CANVAS_HEIGHT],
       });
 
       for (let i = 0; i < slides.length; i++) {
         if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "portrait");
-        const { slide, videoFrameUrl } = await prepareSlideForExport(slides[i], i);
+        const { slide, videoFrameUrl } = await prepareSlideForExport(
+          slides[i],
+          i,
+        );
         const svgStr = buildSvgString(slide, i, false, videoFrameUrl); // Bypass CORS security policies
         const dataUrl = await convertSvgToRaster(svgStr, "png");
         doc.addImage(dataUrl, "PNG", 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       }
 
-      doc.save(`${projectName.toLowerCase().replace(/\s+/g, "-")}-carousel.pdf`);
-      toast.success("Exported the full carousel at 1080 × 1350 per page.", { id: downloadToast });
+      doc.save(
+        `${projectName.toLowerCase().replace(/\s+/g, "-")}-carousel.pdf`,
+      );
+      toast.success("Exported the full carousel at 1080 × 1350 per page.", {
+        id: downloadToast,
+      });
     } catch (e) {
       console.error(e);
       toast.error("Failed to export PDF file", { id: downloadToast });
@@ -1701,7 +1939,9 @@ export function EditorialCarouselClient() {
   };
 
   const handleDownloadMp4 = async () => {
-    const videoToast = toast.loading("Compiling carousel deck into an MP4/WebM video...");
+    const videoToast = toast.loading(
+      "Compiling carousel deck into an MP4/WebM video...",
+    );
     try {
       const canvas = document.createElement("canvas");
       canvas.width = CANVAS_WIDTH;
@@ -1736,24 +1976,33 @@ export function EditorialCarouselClient() {
         }
       };
 
-      const recordedPromise = new Promise<Blob>((resolveRecorded, rejectRecorded) => {
-        recorder.onstop = () => {
-          const blob = new Blob(chunks, { type: recorder.mimeType || "video/mp4" });
-          resolveRecorded(blob);
-        };
-        recorder.onerror = (e) => {
-          rejectRecorded(e);
-        };
-      });
+      const recordedPromise = new Promise<Blob>(
+        (resolveRecorded, rejectRecorded) => {
+          recorder.onstop = () => {
+            const blob = new Blob(chunks, {
+              type: recorder.mimeType || "video/mp4",
+            });
+            resolveRecorded(blob);
+          };
+          recorder.onerror = (e) => {
+            rejectRecorded(e);
+          };
+        },
+      );
 
       recorder.start();
 
       // Loop through slides
       for (let i = 0; i < slides.length; i++) {
         const slide = slides[i];
-        const isVideoAsset = slide.featuredImage.visible && slide.featuredImage.mediaUrl && isVideo(slide.featuredImage.mediaUrl);
-        
-        toast.loading(`Processing slide ${i + 1}/${slides.length}...`, { id: videoToast });
+        const isVideoAsset =
+          slide.featuredImage.visible &&
+          slide.featuredImage.mediaUrl &&
+          isVideo(slide.featuredImage.mediaUrl);
+
+        toast.loading(`Processing slide ${i + 1}/${slides.length}...`, {
+          id: videoToast,
+        });
 
         if (isVideoAsset) {
           // Route video source through the local CORS proxy to bypass security blocks
@@ -1784,23 +2033,29 @@ export function EditorialCarouselClient() {
           });
 
           // Rasterize static slide background (everything except the featured image)
-          const { slide: sanitizedSlide } = await prepareSlideForExport(slide, i);
+          const { slide: sanitizedSlide } = await prepareSlideForExport(
+            slide,
+            i,
+          );
           const slideBg = JSON.parse(JSON.stringify(sanitizedSlide)) as Slide;
           slideBg.featuredImage.visible = false; // hide featured image on background raster
           const bgSvg = buildSvgString(slideBg, i, false);
           const bgUrl = await convertSvgToRaster(bgSvg, "png");
           const bgImg = new Image();
-          await new Promise((resBg) => { bgImg.onload = resBg; bgImg.src = bgUrl; });
+          await new Promise((resBg) => {
+            bgImg.onload = resBg;
+            bgImg.src = bgUrl;
+          });
 
           // Determine playback duration
           const duration = video.duration || 5; // default to 5 seconds
           const totalFrames = Math.ceil(duration * 15); // record at 15 FPS for faster rendering and lighter CPU/decoding loads
-          
+
           // Draw frame-by-frame by seeking systematically to get exact matching decodes
           for (let frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
-            const seekTime = (frameIndex / 15);
+            const seekTime = frameIndex / 15;
             video.currentTime = seekTime;
-            
+
             // Wait for seek operation to complete
             await new Promise<void>((resSeek) => {
               const onSeeked = () => {
@@ -1814,13 +2069,16 @@ export function EditorialCarouselClient() {
             });
 
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            
+
             // Draw background slide elements
             ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
             // Draw video frame with clipping and filters
             ctx.save();
-            if (slide.featuredImage.brightness !== 100 || slide.featuredImage.contrast !== 100) {
+            if (
+              slide.featuredImage.brightness !== 100 ||
+              slide.featuredImage.contrast !== 100
+            ) {
               ctx.filter = `brightness(${slide.featuredImage.brightness}%) contrast(${slide.featuredImage.contrast}%)`;
             }
 
@@ -1859,25 +2117,33 @@ export function EditorialCarouselClient() {
             }
 
             // Sync frame delay
-            await new Promise(r => setTimeout(r, 16));
+            await new Promise((r) => setTimeout(r, 16));
           }
 
-          try { document.body.removeChild(video); } catch (e) {}
+          try {
+            document.body.removeChild(video);
+          } catch (e) {}
         } else {
           // 2. Static Slide processing
           // Rasterize full slide SVG (including image or empty placeholder)
-          const { slide: sanitizedSlide } = await prepareSlideForExport(slide, i);
+          const { slide: sanitizedSlide } = await prepareSlideForExport(
+            slide,
+            i,
+          );
           const svgStr = buildSvgString(sanitizedSlide, i, false);
           const dataUrl = await convertSvgToRaster(svgStr, "png");
           const img = new Image();
-          await new Promise((resImg) => { img.onload = resImg; img.src = dataUrl; });
+          await new Promise((resImg) => {
+            img.onload = resImg;
+            img.src = dataUrl;
+          });
 
           // Render static frame for 3.5 seconds (53 frames at 15 FPS)
           const staticFrames = 53;
           for (let frameIndex = 0; frameIndex < staticFrames; frameIndex++) {
             ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            await new Promise(r => setTimeout(r, 16));
+            await new Promise((r) => setTimeout(r, 16));
           }
         }
       }
@@ -1888,10 +2154,10 @@ export function EditorialCarouselClient() {
 
       const finalBlob = await recordedPromise;
       const downloadUrl = URL.createObjectURL(finalBlob);
-      
+
       const actualMime = recorder.mimeType || options.mimeType;
       const fileExt = actualMime.includes("mp4") ? "mp4" : "webm";
-      
+
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-video.${fileExt}`;
@@ -1900,13 +2166,20 @@ export function EditorialCarouselClient() {
       document.body.removeChild(link);
       URL.revokeObjectURL(downloadUrl);
 
-      toast.success(`Successfully exported carousel video as .${fileExt}!`, { id: videoToast });
+      toast.success(`Successfully exported carousel video as .${fileExt}!`, {
+        id: videoToast,
+      });
       if (fileExt === "webm") {
-        toast.info("WebM is fully supported by LinkedIn & Instagram. To play it offline on legacy players, open the file inside Google Chrome.", { duration: 8000 });
+        toast.info(
+          "WebM is fully supported by LinkedIn & Instagram. To play it offline on legacy players, open the file inside Google Chrome.",
+          { duration: 8000 },
+        );
       }
     } catch (e: any) {
       console.error("Video compile error:", e);
-      toast.error(`Video generation failed: ${e.message || "Unknown error"}`, { id: videoToast });
+      toast.error(`Video generation failed: ${e.message || "Unknown error"}`, {
+        id: videoToast,
+      });
     }
   };
 
@@ -1924,9 +2197,9 @@ export function EditorialCarouselClient() {
   const renderCanvasElement = (key: ElementKey, children: React.ReactNode) => {
     const elem = activeSlide[key];
     if (!elem.visible) return null;
- 
+
     const isSelected = selectedElement === key;
- 
+
     const containerStyle: React.CSSProperties = {
       position: "absolute",
       left: `${elem.x}px`,
@@ -1938,20 +2211,20 @@ export function EditorialCarouselClient() {
       cursor: editorMode === "free" && !elem.locked ? "move" : "default",
       boxSizing: "border-box",
       userSelect: "none",
-      zIndex: elem.zIndex || 1
+      zIndex: elem.zIndex || 1,
     };
- 
+
     return (
-      <div 
+      <div
         style={containerStyle}
         onMouseDown={(e) => handleElementMouseDown(e, key)}
         className={`group relative ${isSelected ? "ring-2 ring-[#1687f8] ring-offset-0" : "hover:outline hover:outline-dashed hover:outline-[#1687f8]/50"}`}
       >
         {children}
-        
+
         {/* Bounding Resize handle */}
         {isSelected && editorMode === "free" && !elem.locked && (
-          <div 
+          <div
             onMouseDown={(e) => handleResizeMouseDown(e, key)}
             className="absolute bottom-0 right-0 bg-white border border-[#1687f8] rounded-full cursor-se-resize z-50 shadow-md"
             style={{
@@ -1961,20 +2234,22 @@ export function EditorialCarouselClient() {
             }}
           />
         )}
- 
+
         {/* Locked status */}
         {elem.locked && isSelected && (
-          <div 
+          <div
             className="absolute bg-neutral-900/90 border border-neutral-800 rounded px-1.5 py-0.5 shadow-sm flex items-center gap-1 z-50 text-white"
             style={{
               top: `${4 / zoomScale}px`,
               right: `${4 / zoomScale}px`,
               transform: `scale(${1 / zoomScale})`,
-              transformOrigin: "top right"
+              transformOrigin: "top right",
             }}
           >
             <Lock size={10} className="text-neutral-300" />
-            <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest">Locked</span>
+            <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest">
+              Locked
+            </span>
           </div>
         )}
       </div>
@@ -1982,13 +2257,13 @@ export function EditorialCarouselClient() {
   };
 
   return (
-    <div className={`w-full h-full min-h-0 flex flex-col bg-[#e9eaec] text-neutral-900 font-sans overflow-hidden transition-colors duration-200 ${darkMode ? "dark bg-[#18181b] text-white" : ""}`}>
-      
+    <div
+      className={`w-full h-full min-h-0 flex flex-col bg-[#e9eaec] text-neutral-900 font-sans overflow-hidden transition-colors duration-200 ${darkMode ? "dark bg-[#18181b] text-white" : ""}`}
+    >
       {/* ==========================================
           TOP BAR (Figma/Canva inspired)
           ========================================== */}
       <header className="h-[64px] border-b border-[rgba(255,255,255,0.06)] bg-[#111214] px-4 flex items-center justify-between shrink-0 z-50 text-white shadow-md select-none">
-        
         {/* Left Section: Document title & status */}
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[#1687f8] flex items-center justify-center font-bold text-sm shadow-md shadow-[#1687f8]/15">
@@ -2002,7 +2277,9 @@ export function EditorialCarouselClient() {
                   value={projectName}
                   onBlur={() => setIsEditingProjectName(false)}
                   onChange={(e) => setProjectName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && setIsEditingProjectName(false)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && setIsEditingProjectName(false)
+                  }
                   autoFocus
                   className="bg-transparent border-b border-[#1687f8] text-xs font-bold focus:outline-none w-48 text-white"
                 />
@@ -2018,7 +2295,9 @@ export function EditorialCarouselClient() {
             </div>
             <div className="flex items-center gap-1.5 px-2">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-[10px] text-neutral-400 font-semibold">Saved just now</span>
+              <span className="text-[10px] text-neutral-400 font-semibold">
+                Saved just now
+              </span>
             </div>
           </div>
         </div>
@@ -2030,8 +2309,8 @@ export function EditorialCarouselClient() {
             <button
               onClick={() => setActiveTool("select")}
               className={`p-1.5 rounded-md transition-all ${
-                activeTool === "select" 
-                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50" 
+                activeTool === "select"
+                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Pointer Selector (V)"
@@ -2041,8 +2320,8 @@ export function EditorialCarouselClient() {
             <button
               onClick={() => setActiveTool("hand")}
               className={`p-1.5 rounded-md transition-all ${
-                activeTool === "hand" 
-                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50" 
+                activeTool === "hand"
+                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Hand Tool / Pan (H)"
@@ -2054,16 +2333,16 @@ export function EditorialCarouselClient() {
           <div className="h-4 w-px bg-neutral-800 mx-1.5" />
 
           {/* History */}
-          <button 
-            onClick={handleUndo} 
+          <button
+            onClick={handleUndo}
             disabled={historyIndex <= 0}
             className="p-1.5 hover:bg-neutral-800 rounded-md transition-all disabled:opacity-20 disabled:hover:bg-transparent text-neutral-400 hover:text-white"
             title="Undo (Ctrl+Z)"
           >
             <Undo size={13} />
           </button>
-          <button 
-            onClick={handleRedo} 
+          <button
+            onClick={handleRedo}
             disabled={historyIndex >= history.length - 1}
             className="p-1.5 hover:bg-neutral-800 rounded-md transition-all disabled:opacity-20 disabled:hover:bg-transparent text-neutral-400 hover:text-white"
             title="Redo (Ctrl+Shift+Z)"
@@ -2074,21 +2353,21 @@ export function EditorialCarouselClient() {
           <div className="h-4 w-px bg-neutral-800 mx-1.5" />
 
           {/* Zoom & Viewport */}
-          <button 
-            onClick={() => setZoomScale(prev => Math.max(0.15, prev - 0.05))}
+          <button
+            onClick={() => setZoomScale((prev) => Math.max(0.15, prev - 0.05))}
             className="p-1.5 hover:bg-neutral-800 rounded-md text-neutral-400 hover:text-white transition-all"
             title="Zoom Out (Ctrl+-)"
           >
             <Minimize2 size={13} />
           </button>
-          
+
           {/* Zoom options Dropdown */}
           <div className="relative group">
             <button className="px-2 py-1 hover:bg-neutral-800 rounded text-xs font-mono font-bold text-neutral-300 flex items-center gap-1 transition-all">
               {Math.round(zoomScale * 100)}% <ChevronDown size={10} />
             </button>
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl py-1 hidden group-hover:block hover:block z-50 w-24 text-left">
-              {[0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(p => (
+              {[0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map((p) => (
                 <button
                   key={p}
                   onClick={() => setZoomScale(p)}
@@ -2106,8 +2385,8 @@ export function EditorialCarouselClient() {
             </div>
           </div>
 
-          <button 
-            onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.05))}
+          <button
+            onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
             className="p-1.5 hover:bg-neutral-800 rounded-md text-neutral-400 hover:text-white transition-all"
             title="Zoom In (Ctrl+=)"
           >
@@ -2124,19 +2403,23 @@ export function EditorialCarouselClient() {
           <div className="h-4 w-px bg-neutral-800 mx-1.5" />
 
           {/* Grid overlays */}
-          <button 
+          <button
             onClick={() => setShowSafeArea(!showSafeArea)}
             className={`p-1.5 rounded-md transition-all ${
-              showSafeArea ? "bg-neutral-800 text-[#1687f8]" : "text-neutral-400 hover:text-white"
+              showSafeArea
+                ? "bg-neutral-800 text-[#1687f8]"
+                : "text-neutral-400 hover:text-white"
             }`}
             title="Toggle Safe Margins Grid"
           >
             <Smartphone size={13} />
           </button>
-          <button 
+          <button
             onClick={() => setShowGrid(!showGrid)}
             className={`p-1.5 rounded-md transition-all ${
-              showGrid ? "bg-neutral-800 text-[#1687f8]" : "text-neutral-400 hover:text-white"
+              showGrid
+                ? "bg-neutral-800 text-[#1687f8]"
+                : "text-neutral-400 hover:text-white"
             }`}
             title="Toggle Pixel Grid Dots"
           >
@@ -2146,7 +2429,7 @@ export function EditorialCarouselClient() {
 
         {/* Right Section: Actions & Exports */}
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
               toast.success("Project URL copied to clipboard!");
@@ -2157,7 +2440,7 @@ export function EditorialCarouselClient() {
             <Share2 size={12} /> Share
           </button>
 
-          <button 
+          <button
             onClick={() => handleDownloadSlideRaster(activeIndex, "png")}
             className="h-[34px] px-3.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
             title="Download current slide as PNG image"
@@ -2165,7 +2448,7 @@ export function EditorialCarouselClient() {
             <Download size={12} /> Download PNG
           </button>
 
-          <button 
+          <button
             onClick={handleDownloadPdf}
             className="h-[34px] px-3.5 border border-neutral-800 hover:border-neutral-600 rounded-lg text-xs font-semibold text-neutral-200 transition-all flex items-center gap-1.5 cursor-pointer"
             title="Download full deck PDF document"
@@ -2173,7 +2456,7 @@ export function EditorialCarouselClient() {
             <FileText size={12} /> Export PDF
           </button>
 
-          <button 
+          <button
             onClick={handleDownloadMp4}
             className="h-[34px] px-4 bg-[#1687f8] hover:bg-[#0b87e3] text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border-none cursor-pointer"
             title="Render and export as high-quality video"
@@ -2181,14 +2464,18 @@ export function EditorialCarouselClient() {
             <Play size={12} /> Export Video
           </button>
         </div>
-
       </header>
 
       {/* ==========================================
           MAIN THREE-COLUMN WORKSPACE
           ========================================== */}
-      <div className="flex-1 min-h-0 w-full grid select-none" style={{ gridTemplateColumns: `${showLeftPanel ? '72px 292px' : '72px 0px'} minmax(0, 1fr) 340px`, transition: 'all 200ms ease' }}>
-        
+      <div
+        className="flex-1 min-h-0 w-full grid select-none"
+        style={{
+          gridTemplateColumns: `${showLeftPanel ? "72px 292px" : "72px 0px"} minmax(0, 1fr) 340px`,
+          transition: "all 200ms ease",
+        }}
+      >
         {/* ==========================================
             LEFT ICON RAIL (72px)
             ========================================== */}
@@ -2196,10 +2483,13 @@ export function EditorialCarouselClient() {
           <div className="flex flex-col items-center gap-4 w-full">
             {/* Slide list toggle button */}
             <button
-              onClick={() => { setShowLeftPanel(!showLeftPanel); setLeftTab("slides"); }}
+              onClick={() => {
+                setShowLeftPanel(!showLeftPanel);
+                setLeftTab("slides");
+              }}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "slides" 
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10" 
+                showLeftPanel && leftTab === "slides"
+                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
                   : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
               title="Slide Deck (F3)"
@@ -2207,10 +2497,13 @@ export function EditorialCarouselClient() {
               <LayersIcon size={16} />
             </button>
             <button
-              onClick={() => { setShowLeftPanel(true); setLeftTab("templates"); }}
+              onClick={() => {
+                setShowLeftPanel(true);
+                setLeftTab("templates");
+              }}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "templates" 
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10" 
+                showLeftPanel && leftTab === "templates"
+                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
                   : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
               title="Presets Gallery"
@@ -2218,10 +2511,13 @@ export function EditorialCarouselClient() {
               <LayoutGrid size={16} />
             </button>
             <button
-              onClick={() => { setShowLeftPanel(true); setLeftTab("brand"); }}
+              onClick={() => {
+                setShowLeftPanel(true);
+                setLeftTab("brand");
+              }}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "brand" 
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10" 
+                showLeftPanel && leftTab === "brand"
+                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
                   : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
               title="Brand Kit Settings"
@@ -2251,24 +2547,27 @@ export function EditorialCarouselClient() {
         {/* ==========================================
             LEFT COLLAPSIBLE SIDEBAR PANEL (292px)
             ========================================== */}
-        <aside className={`w-[292px] h-full border-r border-[rgba(255,255,255,0.06)] bg-[#111214] flex flex-col overflow-hidden shrink-0 z-10 transition-all duration-200 ${
-          showLeftPanel ? 'opacity-100 visible' : 'opacity-0 invisible w-0 pointer-events-none'
-        }`}>
-          
+        <aside
+          className={`w-[292px] h-full border-r border-[rgba(255,255,255,0.06)] bg-[#111214] flex flex-col overflow-hidden shrink-0 z-10 transition-all duration-200 ${
+            showLeftPanel
+              ? "opacity-100 visible"
+              : "opacity-0 invisible w-0 pointer-events-none"
+          }`}
+        >
           <div className="p-4 border-b border-[rgba(255,255,255,0.06)] shrink-0">
             {/* Segmented Tab Control */}
             <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-800">
               {[
                 { id: "slides", label: "Slides" },
                 { id: "templates", label: "Presets" },
-                { id: "brand", label: "Brand" }
-              ].map(tab => (
+                { id: "brand", label: "Brand" },
+              ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setLeftTab(tab.id as any)}
                   className={`flex-1 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-center transition-all ${
-                    leftTab === tab.id 
-                      ? "bg-zinc-800 text-white shadow-sm border border-neutral-700/50" 
+                    leftTab === tab.id
+                      ? "bg-zinc-800 text-white shadow-sm border border-neutral-700/50"
                       : "text-neutral-400 hover:text-white"
                   }`}
                 >
@@ -2282,11 +2581,13 @@ export function EditorialCarouselClient() {
             {/* Slides List view */}
             {leftTab === "slides" && (
               <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">Slide Deck</span>
-                
+                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
+                  Slide Deck
+                </span>
+
                 <div className="flex flex-col gap-3">
                   {slides.map((slide, sIdx) => (
-                    <div 
+                    <div
                       key={slide.id}
                       onClick={() => {
                         setActiveIndex(sIdx);
@@ -2299,8 +2600,8 @@ export function EditorialCarouselClient() {
                       onDragEnd={handleDragEnd}
                       onContextMenu={(e) => handleContextMenu(e, sIdx)}
                       className={`relative p-3 rounded-xl cursor-pointer border transition-all group flex flex-col ${
-                        activeIndex === sIdx 
-                          ? "bg-neutral-800/40 border-[#1687f8] shadow-lg ring-1 ring-[#1687f8]/30 text-white" 
+                        activeIndex === sIdx
+                          ? "bg-neutral-800/40 border-[#1687f8] shadow-lg ring-1 ring-[#1687f8]/30 text-white"
                           : "bg-white/5 border-[rgba(255,255,255,0.06)] hover:bg-white/10 hover:border-neutral-700 text-neutral-300"
                       }`}
                     >
@@ -2326,14 +2627,20 @@ export function EditorialCarouselClient() {
                         </span>
                         <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
-                            onClick={(e) => { e.stopPropagation(); duplicateSlide(sIdx); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              duplicateSlide(sIdx);
+                            }}
                             className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white"
                             title="Duplicate Slide"
                           >
                             <Copy size={10} />
                           </button>
                           <button
-                            onClick={(e) => { e.stopPropagation(); deleteSlide(sIdx); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteSlide(sIdx);
+                            }}
                             className="p-1 hover:bg-red-950/30 hover:text-red-400 rounded text-neutral-400"
                             title="Delete Slide"
                           >
@@ -2341,15 +2648,17 @@ export function EditorialCarouselClient() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <p className="text-[11px] font-bold truncate mt-1.5 text-left text-neutral-200">
-                        {slide.headline.text ? stripHtmlTags(slide.headline.text) : "Empty slide content"}
+                        {slide.headline.text
+                          ? stripHtmlTags(slide.headline.text)
+                          : "Empty slide content"}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => setShowTemplateModal(true)}
                   className="w-full h-11 py-2 rounded-xl border border-dashed border-neutral-800 hover:border-[#1687f8]/50 text-neutral-400 hover:text-white flex items-center justify-center gap-1.5 text-xs font-bold transition-all bg-white/5 hover:bg-white/10"
                 >
@@ -2361,10 +2670,12 @@ export function EditorialCarouselClient() {
             {/* Preset templates list cards */}
             {leftTab === "templates" && (
               <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">Templates</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
+                  Templates
+                </span>
                 <div className="flex flex-col gap-3">
-                  {TEMPLATE_PRESETS.map(preset => (
-                    <div 
+                  {TEMPLATE_PRESETS.map((preset) => (
+                    <div
                       key={preset.id}
                       onClick={() => applyPreset(preset.id)}
                       className="group border border-[rgba(255,255,255,0.06)] rounded-xl p-3 bg-white/5 hover:bg-white/10 hover:border-[#1687f8]/50 transition-all cursor-pointer"
@@ -2374,8 +2685,12 @@ export function EditorialCarouselClient() {
                       </div>
                       <div className="flex items-center justify-between text-left">
                         <div>
-                          <h4 className="text-xs font-bold text-neutral-200 truncate w-32">{preset.name}</h4>
-                          <span className="text-[9px] text-neutral-500 font-semibold uppercase">{preset.category}</span>
+                          <h4 className="text-xs font-bold text-neutral-200 truncate w-32">
+                            {preset.name}
+                          </h4>
+                          <span className="text-[9px] text-neutral-500 font-semibold uppercase">
+                            {preset.category}
+                          </span>
                         </div>
                         <span className="text-[10px] font-bold text-neutral-400 opacity-0 group-hover:opacity-100 transition-all">
                           Apply
@@ -2390,45 +2705,64 @@ export function EditorialCarouselClient() {
             {/* Brand settings kit */}
             {leftTab === "brand" && (
               <div className="space-y-4 text-left">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">Brand Settings</span>
-                
+                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
+                  Brand Settings
+                </span>
+
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Brand Name</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      Brand Name
+                    </span>
                     <input
                       type="text"
                       value={activeSlide.footer.brandName}
-                      onChange={(e) => updateSlideFooter({ brandName: e.target.value })}
+                      onChange={(e) =>
+                        updateSlideFooter({ brandName: e.target.value })
+                      }
                       className="w-full h-9 px-3 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-200 focus:outline-none focus:border-[#1687f8]"
                     />
                   </div>
 
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-xs font-bold text-neutral-300">Show Divider</span>
+                    <span className="text-xs font-bold text-neutral-300">
+                      Show Divider
+                    </span>
                     <input
                       type="checkbox"
                       checked={activeSlide.footer.dividerEnabled}
-                      onChange={(e) => updateSlideFooter({ dividerEnabled: e.target.checked })}
+                      onChange={(e) =>
+                        updateSlideFooter({ dividerEnabled: e.target.checked })
+                      }
                       className="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-[#1687f8] focus:ring-0"
                     />
                   </div>
 
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-xs font-bold text-neutral-300">Show Page Numbers</span>
+                    <span className="text-xs font-bold text-neutral-300">
+                      Show Page Numbers
+                    </span>
                     <input
                       type="checkbox"
                       checked={activeSlide.footer.pageNumberEnabled}
-                      onChange={(e) => updateSlideFooter({ pageNumberEnabled: e.target.checked })}
+                      onChange={(e) =>
+                        updateSlideFooter({
+                          pageNumberEnabled: e.target.checked,
+                        })
+                      }
                       className="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-[#1687f8] focus:ring-0"
                     />
                   </div>
 
-                  {renderColorPicker("Footer Text Color", activeSlide.footer.color, (val) => updateSlideFooter({ color: val }))}
+                  {renderColorPicker(
+                    "Footer Text Color",
+                    activeSlide.footer.color,
+                    (val) => updateSlideFooter({ color: val }),
+                  )}
                 </div>
               </div>
             )}
           </div>
-
         </aside>
 
         {/* ------------------------------------------
@@ -2439,27 +2773,31 @@ export function EditorialCarouselClient() {
           className="flex-1 h-full w-full overflow-hidden relative select-none"
           style={{
             backgroundColor: "#161719",
-            backgroundImage: "radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px)",
-            backgroundSize: "20px 20px"
+            backgroundImage:
+              "radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
           }}
           onMouseDown={handleViewportMouseDown}
         >
-          
           {/* Floating Canvas Toolbar */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#18181b]/95 px-2.5 py-1.5 border border-white/10 rounded-[13px] shadow-[0_10px_30px_rgba(0,0,0,0.35)] z-30 backdrop-blur-[18px]">
             <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-800">
-              <button 
+              <button
                 onClick={() => setEditorMode("fixed")}
                 className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${
-                  editorMode === "fixed" ? "bg-zinc-800 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                  editorMode === "fixed"
+                    ? "bg-zinc-800 text-white shadow-sm"
+                    : "text-neutral-400 hover:text-white"
                 }`}
               >
                 Fixed Grid
               </button>
-              <button 
+              <button
                 onClick={() => setEditorMode("free")}
                 className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${
-                  editorMode === "free" ? "bg-zinc-800 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                  editorMode === "free"
+                    ? "bg-zinc-800 text-white shadow-sm"
+                    : "text-neutral-400 hover:text-white"
                 }`}
               >
                 Free Design
@@ -2468,29 +2806,35 @@ export function EditorialCarouselClient() {
 
             <div className="h-4 w-px bg-neutral-800 mx-2" />
 
-            <button 
+            <button
               onClick={() => setShowSafeArea(!showSafeArea)}
               className={`p-1.5 rounded-lg transition-all ${
-                showSafeArea ? "bg-neutral-800 text-[#1687f8]" : "text-neutral-400 hover:text-white"
+                showSafeArea
+                  ? "bg-neutral-800 text-[#1687f8]"
+                  : "text-neutral-400 hover:text-white"
               }`}
               title="Safe Area Grid"
             >
               <Smartphone size={12} />
             </button>
-            <button 
+            <button
               onClick={() => setShowGrid(!showGrid)}
               className={`p-1.5 rounded-lg transition-all ${
-                showGrid ? "bg-neutral-800 text-[#1687f8]" : "text-neutral-400 hover:text-white"
+                showGrid
+                  ? "bg-neutral-800 text-[#1687f8]"
+                  : "text-neutral-400 hover:text-white"
               }`}
               title="Toggle Grid overlay"
             >
               <Grid size={12} />
             </button>
-            
+
             <div className="h-4 w-px bg-neutral-800 mx-2" />
 
-            <button 
-              onClick={() => setZoomScale(prev => Math.max(0.15, prev - 0.05))}
+            <button
+              onClick={() =>
+                setZoomScale((prev) => Math.max(0.15, prev - 0.05))
+              }
               className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-all"
             >
               <Minimize2 size={12} />
@@ -2498,15 +2842,15 @@ export function EditorialCarouselClient() {
             <span className="text-[10px] font-mono font-bold text-neutral-400 w-10 text-center select-none">
               {Math.round(zoomScale * 100)}%
             </span>
-            <button 
-              onClick={() => setZoomScale(prev => Math.min(3.0, prev + 0.05))}
+            <button
+              onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
               className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-all"
             >
               <Maximize2 size={12} />
             </button>
-            
+
             <div className="h-4 w-px bg-neutral-800 mx-2" />
-            
+
             <button
               onClick={handleFitToScreen}
               className="px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded-md transition-all"
@@ -2526,295 +2870,351 @@ export function EditorialCarouselClient() {
             }}
           >
             {/* Artboard (Actual slide canvas) */}
-            <div 
+            <div
               className="editor-canvas bg-white relative select-none overflow-hidden"
               style={{
                 width: `${CANVAS_WIDTH}px`,
                 height: `${CANVAS_HEIGHT}px`,
                 borderRadius: "18px",
-                boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 80px rgba(0, 0, 0, 0.38)",
-                boxSizing: "border-box"
+                boxShadow:
+                  "0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 80px rgba(0, 0, 0, 0.38)",
+                boxSizing: "border-box",
               }}
             >
               {/* Safe Area guideline overlays */}
               {showSafeArea && (
-                <div 
+                <div
                   className="absolute border border-dashed border-[#000000]/15 pointer-events-none z-40"
                   style={{
                     top: `${SAFE_TOP}px`,
                     bottom: `${SAFE_BOTTOM}px`,
                     left: `${SAFE_LEFT}px`,
-                    right: `${SAFE_RIGHT}px`
+                    right: `${SAFE_RIGHT}px`,
                   }}
                 />
               )}
 
               {/* Grid overlay */}
               {showGrid && (
-                <div 
+                <div
                   className="absolute inset-0 pointer-events-none z-0 opacity-[0.03]"
                   style={{
-                    backgroundImage: "radial-gradient(#000000 1.5px, transparent 1.5px)",
-                    backgroundSize: `30px 30px`
+                    backgroundImage:
+                      "radial-gradient(#000000 1.5px, transparent 1.5px)",
+                    backgroundSize: `30px 30px`,
                   }}
                 />
               )}
 
-            {/* Elements list rendering */}
-            
-            {/* Logo */}
-            {renderCanvasElement("logo", (
-              <div className="w-full h-full">
-                {activeSlide.logo.logoUrl ? (
-                  <img src={activeSlide.logo.logoUrl} className="w-full h-full object-contain animate-fade" />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-[#18181b] text-white font-bold flex items-center justify-center text-[10px] animate-fade" style={{ fontSize: "12px" }}>
-                    GX
-                  </div>
-                )}
-              </div>
-            ))}
+              {/* Elements list rendering */}
 
-            {/* Divider */}
-            {renderCanvasElement("divider", (
-              <div 
-                className="w-full h-full animate-fade"
-                style={{
-                  background: activeSlide.divider.color,
-                  height: `${activeSlide.divider.thickness}px`
-                }}
-              />
-            ))}
-
-            {/* Category tag */}
-            {renderCanvasElement("category", (
-              <div 
-                className="w-full h-full font-sans uppercase tracking-widest truncate animate-fade"
-                style={{
-                  fontSize: `${activeSlide.category.fontSize}px`,
-                  fontWeight: activeSlide.category.fontWeight,
-                  color: activeSlide.category.color,
-                  letterSpacing: `${activeSlide.category.letterSpacing}px`,
-                  textAlign: activeSlide.category.align
-                }}
-              >
-                {activeSlide.category.text}
-              </div>
-            ))}
-
-            {/* Headline Title */}
-            {renderCanvasElement("headline", (
-              <div 
-                className="w-full h-full font-sans tracking-tight leading-tight animate-fade"
-                style={{
-                  fontSize: `${activeSlide.headline.fontSize}px`,
-                  fontWeight: activeSlide.headline.fontWeight,
-                  color: activeSlide.headline.color,
-                  lineHeight: activeSlide.headline.lineHeight,
-                  letterSpacing: `${activeSlide.headline.letterSpacing}px`,
-                  textAlign: activeSlide.headline.align
-                }}
-              >
-                {renderFormattedText(activeSlide.headline.text)}
-              </div>
-            ))}
-
-            {/* Featured Image */}
-            {renderCanvasElement("featuredImage", (
-              <div 
-                className="w-full h-full overflow-hidden animate-fade"
-                style={{
-                  background: activeSlide.featuredImage.color || "transparent",
-                  borderRadius: `${activeSlide.featuredImage.borderRadius}px`,
-                  border: activeSlide.featuredImage.borderWidth > 0 
-                    ? `${activeSlide.featuredImage.borderWidth}px solid ${activeSlide.featuredImage.borderColor}`
-                    : "none"
-                }}
-              >
-                {activeSlide.featuredImage.mediaUrl ? (
-                  isVideo(activeSlide.featuredImage.mediaUrl) ? (
-                    <video 
-                      src={activeSlide.featuredImage.mediaUrl}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full"
-                      style={{
-                        objectFit: activeSlide.featuredImage.objectFit,
-                        filter: `brightness(${activeSlide.featuredImage.brightness}%) contrast(${activeSlide.featuredImage.contrast}%)`
-                      }}
+              {/* Logo */}
+              {renderCanvasElement(
+                "logo",
+                <div className="w-full h-full">
+                  {activeSlide.logo.logoUrl ? (
+                    <img
+                      src={activeSlide.logo.logoUrl}
+                      className="w-full h-full object-contain animate-fade"
                     />
                   ) : (
-                    <img 
-                      src={activeSlide.featuredImage.mediaUrl}
-                      alt="Featured Image Layout"
-                      className="w-full h-full"
-                      style={{
-                        objectFit: activeSlide.featuredImage.objectFit,
-                        filter: `brightness(${activeSlide.featuredImage.brightness}%) contrast(${activeSlide.featuredImage.contrast}%)`
-                      }}
-                    />
-                  )
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 text-neutral-400 bg-neutral-50/50 border border-neutral-100 rounded-2xl">
-                    <span className="font-extrabold uppercase tracking-wider text-[11px] mb-1" style={{ fontSize: "12px" }}>
-                      Featured Image Placeholder
-                    </span>
-                    <span className="text-[9px] opacity-60" style={{ fontSize: "9px" }}>
-                      Upload custom photo in Right Panel
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
+                    <div
+                      className="w-full h-full rounded-full bg-[#18181b] text-white font-bold flex items-center justify-center text-[10px] animate-fade"
+                      style={{ fontSize: "12px" }}
+                    >
+                      GX
+                    </div>
+                  )}
+                </div>,
+              )}
 
-            {/* Body Copy text */}
-            {renderCanvasElement("body", (
-              <div 
-                className="w-full h-full font-sans whitespace-pre-line text-neutral-800 animate-fade"
-                style={{
-                  fontSize: `${activeSlide.body.fontSize}px`,
-                  fontWeight: activeSlide.body.fontWeight,
-                  color: activeSlide.body.color,
-                  lineHeight: activeSlide.body.lineHeight,
-                  letterSpacing: `${activeSlide.body.letterSpacing}px`,
-                  textAlign: activeSlide.body.align
-                }}
-              >
-                {renderFormattedText(activeSlide.body.text)}
-              </div>
-            ))}
-
-            {/* Bullets items */}
-            {renderCanvasElement("bullets", (
-              <div 
-                className="w-full h-full font-sans text-neutral-800 animate-fade"
-                style={{
-                  fontSize: `${activeSlide.bullets.fontSize}px`,
-                  fontWeight: activeSlide.bullets.fontWeight,
-                  color: activeSlide.bullets.color,
-                  lineHeight: activeSlide.bullets.lineHeight
-                }}
-              >
-                <ul className="list-none m-0 p-0" style={{ display: "flex", flexDirection: "column", gap: `${activeSlide.bullets.spacing}px` }}>
-                  {activeSlide.bullets.items.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-black font-bold">
-                        {activeSlide.bullets.bulletStyle === "check" ? "✔" : activeSlide.bullets.bulletStyle === "number" ? `${idx + 1}.` : "•"}
-                      </span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-
-            {/* Quote Box element */}
-            {renderCanvasElement("quote", (
-              <div 
-                className="w-full h-full font-sans animate-fade"
-                style={{
-                  background: activeSlide.quote.backgroundColor,
-                  borderLeft: `5px solid ${activeSlide.quote.borderColor}`,
-                  borderRadius: `${activeSlide.quote.borderRadius}px`,
-                  padding: `${activeSlide.quote.padding || 24}px`
-                }}
-              >
-                <p 
-                  className="m-0 mb-2 font-bold"
+              {/* Divider */}
+              {renderCanvasElement(
+                "divider",
+                <div
+                  className="w-full h-full animate-fade"
                   style={{
-                    fontSize: `${activeSlide.quote.fontSize}px`,
-                    fontWeight: activeSlide.quote.fontWeight,
-                    lineHeight: activeSlide.quote.lineHeight,
-                    color: activeSlide.quote.color
+                    background: activeSlide.divider.color,
+                    height: `${activeSlide.divider.thickness}px`,
+                  }}
+                />,
+              )}
+
+              {/* Category tag */}
+              {renderCanvasElement(
+                "category",
+                <div
+                  className="w-full h-full font-sans uppercase tracking-widest truncate animate-fade"
+                  style={{
+                    fontSize: `${activeSlide.category.fontSize}px`,
+                    fontWeight: activeSlide.category.fontWeight,
+                    color: activeSlide.category.color,
+                    letterSpacing: `${activeSlide.category.letterSpacing}px`,
+                    textAlign: activeSlide.category.align,
                   }}
                 >
-                  "{activeSlide.quote.text}"
-                </p>
-                <span className="text-neutral-500 font-semibold" style={{ fontSize: `${activeSlide.quote.fontSize - 4}px` }}>
-                  — {activeSlide.quote.author}
-                </span>
-              </div>
-            ))}
+                  {activeSlide.category.text}
+                </div>,
+              )}
 
-            {/* CTA Button */}
-            {renderCanvasElement("cta", (
-              <div 
-                className="w-full h-full flex items-center justify-center animate-fade"
+              {/* Headline Title */}
+              {renderCanvasElement(
+                "headline",
+                <div
+                  className="w-full h-full font-sans tracking-tight leading-tight animate-fade"
+                  style={{
+                    fontSize: `${activeSlide.headline.fontSize}px`,
+                    fontWeight: activeSlide.headline.fontWeight,
+                    color: activeSlide.headline.color,
+                    lineHeight: activeSlide.headline.lineHeight,
+                    letterSpacing: `${activeSlide.headline.letterSpacing}px`,
+                    textAlign: activeSlide.headline.align,
+                  }}
+                >
+                  {renderFormattedText(activeSlide.headline.text)}
+                </div>,
+              )}
+
+              {/* Featured Image */}
+              {renderCanvasElement(
+                "featuredImage",
+                <div
+                  className="w-full h-full overflow-hidden animate-fade"
+                  style={{
+                    background:
+                      activeSlide.featuredImage.color || "transparent",
+                    borderRadius: `${activeSlide.featuredImage.borderRadius}px`,
+                    border:
+                      activeSlide.featuredImage.borderWidth > 0
+                        ? `${activeSlide.featuredImage.borderWidth}px solid ${activeSlide.featuredImage.borderColor}`
+                        : "none",
+                  }}
+                >
+                  {activeSlide.featuredImage.mediaUrl ? (
+                    isVideo(activeSlide.featuredImage.mediaUrl) ? (
+                      <video
+                        src={activeSlide.featuredImage.mediaUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full"
+                        style={{
+                          objectFit: activeSlide.featuredImage.objectFit,
+                          filter: `brightness(${activeSlide.featuredImage.brightness}%) contrast(${activeSlide.featuredImage.contrast}%)`,
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={activeSlide.featuredImage.mediaUrl}
+                        alt="Featured Image Layout"
+                        className="w-full h-full"
+                        style={{
+                          objectFit: activeSlide.featuredImage.objectFit,
+                          filter: `brightness(${activeSlide.featuredImage.brightness}%) contrast(${activeSlide.featuredImage.contrast}%)`,
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 text-neutral-400 bg-neutral-50/50 border border-neutral-100 rounded-2xl">
+                      <span
+                        className="font-extrabold uppercase tracking-wider text-[11px] mb-1"
+                        style={{ fontSize: "12px" }}
+                      >
+                        Featured Image Placeholder
+                      </span>
+                      <span
+                        className="text-[9px] opacity-60"
+                        style={{ fontSize: "9px" }}
+                      >
+                        Upload custom photo in Right Panel
+                      </span>
+                    </div>
+                  )}
+                </div>,
+              )}
+
+              {/* Body Copy text */}
+              {renderCanvasElement(
+                "body",
+                <div
+                  className="w-full h-full font-sans whitespace-pre-line text-neutral-800 animate-fade"
+                  style={{
+                    fontSize: `${activeSlide.body.fontSize}px`,
+                    fontWeight: activeSlide.body.fontWeight,
+                    color: activeSlide.body.color,
+                    lineHeight: activeSlide.body.lineHeight,
+                    letterSpacing: `${activeSlide.body.letterSpacing}px`,
+                    textAlign: activeSlide.body.align,
+                  }}
+                >
+                  {renderFormattedText(activeSlide.body.text)}
+                </div>,
+              )}
+
+              {/* Bullets items */}
+              {renderCanvasElement(
+                "bullets",
+                <div
+                  className="w-full h-full font-sans text-neutral-800 animate-fade"
+                  style={{
+                    fontSize: `${activeSlide.bullets.fontSize}px`,
+                    fontWeight: activeSlide.bullets.fontWeight,
+                    color: activeSlide.bullets.color,
+                    lineHeight: activeSlide.bullets.lineHeight,
+                  }}
+                >
+                  <ul
+                    className="list-none m-0 p-0"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: `${activeSlide.bullets.spacing}px`,
+                    }}
+                  >
+                    {activeSlide.bullets.items.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-black font-bold">
+                          {activeSlide.bullets.bulletStyle === "check"
+                            ? "✔"
+                            : activeSlide.bullets.bulletStyle === "number"
+                              ? `${idx + 1}.`
+                              : "•"}
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>,
+              )}
+
+              {/* Quote Box element */}
+              {renderCanvasElement(
+                "quote",
+                <div
+                  className="w-full h-full font-sans animate-fade"
+                  style={{
+                    background: activeSlide.quote.backgroundColor,
+                    borderLeft: `5px solid ${activeSlide.quote.borderColor}`,
+                    borderRadius: `${activeSlide.quote.borderRadius}px`,
+                    padding: `${activeSlide.quote.padding || 24}px`,
+                  }}
+                >
+                  <p
+                    className="m-0 mb-2 font-bold"
+                    style={{
+                      fontSize: `${activeSlide.quote.fontSize}px`,
+                      fontWeight: activeSlide.quote.fontWeight,
+                      lineHeight: activeSlide.quote.lineHeight,
+                      color: activeSlide.quote.color,
+                    }}
+                  >
+                    "{activeSlide.quote.text}"
+                  </p>
+                  <span
+                    className="text-neutral-500 font-semibold"
+                    style={{ fontSize: `${activeSlide.quote.fontSize - 4}px` }}
+                  >
+                    — {activeSlide.quote.author}
+                  </span>
+                </div>,
+              )}
+
+              {/* CTA Button */}
+              {renderCanvasElement(
+                "cta",
+                <div
+                  className="w-full h-full flex items-center justify-center animate-fade"
+                  style={{
+                    background: activeSlide.cta.backgroundColor,
+                    color: activeSlide.cta.textColor,
+                    borderRadius: `${activeSlide.cta.borderRadius}px`,
+                    fontSize: `${activeSlide.cta.fontSize}px`,
+                    fontWeight: activeSlide.cta.fontWeight,
+                    fontFamily: activeSlide.cta.fontFamily,
+                    padding: `${activeSlide.cta.padding || 16}px`,
+                    letterSpacing: `${activeSlide.cta.letterSpacing}px`,
+                  }}
+                >
+                  {activeSlide.cta.text}
+                </div>,
+              )}
+
+              {/* Author profile */}
+              {renderCanvasElement(
+                "author",
+                <div className="w-full h-full flex items-center gap-2 animate-fade">
+                  <div
+                    className="rounded-full bg-neutral-200 overflow-hidden shrink-0 border border-neutral-300"
+                    style={{ width: "32px", height: "32px" }}
+                  >
+                    {activeSlide.author.avatarUrl ? (
+                      <img
+                        src={activeSlide.author.avatarUrl}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#18181b]" />
+                    )}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span
+                      className="font-bold text-neutral-800 leading-tight"
+                      style={{ fontSize: `${activeSlide.author.fontSize}px` }}
+                    >
+                      {activeSlide.author.name}
+                    </span>
+                  </div>
+                </div>,
+              )}
+
+              {/* Footer Branding line */}
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedElement(null);
+                  setIsFooterSelected(true);
+                }}
+                className={`absolute flex items-center justify-between border-t border-neutral-100 cursor-pointer animate-fade ${
+                  isFooterSelected
+                    ? "ring-2 ring-[#1687f8] ring-offset-0"
+                    : "hover:outline hover:outline-dashed hover:outline-[#1687f8]/50"
+                }`}
                 style={{
-                  background: activeSlide.cta.backgroundColor,
-                  color: activeSlide.cta.textColor,
-                  borderRadius: `${activeSlide.cta.borderRadius}px`,
-                  fontSize: `${activeSlide.cta.fontSize}px`,
-                  fontWeight: activeSlide.cta.fontWeight,
-                  fontFamily: activeSlide.cta.fontFamily,
-                  padding: `${activeSlide.cta.padding || 16}px`,
-                  letterSpacing: `${activeSlide.cta.letterSpacing}px`
+                  bottom: `${SAFE_BOTTOM}px`,
+                  left: `${SAFE_LEFT}px`,
+                  width: `${SAFE_WIDTH}px`,
+                  height: `50px`,
+                  borderTop: activeSlide.footer.dividerEnabled
+                    ? `1.5px solid ${activeSlide.footer.color}20`
+                    : "none",
+                  opacity: activeSlide.footer.opacity,
+                  color: activeSlide.footer.color,
+                  fontFamily: "'SF Mono', 'Fira Code', monospace",
+                  userSelect: "none",
                 }}
               >
-                {activeSlide.cta.text}
-              </div>
-            ))}
-
-            {/* Author profile */}
-            {renderCanvasElement("author", (
-              <div className="w-full h-full flex items-center gap-2 animate-fade">
-                <div 
-                  className="rounded-full bg-neutral-200 overflow-hidden shrink-0 border border-neutral-300"
-                  style={{ width: "32px", height: "32px" }}
+                <span
+                  className="font-extrabold uppercase"
+                  style={{ fontSize: "16px" }}
                 >
-                  {activeSlide.author.avatarUrl ? (
-                    <img src={activeSlide.author.avatarUrl} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-[#18181b]" />
-                  )}
-                </div>
-                <div className="flex flex-col text-left">
-                  <span 
-                    className="font-bold text-neutral-800 leading-tight" 
-                    style={{ fontSize: `${activeSlide.author.fontSize}px` }}
-                  >
-                    {activeSlide.author.name}
-                  </span>
-                </div>
-              </div>
-            ))}
-
-            {/* Footer Branding line */}
-            <div 
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedElement(null);
-                setIsFooterSelected(true);
-              }}
-              className={`absolute flex items-center justify-between border-t border-neutral-100 cursor-pointer animate-fade ${
-                isFooterSelected ? "ring-2 ring-[#1687f8] ring-offset-0" : "hover:outline hover:outline-dashed hover:outline-[#1687f8]/50"
-              }`}
-              style={{
-                bottom: `${SAFE_BOTTOM}px`,
-                left: `${SAFE_LEFT}px`,
-                width: `${SAFE_WIDTH}px`,
-                height: `50px`,
-                borderTop: activeSlide.footer.dividerEnabled ? `1.5px solid ${activeSlide.footer.color}20` : "none",
-                opacity: activeSlide.footer.opacity,
-                color: activeSlide.footer.color,
-                fontFamily: "'SF Mono', 'Fira Code', monospace",
-                userSelect: "none"
-              }}
-            >
-              <span className="font-extrabold uppercase" style={{ fontSize: "16px" }}>
-                {activeSlide.footer.brandName ? `[${activeSlide.footer.brandName}]` : ""}
-              </span>
-              {activeSlide.footer.pageNumberEnabled && (
-                <span className="font-bold opacity-60" style={{ fontSize: "16px" }}>
-                  {String(activeIndex + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+                  {activeSlide.footer.brandName
+                    ? `[${activeSlide.footer.brandName}]`
+                    : ""}
                 </span>
-              )}
+                {activeSlide.footer.pageNumberEnabled && (
+                  <span
+                    className="font-bold opacity-60"
+                    style={{ fontSize: "16px" }}
+                  >
+                    {String(activeIndex + 1).padStart(2, "0")} /{" "}
+                    {String(slides.length).padStart(2, "0")}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
         {/* ------------------------------------------
             RIGHT PANEL: THE INSPECTOR
@@ -2839,9 +3239,7 @@ export function EditorialCarouselClient() {
           handleUndo={handleUndo}
           handleRedo={handleRedo}
         />
-
       </div>
-
     </div>
   );
 }
