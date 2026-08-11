@@ -2,8 +2,112 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-const columns=new Set(["business_name","name","contact_name","contact_title","email","phone","website_url","linkedin_url","instagram_url","status","priority","city","state","country","notes","custom_fields"]);
-async function context(){const session=await getServerSession(authOptions),user=session?.user;return user?.id&&user.organisation_id&&user.role==="ADMIN"?user:null}
-export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){const user=await context();if(!user)return Response.json({error:"Admin access required"},{status:403});const {id}=await params,{data,error}=await supabaseAdmin.from("leads").select("*").eq("id",id).eq("organisation_id",user.organisation_id!).is("deleted_at",null).maybeSingle();if(error||!data)return Response.json({error:"Lead not found"},{status:404});return Response.json(data)}
-export async function PATCH(request:Request,{params}:{params:Promise<{id:string}>}){const user=await context();if(!user)return Response.json({error:"Admin access required"},{status:403});const {id}=await params,body=await request.json();if(body.status&&!new Set(["new","contacted","engaged","qualified","disqualified"]).has(body.status))return Response.json({error:"Invalid operational lead status"},{status:422});const updates=Object.fromEntries(Object.entries(body).filter(([key])=>columns.has(key)));updates.updated_at=new Date().toISOString();const {data,error}=await supabaseAdmin.from("leads").update(updates).eq("id",id).eq("organisation_id",user.organisation_id!).is("deleted_at",null).select("*").maybeSingle();if(error||!data)return Response.json({error:"Lead not found or update rejected"},{status:404});return Response.json(data)}
-export async function DELETE(_:Request,{params}:{params:Promise<{id:string}>}){const user=await context();if(!user)return Response.json({error:"Admin access required"},{status:403});const {id}=await params,{data,error}=await supabaseAdmin.from("leads").update({deleted_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",id).eq("organisation_id",user.organisation_id!).is("deleted_at",null).select("id").maybeSingle();if(error||!data)return Response.json({error:"Lead not found"},{status:404});return Response.json({success:true})}
+const columns = new Set([
+  "business_name",
+  "name",
+  "contact_name",
+  "contact_title",
+  "email",
+  "phone",
+  "website_url",
+  "linkedin_url",
+  "instagram_url",
+  "status",
+  "priority",
+  "city",
+  "state",
+  "country",
+  "notes",
+  "custom_fields",
+]);
+async function context() {
+  const session = await getServerSession(authOptions),
+    user = session?.user;
+  return user?.id &&
+    ["ADMIN", "CO_ADMIN", "crm_agent"].includes(String(user.role))
+    ? user
+    : null;
+}
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await context();
+  if (!user)
+    return Response.json({ error: "Admin access required" }, { status: 403 });
+  const { id } = await params,
+    { data, error } = await supabaseAdmin
+      .from("leads")
+      .select("*")
+      .eq("id", id)
+      .is("deleted_at", null)
+      .maybeSingle();
+  if (error || !data)
+    return Response.json({ error: "Lead not found" }, { status: 404 });
+  if (
+    String(user.role) === "crm_agent" &&
+    data.assigned_to &&
+    data.assigned_to !== user.id
+  )
+    return Response.json({ error: "Lead not found" }, { status: 404 });
+  return Response.json(data);
+}
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await context();
+  if (!user)
+    return Response.json({ error: "Admin access required" }, { status: 403 });
+  const { id } = await params,
+    body = await request.json();
+  if (
+    body.status &&
+    !new Set(["new", "contacted", "engaged", "qualified", "disqualified"]).has(
+      body.status,
+    )
+  )
+    return Response.json(
+      { error: "Invalid operational lead status" },
+      { status: 422 },
+    );
+  const updates = Object.fromEntries(
+    Object.entries(body).filter(([key]) => columns.has(key)),
+  );
+  updates.updated_at = new Date().toISOString();
+  const { data, error } = await supabaseAdmin
+    .from("leads")
+    .update(updates)
+    .eq("id", id)
+    .is("deleted_at", null)
+    .select("*")
+    .maybeSingle();
+  if (error || !data)
+    return Response.json(
+      { error: "Lead not found or update rejected" },
+      { status: 404 },
+    );
+  return Response.json(data);
+}
+export async function DELETE(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const user = await context();
+  if (!user)
+    return Response.json({ error: "Admin access required" }, { status: 403 });
+  const { id } = await params,
+    { data, error } = await supabaseAdmin
+      .from("leads")
+      .update({
+        deleted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .is("deleted_at", null)
+      .select("id")
+      .maybeSingle();
+  if (error || !data)
+    return Response.json({ error: "Lead not found" }, { status: 404 });
+  return Response.json({ success: true });
+}
