@@ -13,16 +13,45 @@ interface ImageControlProps {
 
 export function ImageControl({ mediaUrl, objectFit, onUrlChange, onFitChange }: ImageControlProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
+  const [uploadError, setUploadError] = React.useState("");
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      onUrlChange(url);
+    if (!file) return;
+
+    const previousUrl = mediaUrl;
+    const previewUrl = URL.createObjectURL(file);
+    onUrlChange(previewUrl);
+    setUploading(true);
+    setUploadError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      if (!response.ok || !result.url)
+        throw new Error(result.error || "Image upload failed");
+
+      // Only the persistent Supabase URL is allowed to become saved layer data.
+      onUrlChange(result.url);
+    } catch (error) {
+      onUrlChange(previousUrl.startsWith("blob:") ? "" : previousUrl);
+      setUploadError(
+        error instanceof Error ? error.message : "Image upload failed",
+      );
+    } finally {
+      URL.revokeObjectURL(previewUrl);
+      setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -38,8 +67,9 @@ export function ImageControl({ mediaUrl, objectFit, onUrlChange, onFitChange }: 
         />
         <button
           onClick={handleUploadClick}
+          disabled={uploading}
           className="w-8 h-8 flex items-center justify-center bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] text-[var(--inspector-text-secondary)] transition-colors"
-          title="Upload Image"
+          title={uploading ? "Uploading image" : "Upload Image"}
         >
           <Upload className="w-4 h-4" />
         </button>
@@ -51,6 +81,13 @@ export function ImageControl({ mediaUrl, objectFit, onUrlChange, onFitChange }: 
           onChange={handleFileChange}
         />
       </div>
+
+      {uploading && (
+        <p className="text-xs text-[var(--inspector-text-secondary)]">
+          Uploading and saving image…
+        </p>
+      )}
+      {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
 
       <Select.Root value={objectFit} onValueChange={onFitChange}>
         <Select.Trigger className="flex items-center justify-between w-full h-8 px-2 text-sm bg-[var(--inspector-bg)] hover:bg-[var(--inspector-surface-hover)] border border-[var(--inspector-border)] rounded-[var(--radius-control)] text-[var(--inspector-text)]">
