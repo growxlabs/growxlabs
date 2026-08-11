@@ -8,6 +8,7 @@ import {
   normalizePhone,
 } from "@/lib/leads/canonical";
 import { CAREERS_ORGANISATION } from "@/lib/careers/jobs";
+import { getGrowXCrawlConfig } from "@/lib/integrations/growx-crawl-config";
 
 const leadSchema = z
   .object({
@@ -50,7 +51,12 @@ const envelope = z
   .strict();
 
 function auth(request: Request) {
-  const expected = process.env.GROWX_CRAWL_INGESTION_TOKEN;
+  let expected: string | undefined;
+  try {
+    expected = getGrowXCrawlConfig().token;
+  } catch {
+    return false;
+  }
   const actual = request.headers
     .get("authorization")
     ?.replace(/^Bearer\s+/i, "");
@@ -76,7 +82,7 @@ export async function POST(request: Request) {
       { status: 401 },
     );
   const organisationId =
-    process.env.GROWX_CRAWL_ORGANISATION_ID || CAREERS_ORGANISATION;
+    getGrowXCrawlConfig().organisationId || CAREERS_ORGANISATION;
   let body: unknown;
   try {
     body = await request.json();
@@ -175,20 +181,18 @@ export async function POST(request: Request) {
     if (matchStatus !== "no_match") duplicates++;
     if (matchStatus === "ambiguous") review++;
     else valid++;
-    await supabaseAdmin
-      .from("lead_import_candidates")
-      .insert({
-        batch_id: batch.data.id,
-        organisation_id: organisationId,
-        external_reference: lead.external_reference,
-        payload_snapshot: lead,
-        normalized_company_name: lead.company_name.trim().toLowerCase(),
-        normalized_domain: domain,
-        normalized_email: email,
-        normalized_phone: phone,
-        match_status: matchStatus,
-        matched_lead_id: matches.data?.[0]?.id || null,
-      });
+    await supabaseAdmin.from("lead_import_candidates").insert({
+      batch_id: batch.data.id,
+      organisation_id: organisationId,
+      external_reference: lead.external_reference,
+      payload_snapshot: lead,
+      normalized_company_name: lead.company_name.trim().toLowerCase(),
+      normalized_domain: domain,
+      normalized_email: email,
+      normalized_phone: phone,
+      match_status: matchStatus,
+      matched_lead_id: matches.data?.[0]?.id || null,
+    });
   }
   await supabaseAdmin
     .from("lead_import_batches")

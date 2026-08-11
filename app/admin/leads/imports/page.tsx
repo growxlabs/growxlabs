@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function LeadImportsPage() {
   const [batches, setBatches] = useState<any[]>([]);
@@ -38,6 +39,8 @@ export default function LeadImportsPage() {
                 "Duplicates",
                 "Review",
                 "Imported",
+                "Rejected",
+                "Status",
                 "Created",
               ].map((h) => (
                 <th key={h} className="px-4 py-3">
@@ -52,13 +55,25 @@ export default function LeadImportsPage() {
                 key={batch.id}
                 className="border-t border-[var(--border-subtle)]"
               >
-                <td className="px-4 py-4 font-semibold">{batch.source}</td>
+                <td className="px-4 py-4 font-semibold">
+                  <Link
+                    href={`/admin/leads/imports/${batch.id}`}
+                    className="text-[#0075de] hover:underline"
+                  >
+                    {batch.batch_reference}
+                  </Link>
+                  <span className="mt-1 block text-xs text-[var(--text-secondary)]">
+                    {batch.source}
+                  </span>
+                </td>
                 <td className="px-4 py-4">{batch.source_job_id}</td>
                 <td className="px-4 py-4">{batch.received_count}</td>
                 <td className="px-4 py-4">{batch.valid_count}</td>
                 <td className="px-4 py-4">{batch.duplicate_count}</td>
                 <td className="px-4 py-4">{batch.needs_review_count}</td>
                 <td className="px-4 py-4">{batch.imported_count}</td>
+                <td className="px-4 py-4">{batch.rejected_count || 0}</td>
+                <td className="px-4 py-4 font-semibold">{batch.status}</td>
                 <td className="px-4 py-4 text-xs text-[var(--text-muted)]">
                   {new Date(batch.created_at).toLocaleString()}
                 </td>
@@ -67,7 +82,7 @@ export default function LeadImportsPage() {
             {!batches.length && (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={10}
                   className="px-4 py-12 text-center text-[var(--text-secondary)]"
                 >
                   No lead imports received yet.
