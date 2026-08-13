@@ -20,6 +20,8 @@ export type OfferSnapshot = {
   joiningDate: string;
   salaryAmount: number;
   salaryCurrency: string;
+  fixedAmount?: number | null;
+  fixedFrequency?: string | null;
   probationDays: number;
   noticePeriodDays: number;
   expiresAt: string;
@@ -30,9 +32,14 @@ export type OfferSnapshot = {
   stipendPeriod?: string | null;
   incentiveType?: string | null;
   incentiveValue?: number | null;
+  incentiveValueType?: "percentage" | "fixed_amount" | null;
   incentiveStructure?: string | null;
   paymentTerms?: string | null;
   compensationNotes?: string | null;
+  reviewPeriodDays?: number | null;
+  postReviewCompensationType?: string | null;
+  postReviewFixedAmount?: number | null;
+  postReviewFixedFrequency?: string | null;
   signatoryName?: string;
   signatoryTitle?: string;
   acceptedAt?: string | null;
@@ -60,7 +67,6 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
     ["employmentType", "Employment type"],
     ["workLocation", "Work location"],
     ["joiningDate", "Joining date"],
-    ["salaryAmount", "Compensation"],
     ["probationDays", "Probation"],
     ["noticePeriodDays", "Notice period"],
     ["expiresAt", "Offer validity"],
@@ -77,8 +83,12 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
   if (!value.offerTermTemplate?.versionId)
     missing.push("Approved offer terms template");
   if (!value.compensationModel?.trim()) missing.push("Compensation type");
-  if (/incentive/i.test(value.compensationModel || "") && !value.incentiveStructure?.trim())
-    missing.push("Incentive basis");
+  if (/fixed/i.test(value.compensationModel || "") && !(value.fixedAmount ?? value.salaryAmount) && value.fixedAmount !== 0) missing.push("Fixed compensation amount");
+  if (/incentive/i.test(value.compensationModel || "")) {
+    if (!value.incentiveStructure?.trim()) missing.push("Incentive basis");
+    if (!value.incentiveValueType) missing.push("Incentive value type");
+    if (value.incentiveValue == null) missing.push("Incentive value");
+  }
   if (!terms.workingTerms?.trim()) missing.push("Approved working terms");
   if (!terms.confidentialityIp?.trim())
     missing.push("Approved confidentiality / IP wording");
@@ -230,11 +240,11 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
       : "Incentive-based engagement");
   rows([
     ["Compensation model", compensation],
-    ...(snapshot.salaryAmount > 0
+    ...(snapshot.fixedAmount != null && snapshot.fixedAmount > 0
       ? [
           [
             "Fixed amount",
-            `${snapshot.salaryCurrency} ${snapshot.salaryAmount.toLocaleString("en-IN")}`,
+            `${snapshot.salaryCurrency} ${snapshot.fixedAmount.toLocaleString("en-IN")}${snapshot.fixedFrequency ? ` per ${snapshot.fixedFrequency}` : ""}`,
           ] as [string, string],
         ]
       : []),
@@ -245,7 +255,7 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
       ? [["Incentive type", snapshot.incentiveType] as [string, string]]
       : []),
     ...(snapshot.incentiveValue != null
-      ? [["Incentive value", `${snapshot.salaryCurrency} ${snapshot.incentiveValue.toLocaleString("en-IN")}`] as [string, string]]
+      ? [["Incentive value", snapshot.incentiveValueType === "percentage" ? `${snapshot.incentiveValue}%` : `${snapshot.salaryCurrency} ${snapshot.incentiveValue.toLocaleString("en-IN")}`] as [string, string]]
       : []),
     ...(snapshot.incentiveStructure
       ? [
@@ -267,6 +277,8 @@ export function generateOfferPdf(snapshot: OfferSnapshot, issuedAt: Date) {
     ...(snapshot.salaryAmount === 0 && !snapshot.paymentTerms
       ? [["Fixed stipend", "Not applicable"] as [string, string]]
       : []),
+    ...(snapshot.reviewPeriodDays != null ? [["First-month review", `${snapshot.reviewPeriodDays} days`] as [string, string]] : []),
+    ...(snapshot.postReviewFixedAmount != null ? [["From second month", `${snapshot.salaryCurrency} ${snapshot.postReviewFixedAmount.toLocaleString("en-IN")} per ${snapshot.postReviewFixedFrequency || "month"} + applicable performance incentives`] as [string, string]] : []),
   ]);
   section("Employment terms");
   rows([

@@ -24,6 +24,12 @@ export function OfferSection({
 
   const offerLetter = documents.find(d => d.type === 'offer_letter' || d.name.toLowerCase().includes('offer'));
   const terms = offer.snapshot?.terms;
+  const snapshot = offer.snapshot || {};
+  const incentive = snapshot.incentiveValue != null
+    ? snapshot.incentiveValueType === 'percentage'
+      ? `${snapshot.incentiveValue}%`
+      : `${snapshot.salaryCurrency || 'INR'} ${Number(snapshot.incentiveValue).toLocaleString('en-IN')}`
+    : null;
 
   return (
     <div className={css({ display: 'flex', flexDirection: 'column', gap: '20px' })}>
@@ -39,6 +45,14 @@ export function OfferSection({
             {offer.start_date ? new Date(offer.start_date).toLocaleDateString() : offer.startDate || 'TBD'}
           </span>
         </div>
+
+        <section className={css({ display: 'flex', flexDirection: 'column', gap: '10px', padding: '16px', backgroundColor: '#F7F8FA', borderRadius: '8px' })}>
+          <h3 className={css({ fontSize: '12px', fontWeight: 700, color: '#075a9c', textTransform: 'uppercase' })}>Compensation model</h3>
+          <p className={css({ fontSize: '14px', color: '#111827' })}>First month: {snapshot.compensationModel || 'Not specified'}</p>
+          {incentive && <p className={css({ fontSize: '14px', color: '#111827' })}>Incentive: {incentive} {snapshot.incentiveType ? `on ${snapshot.incentiveType}` : 'on eligible deals'}</p>}
+          {snapshot.reviewPeriodDays && <p className={css({ fontSize: '14px', color: '#111827' })}>First-month review: {snapshot.reviewPeriodDays} days</p>}
+          {snapshot.postReviewFixedAmount && <p className={css({ fontSize: '14px', color: '#111827' })}>From second month: {snapshot.salaryCurrency || 'INR'} {Number(snapshot.postReviewFixedAmount).toLocaleString('en-IN')} per {snapshot.postReviewFixedFrequency || 'month'} + applicable performance incentives</p>}
+        </section>
 
         <div className={css({ display: 'flex', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid #E5E7EB' })}>
           <span className={css({ fontSize: '14px', color: '#6B7280' })}>Issued / status</span>

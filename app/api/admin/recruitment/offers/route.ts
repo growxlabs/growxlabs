@@ -19,15 +19,22 @@ const roles = new Set(["ADMIN", "HR", "RECRUITER"]),
     ]),
     workLocation: z.string().trim().min(1),
     joiningDate: z.iso.date(),
-    salaryAmount: z.number().nonnegative(),
+    salaryAmount: z.number().nonnegative().default(0),
     salaryCurrency: z.string().trim().length(3).default("INR"),
     compensationType: z.enum(["Fixed", "Incentive-based", "Fixed plus incentive"]),
+    fixedAmount: z.number().positive().nullable().optional(),
+    fixedFrequency: z.enum(["monthly", "annual"]).nullable().optional(),
     stipendPeriod: z.string().trim().nullable().optional(),
     incentiveType: z.string().trim().nullable().optional(),
     incentiveValue: z.number().nonnegative().nullable().optional(),
+    incentiveValueType: z.enum(["percentage", "fixed_amount"]).nullable().optional(),
     incentiveBasis: z.string().trim().nullable().optional(),
     paymentTiming: z.string().trim().nullable().optional(),
     compensationNotes: z.string().trim().nullable().optional(),
+    reviewPeriodDays: z.number().int().positive().nullable().optional(),
+    postReviewCompensationType: z.string().trim().nullable().optional(),
+    postReviewFixedAmount: z.number().positive().nullable().optional(),
+    postReviewFixedFrequency: z.enum(["monthly", "annual"]).nullable().optional(),
     probationDays: z.number().int().nonnegative(),
     noticePeriodDays: z.number().int().nonnegative(),
     expiresAt: z.iso.datetime(),
@@ -253,6 +260,16 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   const v = parsed.data,
+    validationError = (() => {
+      if (v.compensationType === "Fixed" && !v.fixedAmount && !v.salaryAmount) return "Fixed compensation amount is required.";
+      if (/incentive/i.test(v.compensationType) && (!v.incentiveValueType || v.incentiveValue == null)) return "Incentive value type and value are required.";
+      if (v.incentiveValueType === "percentage" && (!(v.incentiveValue! > 0) || v.incentiveValue! > 100)) return "Percentage incentive must be greater than 0 and no more than 100.";
+      if (v.incentiveValueType === "fixed_amount" && (!(v.incentiveValue! > 0) || !v.salaryCurrency)) return "Fixed incentives require a positive amount and currency.";
+      if (v.postReviewFixedAmount != null && !v.postReviewFixedFrequency) return "Post-review fixed compensation requires a frequency.";
+      return null;
+    })();
+  if (validationError) return Response.json({ error: validationError }, { status: 422 });
+  const
     [app, department, designation, manager, conversion] = await Promise.all([
       supabaseAdmin
         .schema("recruitment")
@@ -340,13 +357,20 @@ export async function POST(request: Request) {
       joiningDate: v.joiningDate,
       salaryAmount: v.salaryAmount,
       salaryCurrency: v.salaryCurrency.toUpperCase(),
+      fixedAmount: v.fixedAmount ?? (v.compensationType === "Fixed" ? v.salaryAmount : null),
+      fixedFrequency: v.fixedFrequency || null,
       compensationModel: v.compensationType,
       stipendPeriod: v.stipendPeriod || null,
       incentiveType: v.incentiveType || null,
       incentiveValue: v.incentiveValue ?? null,
+      incentiveValueType: v.incentiveValueType || null,
       incentiveStructure: v.incentiveBasis || null,
       paymentTerms: v.paymentTiming || null,
       compensationNotes: v.compensationNotes || null,
+      reviewPeriodDays: v.reviewPeriodDays || null,
+      postReviewCompensationType: v.postReviewCompensationType || null,
+      postReviewFixedAmount: v.postReviewFixedAmount || null,
+      postReviewFixedFrequency: v.postReviewFixedFrequency || null,
       probationDays: v.probationDays,
       noticePeriodDays: v.noticePeriodDays,
       expiresAt: v.expiresAt,
@@ -405,11 +429,18 @@ export async function POST(request: Request) {
       compensation_type: v.compensationType,
       fixed_stipend: v.salaryAmount,
       stipend_period: v.stipendPeriod || null,
+      fixed_amount: v.fixedAmount ?? (v.compensationType === "Fixed" ? v.salaryAmount : null),
+      fixed_frequency: v.fixedFrequency || null,
       incentive_type: v.incentiveType || null,
       incentive_value: v.incentiveValue ?? null,
+      incentive_value_type: v.incentiveValueType || null,
       incentive_basis: v.incentiveBasis || null,
       payment_timing: v.paymentTiming || null,
       compensation_notes: v.compensationNotes || null,
+      review_period_days: v.reviewPeriodDays || null,
+      post_review_compensation_type: v.postReviewCompensationType || null,
+      post_review_fixed_amount: v.postReviewFixedAmount || null,
+      post_review_fixed_frequency: v.postReviewFixedFrequency || null,
       start_date: v.joiningDate,
       probation_days: v.probationDays,
       notice_period_days: v.noticePeriodDays,

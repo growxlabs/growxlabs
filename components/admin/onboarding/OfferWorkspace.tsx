@@ -67,13 +67,20 @@ const blank = {
   joiningDate: "",
   salaryAmount: "",
   salaryCurrency: "INR",
+  fixedAmount: "",
+  fixedFrequency: "monthly",
   compensationType: "Fixed",
   stipendPeriod: "",
   incentiveType: "",
   incentiveValue: "",
+  incentiveValueType: "percentage",
   incentiveBasis: "",
   paymentTiming: "",
   compensationNotes: "",
+  reviewPeriodDays: "",
+  postReviewCompensationType: "",
+  postReviewFixedAmount: "",
+  postReviewFixedFrequency: "monthly",
   probationDays: "90",
   noticePeriodDays: "30",
   expiresAt: "",
@@ -187,13 +194,20 @@ export default function OfferWorkspace() {
           ? String(item.salary)
           : v.salaryAmount,
       salaryCurrency: snapshot.salaryCurrency || item.currency || v.salaryCurrency,
+      fixedAmount: snapshot.fixedAmount != null ? String(snapshot.fixedAmount) : v.fixedAmount,
+      fixedFrequency: snapshot.fixedFrequency || v.fixedFrequency,
       compensationType: snapshot.compensationModel || v.compensationType,
       stipendPeriod: snapshot.stipendPeriod || v.stipendPeriod,
       incentiveType: snapshot.incentiveType || v.incentiveType,
       incentiveValue: snapshot.incentiveValue != null ? String(snapshot.incentiveValue) : v.incentiveValue,
+      incentiveValueType: snapshot.incentiveValueType || v.incentiveValueType,
       incentiveBasis: snapshot.incentiveStructure || v.incentiveBasis,
       paymentTiming: snapshot.paymentTerms || v.paymentTiming,
       compensationNotes: snapshot.compensationNotes || v.compensationNotes,
+      reviewPeriodDays: snapshot.reviewPeriodDays != null ? String(snapshot.reviewPeriodDays) : v.reviewPeriodDays,
+      postReviewCompensationType: snapshot.postReviewCompensationType || v.postReviewCompensationType,
+      postReviewFixedAmount: snapshot.postReviewFixedAmount != null ? String(snapshot.postReviewFixedAmount) : v.postReviewFixedAmount,
+      postReviewFixedFrequency: snapshot.postReviewFixedFrequency || v.postReviewFixedFrequency,
       probationDays:
         snapshot.probationDays != null
           ? String(snapshot.probationDays)
@@ -286,9 +300,14 @@ export default function OfferWorkspace() {
       ...form,
       reissue,
       salaryAmount: Number(form.salaryAmount),
+      fixedAmount: form.fixedAmount === "" ? null : Number(form.fixedAmount),
+      fixedFrequency: form.fixedFrequency || null,
       incentiveValue: form.incentiveValue === "" ? null : Number(form.incentiveValue),
+      incentiveValueType: form.incentiveValue === "" ? null : form.incentiveValueType,
       probationDays: Number(form.probationDays),
       noticePeriodDays: Number(form.noticePeriodDays),
+      reviewPeriodDays: form.reviewPeriodDays === "" ? null : Number(form.reviewPeriodDays),
+      postReviewFixedAmount: form.postReviewFixedAmount === "" ? null : Number(form.postReviewFixedAmount),
       expiresAt: new Date(form.expiresAt).toISOString(),
       managerEmployeeId: form.managerEmployeeId || null,
       candidateAddress: form.candidateAddress || null,
@@ -703,19 +722,21 @@ export default function OfferWorkspace() {
                   <option>Fixed</option><option>Incentive-based</option><option>Fixed plus incentive</option>
                 </select>
               </Field>
-              <Field label="Annual compensation">
+              {form.compensationType !== "Incentive-based" && <Field label="Fixed compensation amount">
                 <input
-                  required
                   type="number"
                   min="0"
-                  value={form.salaryAmount}
+                  value={form.fixedAmount}
                   onChange={(e) =>
-                    setForm({ ...form, salaryAmount: e.target.value })
+                    setForm({ ...form, fixedAmount: e.target.value, salaryAmount: e.target.value })
                   }
                   className="input"
                 />
-              </Field>
-              <Field label="Currency">
+              </Field>}
+              {form.compensationType !== "Incentive-based" && <Field label="Fixed compensation frequency">
+                <select value={form.fixedFrequency} onChange={(e) => setForm({ ...form, fixedFrequency: e.target.value })} className="input"><option value="monthly">Monthly</option><option value="annual">Annual</option></select>
+              </Field>}
+              {form.compensationType !== "Incentive-based" && <Field label="Currency">
                 <select
                   value={form.salaryCurrency}
                   onChange={(e) =>
@@ -728,13 +749,20 @@ export default function OfferWorkspace() {
                   <option>GBP</option>
                   <option>EUR</option>
                 </select>
-              </Field>
+              </Field>}
               <Field label="Stipend period"><input value={form.stipendPeriod} onChange={(e) => setForm({ ...form, stipendPeriod: e.target.value })} placeholder="Monthly, one-time, or not applicable" className="input" /></Field>
               {/incentive/i.test(form.compensationType) && <>
                 <Field label="Incentive type"><input required value={form.incentiveType} onChange={(e) => setForm({ ...form, incentiveType: e.target.value })} placeholder="Per qualified meeting, percentage, milestone" className="input" /></Field>
-                <Field label="Incentive value"><input type="number" min="0" value={form.incentiveValue} onChange={(e) => setForm({ ...form, incentiveValue: e.target.value })} className="input" /></Field>
+                <Field label="Incentive value type"><select value={form.incentiveValueType} onChange={(e) => setForm({ ...form, incentiveValueType: e.target.value })} className="input"><option value="percentage">Percentage (%)</option><option value="fixed_amount">Fixed amount ({form.salaryCurrency})</option></select></Field>
+                <Field label={`Incentive value${form.incentiveValueType === "percentage" ? " (%)" : ""}`}><input type="number" min="0" max={form.incentiveValueType === "percentage" ? 100 : undefined} value={form.incentiveValue} onChange={(e) => setForm({ ...form, incentiveValue: e.target.value })} className="input" /></Field>
                 <Field label="Incentive basis"><textarea required value={form.incentiveBasis} onChange={(e) => setForm({ ...form, incentiveBasis: e.target.value })} placeholder="State exactly when an incentive is earned" className="input min-h-20 py-3" /></Field>
                 <Field label="Payment timing"><input required value={form.paymentTiming} onChange={(e) => setForm({ ...form, paymentTiming: e.target.value })} placeholder="For example: paid monthly after validation" className="input" /></Field>
+              </>}
+              {/incentive/i.test(form.compensationType) && <>
+                <Field label="First-month review period (days)"><input required type="number" min="1" value={form.reviewPeriodDays} onChange={(e) => setForm({ ...form, reviewPeriodDays: e.target.value })} className="input" /></Field>
+                <Field label="Post-review compensation type"><input value={form.postReviewCompensationType} onChange={(e) => setForm({ ...form, postReviewCompensationType: e.target.value })} placeholder="Fixed + incentive" className="input" /></Field>
+                <Field label="Post-review fixed amount"><input type="number" min="0" value={form.postReviewFixedAmount} onChange={(e) => setForm({ ...form, postReviewFixedAmount: e.target.value })} className="input" /></Field>
+                <Field label="Post-review frequency"><select value={form.postReviewFixedFrequency} onChange={(e) => setForm({ ...form, postReviewFixedFrequency: e.target.value })} className="input"><option value="monthly">Monthly</option><option value="annual">Annual</option></select></Field>
               </>}
               <Field label="Compensation notes"><textarea value={form.compensationNotes} onChange={(e) => setForm({ ...form, compensationNotes: e.target.value })} className="input min-h-20 py-3" /></Field>
             </Section>
