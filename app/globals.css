@@ -106,6 +106,58 @@ body:has(.candidate-portal-theme) {
     overflow: visible !important;
     border: 0 !important;
     box-shadow: none !important;
+    color: #0f172a !important;
+    font-size: 14px !important;
+    line-height: 1.75 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .assessment-document > header {
+    padding: 44px 48px !important;
+  }
+
+  .assessment-document > div {
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+  }
+
+  .assessment-document-section {
+    padding-top: 44px !important;
+    padding-bottom: 44px !important;
+  }
+
+  .assessment-document-section > div:first-child {
+    margin-bottom: 28px !important;
+  }
+
+  .assessment-document-answer {
+    display: grid !important;
+    grid-template-columns: 240px minmax(0, 1fr) !important;
+    column-gap: 32px !important;
+    row-gap: 8px !important;
+    margin-bottom: 24px !important;
+    font-size: 14px !important;
+    line-height: 1.75 !important;
+  }
+
+  .assessment-document-answer dt,
+  .assessment-document-answer dd {
+    font-size: 14px !important;
+    line-height: 1.75 !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  .assessment-document-answer ul {
+    display: block !important;
+    list-style: disc outside !important;
+    padding-left: 20px !important;
+  }
+
+  .assessment-document-answer li {
+    display: list-item !important;
+    margin-bottom: 4px !important;
   }
 
   .assessment-document-answer,
