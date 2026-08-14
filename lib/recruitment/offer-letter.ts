@@ -83,7 +83,9 @@ export function missingOfferInputs(value: Partial<OfferSnapshot>) {
   if (!value.offerTermTemplate?.versionId)
     missing.push("Approved offer terms template");
   if (!value.compensationModel?.trim()) missing.push("Compensation type");
-  if (/fixed/i.test(value.compensationModel || "") && !(value.fixedAmount ?? value.salaryAmount) && value.fixedAmount !== 0) missing.push("Fixed compensation amount");
+  const fixedAmount = value.fixedAmount ?? value.salaryAmount;
+  const hasExplicitZeroFixedAmount = value.fixedAmount === 0;
+  if (/fixed/i.test(value.compensationModel || "") && !fixedAmount && !hasExplicitZeroFixedAmount) missing.push("Fixed compensation amount");
   if (/incentive/i.test(value.compensationModel || "")) {
     if (!value.incentiveStructure?.trim()) missing.push("Incentive basis");
     if (!value.incentiveValueType) missing.push("Incentive value type");
