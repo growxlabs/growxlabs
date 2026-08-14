@@ -116,7 +116,7 @@ const services = [
   {
     title: "Labs & Pre-built Tools",
     type: "ai",
-    mission: "Deploy proven systems",
+    mission: "Deploy proven platforms",
     useCases: "Healthcare, logistics, maps, ops",
     weight: "Fast launch",
     dimensions: "Configurable / live in 72h",
@@ -127,7 +127,7 @@ const services = [
     title: "Fractional CTO",
     type: "cto",
     mission: "Own product and architecture",
-    useCases: "Roadmaps, systems, hiring",
+    useCases: "Roadmaps, architecture, hiring",
     weight: "Strategic",
     dimensions: "Base build + revenue share",
     buttonText: "GET IN TOUCH",
@@ -157,7 +157,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
   return {
     title: "Global Web Development & Automation Services | GrowXLabsTech",
-    description: "AI-powered websites, n8n automation workflows, WhatsApp integration, and AI chatbots for businesses globally. Trusted by restaurants, real estate companies, and growing businesses worldwide.",
+    description: "AI engineering, product development, web platforms, and intelligent workflow integration for organizations operating in complex environments.",
     alternates: {
       canonical: `https://growxlabs.tech/${locale}/services`,
       languages
@@ -176,7 +176,7 @@ export default function ServicesPage() {
             "name": "AI Development",
             "provider": { "@id": "https://growxlabs.tech/#organization" },
             "areaServed": "Global",
-            "description": "Custom AI systems, automation workflows, and intelligent applications."
+            "description": "Custom AI capabilities, intelligent workflows, and production software applications."
           },
           {
             "@type": "Service",
@@ -184,7 +184,7 @@ export default function ServicesPage() {
             "name": "Web Platforms",
             "provider": { "@id": "https://growxlabs.tech/#organization" },
             "areaServed": "Global",
-            "description": "High-performance websites with native AI integration."
+            "description": "Production-grade web platforms engineered for performance, accessibility, and native AI integration."
           }
         ]}
       />

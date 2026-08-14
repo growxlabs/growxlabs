@@ -86,7 +86,7 @@ export default function TeamLogin() {
       <div className="w-full max-w-md bg-[#111111] p-8 rounded-2xl border border-white/10 shadow-2xl">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Team Portal</h1>
-          <p className="text-sm text-gray-400">Secure access for GrowX Labs Agents</p>
+          <p className="text-sm text-gray-400">Secure access for GrowxLabs Tech agents</p>
         </div>
 
         {error && (
@@ -142,16 +142,16 @@ export default function TeamLogin() {
             
             <div className="p-6 overflow-y-auto text-sm text-gray-300 whitespace-pre-wrap leading-relaxed custom-scrollbar flex-1 min-h-[300px]">
               {termsText || `TEAM MEMBER TERMS AND CONDITIONS
-GrowX Labs
+GrowxLabs Tech
 
 1. CONFIDENTIALITY
 All lead data, client information, and business data you access is strictly confidential. You cannot share, copy, screenshot, or export any data from this system.
 
 2. DATA USAGE
-Lead data is property of GrowX Labs. You are given access to perform outreach duties only. Any misuse will result in immediate termination and legal action.
+Lead data is property of GrowxLabs Tech. You are given access to perform outreach duties only. Any misuse will result in immediate termination and legal action.
 
 3. OUTREACH CONDUCT
-All outreach must be professional and honest. You represent GrowX Labs. Spam, misleading claims, or pressure tactics are strictly prohibited.
+All outreach must be professional and honest. You represent GrowxLabs Tech. Spam, misleading claims, or pressure tactics are strictly prohibited.
 
 4. WORKING HOURS
 All activity in this system is logged including login time, logout time, and all actions performed.
@@ -160,7 +160,7 @@ All activity in this system is logged including login time, logout time, and all
 Commission is paid only on verified closed deals. Disputes must be raised within 7 days of commission date.
 
 6. TERMINATION
-GrowX Labs reserves the right to terminate access immediately without notice for any violation of these terms.`}
+GrowxLabs Tech reserves the right to terminate access immediately without notice for any violation of these terms.`}
             </div>
 
             <div className="p-6 border-t border-white/10 flex-shrink-0 bg-[#0A0A0A] rounded-b-2xl">

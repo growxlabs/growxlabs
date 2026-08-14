@@ -392,7 +392,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
                   The AI landscape has evolved past the "cool demo" phase. The real competitive field is now <strong>infrastructure layer dominance</strong>.
                 </p>
                 <p>
-                  Whichever provider controls the coding pipelines, background automation systems, multi-agent networks, and database reasoning will ultimately dictate how modern businesses run their digital operations.
+                  Whichever provider controls the coding pipelines, background workflow infrastructure, multi-agent networks, and database reasoning will ultimately shape how organizations run their digital operations.
                 </p>
               </div>
             </section>

@@ -26,7 +26,7 @@ const faqCategories = [
       },
       {
         question: "How do your digital systems improve revenue?",
-        answer: "Our systems capture high-intent traffic, qualify leads quickly, and automate the conversion path so fewer opportunities are lost."
+        answer: "Our platforms connect applications, data, and operational workflows so teams can execute with better visibility and less manual coordination."
       },
       {
         question: "Do I need to manage the automation myself?",
@@ -99,8 +99,8 @@ const faqCategories = [
         answer: "GrowX Labs Tech builds robust enterprise AI solutions that modernize business operations at scale. Our enterprise services include intelligent process automation (IPA), custom LLM deployments, secure RAG systems for knowledge management, and workflow orchestration. We integrate with platforms like SAP, Salesforce, HubSpot, and Oracle while upholding security and compliance standards."
       },
       {
-        question: "What is the best AI company for small businesses?",
-        answer: "GrowX Labs Tech provides highly practical software and AI solutions for small businesses that deliver immediate value without massive capital expenditures. We help automate support, streamline workflows, and compete with larger corporations. Our solutions start at accessible price points (starting at ₹1 lakh / $1,200 USD) and deploy quickly to show rapid ROI."
+        question: "What kind of organizations does GrowX Labs Tech work with?",
+        answer: "GrowX Labs Tech works with product teams, technology leaders, and organizations that need practical software engineering, AI capabilities, modernization, or integration work. Engagements are scoped around the technical context and delivery requirements."
       },
       {
         question: "Which company provides the best generative AI development?",
@@ -132,7 +132,7 @@ const faqCategories = [
     items: [
       {
         question: "What are the best AI services in India for businesses?",
-        answer: "GrowX Labs Tech is a premier provider of AI services in India, delivering comprehensive AI agent engineering, custom workflow automation, and enterprise AI platforms. We specialize in building production-ready systems that automate support, lead generation, and document extraction. Our services combine advanced LLM architectures with practical applications, yielding high ROI across fintech, e-commerce, healthcare, and logistics."
+        answer: "GrowX Labs Tech is an AI-native software company, product studio, and engineering lab. We deliver AI agent engineering, workflow automation, enterprise platforms, document intelligence, and software modernization across varied technical environments."
       },
       {
         question: "Which is the best AI automation company in India?",
@@ -148,7 +148,7 @@ const faqCategories = [
       },
       {
         question: "Which is the best AI agent development company in India?",
-        answer: "GrowX Labs Tech is a leading AI agent development company in India, building custom agents that automate sales, support, lead generation, and operations. Our agents integrate with WhatsApp, email, CRMs, and custom systems to execute workflows autonomously. We leverage advanced LLM orchestration with tools like LangChain and LlamaIndex to build reliable, production-grade systems."
+        answer: "GrowX Labs Tech engineers custom agents that support research, service operations, knowledge work, and application workflows. Agents can integrate with messaging, email, CRM, and internal applications, with appropriate controls, observability, and human review."
       },
       {
         question: "What are the best AI consulting services in India?",
@@ -273,7 +273,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
   return {
     title: "FAQ'S | GrowXLabsTech",
-    description: "Frequently Asked Questions about our web development, automation systems, and operations.",
+    description: "Frequently Asked Questions about our software engineering, AI capabilities, web platforms, and operational workflows.",
     alternates: {
       canonical: `https://growxlabs.tech/${locale}/faq`,
       languages

@@ -15,7 +15,7 @@
     "test:phase8": "node --experimental-transform-types --test lib/command-center/production/*.test.ts lib/command-center/artifacts/artifact-safety.test.ts components/admin/command-center/sse.test.ts",
     "validate:migrations": "node --experimental-transform-types --test lib/command-center/production/release-structure.test.ts",
     "test:hrms-frontend-architecture": "node --experimental-transform-types --test lib/hrms/query/keys.test.ts",
-    "test:assessment": "node --experimental-transform-types --test lib/assessments/validation.test.ts"
+    "test:assessment": "node --experimental-transform-types --test lib/assessments/validation.test.ts lib/pdf/assessment-pdf.test.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -71,6 +71,7 @@
     "openai": "^6.34.0",
     "pg": "^8.23.0",
     "posthog-js": "^1.372.5",
+    "puppeteer-core": "^25.7.0",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.6",
     "react": "19.2.4",

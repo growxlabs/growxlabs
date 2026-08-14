@@ -3,7 +3,7 @@
 const VALUES = [
   {
     title: "AI-native digital systems",
-    subtitle: "for modern businesses.",
+    subtitle: "for modern organizations.",
   },
   {
     title: "AI systems designed",

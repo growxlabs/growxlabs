@@ -250,7 +250,7 @@ export default function SignupPage() {
             </div>
 
             <p className="text-[15px] leading-relaxed text-neutral-200 mb-6 font-normal">
-              Using the automated lead capture system and custom CRM workflows from <span className="text-[#C0F0FB]">@growxlabs</span> helped our outreach team response time drop to under 2 minutes. Outstanding partner!
+              Using the workflow orchestration and custom CRM integrations from <span className="text-[#C0F0FB]">@growxlabs</span> helped our outreach team response time drop to under 2 minutes. Outstanding partner!
             </p>
 
             <div className="text-[10px] text-neutral-500 font-mono flex items-center gap-2 border-t border-neutral-900 pt-4">

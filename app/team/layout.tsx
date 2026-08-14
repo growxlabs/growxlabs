@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
 export const metadata = {
-  title: "GrowX Labs Team Portal",
-  description: "Secure access for GrowX Labs team members",
+  title: "GrowxLabs Tech Team Portal",
+  description: "Secure access for GrowxLabs Tech team members",
 };
 
 export default function TeamLayout({ children }: { children: ReactNode }) {

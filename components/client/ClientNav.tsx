@@ -10,6 +10,7 @@ import { signOut } from "next-auth/react";
 
 const navItems = [
   { name: "Overview", href: "/client/dashboard", icon: Layout },
+  { name: "Proposals", href: "/client/proposals", icon: FileText },
   { name: "Contracts", href: "/client/agreement", icon: FileText },
   { name: "Onboarding", href: "/client/onboarding", icon: ClipboardList },
   { name: "Billing", href: "/client/invoices", icon: CreditCard },

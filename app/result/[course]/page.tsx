@@ -86,7 +86,7 @@ export default function ResultPage() {
                 <div>
                    <h1 className="text-5xl lg:text-7xl font-black text-white italic tracking-tighter mb-4">Credentials Verified.</h1>
                    <p className="text-white/40 text-xl font-light uppercase tracking-widest leading-relaxed">
-                     You have successfully qualified for the GrowX Labs <br /> 
+                     You have successfully qualified for the GrowxLabs Tech <br /> 
                      <span className="text-white font-bold">{courseTitle} Certification</span>
                    </p>
                 </div>

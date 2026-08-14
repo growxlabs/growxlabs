@@ -199,7 +199,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
     {
       slug: "restaurant-customer-retention-automation",
       title: "How Restaurants Worldwide Lose 30% of Regulars (And the Automation Fix)",
-      excerpt: "Discover why customer retention is failing in the competitive food market and how automated follow-ups, loyalty rewards, and AI systems can bring guests back through the door.",
+      excerpt: "A technical perspective on retention workflows, loyalty data, and AI capabilities in competitive service environments.",
       category: "FoodTech / Retention / Systems",
       date: "Feb 18, 2026",
       readTime: "6 min read"

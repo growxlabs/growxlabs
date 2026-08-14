@@ -35,7 +35,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
           Certificate Verification
         </h1>
         <p className="text-white/40 text-sm tracking-[0.2em] uppercase font-bold">
-          GrowX Labs Official Validation Portal
+          GrowxLabs Tech Official Validation Portal
         </p>
       </div>
 
@@ -98,7 +98,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
 
           <div className="w-full pt-8 border-t border-white/5 flex flex-col items-center gap-6">
             <p className="text-white/40 text-[11px] leading-relaxed max-w-sm">
-              This digital credential has been cryptographically signed and verified by the GrowX Labs Academy issuance system.
+              This digital credential has been cryptographically signed and verified by the GrowxLabs Tech Academy issuance system.
             </p>
             <Link href={`/certificate/${cert.cert_id}`}>
               <Button className="bg-[#00A86B] hover:bg-[#00A86B]/90 text-white rounded-full px-8">
@@ -110,7 +110,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ id: str
       </Card>
 
       <Link href="/" className="mt-12 text-white/20 hover:text-white transition-colors text-xs uppercase tracking-widest">
-        Back to GrowX Labs
+        Back to GrowxLabs Tech
       </Link>
     </div>
   );

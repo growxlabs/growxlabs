@@ -12,11 +12,11 @@ export function TermsContent() {
   const sections = [
     {
       title: "1. Introduction & Acceptance",
-      content: "By accessing and utilizing the services of GrowX Labs Tech, you agree to be bound by these operational Terms and Conditions. Our development environment is tailored exclusively for companies seeking high-performance software engineering, API orchestrations, and conversion-focused systems."
+      content: "By accessing and utilizing the services of GrowxLabs Tech, you agree to be bound by these operational Terms and Conditions. Our development environment is tailored for companies seeking software engineering, API orchestration, and production workflow capabilities."
     },
     {
       title: "2. Scope of Services",
-      content: "GrowX Labs Tech delivers specialized engineering capabilities including: Next.js and React web architectures, custom backend automation runtimes (n8n, Node.js), cloud node configurations (AWS, Vercel), strategic AI agent modeling, and Technical SEO search integration."
+      content: "GrowxLabs Tech delivers specialized engineering capabilities including: Next.js and React web architectures, custom backend automation runtimes (n8n, Node.js), cloud node configurations (AWS, Vercel), strategic AI agent modeling, and Technical SEO search integration."
     },
     {
       title: "3. Project Kickoff & Payments",
@@ -28,7 +28,7 @@ export function TermsContent() {
     },
     {
       title: "5. Intellectual Property Transfer",
-      content: "Complete legal ownership, licensing rights, and codebase repositories are fully transferred to the client upon receipt of the final project balance. GrowX Labs Tech retains the right to display design wireframes and platform achievements in public case studies unless restricted by a prior NDA."
+      content: "Complete legal ownership, licensing rights, and codebase repositories are fully transferred to the client upon receipt of the final project balance. GrowxLabs Tech retains the right to display design wireframes and platform achievements in public case studies unless restricted by a prior NDA."
     },
     {
       title: "6. Prohibited Operational Uses",
@@ -55,7 +55,7 @@ export function TermsContent() {
                 Terms of Service
               </h1>
               <p className="text-base sm:text-lg text-zinc-400 font-sans leading-relaxed mb-12 max-w-md">
-                Legal framework and structural guidelines governing the engineering, delivery, and support standards of GrowX Labs Tech.
+                Legal framework and structural guidelines governing the engineering, delivery, and support standards of GrowxLabs Tech.
               </p>
 
               {/* Core Promises List */}

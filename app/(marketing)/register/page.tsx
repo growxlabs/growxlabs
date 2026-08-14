@@ -197,7 +197,7 @@ export default function RegisterPage() {
             Go Agent-native With <span className="italic font-serif font-normal text-[#C0F0FB]">GrowXLabs</span>
           </h2>
           <p className="text-sm text-neutral-300 max-w-sm leading-relaxed font-sans font-normal">
-            Partner with us to build advanced, custom AI-native digital pipelines, CRM systems, and high-performance automation workflows.
+            Partner with us to build advanced AI-native software, secure integrations, and production-grade workflow capabilities.
           </p>
         </div>
       </div>

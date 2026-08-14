@@ -611,7 +611,7 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
                   &ldquo;Which parts of our business should AI execute?&rdquo;
                 </p>
                 <p>
-                  Lead generation.
+                  Demand operations.
                 </p>
                 <p>
                   Sales.

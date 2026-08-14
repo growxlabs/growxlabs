@@ -102,7 +102,7 @@ export default function CheckoutPage() {
         key: orderData.key,
         amount: orderData.amount,
         currency: "INR",
-        name: "GrowX Labs",
+        name: "GrowxLabs Tech",
         description: `Purchase of ${title}`,
         order_id: orderData.orderId,
         handler: async (response: any) => {

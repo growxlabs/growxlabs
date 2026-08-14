@@ -19,6 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isEditorialStudio = currentPath?.includes("/admin/editorial-carousel");
   const isCommandCenter = currentPath?.startsWith("/admin/command-center") ?? false;
   const isCommandCenterWorkspace = currentPath === "/admin/command-center";
+  const isPdfRender = currentPath?.includes("/pdf-render") || currentPath?.includes("/print-render");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -133,6 +134,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       document.body.style.overflow = "";
     };
   }, [isMobileOpen]);
+
+  if (isPdfRender) {
+    return <div className="min-h-screen bg-white text-slate-900 print:bg-white">{children}</div>;
+  }
 
   if (authorized === null) {
     return (

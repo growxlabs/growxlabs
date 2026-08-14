@@ -370,7 +370,7 @@ export default async function WhatsappAutomationStrategyPage({ params }: { param
                   What happens in the chat must never stay siloed.
                 </p>
                 <p>
-                  Our WhatsApp automation systems sync directly with your internal CRM databases (like Salesforce or custom database systems). Every question asked, contact detail confirmed, and booking set is logged instantly, ensuring your sales team has full context before they ever jump on a call.
+                  Our WhatsApp workflow integrations sync directly with internal CRM databases (like Salesforce or custom data services). Every question asked, contact detail confirmed, and booking set is logged instantly, ensuring the operations team has full context before a handoff.
                 </p>
               </div>
             </section>

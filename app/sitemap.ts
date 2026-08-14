@@ -8,7 +8,6 @@ const marketingRoutes = [
   { path: '', priority: 1.0, changefreq: 'daily' as const },
   { path: '/services', priority: 0.9, changefreq: 'weekly' as const },
   { path: '/products', priority: 0.9, changefreq: 'weekly' as const },
-  { path: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
   { path: '/portfolio', priority: 0.8, changefreq: 'monthly' as const },
   { path: '/courses', priority: 0.8, changefreq: 'monthly' as const },
   { path: '/about', priority: 0.7, changefreq: 'monthly' as const },
@@ -16,9 +15,6 @@ const marketingRoutes = [
   { path: '/terms', priority: 0.5, changefreq: 'monthly' as const },
   { path: '/privacy', priority: 0.5, changefreq: 'monthly' as const },
   { path: '/refund-policy', priority: 0.5, changefreq: 'monthly' as const },
-  { path: '/how-to-get-clients-from-website', priority: 0.9, changefreq: 'weekly' as const },
-  { path: '/website-vs-growth-system', priority: 0.9, changefreq: 'weekly' as const },
-  { path: '/best-website-for-small-business', priority: 0.9, changefreq: 'weekly' as const },
 ];
 
 // Dynamically generated editorial blog routes

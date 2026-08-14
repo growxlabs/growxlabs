@@ -80,7 +80,7 @@ const nodeDetails: Record<string, NodeDetail> = {
     metrics: "Sync Status: SUCCESS // CRM target: Salesforce"
   },
   automated_workflow: {
-    title: "Automated Follow-Up Engine",
+    title: "Operational Messaging Workflow",
     category: "Central Automation Core",
     description: "The background process tracking idle ticket counters. Triggers escalations and follow-ups on inactive lines.",
     metrics: "Active campaigns: 340 // Drip efficiency: 94.2%"
@@ -207,7 +207,7 @@ export function InteractiveWhatsappNurture() {
             </h4>
           </div>
           <p className="text-muted-foreground text-[12px] mt-1 font-sans">
-            Interactive blueprint of the instant resolution queue versus automated follow-up escalation workflows.
+            Interactive blueprint of the instant resolution queue versus governed escalation workflows.
           </p>
         </div>
 
@@ -262,7 +262,7 @@ export function InteractiveWhatsappNurture() {
 
             {/* Scheme Title Text */}
             <text x="50" y="45" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="16" fontWeight="bold" letterSpacing="0.05em">
-              INSTANT MESSAGING & AUTOMATED FOLLOW-UP SCHEMA
+              INSTANT MESSAGING & ESCALATION WORKFLOW SCHEMA
             </text>
             <text x="50" y="70" fill="#6B7280" fontFamily="monospace" fontSize="10" letterSpacing="0.1em">
               REAL-TIME INTEGRATION PROTOCOL V4.2
@@ -271,7 +271,7 @@ export function InteractiveWhatsappNurture() {
             <text x="50" y="120" fill="#1A1A1A" fontFamily="monospace" fontSize="11" fontWeight="bold" letterSpacing="0.1em">CUSTOMER MESSAGING CHANNELS</text>
             <line x1="50" y1="130" x2="330" y2="130" stroke="#1A1A1A" strokeWidth="1" />
 
-            {/* Central Split Bar (Real-Time Agent Inbox / Automated Follow-Up Workflow) */}
+            {/* Central Split Bar (Real-Time Agent Inbox / Escalation Workflow) */}
             {/* Outline box */}
             <rect x="420" y="100" width="45" height="340" fill="#FAF9F6" stroke="#9CA3AF" strokeWidth="1.2" rx="4" />
             <rect x="420" y="440" width="45" height="360" fill="#FAF9F6" stroke="#9CA3AF" strokeWidth="1.2" rx="4" />
@@ -289,7 +289,7 @@ export function InteractiveWhatsappNurture() {
               REAL-TIME AGENT INBOX
             </text>
             <text x="447" y="620" fill="#1A1A1A" fontFamily="monospace" fontSize="11" fontWeight="bold" letterSpacing="0.15em" transform="rotate(-90 447 620)" textAnchor="middle">
-              AUTOMATED FOLLOW-UP WORKFLOW
+              ESCALATION WORKFLOW
             </text>
 
             {/* ─── CONNECTION PATHS (SVG Lines) ─── */}

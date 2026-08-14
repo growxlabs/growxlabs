@@ -65,6 +65,24 @@ export function mapStoredAssessment(data: unknown): ClientAssessment {
     startedAt:nullableText(row.started_at),submittedAt:nullableText(row.submitted_at),updatedAt:text(row.updated_at) };
 }
 
+export async function getAssessmentByIdOrNumber(idOrNumber: string): Promise<ClientAssessment | null> {
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrNumber);
+  let query = supabaseAdmin
+    .from("client_assessments")
+    .select("*,assessment_answers(question_key,value,updated_at),assessment_files(id,question_id,question_key,file_name,file_type,file_size,created_at),assessment_information_requests(id,message,requested_question_keys,requested_section_keys,status,due_at,created_at)");
+
+  if (isUuid) {
+    query = query.eq("id", idOrNumber);
+  } else {
+    query = query.eq("assessment_number", idOrNumber);
+  }
+
+  const { data, error } = await query.maybeSingle();
+  if (error) throw new Error(`Unable to load assessment: ${error.message}`);
+  if (!data) return null;
+  return mapStoredAssessment(data);
+}
+
 export async function startClientAssessment(context: ClientContext) {
   const existing=await getClientAssessment(context); if(existing) return existing;
   if(!context.companyId)throw new AssessmentHttpError(409,"Your client account must be linked to a company before the assessment can start.");

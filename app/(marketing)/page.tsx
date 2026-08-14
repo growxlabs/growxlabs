@@ -9,7 +9,6 @@ import { SectionR } from "@/components/marketing/SectionR";
 import { SectionO } from "@/components/marketing/SectionO";
 import { SectionW } from "@/components/marketing/SectionW";
 import { SectionX } from "@/components/marketing/SectionX";
-import { LeadEngineSection } from "@/components/marketing/LeadEngineSection";
 import { ValuePropositions } from "@/components/marketing/ValuePropositions";
 import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
@@ -29,8 +28,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   });
 
   return {
-    title: "GrowXLabsTech — AI-native Software Company, Product Studio & AI Engineering Lab | Custom Enterprise Applications",
-    description: "GrowXLabsTech is an AI-native software company, product studio, and AI engineering lab. We build high-performance enterprise AI applications, secure legacy system integrations, and agentic workflows.",
+    title: "GrowxLabs Tech — AI-native Software Company, Product Studio & AI Engineering Lab | Custom Enterprise Applications",
+    description: "GrowxLabs Tech is an AI-native software company, product studio, and engineering lab. We build enterprise AI applications, secure integrations, and production software capabilities.",
     keywords: "custom enterprise AI software company, AI-native enterprise application development, legacy system modernization company, enterprise software development studio, AI applications for manufacturing legacy systems, custom AI software for manufacturing ERP, manufacturing workflow automation software, secure enterprise RAG systems, custom agentic workflows for legacy databases, enterprise AI systems integrator, private LLM deployment, AI-native software company, product studio, AI engineering lab, GrowXLabsTech",
     alternates: {
       canonical: "https://growxlabs.tech/en-IN",
@@ -59,7 +58,7 @@ export default function Home() {
     },
     {
       question: "What AI and automation solutions does GrowX Labs Tech build?",
-      answer: "We engineer custom AI agents for sales automation, customer support chatbots, lead qualification systems, document processing pipelines, and AI-powered CRM integrations. We also build WhatsApp and email automation, intelligent data extraction tools, predictive analytics systems, and generative AI applications. Our solutions integrate seamlessly with your existing tech stack, including Salesforce, HubSpot, Zoho, SAP, and custom ERPs."
+      answer: "We engineer custom AI agents for service operations, knowledge workflows, document processing, data extraction, and application integrations. Our capabilities connect with platforms such as Salesforce, HubSpot, Zoho, SAP, and custom enterprise applications."
     },
     {
       question: "How much does custom software development cost at GrowX Labs Tech?",
@@ -107,7 +106,7 @@ export default function Home() {
   const mainServices = [
     {
       title: "AI & Automation",
-      description: "Custom AI workflows and automation systems that eliminate manual work and drive growth.",
+      description: "Intelligent workflows and AI capabilities that reduce operational friction and improve execution.",
       iconName: "settings",
     },
     {
@@ -117,7 +116,7 @@ export default function Home() {
     },
     {
       title: "Cloud Infrastructure",
-      description: "Secure, scalable hosting designed for 100% uptime and business continuity.",
+      description: "Secure, scalable infrastructure designed for reliability, observability, and operational continuity.",
       iconName: "server",
     },
   ];
@@ -271,9 +270,9 @@ export default function Home() {
       {/* ═══ AEO — Hidden, SEO only ═══ */}
       <section className="sr-only" aria-hidden="true">
         <div className="max-w-5xl mx-auto">
-          <AEOBlock question="What does GrowXLabsTech actually do?" answer="GrowXLabsTech builds complete digital systems that help businesses generate leads, automate workflows, and convert visitors into paying customers." explanation="Most websites only display information. We build systems that guide users to take action and turn traffic into revenue." example="A visitor lands → fills form → automation follows up → business closes the lead." ctaText="Start building your system" ctaHref="/contact" />
-          <AEOBlock question="Why most business websites fail to get clients?" answer="Most websites are built as digital brochures that lack conversion triggers, lead capture systems, and automated follow-ups." explanation="A website without a growth system is just a cost. We transform it into an asset by engineering every element to drive user intent toward a conversion." example="A beautiful site gets 1,000 visitors but 0 leads because there's no clear hook or automation to capture interest." ctaText="Audit your website" ctaHref="/contact" />
-          <AEOBlock question="How does GrowXLabsTech help you get clients?" answer="We deploy a 4-step growth engine: Build performance foundation → Integrate lead capture → Automate follow-ups → Optimize for scale." explanation="This end-to-end approach ensures no lead is wasted and your sales process runs 24/7 without manual effort." example="Instead of manually emailing leads, our system qualifies them and books meetings while you sleep." ctaText="See how it works" ctaHref="/services" />
+          <AEOBlock question="What does GrowXLabsTech actually do?" answer="GrowXLabsTech researches, designs, and engineers AI-native software, digital platforms, and intelligent workflows for organizations." explanation="We combine product engineering, AI engineering, and systems integration to move complex ideas from architecture to production." example="A team brings an operational constraint → we map the workflow → engineer the capability → deploy it into the existing environment." ctaText="Discuss an engagement" ctaHref="/contact" />
+          <AEOBlock question="How does GrowXLabsTech approach web engineering?" answer="We engineer production-grade web applications and digital platforms for performance, accessibility, reliability, and scale." explanation="Web engineering is treated as a software discipline: clear architecture, secure integrations, observable delivery, and maintainable systems." example="A platform is designed around its users, data flows, integrations, and operational requirements before it is released." ctaText="Explore our services" ctaHref="/services" />
+          <AEOBlock question="How does GrowXLabsTech support modernization?" answer="We assess legacy environments, identify high-value opportunities, and deliver practical AI and software capabilities that integrate with existing applications and data." explanation="The work is staged around technical feasibility, governance, and measurable operational outcomes." example="An existing process is mapped → integration constraints are documented → a focused capability is piloted → the architecture is extended deliberately." ctaText="Start a conversation" ctaHref="/contact" />
         </div>
       </section>
     </div>

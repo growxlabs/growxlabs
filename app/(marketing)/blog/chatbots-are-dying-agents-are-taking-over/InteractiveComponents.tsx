@@ -171,7 +171,7 @@ export function AgentCTA() {
           Ready to Build AI Agents For Your Business?
         </h3>
         <p className="text-[#9CA3AF] text-[16px] md:text-[18px] leading-relaxed max-w-2xl mx-auto">
-          GrowXLabs helps businesses design AI-native systems, automation workflows, lead generation engines, and intelligent agents that drive real growth.
+          GrowXLabs helps organizations design AI-native software, automation workflows, and intelligent agents for operational execution.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Link

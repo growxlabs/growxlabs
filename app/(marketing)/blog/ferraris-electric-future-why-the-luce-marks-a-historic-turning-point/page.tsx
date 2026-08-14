@@ -694,7 +694,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
             </span>
             
             <h3 className="text-[28px] md:text-[36px] font-black tracking-tight leading-tight text-foreground font-serif">
-              Engineering AI-native dymanics<br />and high-performance growth systems.
+              Engineering AI-native dynamics<br />and production software platforms.
             </h3>
             
             <p className="text-[#A1A1AA] text-[15px] max-w-lg mx-auto leading-relaxed">

@@ -1,16 +1,2 @@
-import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
-
-export async function GET() {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("proposals")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return NextResponse.json(data || []);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
+import { commercialError,requireCommercialAdmin,supabaseAdmin } from "@/lib/commercial/workflow";
+export async function GET(){try{await requireCommercialAdmin();const {data,error}=await supabaseAdmin.from("legacy_proposal_migration_inventory").select("legacy_proposal_id,canonical_proposal_id,migration_status,discovered_at,migrated_at").order("discovered_at",{ascending:false});if(error)throw new Error(error.message);return Response.json({legacy:true,readOnly:true,records:data||[]});}catch(error){return commercialError(error);}}

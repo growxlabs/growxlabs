@@ -1,0 +1,5 @@
+import { communicationError,requireCommunicationClient } from "@/lib/communications/service";
+import { getClientProposal } from "@/lib/commercial/proposal-phase2";
+import { generateProposalPdf } from "@/lib/pdf/proposal-pdf";
+import { recordProposalEvent } from "@/lib/commercial/proposals";
+export async function GET(_:Request,{params}:{params:Promise<{proposalNumber:string}>}){try{const client=await requireCommunicationClient(),{proposalNumber}=await params,data=await getClientProposal(decodeURIComponent(proposalNumber),client.clientId,client.userId,false),pdf=await generateProposalPdf(data.snapshot,data.status,data.acceptedByName,data.acceptedAt);await recordProposalEvent({proposalId:data.snapshot.proposal.id,proposalVersionId:data.version.id,actorId:client.userId,actorType:"client",event:"proposal_pdf_generated",clientId:client.clientId,metadata:{version:data.version.version}});return new Response(new Uint8Array(pdf),{headers:{"Content-Type":"application/pdf","Content-Disposition":`attachment; filename="${data.snapshot.proposal.number}-v${data.version.version}.pdf"`,"Cache-Control":"private, no-store"}});}catch(error){return communicationError(error);}}

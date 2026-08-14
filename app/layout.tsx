@@ -16,16 +16,16 @@ import "./globals.css";
 export const metadata = {
   metadataBase: new URL('https://growxlabs.tech'),
   title: {
-    default: "GrowXLabsTech — AI-native Software Company, Product Studio & AI Engineering Lab",
-    template: "%s | GrowXLabsTech"
+    default: "GrowxLabs Tech — AI-native Software Company, Product Studio & AI Engineering Lab",
+    template: "%s | GrowxLabs Tech"
   },
-  description: "GrowXLabsTech is an AI-native software company, product studio, and AI engineering lab. We build high-performance digital systems, agentic automations, and custom enterprise AI platforms.",
+  description: "GrowxLabs Tech is an AI-native software company, product studio, and engineering lab. We research, design, and deploy enterprise software, AI capabilities, and production-grade digital platforms.",
   alternates: {
     canonical: "https://growxlabs.tech/",
   },
   openGraph: {
     url: "https://growxlabs.tech/",
-    siteName: 'GrowXLabsTech',
+    siteName: 'GrowXLabs.tech',
     type: 'website',
     images: [{ url: 'https://growxlabs.tech/og-image.png', width: 1200, height: 630 }],
   },
@@ -52,10 +52,11 @@ export default async function RootLayout({
                 {
                   "@type": "Organization",
                   "@id": "https://growxlabs.tech/#organization",
-                  "name": "GrowXLabsTech",
+                  "name": "GrowxLabs Tech",
+                  "alternateName": "GrowxLabs",
                   "url": "https://growxlabs.tech",
                   "logo": "https://growxlabs.tech/logo.png",
-                  "description": "AI-native software company, product studio, and AI engineering lab building enterprise AI products and secure systems.",
+                  "description": "GrowxLabs Tech is an AI-native software company, product studio, and AI engineering lab researching, designing, and engineering enterprise software, AI capabilities, digital platforms, intelligent workflows, and operational intelligence.",
                   "founder": [
                     { "@id": "https://growxlabs.tech/#varshith" },
                     { "@id": "https://growxlabs.tech/#akhilesh" }
@@ -64,12 +65,12 @@ export default async function RootLayout({
                     "@type": "PostalAddress",
                     "addressLocality": "Guntur",
                     "addressRegion": "Andhra Pradesh",
-                    "addressCountry": "India"
+                    "addressCountry": "IN"
                   },
                   "contactPoint": {
                     "@type": "ContactPoint",
                     "email": "sai@growxlabs.tech",
-                    "contactType": "customer support",
+                    "contactType": "general inquiries",
                     "availableLanguage": ["English"]
                   },
                   "areaServed": "Worldwide",
@@ -78,30 +79,22 @@ export default async function RootLayout({
                     "description": "Worldwide — serving clients across all countries"
                   },
                   "knowsAbout": [
-                    "Web Development",
-                    "AI Integration",
-                    "Business Automation",
-                    "n8n Workflows",
-                    "Restaurant Technology",
-                    "Real Estate CRM",
-                    "WhatsApp Automation",
-                    "Lead Generation",
-                    "E-commerce Development",
-                    "SaaS Development",
-                    "AI Chatbots",
-                    "Generative AI",
-                    "Prompt Engineering",
-                    "RAG Systems",
-                    "Multi-Agent Systems",
+                    "AI Engineering",
+                    "Enterprise Software Engineering",
+                    "Product Engineering",
+                    "Web Platform Engineering",
+                    "Intelligent Workflow Automation",
+                    "Modernization and Integrations",
+                    "Operational Intelligence",
                     "Agentic AI",
-                    "AI Developer Tools",
-                    "Agent Runtimes",
-                    "Multi-Agent Orchestration"
+                    "Multi-Agent Orchestration",
+                    "AI Developer Infrastructure",
+                    "Generative AI",
+                    "Retrieval-Augmented Generation"
                   ],
                   "sameAs": [
-                    "https://www.linkedin.com/company/growxlabs",
-                    "https://twitter.com/growxlabs",
-                    "https://github.com/saivarshithnaidu"
+                    "https://www.linkedin.com/company/growxlabstech",
+                    "https://instagram.com/growxlabs.tech"
                   ]
                 },
                 {
@@ -122,7 +115,7 @@ export default async function RootLayout({
                   "@type": "WebSite",
                   "@id": "https://growxlabs.tech/#website",
                   "url": "https://growxlabs.tech",
-                  "name": "GrowXLabsTech",
+                  "name": "GrowXLabs.tech",
                   "publisher": { "@id": "https://growxlabs.tech/#organization" }
                 },
                 {
@@ -160,7 +153,7 @@ export default async function RootLayout({
                   "applicationCategory": "BusinessApplication",
                   "operatingSystem": "Web",
                   "creator": { "@id": "https://growxlabs.tech/#organization" },
-                  "description": "Autonomous startup simulation and multi-agent coordination system that automates business operations.",
+                  "description": "Autonomous startup simulation and multi-agent coordination platform for exploring software operations.",
                   "url": "https://growxlabs.tech/products/3rdmind"
                 },
                 {
@@ -197,37 +190,6 @@ export default async function RootLayout({
         )}
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans relative" suppressHydrationWarning>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "GrowXLabsTech",
-              "url": "https://growxlabs.tech",
-              "logo": "https://growxlabs.tech/logo.png",
-              "description": "Global AI-native software company, product studio, and AI engineering lab building enterprise digital systems and AI solutions.",
-              "foundingDate": "2026",
-              "email": "sai@growxlabs.tech",
-              "areaServed": "Worldwide",
-              "sameAs": [
-                "https://linkedin.com/company/growxlabstech",
-                "https://instagram.com/growxlabstech"
-              ],
-              "knowsAbout": [
-                "Web Development",
-                "AI Integration",
-                "n8n Automation",
-                "Restaurant Technology",
-                "Real Estate CRM",
-                "WhatsApp Automation",
-                "Lead Generation",
-                "Multi-Agent Systems",
-                "Agentic AI"
-              ]
-            })
-          }}
-        />
         <PHProvider>
           <AuthProvider>
             <QueryProvider>

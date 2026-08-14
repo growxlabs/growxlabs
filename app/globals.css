@@ -160,6 +160,9 @@ body:has(.candidate-portal-theme) {
     margin-bottom: 4px !important;
   }
 
+  .assessment-field-row,
+  .assessment-metadata-item,
+  .signature-block,
   .assessment-document-answer,
   .assessment-document-footer {
     break-inside: avoid;
@@ -187,7 +190,7 @@ body:has(.candidate-portal-theme) {
 
 @page {
   size: A4 portrait;
-  margin: 16mm 14mm 18mm 14mm;
+  margin: 14mm 14mm 16mm;
 }
 
 .pdf-export .no-print {

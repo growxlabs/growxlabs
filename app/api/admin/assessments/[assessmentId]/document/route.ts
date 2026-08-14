@@ -1,3 +1,15 @@
-import { assessmentErrorResponse,mapStoredAssessment,requireAssessmentAdmin } from "@/lib/assessments/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
-export async function GET(_request:Request,{params}:{params:Promise<{assessmentId:string}>}){try{await requireAssessmentAdmin();const {assessmentId}=await params;const {data,error}=await supabaseAdmin.from("client_assessments").select("*,assessment_answers(question_key,value,updated_at),assessment_files(id,question_id,question_key,file_name,file_type,file_size,created_at),assessment_information_requests(id,message,requested_question_keys,requested_section_keys,status,due_at,created_at)").eq("id",assessmentId).maybeSingle();if(error)throw new Error(error.message);if(!data)return Response.json({error:"Assessment not found."},{status:404});return Response.json({assessment:mapStoredAssessment(data)});}catch(error){return assessmentErrorResponse(error);}}
+import { assessmentErrorResponse, getAssessmentByIdOrNumber, requireAssessmentAdmin } from "@/lib/assessments/server";
+
+export async function GET(_request: Request, { params }: { params: Promise<{ assessmentId: string }> }) {
+  try {
+    await requireAssessmentAdmin();
+    const { assessmentId } = await params;
+    const assessment = await getAssessmentByIdOrNumber(assessmentId);
+    if (!assessment) {
+      return Response.json({ error: "Assessment not found." }, { status: 404 });
+    }
+    return Response.json({ assessment });
+  } catch (error) {
+    return assessmentErrorResponse(error);
+  }
+}
