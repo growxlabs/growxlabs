@@ -51,6 +51,11 @@ body:has(.candidate-portal-theme) {
 @layer reset, base, tokens, recipes, utilities;
 
 @media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
   .site-navigation,
   .document-action-bar,
   .whatsapp-button,
@@ -96,15 +101,22 @@ body:has(.candidate-portal-theme) {
   }
 
   .assessment-document {
-    position: absolute;
-    inset: 0;
+    position: static !important;
     width: 100%;
+    overflow: visible !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
 
-  .assessment-document-section,
   .assessment-document-answer,
   .assessment-document-footer {
     break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .assessment-document-section {
+    break-inside: auto;
+    page-break-inside: auto;
   }
 
   .assessment-document-section h2,
@@ -122,8 +134,8 @@ body:has(.candidate-portal-theme) {
 }
 
 @page {
-  size: A4;
-  margin: 14mm;
+  size: A4 portrait;
+  margin: 16mm 14mm 18mm 14mm;
 }
 
 .pdf-export .no-print {
