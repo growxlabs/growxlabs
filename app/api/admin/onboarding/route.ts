@@ -1,0 +1,4 @@
+import { createOnboarding,onboardingError,requireOnboardingAdmin } from "@/lib/onboarding/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+export async function GET(){try{await requireOnboardingAdmin();const result=await supabaseAdmin.from("client_onboardings").select("id,onboarding_number,client_id,company_id,status,completion_percentage,owner_id,created_at,updated_at,companies(id,name)").order("updated_at",{ascending:false}).limit(200);if(result.error)throw new Error(result.error.message);return Response.json({onboardings:result.data||[]});}catch(error){return onboardingError(error)}}
+export async function POST(request:Request){try{const actor=await requireOnboardingAdmin();return Response.json({onboarding:await createOnboarding(await request.json(),actor.userId)},{status:201});}catch(error){return onboardingError(error)}}
