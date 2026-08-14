@@ -158,6 +158,7 @@ export default function AdminProposalsPage() {
         ))}
       </div>
 
+      {!loading && filtered.length > 0 && <div className="flex flex-wrap gap-2">{filtered.map((proposal)=><a key={proposal.id} href={`/admin/proposals/${proposal.id}`} className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">Open {proposal.proposal_number}</a>)}</div>}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         {loading ? <div className="flex h-56 items-center justify-center text-slate-500"><Loader2 className="animate-spin" /></div> : filtered.length === 0 ? (
           <div className="flex h-56 flex-col items-center justify-center gap-2 text-center"><FileText className="text-slate-300" size={30} /><p className="font-medium text-slate-700">No commercial proposals found</p><p className="text-sm text-slate-500">Create one from an approved Scope of Work.</p></div>
