@@ -16,7 +16,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ass
     const pdfBuffer = await generateAssessmentPdf(assessment);
     const filename = `${assessment.assessmentNumber || "GrowXLabs-Assessment"}.pdf`;
 
-    return new Response(pdfBuffer, {
+    return new Response(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

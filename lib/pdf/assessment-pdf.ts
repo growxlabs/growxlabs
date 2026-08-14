@@ -543,7 +543,7 @@ export async function generateAssessmentPdf(assessment: ClientAssessment): Promi
     });
 
     await page.setContent(html, {
-      waitUntil: ["load", "networkidle0"],
+      waitUntil: "load",
       timeout: 30000,
     });
 
