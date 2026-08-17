@@ -91,7 +91,7 @@ body:has(.candidate-portal-theme) {
     break-after: avoid;
   }
 
-  body * {
+  body:has(.assessment-document) * {
     visibility: hidden !important;
   }
 
@@ -1571,6 +1571,9 @@ html {
   body:has(.audit-document) .no-print { display: none !important; }
   body:has(.audit-document) main { margin: 0 !important; padding: 0 !important; max-width: none !important; }
   .audit-document { width: 100% !important; border: 0 !important; box-shadow: none !important; }
+  .audit-document,
+  .audit-document * { visibility: visible !important; }
+  .audit-document { position: static !important; overflow: visible !important; color: #0f172a !important; }
   .audit-section > div:first-child { break-after: avoid; page-break-after: avoid; }
   .audit-block, .audit-document table tr { break-inside: avoid; page-break-inside: avoid; }
   .audit-document header, .audit-document footer { break-inside: avoid; page-break-inside: avoid; }
