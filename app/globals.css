@@ -1562,3 +1562,16 @@ html {
 }
 .input:focus { border-color: #0075de; box-shadow: 0 0 0 3px rgb(0 117 222 / 12%); }
 .muted { color: var(--text-muted, #64748b); text-transform: uppercase; font-size: .625rem; letter-spacing: .08em; }
+
+@media print {
+  @page { size: A4 portrait; margin: 14mm 13mm 16mm; }
+  body:has(.audit-document) { background: white !important; }
+  body:has(.audit-document) aside,
+  body:has(.audit-document) nav,
+  body:has(.audit-document) .no-print { display: none !important; }
+  body:has(.audit-document) main { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  .audit-document { width: 100% !important; border: 0 !important; box-shadow: none !important; }
+  .audit-section > div:first-child { break-after: avoid; page-break-after: avoid; }
+  .audit-block, .audit-document table tr { break-inside: avoid; page-break-inside: avoid; }
+  .audit-document header, .audit-document footer { break-inside: avoid; page-break-inside: avoid; }
+}
