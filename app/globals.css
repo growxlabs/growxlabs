@@ -51,6 +51,15 @@ body:has(.candidate-portal-theme) {
 @layer reset, base, tokens, recipes, utilities;
 
 @media print {
+  body:has(.ai-solution-document) { background: white !important; }
+  body:has(.ai-solution-document) aside,
+  body:has(.ai-solution-document) nav,
+  body:has(.ai-solution-document) .no-print { display: none !important; }
+  body:has(.ai-solution-document) main { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  .ai-solution-document { width: 100% !important; border: 0 !important; box-shadow: none !important; position: static !important; overflow: visible !important; }
+  .ai-solution-document section,
+  .ai-solution-document header,
+  .ai-solution-document footer { break-inside: avoid; page-break-inside: avoid; }
   html,
   body {
     background: #fff !important;
