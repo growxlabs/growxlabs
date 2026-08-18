@@ -12,6 +12,14 @@ const list = (v: string) =>
     .split("\n")
     .map((x) => x.trim())
     .filter(Boolean);
+const previewCommercials = (form: any) => {
+  const pricing = form.pricing.map((line: any) => {
+    const quantity = Number(line.quantity || 0), unitPrice = Number(line.unitPrice || 0), discount = Number(line.discount || 0), gross = quantity * unitPrice;
+    return { description: line.description, quantity, unit: line.unit, unit_price: unitPrice, discount, subtotal: Math.max(0, gross - discount) };
+  });
+  const subtotal = pricing.reduce((sum: number, line: any) => sum + line.quantity * line.unit_price, 0), discount = pricing.reduce((sum: number, line: any) => sum + line.discount, 0), taxable = Math.max(0, subtotal - discount), taxAmount = taxable * Number(form.taxRate || 0) / 100;
+  return { pricing, totals: { currency: form.currency, subtotal, discount, taxable_subtotal: taxable, tax_type: form.taxType, tax_rate: Number(form.taxRate || 0), tax_amount: taxAmount, grand_total: taxable + taxAmount } };
+};
 export default function AdminProposalWorkspace() {
   const { proposalId } = useParams<{ proposalId: string }>(),
     q = useQuery({
@@ -28,11 +36,12 @@ export default function AdminProposalWorkspace() {
     [form, setForm] = useState<any>(null),
     [preview, setPreview] = useState(false),
     [busy, setBusy] = useState(false),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    draftKey = `growxlabs:proposal-draft:${proposalId}`;
   useEffect(() => {
     const p = q.data?.proposal;
-    if (p && !form)
-      setForm({
+    if (p && !form) {
+      const serverForm = {
         executiveSummary: split(p.client_content?.executiveSummary),
         scope: split(p.client_content?.scope),
         deliverables: split(p.client_content?.deliverables),
@@ -54,8 +63,12 @@ export default function AdminProposalWorkspace() {
         taxRate: p.commercial_totals?.tax_rate || 0,
         validUntil: p.valid_until || "",
         internalNotes: p.internal_notes || "",
-      });
-  }, [q.data, form]);
+      };
+      try { const recovered = localStorage.getItem(draftKey); setForm(recovered ? { ...serverForm, ...JSON.parse(recovered) } : serverForm); }
+      catch { setForm(serverForm); }
+    }
+  }, [q.data, form, draftKey]);
+  useEffect(() => { if (form) localStorage.setItem(draftKey, JSON.stringify(form)); }, [form, draftKey]);
   async function action(action: string, extra: any = {}) {
     setBusy(true);
     setMessage("");
@@ -90,12 +103,14 @@ export default function AdminProposalWorkspace() {
     setBusy(false);
     if (!r.ok) return setMessage(b.error || "Action failed.");
     setMessage("Proposal updated.");
+    localStorage.removeItem(draftKey);
     setForm(null);
     await q.refetch();
   }
   if (q.isPending || !form) return <p>Loading proposal workspace…</p>;
   if (q.error) return <p className="text-red-700">{q.error.message}</p>;
-  const p = q.data.proposal,
+  const liveCommercials = previewCommercials(form),
+    p = q.data.proposal,
     refs = q.data.references || {},
     editable = ["draft", "changes_required"].includes(p.status),
     snapshot = {
@@ -116,8 +131,8 @@ export default function AdminProposalWorkspace() {
         terms: list(form.terms),
         nextSteps: list(form.nextSteps),
       },
-      pricing: p.pricing,
-      commercialTotals: p.commercial_totals,
+      pricing: liveCommercials.pricing,
+      commercialTotals: liveCommercials.totals,
       paymentSchedule: form.paymentMilestones,
       validUntil: form.validUntil,
     };
@@ -189,6 +204,7 @@ export default function AdminProposalWorkspace() {
         </div>
       </header>
       {message && <p className="rounded border bg-white p-3 text-sm">{message}</p>}
+      {editable && !preview && <p className="rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Changes are automatically preserved in this browser. Use Save Draft to validate and save them permanently.</p>}
       {preview ? (
         <ProposalDocument snapshot={snapshot} status={p.status} />
       ) : (
@@ -225,56 +241,47 @@ export default function AdminProposalWorkspace() {
               </label>
             ))}
             <h2 className="text-lg font-bold">07 Commercial Pricing</h2>
+            <p className="text-sm text-slate-600">Enter the agreed price. Discount is a currency amount, not the final total.</p>
             {form.pricing.map((x: any, i: number) => (
               <div key={i} className="grid gap-2 md:grid-cols-6">
-                <input
-                  placeholder="Description"
-                  value={x.description}
+                <FieldInput label="Description" span value={x.description}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, description: e.target.value };
                     setForm({ ...form, pricing: a });
                   }}
-                  className="rounded border p-2 md:col-span-2"
                 />
-                <input
-                  type="number"
+                <FieldInput label="Quantity" type="number"
                   value={x.quantity}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, quantity: Number(e.target.value) };
                     setForm({ ...form, pricing: a });
                   }}
-                  className="rounded border p-2"
                 />
-                <input
+                <FieldInput label="Unit"
                   value={x.unit}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, unit: e.target.value };
                     setForm({ ...form, pricing: a });
                   }}
-                  className="rounded border p-2"
                 />
-                <input
-                  type="number"
+                <FieldInput label="Unit Price" type="number"
                   value={x.unitPrice}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, unitPrice: Number(e.target.value) };
                     setForm({ ...form, pricing: a });
                   }}
-                  className="rounded border p-2"
                 />
-                <input
-                  type="number"
+                <FieldInput label="Discount Amount" type="number"
                   value={x.discount}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, discount: Number(e.target.value) };
                     setForm({ ...form, pricing: a });
                   }}
-                  className="rounded border p-2"
                 />
               </div>
             ))}
@@ -325,35 +332,32 @@ export default function AdminProposalWorkspace() {
               />
             </div>
             <h2 className="text-lg font-bold">09 Payment Schedule</h2>
+            <p className="text-sm text-slate-600">Use percentages only; all payment percentages must total 100%. Payment amounts are calculated from the grand total.</p>
             {form.paymentMilestones.map((x: any, i: number) => (
               <div key={i} className="grid gap-2 md:grid-cols-3">
-                <input
+                <FieldInput label="Milestone Name"
                   value={x.name}
                   onChange={(e) => {
                     const a = [...form.paymentMilestones];
                     a[i] = { ...x, name: e.target.value };
                     setForm({ ...form, paymentMilestones: a });
                   }}
-                  className="rounded border p-2"
                 />
-                <input
-                  type="number"
+                <FieldInput label="Percentage" type="number"
                   value={x.percentage}
                   onChange={(e) => {
                     const a = [...form.paymentMilestones];
                     a[i] = { ...x, percentage: Number(e.target.value) };
                     setForm({ ...form, paymentMilestones: a });
                   }}
-                  className="rounded border p-2"
                 />
-                <input
+                <FieldInput label="Payment Trigger"
                   value={x.trigger}
                   onChange={(e) => {
                     const a = [...form.paymentMilestones];
                     a[i] = { ...x, trigger: e.target.value };
                     setForm({ ...form, paymentMilestones: a });
                   }}
-                  className="rounded border p-2"
                 />
               </div>
             ))}
@@ -438,6 +442,7 @@ function Meta({ l, v }: { l: string; v: any }) {
     </div>
   );
 }
+function FieldInput({label,value,onChange,type="text",span=false}:{label:string;value:any;onChange:(event:React.ChangeEvent<HTMLInputElement>)=>void;type?:string;span?:boolean}){return <label className={`text-xs font-bold text-slate-600 ${span?"md:col-span-2":""}`}>{label}<input type={type} value={value} onChange={onChange} className="mt-1 w-full rounded border p-2 text-base font-normal text-slate-900"/></label>}
 function Field({
   label,
   value,
