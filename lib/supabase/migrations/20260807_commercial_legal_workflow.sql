@@ -38,10 +38,11 @@ CREATE TABLE IF NOT EXISTS public.commercial_document_versions (id UUID PRIMARY 
 CREATE TABLE IF NOT EXISTS public.commercial_document_comments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), document_type TEXT NOT NULL, document_id UUID NOT NULL, author_id UUID NOT NULL, audience TEXT NOT NULL DEFAULT 'internal' CHECK(audience IN ('internal','client')), body TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now());
 CREATE OR REPLACE FUNCTION public.assign_commercial_number() RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 BEGIN
-  IF TG_TABLE_NAME='scopes_of_work' AND (NEW.scope_number IS NULL OR btrim(NEW.scope_number)='') THEN NEW.scope_number:=public.generate_business_document_number('scope_of_work','GXL-SOW',COALESCE(NEW.created_at,now())); END IF;
-  IF TG_TABLE_NAME='commercial_proposals' AND (NEW.proposal_number IS NULL OR btrim(NEW.proposal_number)='') THEN NEW.proposal_number:=public.generate_business_document_number('commercial_proposal','GXL-PRO',COALESCE(NEW.created_at,now())); END IF;
-  IF TG_TABLE_NAME='proposal_approval_records' AND (NEW.approval_number IS NULL OR btrim(NEW.approval_number)='') THEN NEW.approval_number:=public.generate_business_document_number('proposal_approval','GXL-PAP',COALESCE(NEW.created_at,now())); END IF;
-  IF TG_TABLE_NAME='master_service_agreements' AND (NEW.agreement_number IS NULL OR btrim(NEW.agreement_number)='') THEN NEW.agreement_number:=public.generate_business_document_number('master_service_agreement','GXL-MSA',COALESCE(NEW.created_at,now())); END IF;
+  IF TG_TABLE_NAME='scopes_of_work' AND (NEW.scope_number IS NULL OR btrim(NEW.scope_number)='') THEN NEW.scope_number:=public.generate_business_document_number('scope_of_work','GXL-SOW',COALESCE(NEW.created_at,now()));
+  ELSIF TG_TABLE_NAME='commercial_proposals' AND (NEW.proposal_number IS NULL OR btrim(NEW.proposal_number)='') THEN NEW.proposal_number:=public.generate_business_document_number('commercial_proposal','GXL-PRO',COALESCE(NEW.created_at,now()));
+  ELSIF TG_TABLE_NAME='proposal_approval_records' AND (NEW.approval_number IS NULL OR btrim(NEW.approval_number)='') THEN NEW.approval_number:=public.generate_business_document_number('proposal_approval','GXL-PAP',COALESCE(NEW.created_at,now()));
+  ELSIF TG_TABLE_NAME='master_service_agreements' AND (NEW.agreement_number IS NULL OR btrim(NEW.agreement_number)='') THEN NEW.agreement_number:=public.generate_business_document_number('master_service_agreement','GXL-MSA',COALESCE(NEW.created_at,now()));
+  END IF;
   RETURN NEW;
 END $$;
 DROP TRIGGER IF EXISTS trg_scope_number ON public.scopes_of_work; CREATE TRIGGER trg_scope_number BEFORE INSERT ON public.scopes_of_work FOR EACH ROW EXECUTE FUNCTION public.assign_commercial_number();
