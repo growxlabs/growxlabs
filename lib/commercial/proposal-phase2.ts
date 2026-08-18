@@ -44,11 +44,10 @@ async function clientIdentity(clientId: string) {
 export async function updateProposalDraft(id: string, input: ProposalEditorInput, actorId: string) {
   const current = await proposal(id);
   if (!editable.has(current.status)) return fail(409, "INVALID_TRANSITION", "Only a draft or returned proposal can be edited.");
-  const commercial = calculateCommercials(input.pricing, input.tax, input.currency);
-  const payments = validatePaymentMilestones(input.paymentMilestones);
-  if (!input.validUntil || !Array.isArray((input.clientContent as any).terms) || !(input.clientContent as any).terms.length) {
-    return fail(400, "VALIDATION_FAILED", "Validity and terms are required.");
-  }
+  const commercial = input.pricing?.length
+    ? calculateCommercials(input.pricing, input.tax, input.currency)
+    : { lines: [], totals: { currency: input.currency || "INR", subtotal: 0, discount: 0, taxable_subtotal: 0, tax_type: input.tax?.type || "GST", tax_rate: Number(input.tax?.rate || 0), tax_amount: 0, grand_total: 0 } };
+  const payments = input.paymentMilestones?.length ? validatePaymentMilestones(input.paymentMilestones) : [];
   const { data, error } = await supabaseAdmin.from("commercial_proposals").update({
     client_content: input.clientContent,
     pricing: commercial.lines,
@@ -66,6 +65,7 @@ export async function updateProposalDraft(id: string, input: ProposalEditorInput
 
 export async function recordInternalDecision(id: string, action: "submit" | "approve" | "return", comment: string | undefined, actorId: string) {
   const current = await proposal(id);
+  if (action === "submit" && (!current.valid_until || !current.pricing?.length || !current.payment_schedule?.length || !current.client_content?.terms?.length)) return fail(400, "VALIDATION_FAILED", "Complete validity, terms, pricing and payment schedule before submitting for internal review.");
   const allowed = action === "submit" ? current.status === "draft" : current.status === "internal_review";
   if (!allowed) return fail(409, "INVALID_TRANSITION", "Internal review action is not allowed in the current state.");
   if (action === "return" && !comment?.trim()) return fail(400, "VALIDATION_FAILED", "A return reason is required.");

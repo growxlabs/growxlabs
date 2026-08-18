@@ -254,9 +254,11 @@ export default function AdminProposalWorkspace() {
             ))}
             <h2 className="text-lg font-bold">07 Commercial Pricing</h2>
             <p className="text-sm text-slate-600">Enter the agreed price. Discount is a currency amount, not the final total.</p>
+            <div className="hidden grid-cols-7 gap-2 text-[11px] font-bold uppercase tracking-wide text-slate-500 md:grid"><span className="md:col-span-2">Description</span><span>Quantity</span><span>Unit</span><span>Unit Price</span><span>Discount (₹)</span><span>Subtotal (₹)</span></div>
             {form.pricing.map((x: any, i: number) => (
-              <div key={i} className="grid gap-2 md:grid-cols-6">
+              <div key={i} className="grid gap-2 md:grid-cols-7">
                 <FieldInput label="Description" span value={x.description}
+                  disabled={!editable}
                   onChange={(e) => {
                     const a = [...form.pricing];
                     a[i] = { ...x, description: e.target.value };
@@ -264,6 +266,7 @@ export default function AdminProposalWorkspace() {
                   }}
                 />
                 <FieldInput label="Quantity" type="number"
+                  disabled={!editable}
                   value={x.quantity}
                   onChange={(e) => {
                     const a = [...form.pricing];
@@ -272,6 +275,7 @@ export default function AdminProposalWorkspace() {
                   }}
                 />
                 <FieldInput label="Unit"
+                  disabled={!editable}
                   value={x.unit}
                   onChange={(e) => {
                     const a = [...form.pricing];
@@ -280,6 +284,7 @@ export default function AdminProposalWorkspace() {
                   }}
                 />
                 <FieldInput label="Unit Price" type="number"
+                  disabled={!editable}
                   value={x.unitPrice}
                   onChange={(e) => {
                     const a = [...form.pricing];
@@ -288,6 +293,7 @@ export default function AdminProposalWorkspace() {
                   }}
                 />
                 <FieldInput label="Discount Amount" type="number"
+                  disabled={!editable}
                   value={x.discount}
                   onChange={(e) => {
                     const a = [...form.pricing];
@@ -295,6 +301,7 @@ export default function AdminProposalWorkspace() {
                     setForm({ ...form, pricing: a });
                   }}
                 />
+                <div className="rounded border border-slate-200 bg-slate-50 p-2 text-base text-slate-900"><span className="mb-1 block text-xs font-bold text-slate-600 md:hidden">Subtotal (₹)</span>{(Number(x.quantity || 0) * Number(x.unitPrice || 0) - Number(x.discount || 0)).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
               </div>
             ))}
             {editable && (
@@ -454,7 +461,7 @@ function Meta({ l, v }: { l: string; v: any }) {
     </div>
   );
 }
-function FieldInput({label,value,onChange,type="text",span=false}:{label:string;value:any;onChange:(event:React.ChangeEvent<HTMLInputElement>)=>void;type?:string;span?:boolean}){return <label className={`text-xs font-bold text-slate-600 ${span?"md:col-span-2":""}`}>{label}<input type={type} value={value} onChange={onChange} className="mt-1 w-full rounded border p-2 text-base font-normal text-slate-900"/></label>}
+function FieldInput({label,value,onChange,type="text",span=false,disabled=false}:{label:string;value:any;onChange:(event:React.ChangeEvent<HTMLInputElement>)=>void;type?:string;span?:boolean;disabled?:boolean}){return <label className={`text-xs font-bold text-slate-600 ${span?"md:col-span-2":""}`}>{label}<input disabled={disabled} type={type} value={value} onChange={onChange} className="mt-1 w-full rounded border p-2 text-base font-normal text-slate-900 disabled:cursor-not-allowed disabled:bg-slate-100"/></label>}
 function Field({
   label,
   value,
