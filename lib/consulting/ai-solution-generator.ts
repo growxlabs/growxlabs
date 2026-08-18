@@ -40,7 +40,11 @@ export async function generateAiSolutionContent(reportId:string,actorId:string){
    try{raw=await requestReport(client,model,audit,false)}catch(fallbackError){throw friendlyProviderError(fallbackError)}
  }
  if(!raw)throw new ConsultingHttpError(502,"The AI provider returned an empty report. Please try again.");
- let parsed:Record<string,unknown>;try{parsed=JSON.parse(raw)}catch{throw new ConsultingHttpError(502,"The AI provider returned an invalid report. Please try again.");}
+ let parsed=parseReport(raw);
+ if(!parsed&&usedFallback){
+   try{raw=await requestReport(client,model,audit,false,true);parsed=parseReport(raw)}catch(fallbackError){throw friendlyProviderError(fallbackError)}
+ }
+ if(!parsed)throw new ConsultingHttpError(502,"The AI provider could not produce a complete report. Please try again.");
  const content=normalize(parsed);
  const saved=await supabaseAdmin.from("ai_solution_reports").update({...content,status:"internal_review",updated_at:new Date().toISOString()}).eq("id",reportId).select("*").single();
  if(saved.error)throw new Error(saved.error.message);
@@ -51,18 +55,26 @@ export async function generateAiSolutionContent(reportId:string,actorId:string){
  return saved.data;
 }
 
-async function requestReport(client:OpenAI,model:string,audit:Record<string,unknown>,strict:boolean){
+async function requestReport(client:OpenAI,model:string,audit:Record<string,unknown>,strict:boolean,compact=false){
  const response=await client.chat.completions.create({
-  model,temperature:0.2,max_tokens:3500,
+  model,temperature:0.2,max_tokens:strict?3500:compact?4500:7000,
   response_format:strict?{type:"json_schema",json_schema:{name:"growxlabs_ai_solution_report",strict:true,schema}}:{type:"json_object"},
   messages:[
-   {role:"system",content:"You are a senior GrowXLabs business and AI transformation consultant. Return JSON only. Produce a concise professional report using only source-audit facts. Do not invent metrics, systems, budgets, integrations, or findings. Use empty arrays when evidence is insufficient. Required top-level keys: executive_summary, business_outcomes, opportunity_map, opportunities, automation_opportunities, software_opportunities, solution_options, human_in_loop, data_requirements, integration_requirements, roadmap, risks, recommendations."},
+   {role:"system",content:`You are a senior GrowXLabs business and AI transformation consultant. Return one valid JSON object only, without markdown fences or commentary. Produce a concise professional report using only source-audit facts. Do not invent metrics, systems, budgets, integrations, or findings. Use empty arrays when evidence is insufficient. Required top-level keys: executive_summary, business_outcomes, opportunity_map, opportunities, automation_opportunities, software_opportunities, solution_options, human_in_loop, data_requirements, integration_requirements, roadmap, risks, recommendations.${compact?" Limit every array to at most two concise items and keep the entire response under 2500 tokens.":""}`},
    {role:"user",content:`Create the structured AI Opportunity & Solution Report from this audit: ${JSON.stringify(prune(audit))}`}
   ]
  });
  return response.choices[0]?.message?.content||undefined;
 }
 function normalize(value:Record<string,unknown>){const summary=value.executive_summary;const result:Record<string,unknown>={executive_summary:typeof summary==="object"&&summary!==null?summary:{content:String(summary||"Consultant review required."),currentState:"Validation required.",transformationRationale:"Validation required."}};for(const key of arrayFields)result[key]=Array.isArray(value[key])?value[key]:[];return result}
+function parseReport(raw:string|undefined){
+ if(!raw)return null;
+ const cleaned=raw.trim().replace(/^\`\`\`(?:json)?\s*/i,"").replace(/\s*\`\`\`$/,"");
+ const start=cleaned.indexOf("{"),end=cleaned.lastIndexOf("}");
+ if(start<0||end<=start)return null;
+ const candidate=cleaned.slice(start,end+1).replace(/,\s*([}\]])/g,"$1");
+ try{const value=JSON.parse(candidate);return value&&typeof value==="object"&&!Array.isArray(value)?value as Record<string,unknown>:null}catch{return null}
+}
 function prune(value:unknown):unknown{if(Array.isArray(value))return value.map(prune);if(!value||typeof value!=="object")return value;return Object.fromEntries(Object.entries(value as Record<string,unknown>).filter(([key])=>!["id","created_at","updated_at","created_by","approved_by"].includes(key)).map(([key,item])=>[key,prune(item)]))}
 function isCreditError(error:unknown){return error instanceof OpenAI.APIError&&(error.status===402||/credit|max_tokens|afford/i.test(error.message))}
 function friendlyProviderError(error:unknown){if(error instanceof OpenAI.APIError){if(error.status===401)return new ConsultingHttpError(503,"AI authentication failed. Please contact the system administrator.");if(error.status===429)return new ConsultingHttpError(503,"The AI service is temporarily busy. Please try again shortly.");return new ConsultingHttpError(502,"The AI report could not be generated right now. Please try again.");}return error}
