@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { FileText, Loader2, RefreshCw } from "lucide-react";
+import Link from "next/link";
 
 type Scope = {
   id: string;
@@ -95,9 +96,9 @@ export default function AdminScopesPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {scopes.map((scope) => (
-                  <tr key={scope.id} className="hover:bg-slate-50">
+                  <tr key={scope.id} className="cursor-pointer hover:bg-slate-50">
                     <td className="px-5 py-4 font-semibold text-slate-900">
-                      {scope.scope_number}
+                      <Link className="text-blue-700 hover:underline" href={`/admin/scopes/${scope.id}`}>{scope.scope_number}</Link>
                     </td>
                     <td className="px-5 py-4">
                       <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
