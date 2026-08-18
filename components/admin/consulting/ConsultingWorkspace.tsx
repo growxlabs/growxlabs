@@ -92,6 +92,35 @@ export function ConsultingWorkspace({
       router.push(`/admin/solution-architectures/${architectureId}`);
     },
   });
+  const createScope = useMutation({
+    mutationFn: async () => {
+      if (status !== "closed") {
+        const closeResponse = await fetch(`${config.endpoint}/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "closed" }),
+        });
+        const closeBody = await apiBody(closeResponse);
+        if (!closeResponse.ok)
+          throw new Error(
+            String(closeBody.error || "Unable to complete the architecture."),
+          );
+      }
+      const response = await fetch("/api/admin/scopes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ architectureId: id }),
+      });
+      const body = await apiBody(response);
+      if (!response.ok)
+        throw new Error(String(body.error || "Unable to create Scope of Work."));
+      const scope = body.scope as Record<string, unknown> | undefined;
+      if (!scope?.id)
+        throw new Error("Scope of Work was created without a document ID.");
+      return String(scope.id);
+    },
+    onSuccess: () => router.push("/admin/scopes"),
+  });
   if (query.isPending) return <p>Loading document…</p>;
   if (query.error) return <p className="text-red-700">{query.error.message}</p>;
   const doc = query.data[config.root],
@@ -102,7 +131,7 @@ export function ConsultingWorkspace({
     architecturePlaceholder =
       kind === "architecture" &&
       String(summary?.content || "").startsWith("Draft"),
-    error = update.error ?? createNext.error;
+    error = update.error ?? createNext.error ?? createScope.error;
   if (kind === "report")
     return (
       <main className="p-6 md:p-10">
@@ -209,12 +238,12 @@ export function ConsultingWorkspace({
           <div className="flex flex-wrap gap-3">
             {architecturePlaceholder&&<button onClick={()=>update.mutate({generateDraft:true})} disabled={update.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-70">{update.isPending?"Generating Architecture…":"Generate Architecture Draft"}</button>}
             {!architecturePlaceholder&&["draft","internal_review","changes_required"].includes(status)&&<button onClick={()=>update.mutate({status:"approved_internal"})} disabled={update.isPending} className="rounded border border-[#1d4f7a] px-4 py-2 text-sm font-semibold text-[#1d4f7a]">Approve Architecture</button>}
-            {status==="approved_internal"&&<button onClick={()=>update.mutate({status:"closed"})} disabled={update.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">Complete &amp; Prepare Scope of Work</button>}
+            {["approved_internal","closed"].includes(status)&&<button onClick={()=>createScope.mutate()} disabled={createScope.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-70">{createScope.isPending?"Creating Scope of Work…":status==="closed"?"Create/Open Scope of Work":"Complete & Create Scope of Work"}</button>}
             <button onClick={()=>window.print()} disabled={update.isPending} className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold">Print</button>
           </div>
         </div>
         {architecturePlaceholder&&<p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">Architecture generation is required. This workspace still contains the initial placeholder.</p>}
-        {update.isPending&&<p className="mt-4 rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Preparing the architecture document from the approved AI report…</p>}
+        {(update.isPending||createScope.isPending)&&<p className="mt-4 rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">{createScope.isPending?"Creating the Scope of Work and opening the scopes workspace…":"Preparing the architecture document from the approved AI report…"}</p>}
         {error&&<p className="mt-3 text-sm text-red-700">{error.message}</p>}
       </div>
       <div className="mx-auto max-w-6xl">
