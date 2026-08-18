@@ -1,16 +1,252 @@
 "use client";
-import { useMutation,useQuery,useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AiSolutionReportDocument } from "@/components/consulting/AiSolutionReportDocument";
 import { consultingStatusLabel } from "@/lib/consulting/status";
-const statuses=["draft","internal_review","changes_required","approved_internal","ready_for_client","shared","client_reviewed","client_acknowledged","closed","archived"];
-export function ConsultingWorkspace({kind,id}:{kind:"report"|"architecture";id:string}){
- const config=kind==="report"?{endpoint:"/api/admin/ai-solution-reports",key:"ai-solution-report",root:"report",title:"AI Opportunity & Solution Report",nextEndpoint:"/api/admin/solution-architectures"}:{endpoint:"/api/admin/solution-architectures",key:"solution-architecture",root:"architecture",title:"Solution Architecture",nextEndpoint:""};
- const qc=useQueryClient(),query=useQuery<{[key:string]:Record<string,unknown>}>({queryKey:[config.key,id],queryFn:async()=>{const r=await fetch(`${config.endpoint}/${id}`),b=await apiBody(r);if(!r.ok)throw new Error(String(b.error||"Unable to load document."));return b as {[key:string]:Record<string,unknown>};}});
- const update=useMutation({mutationFn:async(payload:Record<string,unknown>)=>{const r=await fetch(`${config.endpoint}/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}),b=await apiBody(r);if(!r.ok)throw new Error(String(b.error||"AI generation did not complete. Please try again."));return b;},onSuccess:()=>qc.invalidateQueries({queryKey:[config.key,id]})});
- const createNext=useMutation({mutationFn:async()=>{const r=await fetch(config.nextEndpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reportId:id})}),b=await apiBody(r);if(!r.ok)throw new Error(String(b.error||"Unable to continue workflow."));return b;}});
- if(query.isPending)return <p>Loading document…</p>;if(query.error)return <p className="text-red-700">{query.error.message}</p>;
- const doc=query.data[config.root],status=String(doc.status),summary=doc.executive_summary as Record<string,unknown>|undefined,placeholder=kind==="report"&&String(summary?.content||"").startsWith("Draft"),error=update.error??createNext.error;
- if(kind==="report")return <main className="p-6 md:p-10"><div className="no-print mx-auto mb-6 max-w-6xl rounded-xl border border-slate-200 bg-white p-5"><div className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Consulting workflow</p><p className="mt-1 text-sm text-slate-600">{consultingStatusLabel(status)}</p></div><div className="flex flex-wrap gap-3">{!["approved_internal","ready_for_client","shared","client_reviewed","client_acknowledged","closed","archived"].includes(status)&&<button onClick={()=>update.mutate({generateAi:true})} disabled={update.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">{update.isPending?"Generating…":placeholder?"Generate AI Draft":"Regenerate AI Draft"}</button>}{!placeholder&&["draft","internal_review","changes_required"].includes(status)&&<button onClick={()=>update.mutate({status:"approved_internal"})} disabled={update.isPending} className="rounded border border-[#1d4f7a] px-4 py-2 text-sm font-semibold text-[#1d4f7a]">Approve Report</button>}{status==="approved_internal"&&<button onClick={()=>createNext.mutate()} disabled={createNext.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">Generate Solution Architecture</button>}<button onClick={()=>window.print()} className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold">Print</button></div></div>{placeholder&&<p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">AI generation is required. The source audit is ready, but this report still contains the initial placeholder.</p>}{error&&<p className="mt-3 text-sm text-red-700">{error.message}</p>}</div><div className="mx-auto max-w-6xl"><AiSolutionReportDocument report={doc}/></div></main>;
- const content=Object.entries(doc).filter(([key,value])=>typeof value==="object"&&value!==null&&key!=="id");return <main className="space-y-6 p-6 md:p-10"><header className="rounded-xl border border-slate-200 bg-white p-6"><h1 className="text-3xl font-bold">{String(doc.architecture_number)}</h1><p>{config.title} · {consultingStatusLabel(status)}</p><div className="mt-4 flex gap-3"><select value={status} onChange={e=>update.mutate({status:e.target.value})}>{statuses.map(s=><option key={s} value={s}>{consultingStatusLabel(s)}</option>)}</select><button onClick={()=>window.print()}>Print</button></div></header><div className="grid gap-5 lg:grid-cols-2">{content.map(([key,value])=><section key={key} className="rounded-xl border bg-white p-5"><h2 className="font-semibold">{key.replace(/_/g," ")}</h2><pre className="whitespace-pre-wrap text-xs">{JSON.stringify(value,null,2)}</pre></section>)}</div></main>;
+import { useRouter } from "next/navigation";
+const statuses = [
+  "draft",
+  "internal_review",
+  "changes_required",
+  "approved_internal",
+  "ready_for_client",
+  "shared",
+  "client_reviewed",
+  "client_acknowledged",
+  "closed",
+  "archived",
+];
+export function ConsultingWorkspace({
+  kind,
+  id,
+}: {
+  kind: "report" | "architecture";
+  id: string;
+}) {
+  const router = useRouter();
+  const config =
+    kind === "report"
+      ? {
+          endpoint: "/api/admin/ai-solution-reports",
+          key: "ai-solution-report",
+          root: "report",
+          title: "AI Opportunity & Solution Report",
+          nextEndpoint: "/api/admin/solution-architectures",
+        }
+      : {
+          endpoint: "/api/admin/solution-architectures",
+          key: "solution-architecture",
+          root: "architecture",
+          title: "Solution Architecture",
+          nextEndpoint: "",
+        };
+  const qc = useQueryClient(),
+    query = useQuery<{ [key: string]: Record<string, unknown> }>({
+      queryKey: [config.key, id],
+      queryFn: async () => {
+        const r = await fetch(`${config.endpoint}/${id}`),
+          b = await apiBody(r);
+        if (!r.ok)
+          throw new Error(String(b.error || "Unable to load document."));
+        return b as { [key: string]: Record<string, unknown> };
+      },
+    });
+  const update = useMutation({
+    mutationFn: async (payload: Record<string, unknown>) => {
+      const r = await fetch(`${config.endpoint}/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }),
+        b = await apiBody(r);
+      if (!r.ok)
+        throw new Error(
+          String(
+            b.error || "AI generation did not complete. Please try again.",
+          ),
+        );
+      return b;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: [config.key, id] }),
+  });
+  const createNext = useMutation({
+    mutationFn: async () => {
+      const r = await fetch(config.nextEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reportId: id }),
+        }),
+        b = await apiBody(r);
+      if (!r.ok)
+        throw new Error(String(b.error || "Unable to continue workflow."));
+      const architecture = b.architecture as
+        | Record<string, unknown>
+        | undefined;
+      if (!architecture?.id)
+        throw new Error(
+          "Architecture was created, but its document ID was not returned.",
+        );
+      return String(architecture.id);
+    },
+    onSuccess: (architectureId) => {
+      router.push(`/admin/solution-architectures/${architectureId}`);
+    },
+  });
+  if (query.isPending) return <p>Loading document…</p>;
+  if (query.error) return <p className="text-red-700">{query.error.message}</p>;
+  const doc = query.data[config.root],
+    status = String(doc.status),
+    summary = doc.executive_summary as Record<string, unknown> | undefined,
+    placeholder =
+      kind === "report" && String(summary?.content || "").startsWith("Draft"),
+    error = update.error ?? createNext.error;
+  if (kind === "report")
+    return (
+      <main className="p-6 md:p-10">
+        <div className="no-print mx-auto mb-6 max-w-6xl rounded-xl border border-slate-200 bg-white p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                Consulting workflow
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                {consultingStatusLabel(status)}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {![
+                "approved_internal",
+                "ready_for_client",
+                "shared",
+                "client_reviewed",
+                "client_acknowledged",
+                "closed",
+                "archived",
+              ].includes(status) && (
+                <button
+                  onClick={() => update.mutate({ generateAi: true })}
+                  disabled={update.isPending}
+                  className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {update.isPending
+                    ? "Generating…"
+                    : placeholder
+                      ? "Generate AI Draft"
+                      : "Regenerate AI Draft"}
+                </button>
+              )}
+              {!placeholder &&
+                ["draft", "internal_review", "changes_required"].includes(
+                  status,
+                ) && (
+                  <button
+                    onClick={() =>
+                      update.mutate({ status: "approved_internal" })
+                    }
+                    disabled={update.isPending}
+                    className="rounded border border-[#1d4f7a] px-4 py-2 text-sm font-semibold text-[#1d4f7a]"
+                  >
+                    Approve Report
+                  </button>
+                )}
+              {status === "approved_internal" && (
+                <button
+                  type="button"
+                  onClick={() => createNext.mutate()}
+                  disabled={createNext.isPending}
+                  aria-busy={createNext.isPending}
+                  className="inline-flex min-w-64 items-center justify-center gap-2 rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-70"
+                >
+                  {createNext.isPending && (
+                    <span
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                      aria-hidden="true"
+                    />
+                  )}
+                  {createNext.isPending
+                    ? "Creating Architecture…"
+                    : "Generate Solution Architecture"}
+                </button>
+              )}
+              <button
+                onClick={() => window.print()}
+                disabled={createNext.isPending}
+                className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold disabled:opacity-50"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+          {placeholder && (
+            <p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              AI generation is required. The source audit is ready, but this
+              report still contains the initial placeholder.
+            </p>
+          )}
+          {createNext.isPending && (
+            <p className="mt-4 rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+              Creating the Solution Architecture workspace. You will be
+              redirected automatically when it is ready.
+            </p>
+          )}
+          {error && (
+            <p className="mt-3 text-sm text-red-700">{error.message}</p>
+          )}
+        </div>
+        <div className="mx-auto max-w-6xl">
+          <AiSolutionReportDocument report={doc} />
+        </div>
+      </main>
+    );
+  const content = Object.entries(doc).filter(
+    ([key, value]) =>
+      typeof value === "object" && value !== null && key !== "id",
+  );
+  return (
+    <main className="space-y-6 p-6 md:p-10">
+      <header className="rounded-xl border border-slate-200 bg-white p-6">
+        <h1 className="text-3xl font-bold">
+          {String(doc.architecture_number)}
+        </h1>
+        <p>
+          {config.title} · {consultingStatusLabel(status)}
+        </p>
+        <div className="mt-4 flex gap-3">
+          <select
+            value={status}
+            onChange={(e) => update.mutate({ status: e.target.value })}
+          >
+            {statuses.map((s) => (
+              <option key={s} value={s}>
+                {consultingStatusLabel(s)}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => window.print()}>Print</button>
+        </div>
+      </header>
+      <div className="grid gap-5 lg:grid-cols-2">
+        {content.map(([key, value]) => (
+          <section key={key} className="rounded-xl border bg-white p-5">
+            <h2 className="font-semibold">{key.replace(/_/g, " ")}</h2>
+            <pre className="whitespace-pre-wrap text-xs">
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          </section>
+        ))}
+      </div>
+    </main>
+  );
 }
-async function apiBody(response:Response){const text=await response.text();if(!text)return {};try{return JSON.parse(text) as Record<string,unknown>}catch{return {error:response.ok?"The server returned an invalid response.":"The request timed out or the server was temporarily unavailable. Please try again."}}}
+async function apiBody(response: Response) {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return {
+      error: response.ok
+        ? "The server returned an invalid response."
+        : "The request timed out or the server was temporarily unavailable. Please try again.",
+    };
+  }
+}
