@@ -20,6 +20,18 @@ const previewCommercials = (form: any) => {
   const subtotal = pricing.reduce((sum: number, line: any) => sum + line.quantity * line.unit_price, 0), discount = pricing.reduce((sum: number, line: any) => sum + line.discount, 0), taxable = Math.max(0, subtotal - discount), taxAmount = taxable * Number(form.taxRate || 0) / 100;
   return { pricing, totals: { currency: form.currency, subtotal, discount, taxable_subtotal: taxable, tax_type: form.taxType, tax_rate: Number(form.taxRate || 0), tax_amount: taxAmount, grand_total: taxable + taxAmount } };
 };
+const normalizeLegacyDraft = (draft: any) => ({
+  ...draft,
+  pricing: (draft.pricing || []).map((line: any) => {
+    const gross = Number(line.quantity || 0) * Number(line.unitPrice || 0);
+    return { ...line, discount: gross > 0 && Number(line.discount) === gross ? 0 : Number(line.discount || 0) };
+  }),
+  paymentMilestones: (draft.paymentMilestones || []).map((item: any, index: number) => {
+    const namedPercentage = Number(String(item.name || "").replace("%", ""));
+    if (Number(item.percentage) > 100 && namedPercentage > 0 && namedPercentage <= 100) return { ...item, name: ["Initial Payment", "Implementation Milestone", "Final Payment"][index] || `Payment ${index + 1}`, percentage: namedPercentage };
+    return item;
+  }),
+});
 export default function AdminProposalWorkspace() {
   const { proposalId } = useParams<{ proposalId: string }>(),
     q = useQuery({
@@ -64,8 +76,8 @@ export default function AdminProposalWorkspace() {
         validUntil: p.valid_until || "",
         internalNotes: p.internal_notes || "",
       };
-      try { const recovered = localStorage.getItem(draftKey); setForm(recovered ? { ...serverForm, ...JSON.parse(recovered) } : serverForm); }
-      catch { setForm(serverForm); }
+      try { const recovered = localStorage.getItem(draftKey); setForm(normalizeLegacyDraft(recovered ? { ...serverForm, ...JSON.parse(recovered) } : serverForm)); }
+      catch { setForm(normalizeLegacyDraft(serverForm)); }
     }
   }, [q.data, form, draftKey]);
   useEffect(() => { if (form) localStorage.setItem(draftKey, JSON.stringify(form)); }, [form, draftKey]);
@@ -203,7 +215,7 @@ export default function AdminProposalWorkspace() {
           )}
         </div>
       </header>
-      {message && <p className="rounded border bg-white p-3 text-sm">{message}</p>}
+      {message && <p className={`fixed right-6 top-24 z-50 max-w-xl rounded border p-4 text-sm shadow-lg ${message === "Proposal updated." ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-red-300 bg-red-50 text-red-800"}`}>{message}</p>}
       {editable && !preview && <p className="rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Changes are automatically preserved in this browser. Use Save Draft to validate and save them permanently.</p>}
       {preview ? (
         <ProposalDocument snapshot={snapshot} status={p.status} />
@@ -392,7 +404,7 @@ export default function AdminProposalWorkspace() {
                 onClick={() => action("save")}
                 className="rounded bg-blue-700 px-5 py-3 font-semibold text-white"
               >
-                Save Draft
+                {busy ? "Saving Draft…" : "Save Draft"}
               </button>
             )}
           </section>
