@@ -1,6 +1,7 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AiSolutionReportDocument } from "@/components/consulting/AiSolutionReportDocument";
+import { SolutionArchitectureDocument } from "@/components/consulting/SolutionArchitectureDocument";
 import { consultingStatusLabel } from "@/lib/consulting/status";
 import { useRouter } from "next/navigation";
 const statuses = [
@@ -98,6 +99,9 @@ export function ConsultingWorkspace({
     summary = doc.executive_summary as Record<string, unknown> | undefined,
     placeholder =
       kind === "report" && String(summary?.content || "").startsWith("Draft"),
+    architecturePlaceholder =
+      kind === "architecture" &&
+      String(summary?.content || "").startsWith("Draft"),
     error = update.error ?? createNext.error;
   if (kind === "report")
     return (
@@ -197,42 +201,24 @@ export function ConsultingWorkspace({
         </div>
       </main>
     );
-  const content = Object.entries(doc).filter(
-    ([key, value]) =>
-      typeof value === "object" && value !== null && key !== "id",
-  );
   return (
-    <main className="space-y-6 p-6 md:p-10">
-      <header className="rounded-xl border border-slate-200 bg-white p-6">
-        <h1 className="text-3xl font-bold">
-          {String(doc.architecture_number)}
-        </h1>
-        <p>
-          {config.title} · {consultingStatusLabel(status)}
-        </p>
-        <div className="mt-4 flex gap-3">
-          <select
-            value={status}
-            onChange={(e) => update.mutate({ status: e.target.value })}
-          >
-            {statuses.map((s) => (
-              <option key={s} value={s}>
-                {consultingStatusLabel(s)}
-              </option>
-            ))}
-          </select>
-          <button onClick={() => window.print()}>Print</button>
+    <main className="p-6 md:p-10">
+      <div className="no-print mx-auto mb-6 max-w-6xl rounded-xl border border-slate-200 bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div><p className="text-xs font-bold uppercase tracking-widest text-slate-500">Solution architecture workflow</p><p className="mt-1 text-sm text-slate-600">{consultingStatusLabel(status)}</p></div>
+          <div className="flex flex-wrap gap-3">
+            {architecturePlaceholder&&<button onClick={()=>update.mutate({generateDraft:true})} disabled={update.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-70">{update.isPending?"Generating Architecture…":"Generate Architecture Draft"}</button>}
+            {!architecturePlaceholder&&["draft","internal_review","changes_required"].includes(status)&&<button onClick={()=>update.mutate({status:"approved_internal"})} disabled={update.isPending} className="rounded border border-[#1d4f7a] px-4 py-2 text-sm font-semibold text-[#1d4f7a]">Approve Architecture</button>}
+            {status==="approved_internal"&&<button onClick={()=>update.mutate({status:"closed"})} disabled={update.isPending} className="rounded bg-[#1d4f7a] px-4 py-2 text-sm font-semibold text-white">Complete &amp; Prepare Scope of Work</button>}
+            <button onClick={()=>window.print()} disabled={update.isPending} className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold">Print</button>
+          </div>
         </div>
-      </header>
-      <div className="grid gap-5 lg:grid-cols-2">
-        {content.map(([key, value]) => (
-          <section key={key} className="rounded-xl border bg-white p-5">
-            <h2 className="font-semibold">{key.replace(/_/g, " ")}</h2>
-            <pre className="whitespace-pre-wrap text-xs">
-              {JSON.stringify(value, null, 2)}
-            </pre>
-          </section>
-        ))}
+        {architecturePlaceholder&&<p className="mt-4 rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">Architecture generation is required. This workspace still contains the initial placeholder.</p>}
+        {update.isPending&&<p className="mt-4 rounded border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">Preparing the architecture document from the approved AI report…</p>}
+        {error&&<p className="mt-3 text-sm text-red-700">{error.message}</p>}
+      </div>
+      <div className="mx-auto max-w-6xl">
+        <SolutionArchitectureDocument architecture={doc}/>
       </div>
     </main>
   );
