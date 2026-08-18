@@ -1,0 +1,19 @@
+"use client";
+
+const sections:[string,string][]=[["executiveSummary","Executive Summary"],["included","Included Scope"],["deliverables","Deliverables"],["milestones","Timeline & Milestones"],["assumptions","Assumptions"],["dependencies","Dependencies"],["exclusions","Exclusions"],["acceptanceCriteria","Acceptance Criteria"]];
+
+export function ScopeOfWorkDocument({scope,form,editable,onChange}:{scope:Record<string,unknown>;form:Record<string,string>;editable:boolean;onChange:(key:string,value:string)=>void}){
+  return <article className="overflow-hidden border border-slate-300 bg-white shadow-sm print:border-0 print:shadow-none">
+    <header className="border-b-2 border-slate-800 px-6 py-8 md:px-12 md:py-11">
+      <div className="flex justify-between gap-6"><div><div className="text-2xl font-extrabold">GrowX<span className="text-[#1d5f8d]">Labs.tech</span></div><p className="mt-1 text-[10px] font-bold uppercase tracking-[.16em] text-slate-500">AI-Native Software Company</p></div><p className="text-right text-[11px] font-bold uppercase tracking-[.15em] text-red-800">Confidential</p></div>
+      <p className="mt-9 text-xs font-bold uppercase tracking-[.2em] text-[#1d5f8d]">Commercial Document</p><h1 className="mt-3 font-serif text-3xl text-slate-950 md:text-4xl">Scope of Work</h1><p className="mt-2 text-sm text-slate-500">Defined services, deliverables and engagement boundaries</p>
+      <dl className="mt-8 grid gap-x-8 gap-y-4 border-t border-slate-200 pt-6 text-sm sm:grid-cols-2 lg:grid-cols-3"><Meta label="Scope Number" value={text(scope.scope_number)}/><Meta label="Client" value={text((scope.company as {name?:unknown}|undefined)?.name)||"Customer"}/><Meta label="Version" value={text(scope.version||1)}/><Meta label="Document Status" value={status(text(scope.status))}/><Meta label="Prepared By" value="GrowXLabs"/><Meta label="Confidentiality" value="Confidential Client Information"/></dl>
+    </header>
+    <div className="px-6 md:px-12">{sections.map(([key,title],index)=><section key={key} className="break-inside-avoid border-b border-slate-200 py-8 last:border-0"><div className="mb-5 flex items-baseline gap-4"><span className="font-serif text-lg text-[#1d4f7a]">{String(index+1).padStart(2,"0")}</span><h2 className="font-serif text-2xl text-slate-950">{title}</h2></div>{editable?<textarea aria-label={title} value={form[key]||""} onChange={event=>onChange(key,event.target.value)} placeholder={`Enter ${title.toLowerCase()}`} className="no-print min-h-28 w-full rounded border border-slate-300 bg-white p-4 text-sm leading-7 outline-none focus:border-[#1d5f8d] focus:ring-1 focus:ring-[#1d5f8d]"/>:<Content value={form[key]}/>} {editable&&<div className="hidden print:block"><Content value={form[key]}/></div>}</section>)}</div>
+    <footer className="border-t-2 border-slate-800 px-6 py-7 text-xs text-slate-600 md:px-12">GrowXLabs · Confidential Client Information · Scope Number: {text(scope.scope_number)}</footer>
+  </article>
+}
+function Content({value}:{value?:string}){const items=(value||"").split("\n").map(item=>item.trim()).filter(Boolean);if(!items.length)return <p className="text-sm italic text-slate-500">To be confirmed during internal review.</p>;if(items.length===1)return <p className="whitespace-pre-wrap text-sm leading-7 text-slate-800">{items[0]}</p>;return <ul className="space-y-2 text-sm leading-7 text-slate-800">{items.map((item,index)=><li key={`${item}-${index}`} className="flex gap-3"><span className="text-[#1d5f8d]">•</span><span>{item}</span></li>)}</ul>}
+function Meta({label,value}:{label:string;value:string}){return <div><dt className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{label}</dt><dd className="mt-1 text-slate-900">{value}</dd></div>}
+function text(value:unknown){return String(value??"")}
+function status(value:string){return value.replaceAll("_"," ").replace(/\b\w/g,letter=>letter.toUpperCase())}
