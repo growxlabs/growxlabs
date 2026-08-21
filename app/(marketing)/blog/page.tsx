@@ -39,16 +39,34 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
 
   // Blog posts database
   const featuredPost = {
-    slug: "kimi-k3-open-frontier-intelligence-model",
-    title: "Kimi K3 Technical Analysis: Inside Moonshot AI's Open Frontier Intelligence Model",
-    excerpt: "Moonshot AI has released Kimi K3, a 2.8T parameter open-weight Mixture-of-Experts model that sets global records across long-horizon software engineering and knowledge work benchmarks. Read our full technical report.",
-    category: "AI Research • Architecture • Open Weights",
-    date: "July 21, 2026",
-    readTime: "18 min read",
-    image: "/images/blog-kimi-k3-woodcut.png"
+    slug: "cursor-origin-github-ai-code-hosting",
+    title: "Cursor Launches Origin: Why Cursor Is Moving Into GitHub’s Territory",
+    excerpt: "Cursor launched Origin on August 17, 2026, bringing repository hosting, pull requests, GitHub sync and AI agents closer together. Here’s why the move matters for the future of software development.",
+    category: "Developer Infrastructure • AI Agents • Code Hosting",
+    date: "August 17, 2026",
+    readTime: "11 min read",
+    image: "/images/blog-cursor-origin.png"
   };
 
   const regularPosts = [
+    {
+      slug: "stripe-openrouter-ai-infrastructure-acquisition",
+      title: "Stripe Is Buying OpenRouter: Why a Payments Company Wants to Own Part of the AI Infrastructure Layer",
+      excerpt: "Stripe agreed to acquire OpenRouter on August 19, 2026 in an $8B+ milestone transaction. Here's how model routing, token usage, billing and payments are converging into a new AI infrastructure layer.",
+      category: "AI Infrastructure • FinTech • Token Economics",
+      date: "August 19, 2026",
+      readTime: "12 min read",
+      image: "/images/blog-stripe-openrouter-acquisition.png"
+    },
+    {
+      slug: "kimi-k3-open-frontier-intelligence-model",
+      title: "Kimi K3 Technical Analysis: Inside Moonshot AI's Open Frontier Intelligence Model",
+      excerpt: "Moonshot AI has released Kimi K3, a 2.8T parameter open-weight Mixture-of-Experts model that sets global records across long-horizon software engineering and knowledge work benchmarks. Read our full technical report.",
+      category: "AI Research • Architecture • Open Weights",
+      date: "July 21, 2026",
+      readTime: "18 min read",
+      image: "/images/blog-kimi-k3-woodcut.png"
+    },
     {
       slug: "applied-intuition-dana-physical-ai-platform",
       title: "Dana: Applied Intuition's Bold Bet on the Future of Physical AI",
