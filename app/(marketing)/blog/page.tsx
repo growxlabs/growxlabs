@@ -1,13 +1,7 @@
 import React from "react";
-import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
-import { Reveal } from "@/components/marketing/Reveal";
-import { ArrowRight, Calendar, Clock, User, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { locales } from "@/navigation";
 import { BlogInteractiveList } from "@/components/marketing/BlogInteractiveList";
-import { AstroChatCTA } from "@/components/marketing/AstroChatCTA";
-import { FlickerText } from "@/components/marketing/FlickerText";
 
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / Directory SEO)
@@ -35,8 +29,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function BlogIndexPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const titleName = "INSIGHTS";
-
   // Blog posts database
   const featuredPost = {
     slug: "cursor-origin-github-ai-code-hosting",
@@ -262,7 +254,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
   };
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24 animate-fade-in">
+    <div className="min-h-screen w-full bg-black pb-24 pt-20 text-white selection:bg-[#bdefff] selection:text-black">
       {/* Schema injection */}
       <Script
         id="blog-index-schema"
@@ -270,34 +262,19 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 md:px-10 xl:px-16 2xl:px-24">
+      <div className="mx-auto max-w-[1600px] px-6 md:px-10 xl:px-20">
         {/* Page Header */}
-        <header className="pb-10 mb-10 text-center">
-          <Reveal y={20}>
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-4 block font-mono">
-              Editorial Insights
-            </span>
-            <div className="w-full overflow-hidden flex justify-center items-end select-none pointer-events-none mb-6">
-              <h1 className="font-black select-none tracking-[-0.06em] text-foreground leading-[0.8] text-[clamp(2.5rem,9.2vw,130px)] uppercase whitespace-nowrap">
-                <FlickerText text={titleName} />
-              </h1>
-            </div>
-            <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl mx-auto">
-              Curated engineering papers, case studies, and technical deep-dives from the GrowXLabsTech team.
-            </p>
-          </Reveal>
+        <header className="grid gap-8 border-b border-white/15 py-12 md:grid-cols-[1fr_auto] md:items-end md:py-16">
+          <div>
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#bdefff]">Essays · Analysis · Field notes</p>
+            <h1 className="max-w-5xl font-serif text-[clamp(3.35rem,7.5vw,8.5rem)] font-medium leading-[0.82] tracking-[-0.065em] text-[#f5f3ee]">Ideas worth<br />building on.</h1>
+          </div>
+          <p className="max-w-sm border-l border-white/25 pl-5 text-[15px] leading-relaxed text-white/60 md:mb-1">Original reporting and technical perspectives on AI, automation, engineering and the systems shaping what comes next.</p>
         </header>
 
         {/* Interactive Filterable Blog Index Split Layout */}
         <BlogInteractiveList posts={regularPosts} featuredPost={featuredPost} />
       </div>
-
-      {/* Bottom CTA Block */}
-      <section className="my-36 w-full flex justify-center">
-        <Reveal y={20} className="w-full flex justify-center">
-          <AstroChatCTA />
-        </Reveal>
-      </section>
     </div>
   );
 }

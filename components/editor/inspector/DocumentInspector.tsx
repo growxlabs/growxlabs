@@ -25,6 +25,7 @@ interface DocumentInspectorProps {
   handleDownloadPdf: () => void;
   handleDownloadMp4: () => void;
   activeIndex: number;
+  updateSlideBackground: (color: string) => void;
 }
 
 export function DocumentInspector({
@@ -37,6 +38,7 @@ export function DocumentInspector({
   handleDownloadPdf,
   handleDownloadMp4,
   activeIndex,
+  updateSlideBackground,
 }: DocumentInspectorProps) {
   const [exportOpen, setExportOpen] = useState(true);
 
@@ -121,6 +123,20 @@ export function DocumentInspector({
 
       <div className="p-4 border-b border-[var(--inspector-border)]">
         <h2 className="font-semibold text-[var(--inspector-text)] mb-3">Document Settings</h2>
+
+        <label className="mb-4 flex items-center justify-between rounded-[var(--radius-row)] border border-[var(--inspector-border)] bg-[var(--inspector-surface)] p-3">
+          <span className="text-xs font-medium text-[var(--inspector-text-secondary)]">Canvas color</span>
+          <span className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase text-[var(--inspector-text-muted)]">{activeSlide.backgroundColor}</span>
+            <input
+              type="color"
+              value={activeSlide.backgroundColor || "#ffffff"}
+              onChange={(event) => updateSlideBackground(event.target.value)}
+              className="h-8 w-10 cursor-pointer rounded border border-[var(--inspector-border)] bg-transparent p-0.5"
+              aria-label="Canvas background color"
+            />
+          </span>
+        </label>
         
         {/* Canvas dimensions display */}
         <div className="bg-[var(--inspector-surface)] rounded-[var(--radius-row)] p-3 mb-4">

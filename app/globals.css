@@ -1135,6 +1135,10 @@ section:not(:first-of-type) {
   font-family: var(--font-serif), Georgia, serif !important;
 }
 
+.posts-page main .blog-ui-heading {
+  font-family: var(--font-sans), Arial, sans-serif !important;
+}
+
 .posts-page main .font-lora {
   font-family: var(--font-lora), Georgia, serif !important;
 }

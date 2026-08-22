@@ -1,452 +1,233 @@
 "use client";
 
-import React, { useState } from "react";
 import Image from "next/image";
+import { useMemo, useState } from "react";
+import { ArrowRight, Search, X } from "lucide-react";
 import { Link } from "@/navigation";
-import { Search } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  readTime: string;
-  image?: string;
-}
+interface BlogPost { slug: string; title: string; excerpt: string; category: string; date: string; readTime: string; image?: string; }
+interface BlogInteractiveListProps { posts: BlogPost[]; featuredPost: BlogPost; }
 
-interface BlogInteractiveListProps {
-  posts: BlogPost[];
-  featuredPost: BlogPost;
-}
-
-const getPostImage = (post: BlogPost): string => {
-  if (post.image) return post.image;
-  const images: Record<string, string> = {
-    "nvidia-vision-agentic-to-useful-ai": "/images/nvidia-vision-agentic-to-useful-ai.png",
-    "chatbots-are-dying-agents-are-taking-over": "/images/chatbots-are-dying-agents-are-taking-over.png",
-    "blue-origin-new-glenn-rocket-explosion": "/images/blue-origin-new-glenn-rocket-explosion.png",
-    "claude-opus-4-8-anthropic-ai-model": "/images/claude_blog_woodcut_1780853620986.png",
-    "google-io-2026": "/images/blog-google-io-2026.png",
-    "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point": "/images/blog-ferrari-luce.png",
-    "google-search-is-no-longer-just-search": "/images/search_blog_woodcut_1780853646113.png",
-    "why-anthropic-is-becoming-a-serious-threat-to-openai": "/images/anthropic_openai_woodcut_1780853674501.png",
-    "ai-coding-tools-are-reshaping-modern-software-engineering": "/images/coding_blog_woodcut_1780853698423.png",
-    "n8n-automation-for-business": "/images/blog-n8n-automation.png",
-    "whatsapp-automation-for-lead-nurturing": "/images/blog-whatsapp-nurture.png",
-    "restaurant-customer-retention-automation": "/images/blog-restaurant-retention.png",
-    "indian-restaurant-website-usa": "/images/blog-restaurant-website.png",
-    "claude-fable-5-mythos-5-anthropic-models": "/images/blog-claude-fable-5-mythos-5.png",
-    "claude-fable-5-mythos-5-banned-us-government": "/images/blog-claude-fable-5-mythos-5-banned.png",
-    "elon-musks-path-to-becoming-the-worlds-first-trillionaire": "/images/blog-elon-trillionaire.png",
-    "chatgpt-gpt-5-6-preview-everything-you-need-to-know": "/images/blog-gpt56-preview.png",
-    "skyroot-aerospace-vikram-1-orbital-launch": "/images/blog-skyroot-vikram1.png",
-    "kimi-k3-open-frontier-intelligence-model": "/images/blog-kimi-k3-woodcut.png"
-  };
-  return images[post.slug] || "/images/nvidia-vision-agentic-to-useful-ai.png";
+const images: Record<string, string> = {
+  "nvidia-vision-agentic-to-useful-ai": "/images/nvidia-vision-agentic-to-useful-ai.png",
+  "chatbots-are-dying-agents-are-taking-over": "/images/chatbots-are-dying-agents-are-taking-over.png",
+  "blue-origin-new-glenn-rocket-explosion": "/images/blue-origin-new-glenn-rocket-explosion.png",
+  "claude-opus-4-8-anthropic-ai-model": "/images/claude_blog_woodcut_1780853620986.png",
+  "google-io-2026": "/images/blog-google-io-2026.png",
+  "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point": "/images/blog-ferrari-luce.png",
+  "google-search-is-no-longer-just-search": "/images/search_blog_woodcut_1780853646113.png",
+  "why-anthropic-is-becoming-a-serious-threat-to-openai": "/images/anthropic_openai_woodcut_1780853674501.png",
+  "ai-coding-tools-are-reshaping-modern-software-engineering": "/images/coding_blog_woodcut_1780853698423.png",
+  "n8n-automation-for-business": "/images/blog-n8n-automation.png",
+  "whatsapp-automation-for-lead-nurturing": "/images/blog-whatsapp-nurture.png",
+  "restaurant-customer-retention-automation": "/images/blog-restaurant-retention.png",
+  "indian-restaurant-website-usa": "/images/blog-restaurant-website.png",
+  "claude-fable-5-mythos-5-anthropic-models": "/images/blog-claude-fable-5-mythos-5.png",
+  "claude-fable-5-mythos-5-banned-us-government": "/images/blog-claude-fable-5-mythos-5-banned.png",
+  "elon-musks-path-to-becoming-the-worlds-first-trillionaire": "/images/blog-elon-trillionaire.png",
+  "chatgpt-gpt-5-6-preview-everything-you-need-to-know": "/images/blog-gpt56-preview.png",
+  "skyroot-aerospace-vikram-1-orbital-launch": "/images/blog-skyroot-vikram1.png",
+  "kimi-k3-open-frontier-intelligence-model": "/images/blog-kimi-k3-woodcut.png",
 };
 
-const getAccentWord = (slug: string): string => {
-  const accents: Record<string, string> = {
-    "nvidia-vision-agentic-to-useful-ai": "Future",
-    "chatbots-are-dying-agents-are-taking-over": "Dying",
-    "blue-origin-new-glenn-rocket-explosion": "Explodes",
-    "claude-opus-4-8-anthropic-ai-model": "Benchmarks",
-    "google-io-2026": "AI-Native",
-    "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point": "Luce",
-    "google-search-is-no-longer-just-search": "Search",
-    "why-anthropic-is-becoming-a-serious-threat-to-openai": "Threat",
-    "ai-coding-tools-are-reshaping-modern-software-engineering": "Reshaping",
-    "n8n-automation-for-business": "Automation",
-    "whatsapp-automation-for-lead-nurturing": "Nurturing",
-    "restaurant-customer-retention-automation": "Lose",
-    "indian-restaurant-website-usa": "Stop",
-    "claude-fable-5-mythos-5-anthropic-models": "Fable",
-    "claude-fable-5-mythos-5-banned-us-government": "Banned",
-    "elon-musks-path-to-becoming-the-worlds-first-trillionaire": "Trillionaire",
-    "chatgpt-gpt-5-6-preview-everything-you-need-to-know": "Preview",
-    "skyroot-aerospace-vikram-1-orbital-launch": "Orbital",
-    "kimi-k3-open-frontier-intelligence-model": "Frontier"
-  };
-  return accents[slug] || "";
+const getImage = (post: BlogPost) => post.image || images[post.slug] || images["nvidia-vision-agentic-to-useful-ai"];
+const group = (category: string) => {
+  const value = category.toLowerCase();
+  if (value.includes("automation") || value.includes("whatsapp") || value.includes("n8n")) return "Automation";
+  if (value.includes("engineering") || value.includes("code") || value.includes("web")) return "Engineering";
+  if (value.includes("space") || value.includes("automotive") || value.includes("future") || value.includes("science")) return "Tech & Science";
+  return "AI & Agents";
 };
 
-const renderSerifTitle = (title: string, slug: string) => {
-  const accent = getAccentWord(slug);
-  if (accent && title.includes(accent)) {
-    const parts = title.split(accent);
-    return (
-      <>
-        {parts[0]}
-        <span className="italic font-serif font-normal">{accent}</span>
-        {parts.slice(1).join(accent)}
-      </>
-    );
-  }
-  return title;
-};
-
-export function BlogInteractiveList({ posts, featuredPost }: BlogInteractiveListProps) {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState<string>(" "); // Space handles state initial trigger cleanly
-  const [realSearch, setRealSearch] = useState<string>("");
-
-  const categories = ["All", "AI & Agents", "Automation", "Engineering", "Tech & Science"];
-
-  const getCategoryGroup = (category: string): string => {
-    const cat = category.toLowerCase();
-    if (cat.includes("automation") || cat.includes("whatsapp") || cat.includes("n8n") || cat.includes("retention")) {
-      return "Automation";
-    }
-    if (cat.includes("engineering") || cat.includes("code") || cat.includes("web")) {
-      return "Engineering";
-    }
-    if (cat.includes("space") || cat.includes("automotive") || cat.includes("future") || cat.includes("science")) {
-      return "Tech & Science";
-    }
-    if (cat.includes("ai") || cat.includes("agent") || cat.includes("anthropic") || cat.includes("openai") || cat.includes("search")) {
-      return "AI & Agents";
-    }
-    return "Other";
-  };
-
-  const filtered = posts.filter((post) => {
-    const matchesCategory =
-      activeCategory === "All" || getCategoryGroup(post.category) === activeCategory;
-    const matchesSearch =
-      realSearch === "" ||
-      post.title.toLowerCase().includes(realSearch.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(realSearch.toLowerCase()) ||
-      post.category.toLowerCase().includes(realSearch.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const showFeatured = featuredPost && (
-    (activeCategory === "All" || getCategoryGroup(featuredPost.category) === activeCategory) &&
-    (realSearch === "" ||
-     featuredPost.title.toLowerCase().includes(realSearch.toLowerCase()) ||
-     featuredPost.excerpt.toLowerCase().includes(realSearch.toLowerCase()))
-  );
-
-  const displayFeatured = showFeatured ? featuredPost : filtered[0];
-  const feedPosts = showFeatured
-    ? filtered.filter((p) => p.slug !== featuredPost.slug)
-    : filtered.slice(1);
-
-  // Divide regular feed posts into Left Column (2 items) and Right Column (remaining items)
-  const leftColumnPosts = feedPosts.slice(0, 2);
-  const rightColumnPosts = feedPosts.slice(2);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setRealSearch(val);
-    setSearchQuery(val || " ");
-  };
-
+function ArticleCard({ post, priority = false, index }: { post: BlogPost; priority?: boolean; index: number }) {
   return (
-    <div className="space-y-12">
-      {/* Minimalistic Inline Navigation & Search Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6">
-        {/* Transparent Category Tabs */}
-        <div className="flex flex-wrap items-center gap-6 order-2 md:order-1">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`text-xs font-mono tracking-widest uppercase pb-2 border-b transition-all duration-300 cursor-pointer ${
-                activeCategory === cat
-                  ? "border-white text-white font-bold"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        {/* Minimalist Search Icon & Input */}
-        <div className="relative w-full md:max-w-xs order-1 md:order-2">
-          <input
-            type="text"
-            value={realSearch}
-            onChange={handleSearchChange}
-            placeholder="Search insights..."
-            className="w-full bg-transparent border-b border-white/10 py-1.5 px-0 pl-7 text-xs focus:outline-none focus:border-white text-foreground placeholder-muted-foreground transition-all font-mono"
-          />
-          <Search className="absolute left-0 top-1.5 w-4.5 h-4.5 text-muted-foreground" />
+    <article className={`group flex min-w-0 flex-col border-b border-white/20 pb-10 md:border-b-0 ${index >= 2 ? "md:border-t md:border-dashed md:border-white/25 md:pt-12" : ""} ${index === 2 || index === 3 ? "lg:border-t-0 lg:pt-0" : ""} ${index >= 4 ? "lg:border-t lg:border-dashed lg:border-white/25 lg:pt-16" : ""} lg:border-r lg:pr-5 last:border-r-0`}>
+      <Link href={`/blog/${post.slug}`} className="relative block aspect-[1.04/1] overflow-hidden bg-[#151515] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]">
+        <Image src={getImage(post)} alt={post.title} fill priority={priority} sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-cover transition duration-500 ease-out group-hover:scale-[1.025] group-hover:brightness-110" />
+      </Link>
+      <div className="flex flex-1 flex-col pt-6">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/55">{group(post.category)}</p>
+        <Link href={`/blog/${post.slug}`} className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#bdefff]">
+          <h3 className="font-serif text-[clamp(2rem,2.55vw,2.75rem)] font-medium leading-[1.06] tracking-[-0.035em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h3>
+        </Link>
+        <p className="mt-5 line-clamp-4 font-serif text-[18px] leading-[1.45] text-white/70">{post.excerpt}</p>
+        <div className="mt-auto flex items-center gap-3 pt-7 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">
+          <span className="grid h-7 w-7 place-items-center rounded-full bg-[#bdefff] text-[9px] font-black text-black">GX</span>
+          <span>GrowXLabs Team</span><span className="text-white/30">·</span><span className="text-white/45">{post.readTime}</span>
         </div>
       </div>
+    </article>
+  );
+}
 
-      {/* Grid Layout inspired by every.to */}
-      {displayFeatured ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-start">
-          
-          {/* LEFT & CENTER COMBINED (col-span-9) */}
-          <div className="lg:col-span-9 space-y-16 order-2 lg:order-1">
-            
-            {/* Top row: Stories */}
-            <div className="grid grid-cols-1 md:grid-cols-9 gap-10 items-start">
-              
-              {/* 1. LEFT COLUMN (col-span-3 inside the 9-col container): Stacked Stories */}
-              <div className="md:col-span-3 space-y-12">
-                {leftColumnPosts.map((post) => (
-                  <div key={post.slug} className="group block space-y-3">
-                    {/* Clean Widescreen Thumbnail */}
-                    <Link href={`/blog/${post.slug}`} className="block">
-                      <div className="w-full overflow-hidden rounded-md border border-white/5 flex items-center justify-center">
-                        <img
-                          src={getPostImage(post)}
-                          alt={post.title}
-                          className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
-                        />
-                      </div>
-                    </Link>
+function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost; sideStories: BlogPost[]; recentStories: BlogPost[] }) {
+  return (
+    <section aria-labelledby="featured-edition" className="border-b border-white/20 py-8 md:py-10">
+      <h2 id="featured-edition" className="sr-only">Featured edition</h2>
+      <div className="grid gap-8 lg:grid-cols-12 lg:gap-0">
+        <div className="order-2 space-y-7 lg:order-1 lg:col-span-3 lg:border-r lg:border-dashed lg:border-white/25 lg:pr-5">
+          {sideStories.map((post) => (
+            <article key={post.slug} className="border-b border-dashed border-white/25 pb-7 last:border-b-0">
+              <Link href={`/blog/${post.slug}`} className="group block">
+                <div className="relative aspect-[1.72/1] overflow-hidden bg-[#151515]"><Image src={getImage(post)} alt={post.title} fill sizes="(max-width: 1023px) 100vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.025]" /></div>
+                <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/60">{post.date} · {group(post.category)}</p>
+                <h3 className="mt-3 font-serif text-[clamp(1.65rem,2vw,2.2rem)] leading-[1.08] tracking-[-0.025em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h3>
+                <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">GrowXLabs Team</p>
+              </Link>
+            </article>
+          ))}
+        </div>
 
-                    {/* Metadata */}
-                    <div className="text-[9px] font-mono tracking-[0.15em] text-white font-semibold uppercase">
-                      {post.date} IN <span>{getCategoryGroup(post.category)}</span>
-                    </div>
-
-                    {/* Title */}
-                    <Link href={`/blog/${post.slug}`} className="block">
-                      <h3 className="font-serif font-black text-xl text-foreground leading-snug tracking-tight group-hover:text-zinc-300 transition-colors">
-                        {renderSerifTitle(post.title, post.slug)}
-                      </h3>
-                    </Link>
-
-                    {/* Author row */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-white/10 bg-[#161616]">
-                        <img
-                          src="/images/avatars/growxlabs.png"
-                          alt="GXL Editor"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0a0a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
-                          }}
-                        />
-                      </div>
-                      <span className="font-mono text-[9px] tracking-wider text-muted-foreground uppercase">
-                        BY GROWXLABS TEAM
-                      </span>
-                    </div>
-                  </div>
-                ))}
-                
-                {leftColumnPosts.length === 0 && (
-                  <p className="text-xs font-mono text-muted-foreground text-center py-6">No matching insights in index feed.</p>
-                )}
-              </div>
-
-              {/* 2. MIDDLE COLUMN (col-span-6 inside the 9-col container): Huge Primary Featured Post */}
-              <div className="md:col-span-6 space-y-5 border-b border-white/10 md:border-b-0 pb-10 md:pb-0">
-                <div className="group block space-y-4">
-                  {/* Huge featured cover image */}
-                  <Link href={`/blog/${displayFeatured.slug}`} className="block">
-                    <div className="w-full overflow-hidden rounded-md border border-white/5 flex items-center justify-center">
-                      <img
-                        src={getPostImage(displayFeatured)}
-                        alt={displayFeatured.title}
-                        className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-[1.02]"
-                      />
-                    </div>
-                  </Link>
-
-                  {/* Metadata */}
-                  <div className="text-[10px] font-mono tracking-[0.2em] text-white font-bold uppercase">
-                    {displayFeatured.date} IN <span>{getCategoryGroup(displayFeatured.category)}</span>
-                  </div>
-
-                  {/* Large title */}
-                  <Link href={`/blog/${displayFeatured.slug}`} className="block">
-                    <h2 className="font-serif font-black text-3xl md:text-4xl text-foreground leading-[1.15] tracking-tight group-hover:text-zinc-300 transition-colors">
-                      {renderSerifTitle(displayFeatured.title, displayFeatured.slug)}
-                    </h2>
-                  </Link>
-
-                  {/* Excerpt */}
-                  <p className="text-muted-foreground text-[14px] leading-relaxed max-w-3xl">
-                    {displayFeatured.excerpt}
-                  </p>
-
-                  {/* Author row */}
-                  <div className="flex items-center gap-2 pt-2">
-                    <div className="w-5 h-5 rounded-full overflow-hidden shrink-0 border border-white/10 bg-[#161616]">
-                      <img
-                        src="/images/avatars/growxlabs.png"
-                        alt="GXL Editor"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0a0a0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
-                        }}
-                      />
-                    </div>
-                    <span className="font-mono text-[9px] tracking-wider text-muted-foreground uppercase">
-                      BY GROWXLABS TEAM
-                    </span>
-                  </div>
-                </div>
-              </div>
-
+        <article className="group order-1 lg:order-2 lg:col-span-6 lg:border-r lg:border-dashed lg:border-white/25 lg:px-5">
+          <Link href={`/blog/${lead.slug}`} className="block">
+            <div className="relative aspect-[1.3/1] overflow-hidden bg-[#151515]"><Image src={getImage(lead)} alt={lead.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.02]" /></div>
+            <div className="pt-5 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-white/65">{lead.date} · Featured analysis</p>
+              <h3 className="mt-4 font-serif text-[clamp(2.7rem,3.5vw,4rem)] font-medium leading-[0.98] tracking-[-0.04em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{lead.title}</h3>
+              <p className="mx-auto mt-5 max-w-3xl line-clamp-2 font-serif text-xl leading-[1.4] text-white/70">{lead.excerpt}</p>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.05em] text-white/75">GrowXLabs Team · {lead.readTime}</p>
             </div>
+          </Link>
+        </article>
 
-            {/* Bottom row: "BUILT BY GROWXLABS" Section */}
-            <div className="border-t border-white/10 pt-12 space-y-8">
-              <div>
-                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-neutral-400 uppercase">
-                  Built by GrowXLabs
-                </span>
-                <h3 className="font-serif font-black text-2xl text-foreground mt-2 uppercase tracking-tight">
-                  Try out our AI-powered products.
-                </h3>
-              </div>
-
-              {/* 5-column Projects grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {[
-                  {
-                    name: "3RDMIND",
-                    desc: "Autonomous multi-agent startup simulation and self-improving operational intelligence platform.",
-                    image: "/portfolio/3rdmind.png",
-                    link: "https://3rdmind.growxlabs.tech",
-                    bannerColor: "border-cyan-900/40 text-cyan-300",
-                    label: "Agentic AI Platform"
-                  },
-                  {
-                    name: "Pipper",
-                    desc: "Developer-focused local agent harness and desktop runtime to run Codex, Claude-Code, and OpenCode workflows side-by-side.",
-                    image: "/portfolio/pipper.png",
-                    link: "https://pipper.dev",
-                    bannerColor: "border-indigo-900/40 text-indigo-300",
-                    label: "Developer Tool"
-                  },
-                  {
-                    name: "ResumeForgeAI",
-                    desc: "AI powered career platform for Indian professionals. Resume builder, ATS optimizer, and job matching.",
-                    image: "/portfolio/resumeforgeai.png",
-                    link: "https://resumeforgeai.in",
-                    bannerColor: "border-rose-900/40 text-rose-300",
-                    label: "Career Platform"
-                  },
-                  {
-                    name: "UniversalAI",
-                    desc: "Multi model AI chat platform supporting Claude, GPT-4, and Gemini in one unified interface.",
-                    image: "/portfolio/universalai.png",
-                    link: "https://universalai.co.in",
-                    bannerColor: "border-indigo-900/40 text-indigo-300",
-                    label: "AI Platform"
-                  },
-                  {
-                    name: "RecruitAI",
-                    desc: "AI recruitment automation with screening, scoring, and n8n workflow integration.",
-                    image: "/portfolio/recruitai.png",
-                    link: "https://recruitaitech.in",
-                    bannerColor: "border-emerald-900/40 text-emerald-300",
-                    label: "Automation Portal"
-                  }
-                ].map((proj) => (
-                  <div key={proj.name} className="bg-transparent border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-white/20 transition-all duration-300 h-full group/card">
-                    {/* Header Banner */}
-                    <div className={`py-3 px-4 flex items-center justify-center font-mono font-bold text-[10px] uppercase tracking-widest border-b bg-transparent ${proj.bannerColor}`}>
-                      {proj.label}
-                    </div>
-
-                    {/* Image */}
-                    <div className="w-full overflow-hidden border-b border-white/10 flex items-center justify-center p-3 bg-transparent">
-                      <img
-                        src={proj.image}
-                        alt={proj.name}
-                        className="w-full h-auto object-contain rounded-lg transition-transform duration-500 group-hover/card:scale-[1.02]"
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5 flex-grow flex flex-col justify-between space-y-4">
-                      <div className="space-y-2">
-                        <h4 className="font-serif font-black text-lg text-white">
-                          {proj.name}
-                        </h4>
-                        <p className="text-xs text-neutral-400 leading-relaxed">
-                          {proj.desc}
-                        </p>
-                      </div>
-
-                      <a
-                        href={proj.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block w-full text-center bg-white text-black text-xs font-bold py-2.5 px-4 rounded-full hover:bg-neutral-200 transition-colors"
-                      >
-                        Try it
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+        <aside className="order-3 lg:col-span-3 lg:pl-5" aria-label="Recent essays">
+          <div className="flex items-center justify-between border-b border-white/20 pb-4"><h3 className="blog-ui-heading text-[20px] font-bold uppercase tracking-[-0.03em]">Recent essays</h3><ArrowRight className="h-5 w-5" /></div>
+          <div>
+            {recentStories.map((post) => (
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="group grid grid-cols-[88px_1fr] gap-4 border-b border-dashed border-white/25 py-5">
+                <div className="relative aspect-square overflow-hidden bg-[#151515]"><Image src={getImage(post)} alt="" fill sizes="88px" className="object-cover transition-transform duration-500 group-hover:scale-105" /></div>
+                <div className="min-w-0"><h4 className="font-serif text-[22px] leading-[1.08] tracking-[-0.02em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h4><p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-white/65">GrowXLabs Team</p></div>
+              </Link>
+            ))}
           </div>
+        </aside>
+      </div>
+    </section>
+  );
+}
 
-          {/* 3. RIGHT COLUMN (col-span-3): RECENT ESSAYS Feed */}
-          <div className="lg:col-span-3 space-y-6 order-3 lg:border-l lg:border-white/10 lg:pl-8">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-muted-foreground uppercase">
-                Recent Insights
-              </span>
-              <span className="text-xs text-muted-foreground font-mono">→</span>
+const growxProducts = [
+  { name: "ResumeForgeAI", description: "Create ATS-ready resumes, practice interviews and manage your career in one workspace.", image: "/portfolio/resumeforgeai-card.png", href: "https://resumeforgeai.in", tone: "bg-[#3b2719]", accent: "text-[#ffd7ac]" },
+  { name: "Pipper", description: "Run Codex, Claude Code and OpenCode together in one local developer workspace.", image: "/portfolio/pipper.png", href: "https://pipper.dev", tone: "bg-[#173643]", accent: "text-[#bdefff]" },
+  { name: "RecruitAI", description: "Screen applicants, run assessments and move qualified candidates through hiring faster.", image: "/portfolio/resumeforgeai.png", href: "https://recruitaitech.in", tone: "bg-[#313131]", accent: "text-[#e8e8e8]" },
+  { name: "3rdMind", description: "Coordinate strategy and execution with a digital C-suite built for founders.", image: "/portfolio/3rdmind.png", href: "https://3rdmind.growxlabs.tech", tone: "bg-[#0a2825]", accent: "text-[#a9f5de]" },
+];
+
+function ProductStudio() {
+  return (
+    <section aria-labelledby="built-by-growxlabs" className="scroll-mt-28 pt-16 md:pt-20">
+      <div className="flex items-end justify-between gap-6 border-y border-dashed border-white/25 py-8">
+        <div><h2 id="built-by-growxlabs" className="blog-ui-heading scroll-mt-28 text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">Built by GrowXLabs</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">Explore our AI-native products.</p></div>
+        <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
+      </div>
+      <div className="grid gap-5 pt-8 md:grid-cols-2 lg:grid-cols-4">
+        {growxProducts.map((product) => (
+          <article key={product.name} className={`group flex flex-col overflow-hidden rounded-[14px] p-3 ${product.tone}`}>
+            <a href={product.href} target="_blank" rel="noreferrer" className="relative block aspect-[1.34/1] overflow-hidden rounded-[8px] bg-black/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]">
+              <Image src={product.image} alt={`${product.name} product interface`} fill sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.025]" />
+            </a>
+            <div className="flex min-h-[220px] flex-1 flex-col px-1 pb-2 pt-5 md:px-0 md:pb-1">
+              <h3 className={`blog-ui-heading text-[30px] font-bold leading-none tracking-[-0.035em] ${product.accent}`}>{product.name}</h3>
+              <p className="mt-3 text-[17px] leading-[1.35] text-white/80">{product.description}</p>
+              <div className="mt-auto pt-6"><a href={product.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[15px] font-bold text-black transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Try it <ArrowRight className="ml-2 h-4 w-4" /></a></div>
             </div>
-            
-            <div className="space-y-6">
-              {rightColumnPosts.map((post) => (
-                <div key={post.slug} className="group flex gap-4 pb-6 border-b border-white/5 last:border-0 last:pb-0 items-start">
-                  
-                  {/* Small Square Thumbnail */}
-                  <Link href={`/blog/${post.slug}`} className="shrink-0 block">
-                    <div className="w-16 h-16 overflow-hidden rounded-md border border-white/5 flex items-center justify-center">
-                      <img
-                        src={getPostImage(post)}
-                        alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                      />
-                    </div>
-                  </Link>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
 
-                  {/* Title & Author Info */}
-                  <div className="flex-1 space-y-1">
-                    <Link href={`/blog/${post.slug}`} className="block">
-                      <h4 className="font-serif font-black text-sm text-foreground leading-snug group-hover:text-zinc-300 transition-colors">
-                        {renderSerifTitle(post.title, post.slug)}
-                      </h4>
-                    </Link>
-                    <div className="font-mono text-[8px] tracking-wider text-muted-foreground uppercase">
-                      BY GROWXLABS TEAM
-                    </div>
-                  </div>
-                  
+function GrowXLabsStudioBanner() {
+  return (
+    <section aria-labelledby="growxlabs-studio-banner" className="pt-16 md:pt-20">
+      <a
+        href="#built-by-growxlabs"
+        className="group block overflow-hidden bg-[#bdefff] text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]"
+      >
+        <div className="px-6 pb-0 pt-12 text-center sm:px-10 md:pt-16 lg:px-16 lg:pt-20">
+          <p className="blog-ui-heading text-[13px] font-bold uppercase tracking-[0.18em] text-black/55">GrowXLabs product studio</p>
+          <h2 id="growxlabs-studio-banner" className="mx-auto mt-5 max-w-5xl font-serif text-[clamp(2.7rem,5.2vw,5.6rem)] font-medium leading-[0.98] tracking-[-0.045em]">
+            One studio. Four AI-native products built for real work.
+          </h2>
+          <p className="mx-auto mt-6 max-w-2xl text-[17px] leading-[1.45] text-black/65 md:text-[21px]">
+            Build your career, ship software, hire stronger teams and run your company with products made by GrowXLabs.
+          </p>
+        </div>
+
+        <div className="mx-auto mt-10 flex max-w-[1180px] items-end justify-center overflow-hidden px-4 sm:mt-14 sm:px-8 lg:mt-16">
+          {growxProducts.map((product, index) => (
+            <div
+              key={product.name}
+              className={`relative aspect-square w-[28%] max-w-[280px] shrink-0 overflow-hidden rounded-t-[28px] border-[5px] border-[#bdefff] bg-black shadow-[0_18px_45px_rgba(0,0,0,0.22)] transition-transform duration-500 group-hover:-translate-y-2 sm:rounded-t-[38px] ${index > 0 ? "-ml-[5%]" : ""} ${index % 2 === 0 ? "translate-y-5" : ""}`}
+              style={{ zIndex: index + 1 }}
+            >
+              <Image src={product.image} alt={`${product.name} interface`} fill sizes="(max-width: 767px) 28vw, 280px" className="object-cover object-top" />
+              <div className="absolute inset-x-0 bottom-0 bg-black/85 px-2 py-3 text-center sm:px-4 sm:py-4">
+                <span className="blog-ui-heading text-[10px] font-bold text-white sm:text-sm md:text-base">{product.name}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </a>
+      <div className="flex items-center justify-between border-b border-dashed border-white/25 py-7">
+        <div><h3 className="blog-ui-heading text-[22px] font-bold uppercase tracking-[-0.025em] text-white md:text-[27px]">Built to put AI to work</h3><p className="mt-1 text-base text-white/70 md:text-xl">Explore the products coming out of the GrowXLabs studio.</p></div>
+        <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
+      </div>
+    </section>
+  );
+}
+
+export function BlogInteractiveList({ posts, featuredPost }: BlogInteractiveListProps) {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [query, setQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const categories = ["All", "AI & Agents", "Automation", "Engineering", "Tech & Science"];
+  const allPosts = useMemo(() => [featuredPost, ...posts], [featuredPost, posts]);
+  const filtered = useMemo(() => allPosts.filter((post) => (activeCategory === "All" || group(post.category) === activeCategory) && (!query || `${post.title} ${post.excerpt} ${post.category}`.toLowerCase().includes(query.toLowerCase()))), [activeCategory, query, allPosts]);
+  const isDefaultView = activeCategory === "All" && !query;
+  const displayPosts = isDefaultView ? posts.slice(6) : filtered;
+  const editorialRows = [
+    { title: "Frontier Intelligence", subtitle: "Models, markets and the race to shape advanced AI.", posts: displayPosts.slice(0, 4) },
+    { title: "Technology in Motion", subtitle: "Signals from agents, aerospace and the AI-native internet.", posts: displayPosts.slice(4, 8) },
+    { title: "The Future of Engineering", subtitle: "How software, search and intelligent systems are being rebuilt.", posts: displayPosts.slice(8, 12) },
+    { title: "Automation for Growth", subtitle: "Practical systems that turn attention into durable business value.", posts: displayPosts.slice(12, 16) },
+  ];
+
+  return (
+    <div>
+      <div className="sticky top-20 z-30 -mx-6 border-y border-white/15 bg-black/95 px-6 backdrop-blur-md md:-mx-10 md:px-10 xl:-mx-20 xl:px-20">
+        <div className="mx-auto flex min-h-16 max-w-[1600px] items-center justify-between gap-5">
+          <nav aria-label="Article topics" className="flex min-w-0 items-center gap-6 overflow-x-auto py-5 [scrollbar-width:none]">
+            {categories.map((category) => <button key={category} type="button" onClick={() => setActiveCategory(category)} className={`shrink-0 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors ${activeCategory === category ? "text-[#bdefff]" : "text-white/50 hover:text-white"}`}>{category}</button>)}
+          </nav>
+          <button type="button" onClick={() => setSearchOpen((value) => !value)} aria-label="Search articles" aria-expanded={searchOpen} className="shrink-0 p-2 text-white/75 hover:text-white">{searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}</button>
+        </div>
+        {searchOpen && <div className="mx-auto max-w-[1600px] border-t border-white/10 py-4"><label className="flex items-center gap-3"><Search className="h-4 w-4 text-white/40" /><span className="sr-only">Search insights</span><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search GrowXLabs insights…" className="w-full bg-transparent py-2 text-base text-white outline-none placeholder:text-white/35" /></label></div>}
+      </div>
+
+      {isDefaultView && <FeaturedEdition lead={featuredPost} sideStories={posts.slice(0, 2)} recentStories={posts.slice(2, 6)} />}
+
+      {isDefaultView ? (
+        <div aria-label="GrowXLabs editorial collections">
+          {editorialRows.filter((row) => row.posts.length > 0).map((row, rowIndex) => (
+            <div key={row.title}>
+              <section aria-labelledby={`editorial-row-${rowIndex}`} className="pt-16 md:pt-20">
+                <div className="flex items-end justify-between gap-6 border-b border-dashed border-white/25 pb-8">
+                  <div><h2 id={`editorial-row-${rowIndex}`} className="blog-ui-heading text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">{row.title}</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">{row.subtitle}</p></div>
+                  <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
                 </div>
-              ))}
-
-              {rightColumnPosts.length === 0 && (
-                <p className="text-xs font-mono text-muted-foreground text-center py-6">No other recent articles.</p>
-              )}
+                <div className="grid gap-x-5 gap-y-12 pt-8 md:grid-cols-2 lg:grid-cols-4">{row.posts.map((post, index) => <ArticleCard key={post.slug} post={post} priority={rowIndex === 0} index={index} />)}</div>
+              </section>
+              {rowIndex === 1 && <><GrowXLabsStudioBanner /><ProductStudio /></>}
             </div>
-          </div>
-
+          ))}
         </div>
       ) : (
-        <div className="text-center py-20 border border-dashed border-white/10 rounded-lg">
-          <p className="text-muted-foreground text-sm font-mono">No articles found matching your query.</p>
-          <button
-            onClick={() => {
-              setActiveCategory("All");
-              setRealSearch("");
-              setSearchQuery(" ");
-            }}
-            className="mt-4 text-xs font-mono font-bold uppercase tracking-wider text-white hover:underline cursor-pointer"
-          >
-            Reset search filters
-          </button>
-        </div>
+        <section aria-labelledby="filtered-insights" className="pt-14 md:pt-20">
+          <div className="flex items-end justify-between gap-6 border-b border-dashed border-white/25 pb-8"><div><h2 id="filtered-insights" className="blog-ui-heading text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">Filtered Insights</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">Stories selected from the GrowXLabs archive.</p></div><ArrowRight className="hidden h-7 w-7 text-white/80 sm:block" /></div>
+          {displayPosts.length > 0 ? <div className="grid gap-x-5 gap-y-12 pt-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-y-16">{displayPosts.map((post, index) => <ArticleCard key={post.slug} post={post} priority={index < 4} index={index} />)}</div> : <div className="border-b border-white/20 py-24 text-center"><p className="font-serif text-3xl text-white">No stories match that search.</p><button type="button" onClick={() => { setQuery(""); setActiveCategory("All"); }} className="mt-5 text-sm font-semibold text-[#bdefff] underline underline-offset-4">Show all stories</button></div>}
+        </section>
       )}
     </div>
   );

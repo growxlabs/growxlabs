@@ -16,6 +16,9 @@ export function WhatsAppWidget() {
                            pathname?.includes('/dashboard') ||
                            pathname?.includes('/careers') ||
                            pathname?.startsWith('/activate/') ||
+                           pathname?.includes('/blog') ||
+                           pathname?.includes('/insights') ||
+                           pathname?.includes('/research') ||
                            isEmployeeWorkspaceRoute(pathname) ||
                            pathname === '/onboarding';
 

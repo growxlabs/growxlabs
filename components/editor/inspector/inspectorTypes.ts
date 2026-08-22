@@ -30,6 +30,7 @@ export interface CtaElementStyle extends ElementStyle {
 
 export interface Slide {
   id: string;
+  backgroundColor: string;
   category: ElementStyle & { text: string };
   headline: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
   featuredImage: ImageElementStyle;
@@ -86,6 +87,7 @@ export interface InspectorPanelProps {
   setIsFooterSelected: (val: boolean) => void;
   updateSlideElement: (key: ElementKey, updates: any) => void;
   updateSlideFooter: (updates: Partial<Slide["footer"]>) => void;
+  updateSlideBackground: (color: string) => void;
   handleDownloadSlideRaster: (index: number, format: "png" | "jpeg") => void;
   handleDownloadSlideSvg: (index: number) => void;
   handleDownloadAllSlidesSvg: () => void;

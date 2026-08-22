@@ -130,6 +130,7 @@ interface CtaElementStyle extends ElementStyle {
 
 interface Slide {
   id: string;
+  backgroundColor: string;
   category: ElementStyle & { text: string };
   headline: ElementStyle & {
     text: string;
@@ -198,6 +199,7 @@ const DEFAULT_FONTS = [
 
 const DEFAULT_SLIDE = (index: number): Slide => ({
   id: `slide-${Date.now()}-${Math.random()}`,
+  backgroundColor: "#ffffff",
   category: {
     text: "AI NEWS",
     x: SAFE_LEFT,
@@ -427,6 +429,127 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     align: "left",
   },
 });
+
+const PRODUCT_CYAN = "#bdefff";
+const PRODUCT_IMAGE = "/portfolio/resumeforgeai-card.png";
+
+const PRODUCT_LAUNCH_SLIDE = (
+  index: number,
+  content: { eyebrow: string; headline: string; body: string; image?: boolean },
+): Slide => {
+  const slide = DEFAULT_SLIDE(index);
+  return {
+    ...slide,
+    backgroundColor: PRODUCT_CYAN,
+    category: {
+      ...slide.category,
+      text: content.eyebrow,
+      x: 132,
+      y: 115,
+      width: 816,
+      height: 28,
+      align: "center",
+      fontSize: 15,
+      letterSpacing: 4,
+      color: "#53666b",
+      fontWeight: "800",
+    },
+    headline: {
+      ...slide.headline,
+      text: content.headline,
+      x: 74,
+      y: 190,
+      width: 932,
+      height: 260,
+      align: "center",
+      fontFamily: "'Playfair Display', Georgia, serif",
+      fontSize: index === 0 ? 78 : 72,
+      lineHeight: 1.02,
+      letterSpacing: -2.4,
+      fontWeight: "700",
+      color: "#050505",
+      maxLines: 3,
+    },
+    body: {
+      ...slide.body,
+      text: content.body,
+      x: 168,
+      y: 485,
+      width: 744,
+      height: 110,
+      align: "center",
+      fontSize: 25,
+      lineHeight: 1.45,
+      color: "#53666b",
+      maxLines: 3,
+    },
+    featuredImage: {
+      ...slide.featuredImage,
+      mediaUrl: content.image === false ? "" : PRODUCT_IMAGE,
+      x: 62,
+      y: 655,
+      width: 956,
+      height: 560,
+      visible: content.image !== false,
+      objectFit: "cover",
+      borderRadius: 34,
+      borderWidth: 4,
+      borderColor: "rgba(255,255,255,0.7)",
+      shadowEnabled: true,
+    },
+    bullets: { ...slide.bullets, visible: false },
+    quote: { ...slide.quote, visible: false },
+    cta: { ...slide.cta, visible: false },
+    logo: { ...slide.logo, visible: false },
+    divider: { ...slide.divider, visible: false },
+    author: { ...slide.author, visible: false },
+    footer: {
+      ...slide.footer,
+      brandName: "RESUMEFORGEAI",
+      color: "#53666b",
+      dividerEnabled: false,
+      pageNumberEnabled: true,
+    },
+  };
+};
+
+const PRODUCT_LAUNCH_DECK = (): Slide[] => [
+  PRODUCT_LAUNCH_SLIDE(0, {
+    eyebrow: "GROWXLABS PRODUCT LAUNCH",
+    headline: "Forge your career.<br/>From resume to offer.",
+    body: "ResumeForgeAI brings resumes, interviews and career tools into one focused workspace.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(1, {
+    eyebrow: "THE PROBLEM",
+    headline: "Your career tools should work together.",
+    body: "Stop moving between disconnected resume builders, job trackers and interview-prep tools.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(2, {
+    eyebrow: "ONE WORKSPACE",
+    headline: "Build a resume that is ready for the role.",
+    body: "Create, improve and organize role-specific resumes from one focused dashboard.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(3, {
+    eyebrow: "INTERVIEW PREP",
+    headline: "Practice before the interview matters.",
+    body: "Prepare answers, rehearse technical conversations and enter every interview with clarity.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(4, {
+    eyebrow: "JOB TRACKER",
+    headline: "Know exactly where every application stands.",
+    body: "Track roles, interviews and next steps without losing momentum between opportunities.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(5, {
+    eyebrow: "BUILT FOR DEVELOPERS",
+    headline: "A career system designed for technical talent.",
+    body: "Keep your projects, skills, resumes and interview progress connected as your career grows.",
+  }),
+  PRODUCT_LAUNCH_SLIDE(6, {
+    eyebrow: "NOW AVAILABLE",
+    headline: "Your next opportunity starts here.",
+    body: "Create your ResumeForgeAI workspace and move from resume to offer with a clearer process.",
+  }),
+];
 
 // ==========================================
 // TEMPLATE PRESETS
@@ -791,8 +914,37 @@ export function EditorialCarouselClient() {
 
   // App states
   const [projectName, setProjectName] = useState("GrowXLabs Editorial Post");
+  const [documentKind, setDocumentKind] = useState<"editorial" | "product">(
+    "editorial",
+  );
   const [isEditingProjectName, setIsEditingProjectName] = useState(false);
   const activeSlide = slides[activeIndex] || DEFAULT_SLIDE(0);
+
+  const switchDocumentKind = (kind: "editorial" | "product") => {
+    if (kind === documentKind) return;
+    if (kind === "product") {
+      const launchDeck = PRODUCT_LAUNCH_DECK();
+      setDocumentKind("product");
+      setProjectName("ResumeForgeAI Product Launch");
+      setEditorMode("free");
+      setSlides(launchDeck);
+      setActiveIndex(0);
+      setSelectedElement(null);
+      saveHistory(launchDeck);
+      toast.success("Product Launch deck created — 7 premium slides");
+      return;
+    }
+
+    const editorialDeck = [DEFAULT_SLIDE(0)];
+    setDocumentKind("editorial");
+    setProjectName("GrowXLabs Editorial Post");
+    setEditorMode("fixed");
+    setSlides(editorialDeck);
+    setActiveIndex(0);
+    setSelectedElement(null);
+    saveHistory(editorialDeck);
+    toast.success("Editorial news canvas restored");
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -976,6 +1128,14 @@ export function EditorialCarouselClient() {
     saveHistory(newSlides);
   };
 
+  const updateSlideBackground = (backgroundColor: string) => {
+    const newSlides = slides.map((slide, idx) =>
+      idx === activeIndex ? { ...slide, backgroundColor } : slide,
+    );
+    setSlides(newSlides);
+    saveHistory(newSlides);
+  };
+
   const renderColorPicker = (
     label: string,
     value: string,
@@ -1120,7 +1280,15 @@ export function EditorialCarouselClient() {
   };
 
   const addSlide = () => {
-    const newSlides = [...slides, DEFAULT_SLIDE(slides.length)];
+    const nextSlide =
+      documentKind === "product"
+        ? PRODUCT_LAUNCH_SLIDE(slides.length, {
+            eyebrow: "PRODUCT STORY",
+            headline: "Add the next chapter of your launch story.",
+            body: "Edit this message, replace the product image and shape the next part of your campaign.",
+          })
+        : DEFAULT_SLIDE(slides.length);
+    const newSlides = [...slides, nextSlide];
     setSlides(newSlides);
     setActiveIndex(newSlides.length - 1);
     saveHistory(newSlides);
@@ -1580,7 +1748,7 @@ export function EditorialCarouselClient() {
           <div xmlns="http://www.w3.org/1999/xhtml" style="
             width: ${CANVAS_WIDTH}px;
             height: ${CANVAS_HEIGHT}px;
-            background: #ffffff;
+            background: ${slide.backgroundColor || "#ffffff"};
             position: relative;
             box-sizing: border-box;
             overflow: hidden;
@@ -1880,7 +2048,7 @@ export function EditorialCarouselClient() {
           scale: 1 / zoomScale,
           useCORS: true,
           allowTaint: false,
-          backgroundColor: "#ffffff",
+          backgroundColor: slides[idx]?.backgroundColor || "#ffffff",
         });
 
         if (safeArea) safeArea.style.display = safeAreaDisplay;
@@ -2299,6 +2467,30 @@ export function EditorialCarouselClient() {
                 Saved just now
               </span>
             </div>
+          </div>
+          <div className="ml-3 flex rounded-lg border border-white/10 bg-black/30 p-0.5">
+            <button
+              type="button"
+              onClick={() => switchDocumentKind("editorial")}
+              className={`rounded-md px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.08em] transition-all ${
+                documentKind === "editorial"
+                  ? "bg-white text-black"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Daily News
+            </button>
+            <button
+              type="button"
+              onClick={() => switchDocumentKind("product")}
+              className={`rounded-md px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.08em] transition-all ${
+                documentKind === "product"
+                  ? "bg-[#bdefff] text-black"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Product Launch
+            </button>
           </div>
         </div>
 
@@ -2875,6 +3067,7 @@ export function EditorialCarouselClient() {
               style={{
                 width: `${CANVAS_WIDTH}px`,
                 height: `${CANVAS_HEIGHT}px`,
+                backgroundColor: activeSlide.backgroundColor || "#ffffff",
                 borderRadius: "18px",
                 boxShadow:
                   "0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 80px rgba(0, 0, 0, 0.38)",
@@ -3231,6 +3424,7 @@ export function EditorialCarouselClient() {
           setIsFooterSelected={setIsFooterSelected}
           updateSlideElement={updateSlideElement}
           updateSlideFooter={updateSlideFooter}
+          updateSlideBackground={updateSlideBackground}
           handleDownloadSlideRaster={handleDownloadSlideRaster}
           handleDownloadSlideSvg={handleDownloadSlideSvg}
           handleDownloadAllSlidesSvg={handleDownloadAllSlidesSvg}

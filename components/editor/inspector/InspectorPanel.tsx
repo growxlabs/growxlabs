@@ -21,6 +21,7 @@ export function InspectorPanel({
   setIsFooterSelected,
   updateSlideElement,
   updateSlideFooter,
+  updateSlideBackground,
   handleDownloadSlideRaster,
   handleDownloadSlideSvg,
   handleDownloadAllSlidesSvg,
@@ -159,6 +160,7 @@ export function InspectorPanel({
                   handleDownloadPdf={handleDownloadPdf}
                   handleDownloadMp4={handleDownloadMp4}
                   activeIndex={activeIndex}
+                  updateSlideBackground={updateSlideBackground}
                 />
               </div>
             )}
