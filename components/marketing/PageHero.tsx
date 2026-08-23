@@ -19,15 +19,20 @@ export function PageHero({
   tagline = "SYSTEMS & LAB",
   className,
 }: PageHeroProps) {
+  const charCount = title.length;
+  const desktopFontSize =
+    charCount <= 7
+      ? "clamp(4.5rem, 13.5vw, 15.5rem)"
+      : charCount <= 9
+      ? "clamp(4rem, 11vw, 13.5rem)"
+      : "clamp(3.5rem, 9vw, 11.5rem)";
+
   return (
     <div className={cn("w-full bg-background relative overflow-hidden select-none", className)}>
       {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
       <section
-        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between select-none"
+        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-6 md:pb-8 min-h-dvh justify-between select-none"
       >
-        {/* Decorative Grid Mesh Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-
         <div className="flex-grow" />
 
         {/* Middle part: Swiss Grid columns aligned to the right */}
@@ -35,7 +40,7 @@ export function PageHero({
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="w-full flex flex-col items-end mb-36 z-10 select-none"
+          className="w-full flex flex-col items-end mb-28 z-10 select-none"
         >
           {/* Subtle horizontal grid line for Swiss architectural framing */}
           <div className="w-full max-w-4xl pr-8 mb-6">
@@ -69,10 +74,11 @@ export function PageHero({
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          className="w-full flex justify-start items-end select-none pointer-events-none z-0 translate-y-[3%] overflow-visible -ml-3 md:-ml-5 xl:-ml-8 2xl:-ml-12"
+          className="w-full flex justify-start items-end select-none pointer-events-none z-0 overflow-visible -ml-2 md:-ml-4 xl:-ml-6 mb-2"
         >
           <h1
-            className="font-sans font-black select-none tracking-[0.08em] text-foreground leading-[0.8] text-[10.2vw] whitespace-nowrap inline-block origin-bottom scale-x-[1.08] scale-y-[1.35]"
+            className="font-sans font-black select-none tracking-[0.01em] text-foreground leading-[0.85] whitespace-nowrap inline-block origin-bottom"
+            style={{ fontSize: desktopFontSize }}
           >
             <FlickerText text={title} />
           </h1>
@@ -83,9 +89,6 @@ export function PageHero({
       <section
         className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center"
       >
-        {/* Decorative Grid Mesh Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-
         <div className="relative w-full flex flex-row items-center justify-between">
           
           {/* Left Column: Swiss Editorial Stack */}
@@ -135,7 +138,7 @@ export function PageHero({
             className="absolute right-0 top-1/2 -translate-y-1/2 w-[90px] h-[75dvh] flex items-center justify-center pointer-events-none z-0 overflow-hidden"
           >
             <h1
-              className="font-sans rotate-[-90deg] whitespace-nowrap text-foreground font-black select-none tracking-[0.06em] leading-none scale-x-[1.08]"
+              className="font-sans rotate-[-90deg] whitespace-nowrap text-foreground font-black select-none tracking-[0.03em] leading-none"
               style={{
                 fontSize: "clamp(1.8rem, 6.8vh, 3.4rem)",
               }}

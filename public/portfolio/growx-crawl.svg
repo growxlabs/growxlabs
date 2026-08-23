@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="100%" height="100%">
+  <!-- Terminal Window Container (Full Width Artifact) -->
+  <rect width="1200" height="660" rx="6" fill="#0d0d0d" stroke="#262626" stroke-width="1.5" />
+
+  <!-- Terminal Header Bar -->
+  <path d="M 0 6 Q 0 0 6 0 L 1194 0 Q 1200 0 1200 6 L 1200 44 L 0 44 Z" fill="#161616" />
+  <line x1="0" y1="44" x2="1200" y2="44" stroke="#262626" stroke-width="1" />
+
+  <!-- Window Dots -->
+  <circle cx="28" cy="22" r="5.5" fill="#ff5f56" />
+  <circle cx="48" cy="22" r="5.5" fill="#ffbd2e" />
+  <circle cx="68" cy="22" r="5.5" fill="#27c93f" />
+
+  <!-- Terminal Title -->
+  <text x="600" y="26" text-anchor="middle" fill="#888888" font-family="monospace" font-size="11.5" font-weight="bold">growx-crawl :: local-first research runtime (v2.4.0)</text>
+  
+  <!-- Status Pill -->
+  <rect x="1060" y="12" width="115" height="20" rx="3" fill="#1a2730" stroke="#bdefff" stroke-opacity="0.3" stroke-width="1" />
+  <circle cx="1074" cy="22" r="3" fill="#bdefff" />
+  <text x="1085" y="26" fill="#bdefff" font-family="monospace" font-size="9.5" font-weight="bold">ENGINE ACTIVE</text>
+
+  <!-- Terminal Content Area -->
+  <g font-family="monospace" font-size="13" xml:space="preserve">
+    <!-- Command Prompt -->
+    <text x="35" y="80" fill="#888888">$ <tspan fill="#ffffff" font-weight="bold">growx-crawl</tspan> <tspan fill="#bdefff">--target</tspan> <tspan fill="#ffffff">"https://industrial-robotics-corp.com"</tspan> <tspan fill="#bdefff">--depth</tspan> <tspan fill="#ffffff">3</tspan> <tspan fill="#bdefff">--audit</tspan> <tspan fill="#ffffff">seo,aeo,geo</tspan> <tspan fill="#bdefff">--evidence</tspan> <tspan fill="#ffffff">strict</tspan></text>
+
+    <!-- Execution Timeline -->
+    <g fill="#777777" font-size="12">
+      <!-- Discovery Phase -->
+      <text x="35" y="118"><tspan fill="#bdefff">[00:01.04]</tspan> <tspan fill="#4ade80" font-weight="bold">DISCOVERY</tspan>   Resolving sitemaps, robots.txt, and public DNS records...</text>
+      <text x="35" y="139">             Found 68 public routes · 8 product families · 14 executive profiles</text>
+
+      <!-- Crawl & Render Phase -->
+      <text x="35" y="177"><tspan fill="#bdefff">[00:03.22]</tspan> <tspan fill="#60a5fa" font-weight="bold">CRAWL ENGINE</tspan> High-throughput HTTP fetch (58 pages) · Playwright headless JS render (10 SPAs)</text>
+      <text x="35" y="198">             Extracted 186 DOM trees · 42 technical datasheets (PDF) · Status: 100% OK</text>
+
+      <!-- Extraction & Evidence Phase -->
+      <text x="35" y="236"><tspan fill="#bdefff">[00:05.80]</tspan> <tspan fill="#c084fc" font-weight="bold">EXTRACTION</tspan>   Structuring company entities, specs, executive hierarchy, and technologies...</text>
+      <text x="35" y="257">             Captured 48 verifiable evidence records (DOM selectors + hashes verified)</text>
+    </g>
+
+    <!-- Split Visual Dashboard Area (Inside Terminal) -->
+    <!-- Left Box: Audit Scores -->
+    <g>
+      <rect x="35" y="285" width="545" height="345" rx="6" fill="#131313" stroke="#262626" stroke-width="1" />
+      <text x="60" y="318" fill="#ffffff" font-size="13" font-weight="bold">WEBSITE VISIBILITY AUDIT</text>
+      <text x="60" y="336" fill="#666666" font-size="10">Tri-perspective indexing &amp; answer readiness</text>
+
+      <!-- SEO Score Row -->
+      <text x="60" y="375" fill="#e5e5e5" font-size="12" font-weight="bold">SEO</text>
+      <text x="100" y="375" fill="#888888" font-size="11">Search visibility &amp; technical hygiene</text>
+      <rect x="60" y="388" width="400" height="8" rx="4" fill="#222222" />
+      <rect x="60" y="388" width="328" height="8" rx="4" fill="#bdefff" />
+      <text x="480" y="395" fill="#bdefff" font-size="12" font-weight="bold">82 / 100</text>
+
+      <!-- AEO Score Row -->
+      <text x="60" y="440" fill="#e5e5e5" font-size="12" font-weight="bold">AEO</text>
+      <text x="100" y="440" fill="#888888" font-size="11">Answer Engine direct question resolution</text>
+      <rect x="60" y="453" width="400" height="8" rx="4" fill="#222222" />
+      <rect x="60" y="453" width="284" height="8" rx="4" fill="#60a5fa" />
+      <text x="480" y="460" fill="#60a5fa" font-size="12" font-weight="bold">71 / 100</text>
+
+      <!-- GEO Score Row -->
+      <text x="60" y="505" fill="#e5e5e5" font-size="12" font-weight="bold">GEO</text>
+      <text x="100" y="505" fill="#888888" font-size="11">Generative LLM attribution &amp; clarity</text>
+      <rect x="60" y="518" width="400" height="8" rx="4" fill="#222222" />
+      <rect x="60" y="518" width="264" height="8" rx="4" fill="#c084fc" />
+      <text x="480" y="525" fill="#c084fc" font-size="12" font-weight="bold">66 / 100</text>
+
+      <text x="60" y="605" fill="#555555" font-size="9">// EXAMPLE VISUALIZATION · COMPILED VIA LOCAL HARNESS</text>
+    </g>
+
+    <!-- Right Box: Evidence & Entity Graph Sample -->
+    <g>
+      <rect x="600" y="285" width="565" height="345" rx="6" fill="#131313" stroke="#262626" stroke-width="1" />
+      <text x="625" y="318" fill="#ffffff" font-size="13" font-weight="bold">VERIFIED EVIDENCE TRACE</text>
+      <text x="625" y="336" fill="#666666" font-size="10">Source-backed claim validation</text>
+
+      <!-- Evidence Card 1: Observed -->
+      <rect x="625" y="355" width="515" height="100" rx="4" fill="#0c0c0c" stroke="#262626" stroke-width="1" />
+      <rect x="640" y="370" width="80" height="18" rx="3" fill="#162e20" stroke="#22c55e" stroke-opacity="0.4" />
+      <text x="680" y="383" text-anchor="middle" fill="#4ade80" font-size="9" font-weight="bold">OBSERVED</text>
+      <text x="730" y="383" fill="#999999" font-size="10">Source: /products/series-9-actuator</text>
+      <text x="640" y="412" fill="#ffffff" font-size="11" font-weight="bold">"Series 9 Actuator supports IP68 submergence ratings"</text>
+      <text x="640" y="435" fill="#666666" font-size="9">Selector: #specs-table &gt; tr:nth-child(4) · Confidence: 1.00</text>
+
+      <!-- Evidence Card 2: Inferred -->
+      <rect x="625" y="470" width="515" height="100" rx="4" fill="#0c0c0c" stroke="#262626" stroke-width="1" />
+      <rect x="640" y="485" width="75" height="18" rx="3" fill="#2c2415" stroke="#f59e0b" stroke-opacity="0.4" />
+      <text x="677" y="498" text-anchor="middle" fill="#fbbf24" font-size="9" font-weight="bold">INFERRED</text>
+      <text x="725" y="498" fill="#999999" font-size="10">Cross-referenced from 3 press releases</text>
+      <text x="640" y="527" fill="#ffffff" font-size="11" font-weight="bold">Targeting European industrial automation expansion in Q4</text>
+      <text x="640" y="550" fill="#666666" font-size="9">Derived from hiring footprints &amp; regional CE certifications</text>
+
+      <text x="625" y="605" fill="#555555" font-size="9">// STORED IN LOCAL DUCKDB / SQLITE SCHEMA</text>
+    </g>
+
+  </g>
+</svg>

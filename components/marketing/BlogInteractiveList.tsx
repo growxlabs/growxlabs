@@ -107,10 +107,10 @@ function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost;
 }
 
 const growxProducts = [
-  { name: "ResumeForgeAI", description: "Create ATS-ready resumes, practice interviews and manage your career in one workspace.", image: "/portfolio/resumeforgeai-card.png", href: "https://resumeforgeai.in", tone: "bg-[#3b2719]", accent: "text-[#ffd7ac]" },
-  { name: "Pipper", description: "Run Codex, Claude Code and OpenCode together in one local developer workspace.", image: "/portfolio/pipper.png", href: "https://pipper.dev", tone: "bg-[#173643]", accent: "text-[#bdefff]" },
-  { name: "RecruitAI", description: "Screen applicants, run assessments and move qualified candidates through hiring faster.", image: "/portfolio/resumeforgeai.png", href: "https://recruitaitech.in", tone: "bg-[#313131]", accent: "text-[#e8e8e8]" },
-  { name: "3rdMind", description: "Coordinate strategy and execution with a digital C-suite built for founders.", image: "/portfolio/3rdmind.png", href: "https://3rdmind.growxlabs.tech", tone: "bg-[#0a2825]", accent: "text-[#a9f5de]" },
+  { name: "ResumeForgeAI", description: "Create ATS-ready resumes, practice interviews and manage your career in one workspace.", image: "/portfolio/resumeforgeai-card.png", href: "https://resumeforgeai.in?utm_source=growxlabswebsite", tone: "bg-[#3b2719]", accent: "text-[#ffd7ac]" },
+  { name: "Pipper", description: "Run Codex, Claude Code and OpenCode together in one local developer workspace.", image: "/portfolio/pipper.png", href: "https://pipper.dev?utm_source=growxlabswebsite", tone: "bg-[#173643]", accent: "text-[#bdefff]" },
+  { name: "RecruitAI", description: "Screen applicants, run assessments and move qualified candidates through hiring faster.", image: "/portfolio/resumeforgeai.png", href: "https://recruitaitech.in?utm_source=growxlabswebsite", tone: "bg-[#313131]", accent: "text-[#e8e8e8]" },
+  { name: "3rdMind", description: "Coordinate strategy and execution with a digital C-suite built for founders.", image: "/portfolio/3rdmind.png", href: "https://3rdmind.growxlabs.tech?utm_source=growxlabswebsite", tone: "bg-[#0a2825]", accent: "text-[#a9f5de]" },
 ];
 
 function ProductStudio() {

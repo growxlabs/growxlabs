@@ -23,7 +23,7 @@ interface Feature1Props {
 }
 
 export const Feature1 = ({
-  title = "Ready to build your next AI-powered product?",
+  title = "Ready to build what’s next?",
   description = "Let's make it happen.",
   imageSrc = "/images/landscape.jpg",
   imageAlt = "GrowXLabs Landscape Illustration",
@@ -91,7 +91,7 @@ export const Feature1 = ({
   };
 
   return (
-    <section className="py-24 border-t border-b border-white/5 bg-[#111111] overflow-hidden">
+    <section className="py-24 border-t border-b border-white/5 bg-background overflow-hidden">
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left z-10">

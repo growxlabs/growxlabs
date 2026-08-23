@@ -28,12 +28,9 @@ export function HeroSection() {
     <>
       {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
       <section
-        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between"
+        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between bg-background"
         aria-labelledby="hero-studio-heading-desktop"
       >
-        {/* Decorative Grid Mesh Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-
         {/* Empty flex spacer at top to push content down */}
         <div className="flex-grow" />
 
@@ -81,12 +78,9 @@ export function HeroSection() {
 
       {/* ═══ SWISS-EDITORIAL MOBILE HERO (Visible only on mobile) ═══ */}
       <section
-        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center"
+        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-background"
         aria-labelledby="hero-studio-heading-mobile"
       >
-        {/* Decorative Grid Mesh Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-
         <div className="relative w-full flex flex-row items-center justify-between">
           
           {/* Left Column: Swiss Editorial Stack */}

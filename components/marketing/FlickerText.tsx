@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface FlickerTextProps {
   text: string;
@@ -36,10 +37,11 @@ export function FlickerText({ text, className, delays }: FlickerTextProps) {
         }
         const currentDelay = activeDelays[letterIdx % activeDelays.length];
         letterIdx++;
+        const isDescender = char === "y" || char === "g" || char === "p" || char === "q" || char === "j";
         return (
           <motion.span
             key={idx}
-            className="inline-block"
+            className={cn("inline-block", isDescender && "relative -top-[0.06em]")}
             variants={flickerVariants}
             initial="hidden"
             animate="visible"

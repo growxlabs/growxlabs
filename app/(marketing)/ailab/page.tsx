@@ -171,14 +171,14 @@ const products = [
   },
 ];
 
-export default function ProductsPage() {
+export default function AiLabPage() {
   return (
     <>
       <PageHero
-        title="Products"
-        viewingText="PRODUCTS"
-        exploreText="PRODUCTS"
-        tagline="OWN PRODUCTS"
+        title="AI Lab"
+        viewingText="AI LAB"
+        exploreText="RESEARCH"
+        tagline="OWN LAB SYSTEMS"
       />
 
       <div className="w-full bg-background px-4 sm:px-6 md:px-8 xl:px-12 pb-24 border-t border-border/20 pt-16">
@@ -191,13 +191,13 @@ export default function ProductsPage() {
             className="mb-14 md:mb-16 text-center pt-8 md:pt-10"
           >
             <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-primary mb-3 block font-mono">
-              PRODUCTS
+              AI LAB
             </span>
             <h2 className="text-[clamp(1.65rem,4vw,2.75rem)] font-black text-foreground tracking-tight mb-4 leading-[1.12] max-w-4xl mx-auto">
-              Products that prove our engineering speed.
+              Labs that prove our engineering speed.
             </h2>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-              Explore AI-native software and developer platforms built by GrowXLabs.
+              Explore proprietary AI platforms, developer harnesses, and autonomous agent systems engineered by GrowXLabs.
             </p>
           </motion.div>
 

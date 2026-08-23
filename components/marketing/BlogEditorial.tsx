@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Link } from "@/navigation";
-import { Lightbulb, TrendingUp, AlertTriangle, Zap, ArrowRight, Play, Headphones, Link2, Share2, Heart, MessageSquare } from "lucide-react";
+import { Lightbulb, TrendingUp, AlertTriangle, Zap, ArrowRight, Play, Headphones, Link2, Share2, Heart, MessageSquare, ArrowUpRight, Check } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════
    INSIGHT CALLOUT
@@ -306,8 +306,13 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
   const [likes, setLikes] = useState(12);
   const [hasLiked, setHasLiked] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedAi, setCopiedAi] = useState(false);
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : `https://growxlabs.tech/blog/${slug}`;
+
+  const aiPrompt = `Read this GrowxLabs article: ${shareUrl}. Help me understand the article and answer my questions about it.`;
+  const chatGptUrl = `https://chatgpt.com/?q=${encodeURIComponent(aiPrompt)}`;
+  const claudeUrl = `https://claude.ai/new?q=${encodeURIComponent(aiPrompt)}`;
 
   const handleCopyLink = async () => {
     try {
@@ -317,6 +322,17 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleAiAction = async (targetUrl: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(aiPrompt);
+        setCopiedAi(true);
+        setTimeout(() => setCopiedAi(false), 2500);
+      } catch {}
+    }
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleLike = () => {
@@ -330,38 +346,45 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
   };
 
   return (
-    <div className="w-full border-t border-b border-[#E5E2DC] py-3 my-6 flex items-center justify-between text-[#4B5563]">
-      {/* Left: Listen Pill */}
-      <button
-        type="button"
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#EDEAE4] hover:bg-[#E5E2DC] transition-colors text-xs font-semibold text-[#111111]"
-      >
-        <Headphones className="w-3.5 h-3.5" />
-        <span>Listen</span>
-      </button>
-
-      {/* Right: Actions */}
-      <div className="flex items-center gap-2">
-        {/* Social Buttons */}
+    <div className="w-full border-t border-b border-neutral-800/80 py-3 my-6 flex items-center justify-between gap-4 text-xs">
+      {/* Left: Read with AI */}
+      <div className="flex items-center gap-2.5">
+        <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary">
+          Read with AI:
+        </span>
         <button
           type="button"
-          onClick={handleCopyLink}
-          className="w-8 h-8 rounded-full border border-[#D1D5DB] hover:border-[#111111] hover:text-[#111111] flex items-center justify-center transition-all relative"
-          title="Copy Link"
+          onClick={() => handleAiAction(chatGptUrl)}
+          className="inline-flex items-center gap-1 text-neutral-400 hover:text-foreground font-mono text-xs transition-colors cursor-pointer"
+          title="Read with ChatGPT"
         >
-          <Link2 className="w-3.5 h-3.5" />
-          {copied && (
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap">
-              Copied!
-            </span>
-          )}
+          <span>ChatGPT</span>
+          <ArrowUpRight className="w-3 h-3 text-neutral-500" />
         </button>
+        <span className="text-neutral-700">·</span>
+        <button
+          type="button"
+          onClick={() => handleAiAction(claudeUrl)}
+          className="inline-flex items-center gap-1 text-neutral-400 hover:text-foreground font-mono text-xs transition-colors cursor-pointer"
+          title="Read with Claude"
+        >
+          <span>Claude</span>
+          <ArrowUpRight className="w-3 h-3 text-neutral-500" />
+        </button>
+        {copiedAi && (
+          <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1 ml-1 animate-fade-in">
+            <Check className="w-3 h-3" /> Copied
+          </span>
+        )}
+      </div>
 
+      {/* Right: Clean Social Share Icons */}
+      <div className="flex items-center gap-3 text-neutral-400 shrink-0">
         <a
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-8 h-8 rounded-full border border-[#D1D5DB] hover:border-[#111111] hover:text-[#111111] flex items-center justify-center transition-all"
+          className="hover:text-foreground transition-colors p-1"
           title="Share on X"
         >
           <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -373,7 +396,7 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
           href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-8 h-8 rounded-full border border-[#D1D5DB] hover:border-[#111111] hover:text-[#111111] flex items-center justify-center transition-all"
+          className="hover:text-foreground transition-colors p-1"
           title="Share on LinkedIn"
         >
           <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -381,39 +404,18 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
           </svg>
         </a>
 
-        <a
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-8 h-8 rounded-full border border-[#D1D5DB] hover:border-[#111111] hover:text-[#111111] flex items-center justify-center transition-all"
-          title="Share on Facebook"
-        >
-          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-        </a>
-
-        <div className="h-4 w-px bg-[#D1D5DB] mx-1" />
-
-        {/* Likes */}
         <button
           type="button"
-          onClick={handleLike}
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium transition-all ${
-            hasLiked
-              ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-              : "border-[#D1D5DB] hover:border-[#111111] hover:text-[#111111]"
-          }`}
+          onClick={handleCopyLink}
+          className="hover:text-foreground transition-colors p-1 cursor-pointer flex items-center gap-1"
+          title="Copy Link"
         >
-          <Heart className={`w-3.5 h-3.5 ${hasLiked ? "fill-current" : ""}`} />
-          <span>{likes}</span>
+          {copied ? (
+            <span className="text-[10px] font-mono text-emerald-400">Copied</span>
+          ) : (
+            <Link2 className="w-3.5 h-3.5" />
+          )}
         </button>
-
-        {/* Comments Icon Indicator */}
-        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#D1D5DB] text-xs font-medium">
-          <MessageSquare className="w-3.5 h-3.5" />
-          <span>2</span>
-        </div>
       </div>
     </div>
   );

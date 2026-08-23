@@ -1,83 +1,66 @@
-import { ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { CaseStudy } from "@/lib/data/projects";
 import Image from "next/image";
 import { Link } from "@/navigation";
 
-type ProjectCardProps = Pick<CaseStudy, "slug" | "title" | "tag" | "description" | "tech" | "metric" | "link" | "status" | "image">;
+type ProjectCardProps = Pick<CaseStudy, "slug" | "title" | "description" | "image"> & {
+  tag?: string;
+  category?: string;
+};
 
-export function ProjectCard({ slug, title, tag, description, tech, metric, link, status, image }: ProjectCardProps) {
+export function ProjectCard({ slug, title, description, image, tag, category }: ProjectCardProps) {
+  const displayCategory = category?.startsWith("//") ? category : tag?.startsWith("//") ? tag : category ? `// ${category.toUpperCase()}` : tag ? `// ${tag.toUpperCase()}` : null;
   return (
-    <div className="group h-full relative overflow-hidden transform-none">
-      <div className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden transition-[opacity,background-color,border-color] duration-200 shadow-sm group-hover:border-primary/20">
+    <div className="group h-full relative overflow-hidden">
+      <div className="h-full flex flex-col bg-[#141414] border border-neutral-800 rounded-2xl overflow-hidden transition-all duration-300 shadow-md hover:border-neutral-700 hover:-translate-y-1">
         
-        {/* Clickable Image Section */}
-        <Link href={`/portfolio/${slug}`} className="relative h-48 w-full overflow-hidden rounded-t-lg block bg-[#050505] border-b border-border/10">
-          {image && (
-            <>
-              <Image
-                src={image}
-                alt={title}
-                fill
-                className="object-contain p-4 transition-transform duration-500 group-hover:scale-101"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-40 pointer-events-none" />
-            </>
+        {/* Clickable Image Preview */}
+        <Link
+          href={`/portfolio/${slug}`}
+          className="relative aspect-[16/10] w-full overflow-hidden block bg-[#0a0a0a] border-b border-neutral-800/80 group-hover:opacity-95 transition-opacity"
+        >
+          {image ? (
+            <Image
+              src={image}
+              alt={`${title} project preview`}
+              fill
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full bg-neutral-900" />
           )}
-          <div className="absolute top-4 left-4">
-            <span className="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-card text-primary border border-border">
-              {tag}
-            </span>
-          </div>
         </Link>
 
-        <div className="p-6 flex flex-col flex-1">
-          {/* Clickable Title */}
-          <Link href={`/portfolio/${slug}`} className="hover:text-primary transition-colors block mb-2">
-            <h3 className="text-[20px] font-bold text-foreground tracking-tight">{title}</h3>
-          </Link>
-          
-          <p className="text-muted-foreground text-[14px] leading-[1.6] mb-6 flex-1">
-            {description}
-          </p>
-
-          <div className="flex flex-wrap gap-2 mb-6">
-            {tech?.slice(0, 3).map((t, i) => (
-              <span
-                key={i}
-                className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground border border-border"
-              >
-                {t}
+        {/* Card Body */}
+        <div className="p-6 md:p-7 flex flex-col flex-1 justify-between space-y-5">
+          <div className="space-y-2">
+            {displayCategory && (
+              <span className="font-mono text-[11px] font-bold text-primary tracking-wider uppercase block">
+                {displayCategory}
               </span>
-            ))}
+            )}
+            <Link href={`/portfolio/${slug}`} className="block group-hover:text-white transition-colors">
+              <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
+                {title}
+              </h3>
+            </Link>
+            
+            <p className="text-muted-foreground text-sm md:text-[15px] leading-relaxed pt-1">
+              {description}
+            </p>
           </div>
 
-          <div className="flex items-center justify-between pt-5 border-t border-border mt-auto">
-            <div className="flex items-center gap-3">
-              {status === "Live" && (
-                <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Live
-                </span>
-              )}
-              {metric && (
-                <span className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                  {metric}
-                </span>
-              )}
-            </div>
-
-            {link && (
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-primary hover:opacity-80 transition-opacity"
-              >
-                Launch <ExternalLink size={12} />
-              </a>
-            )}
+          {/* Action Link: View Project → */}
+          <div className="pt-4 border-t border-neutral-800/80">
+            <Link
+              href={`/portfolio/${slug}`}
+              className="inline-flex items-center gap-2 text-sm font-bold text-foreground hover:text-white transition-colors group-hover:gap-2.5"
+            >
+              <span>View Project</span>
+              <ArrowRight className="h-4 w-4 transition-transform duration-200" aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </div>

@@ -5,13 +5,13 @@ import { Copy, Check, Send, Mail, GitBranch, GitPullRequest, GitCommit, Play, Ar
 import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
 
-export function BlogShare({ title, slug }: { title: string; slug: string }) {
+export function BlogShare({ title, slug, url }: { title: string; slug?: string; url?: string }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://growxlabs.tech/blog/${slug}`;
+  const shareUrl = url || (slug ? `https://growxlabs.tech/blog/${slug}` : (typeof window !== "undefined" ? window.location.href : "https://growxlabs.tech"));
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -19,67 +19,39 @@ export function BlogShare({ title, slug }: { title: string; slug: string }) {
     }
   };
 
-  const shareLinks = [
-    {
-      name: "X / Twitter",
-      icon: () => (
-        <svg className="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-      ),
-      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
-      color: "hover:text-white hover:bg-white/[0.06]",
-    },
-    {
-      name: "LinkedIn",
-      icon: () => (
-        <svg className="w-4 h-4 shrink-0 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z" />
-        </svg>
-      ),
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-      color: "hover:text-[#0A66C2] hover:bg-[#0A66C2]/10",
-    },
-  ];
-
   return (
-    <div className="flex flex-col gap-4 py-6 border-t border-b border-border/60 my-10 animate-fade-in">
-      <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">Share this briefing</p>
-      <div className="flex flex-wrap items-center gap-3">
-        {shareLinks.map((link) => (
-          <a
-            key={link.name}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border/60 bg-muted/20 text-foreground text-[13px] font-medium transition-all duration-300 active:scale-[0.98]",
-              link.color
-            )}
-          >
-            <link.icon />
-            <span>{link.name}</span>
-          </a>
-        ))}
+    <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-neutral-800/80 font-mono text-xs text-muted-foreground my-8">
+      <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-400">Share this briefing</span>
+      <div className="flex items-center gap-4">
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground transition-colors"
+        >
+          X / Twitter ↗
+        </a>
+        <span className="text-neutral-700">·</span>
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground transition-colors"
+        >
+          LinkedIn ↗
+        </a>
+        <span className="text-neutral-700">·</span>
         <button
           onClick={handleCopy}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-all duration-300 active:scale-[0.98] mr-auto",
-            copied
-              ? "border-emerald-500 text-emerald-400 bg-emerald-500/10"
-              : "border-border/60 text-foreground bg-muted/20 hover:border-primary hover:text-primary"
-          )}
+          className="hover:text-foreground transition-colors cursor-pointer flex items-center gap-1.5"
         >
           {copied ? (
             <>
-              <Check className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span>Link Copied!</span>
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-emerald-400">Copied</span>
             </>
           ) : (
-            <>
-              <Copy className="w-4 h-4 shrink-0" />
-              <span>Copy Link</span>
-            </>
+            <span>Copy Link</span>
           )}
         </button>
       </div>
@@ -352,72 +324,71 @@ export function NewsletterCTA() {
   };
 
   return (
-    <div className="my-14 rounded-2xl border border-border/80 bg-gradient-to-b from-card to-background p-8 md:p-10 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="max-w-2xl relative z-10">
-        <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary font-bold">
-          GrowXLabs Developer Infrastructure Briefing
+    <section className="border-t border-neutral-800/80 pt-12 pb-6 space-y-6">
+      <div className="space-y-2">
+        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-primary font-bold">
+          // DEVELOPER BRIEFING
         </span>
-        <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-2">
+        <h3 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-foreground">
           Stay ahead of agentic software development and modern Git infrastructure.
         </h3>
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-          Join 25,000+ engineers, software architects, and engineering leaders receiving our weekly deep dives on AI coding agents, Next.js architecture, and developer productivity systems.
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
+          Weekly technical deep dives on AI coding agents, systems architecture, and developer productivity tools from GrowXLabs.
         </p>
-
-        {status === "success" ? (
-          <div className="mt-6 p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-sm font-medium flex items-center gap-2">
-            <Check className="w-5 h-5 shrink-0" />
-            <span>Thank you for subscribing! You are now on our priority dispatch list.</span>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="mt-6 flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your work email (e.g. alex@company.com)"
-              className="flex-1 px-4 py-3 rounded-xl border border-border/80 bg-background text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary transition-all"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              <span>{status === "loading" ? "Subscribing..." : "Subscribe Free"}</span>
-            </button>
-          </form>
-        )}
       </div>
-    </div>
+
+      {status === "success" ? (
+        <div className="p-3 text-emerald-400 font-mono text-xs flex items-center gap-2">
+          <Check className="w-4 h-4" />
+          <span>Subscribed. You are on the priority dispatch list.</span>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter work email"
+            className="flex-1 px-3.5 py-2.5 rounded-none border-b border-neutral-700 bg-transparent text-foreground text-xs placeholder:text-muted-foreground/60 focus:outline-none focus:border-white transition-all font-mono"
+          />
+          <button
+            type="submit"
+            disabled={status === "loading"}
+            className="px-5 py-2.5 bg-white text-black font-mono font-bold text-xs hover:bg-neutral-200 transition-all shrink-0 cursor-pointer"
+          >
+            {status === "loading" ? "Subscribing..." : "Subscribe"}
+          </button>
+        </form>
+      )}
+    </section>
   );
 }
 
 export function AgentCTA() {
   return (
-    <div className="my-16 rounded-2xl border border-primary/40 bg-primary/[0.04] p-8 md:p-10 relative overflow-hidden">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2 max-w-xl">
-          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary">
-            Engineering Consultation
-          </span>
-          <h3 className="text-2xl font-bold text-foreground">
-            Integrate Agentic AI Workflows into Your Engineering Team
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            GrowXLabs helps high-growth companies architect autonomous coding agent pipelines, review automation, and modern CI/CD systems that 10x development velocity safely.
-          </p>
-        </div>
+    <section className="border-t border-neutral-800/80 pt-12 pb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      <div className="space-y-2 max-w-xl">
+        <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary block">
+          // ENGINEERING CONSULTATION
+        </span>
+        <h3 className="font-serif font-black text-2xl sm:text-3xl text-foreground tracking-tight">
+          Integrate Agentic AI Workflows into Your Engineering Team
+        </h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          GrowXLabs helps high-growth companies architect autonomous coding agent pipelines, review automation, and modern CI/CD systems that accelerate development velocity safely.
+        </p>
+      </div>
+
+      <div className="shrink-0">
         <Link
           href="/contact"
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm hover:bg-foreground/90 transition-all shrink-0"
+          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-all shadow-md group"
         >
           <span>Schedule Engineering Review</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
-    </div>
+    </section>
   );
 }
