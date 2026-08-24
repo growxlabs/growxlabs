@@ -62,6 +62,20 @@ const PRODUCTS = [
     href: "/contact",
     isExternal: false,
   },
+  {
+    name: "GrowX Crawl™",
+    label: "WEB INTELLIGENCE & RESEARCH RUNTIME",
+    shortName: "GROWX CRAWL",
+    image: "/portfolio/growx-crawl.svg",
+    isSvg: true,
+    taglineLead: "Your local-first web discovery engine that is",
+    taglineBold: "verifiable, high-throughput and structured.",
+    subtext: "It executes headless JS crawls, extracts entities, and audits search engine visibility.",
+    description:
+      "A local-first web research tool built inside GrowXLabs to discover companies, crawl websites, extract structured information, and keep verifiable source evidence behind every finding.",
+    href: "/contact",
+    isExternal: false,
+  },
 ];
 
 export default function ProductsPage() {
@@ -82,14 +96,22 @@ export default function ProductsPage() {
             {PRODUCTS.map((product) => {
               const LeftVisual = product.image ? (
                 <div className="w-full bg-black border border-black min-h-[300px] sm:min-h-[340px] md:min-h-[380px] h-full relative overflow-hidden flex items-center justify-center">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover object-center"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                  />
+                  {product.isSvg ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  ) : (
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      priority
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="w-full bg-black border border-black p-8 sm:p-10 md:p-12 min-h-[300px] sm:min-h-[340px] md:min-h-[380px] flex flex-col justify-between text-center">
@@ -164,7 +186,7 @@ export default function ProductsPage() {
           <div className="mt-20 sm:mt-24 border-t border-white/10 pt-6">
             <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
               <span>// End of Products</span>
-              <span>4 Products</span>
+              <span>{PRODUCTS.length} Products</span>
             </div>
           </div>
 
