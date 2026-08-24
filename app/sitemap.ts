@@ -8,6 +8,8 @@ const marketingRoutes = [
   { path: '', priority: 1.0, changefreq: 'daily' as const },
   { path: '/services', priority: 0.9, changefreq: 'weekly' as const },
   { path: '/products', priority: 0.9, changefreq: 'weekly' as const },
+  { path: '/research', priority: 0.9, changefreq: 'weekly' as const },
+  { path: '/ailab', priority: 0.9, changefreq: 'weekly' as const },
   { path: '/portfolio', priority: 0.8, changefreq: 'monthly' as const },
   { path: '/courses', priority: 0.8, changefreq: 'monthly' as const },
   { path: '/about', priority: 0.7, changefreq: 'monthly' as const },
