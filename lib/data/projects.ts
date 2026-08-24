@@ -1,6 +1,8 @@
 export interface CaseStudy {
   slug: string;
   title: string;
+  subtitle?: string;
+  client?: string;
   category: string;
   tag: string;
   description: string;
@@ -32,9 +34,11 @@ export const projects: CaseStudy[] = [
   {
     slug: "trionyx",
     title: "TRIONYX",
-    tag: "Client Project",
-    category: "Digital Platform",
-    description: "A digital platform built around Trionyx's products, customer experience and day-to-day operations.",
+    subtitle: "Distributor Management Platform",
+    client: "Client: Trionyx India Pvt. Ltd.",
+    tag: "Distribution Platform",
+    category: "// DISTRIBUTION PLATFORM",
+    description: "Connects distributor operations, enquiries, inventory and sales in one platform.",
     image: "/portfolio/trionyx-dashboard.png",
     problem: "Trionyx needed a modern, high-performance digital platform to showcase their specialized product catalog, provide direct technical specifications to buyers, and streamline day-to-day customer communication.",
     solution: "Engineered a custom enterprise web platform with interactive product catalogs, structured technical documentation, automated inquiry routing, and unified operational workflows.",

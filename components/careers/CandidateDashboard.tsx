@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { User, Briefcase, Calendar, FileText, CheckCircle2, Clock, MapPin, Award } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, MapPin, Award } from "lucide-react";
+import { GrowxUser, GrowxPortfolio, GrowxDocument } from "@/components/icons";
 
 interface CandidateDashboardProps {
   candidate: any;
@@ -36,7 +37,7 @@ export function CandidateDashboard({ candidate, onClose }: CandidateDashboardPro
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-6">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-[#0075de] font-bold text-lg">
-            {candidate?.fullName?.[0] || <User size={20} />}
+            {candidate?.fullName?.[0] || <GrowxUser size={20} />}
           </div>
           <div>
             <h2 className="text-xl font-black text-slate-900">{candidate?.fullName || "Candidate Dashboard"}</h2>
@@ -56,7 +57,7 @@ export function CandidateDashboard({ candidate, onClose }: CandidateDashboardPro
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="flex items-center gap-2 text-sm font-black text-slate-900">
-              <Briefcase size={16} className="text-[#0075de]" /> My Applications ({applications.length})
+              <GrowxPortfolio size={16} className="text-[#0075de]" /> My Applications ({applications.length})
             </h3>
           </div>
 
@@ -118,7 +119,7 @@ export function CandidateDashboard({ candidate, onClose }: CandidateDashboardPro
         <div className="grid gap-4 sm:grid-cols-2 pt-4">
           <div className="rounded-2xl border border-slate-200 p-5 bg-white">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-              <FileText size={14} className="text-[#0075de]" /> Saved Resumes
+              <GrowxDocument size={14} className="text-[#0075de]" /> Saved Resumes
             </div>
             <p className="mt-2 text-xs text-slate-600">Primary Candidate Resume Version 1.0 (PDF)</p>
             <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 p-2 rounded-lg w-fit">

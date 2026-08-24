@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { X } from "lucide-react";
+import { GrowxMenu } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { usePathname } from "@/navigation-client";
@@ -54,7 +55,7 @@ export function Navbar() {
     { name: "Services", href: "/services" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Products", href: "/products" },
-    { name: "AI Lab", href: "/ailab" },
+    { name: "R&D", href: "/research" },
     { name: "Blog", href: "/blog" },
     { name: "FAQ'S", href: "/faq" },
     { name: "Contact", href: "/contact" },
@@ -116,7 +117,7 @@ export function Navbar() {
                 )}
                 aria-label="Open menu"
               >
-                <Menu className="h-6 w-6" />
+                <GrowxMenu size={24} />
               </button>
             </div>
 

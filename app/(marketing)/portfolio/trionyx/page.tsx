@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { GrowxArrowRight } from "@/components/icons";
 import { PageHero } from "@/components/marketing/PageHero";
 import { AIReadActions } from "@/components/marketing/AIReadActions";
 
@@ -603,7 +604,7 @@ export default function TrionyxCaseStudyPage() {
               className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-all shadow-md group"
             >
               <span>Contact GrowxLabs</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <GrowxArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </section>

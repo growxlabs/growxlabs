@@ -1,6 +1,7 @@
 "use client";
 
-import { Mail, MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle } from "lucide-react";
+import { GrowxContact, GrowxArrowRight } from "@/components/icons";
 
 export function ContactContent() {
   return (
@@ -52,7 +53,7 @@ export function ContactContent() {
             
             {/* Icon + Label */}
             <div className="col-span-11 md:col-span-8 flex items-center gap-5">
-              <Mail className="h-5 w-5 text-neutral-500 group-hover:text-primary transition-colors duration-300" />
+              <GrowxContact size={20} className="text-neutral-500 group-hover:text-primary transition-colors duration-300" />
               <span className="text-xl md:text-3xl font-sans font-normal tracking-tight text-neutral-300 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
                 sai@growxlabs.tech
               </span>
@@ -60,7 +61,7 @@ export function ContactContent() {
             
             {/* Arrow Indicator */}
             <div className="col-span-1 flex justify-end select-none opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-              <ArrowRight className="h-5 w-5 text-white" />
+              <GrowxArrowRight size={20} className="text-white" />
             </div>
           </a>
 
@@ -86,7 +87,7 @@ export function ContactContent() {
             
             {/* Arrow Indicator */}
             <div className="col-span-1 flex justify-end select-none opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-              <ArrowRight className="h-5 w-5 text-white" />
+              <GrowxArrowRight size={20} className="text-white" />
             </div>
           </a>
 

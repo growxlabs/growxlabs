@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail } from "lucide-react";
+import { GrowxContact } from "@/components/icons";
 import { Link, usePathname } from "@/navigation-client";
 import { useState, useEffect } from "react";
 import { getAbsoluteUrl } from "@/lib/subdomains";
@@ -57,7 +57,7 @@ export function Footer() {
             <span className="hidden md:inline text-border/30">|</span>
 
             <a href="mailto:sai@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-foreground transition-colors ${textColor}`}>
-              <Mail size={13} className={accentColor} aria-hidden="true" /> sai@growxlabs.tech
+              <GrowxContact size={14} className={accentColor} aria-hidden="true" /> sai@growxlabs.tech
             </a>
 
             <span className="hidden md:inline text-border/30">|</span>

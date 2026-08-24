@@ -7,7 +7,7 @@
   --font-lora: Lora, Georgia, "Times New Roman", serif;
   --font-outfit: Outfit, "Segoe UI", Arial, sans-serif;
 }
-@custom-variant dark (&:where(.dark, .dark *));
+@variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
 
 /*

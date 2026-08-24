@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { GrowxExternalLink } from "@/components/icons";
 
 export type ContentType = "project" | "blog" | "article" | "research";
 
@@ -79,7 +80,7 @@ export function AIReadActions({
             title="Read with ChatGPT"
           >
             <span>Read with ChatGPT</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <GrowxExternalLink size={14} className="text-neutral-500 group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
 
           <span className="text-neutral-700">/</span>
@@ -91,7 +92,7 @@ export function AIReadActions({
             title="Read with Claude"
           >
             <span>Read with Claude</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <GrowxExternalLink size={14} className="text-neutral-500 group-hover:text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
 
           {copiedProvider && (

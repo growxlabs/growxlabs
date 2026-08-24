@@ -861,6 +861,7 @@ export function AdminNav({
             </div>
           ) : isCollapsed && !isMobile ? (
             <button
+              type="button"
               onClick={() => {
                 const nextTheme =
                   theme === "light"
@@ -882,10 +883,11 @@ export function AdminNav({
           ) : (
             <div className="flex w-full h-full gap-0.5">
               {(["light", "dark", "system"] as const).map((t) => {
-                const isActive = theme === t;
+                const isActive = (theme || "system") === t;
                 return (
                   <button
                     key={t}
+                    type="button"
                     onClick={() => {
                       setTheme(t);
                       updateThemeClass(t);
@@ -893,8 +895,8 @@ export function AdminNav({
                     className={cn(
                       "flex-1 flex items-center justify-center gap-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer h-full px-1",
                       isActive
-                        ? "bg-white text-[#0075de] dark:bg-neutral-950 dark:text-white border border-slate-100 dark:border-neutral-900/60 shadow-xs font-black"
-                        : "text-slate-500 hover:text-slate-900 dark:hover:text-neutral-200",
+                        ? "bg-white text-[#0075de] dark:bg-neutral-800 dark:text-[#bdefff] border border-slate-200/80 dark:border-neutral-700 shadow-xs font-black"
+                        : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white",
                     )}
                   >
                     {t === "light" && <Sun size={10} />}

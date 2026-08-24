@@ -196,7 +196,7 @@ export default function Home() {
 
             {/* LABS CARD */}
             <AnimatedItem>
-              <Link href="/products" className="group block h-full">
+              <Link href="/ailab" className="group block h-full">
                 <div className="relative h-full flex flex-col justify-between bg-[#111111] text-white border border-white/5 rounded-2xl p-8 md:p-10 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#6366F1]/35 hover:bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.06),transparent_60%)] min-h-[460px]">
                   {/* Top line with title and circular arrow */}
                   <div className="flex justify-between items-start z-10">

@@ -1,173 +1,66 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Terminal, Network, FileText, MessageSquare, Users } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { PageHero } from "@/components/marketing/PageHero";
 
 // ══════════════════════════════════════════════════════════════════
-// Minimal Integrated Product Visual Motifs (Clean black/translucent line art)
+// Product Catalog Definition Matching 360Labs Structure As-Is
 // ══════════════════════════════════════════════════════════════════
 
-/** 3RDMIND: Abstract connected leadership nodes */
-function MindNodesVisual() {
-  return (
-    <div className="w-full h-16 rounded-xl bg-black/[0.04] border border-black/10 flex items-center justify-center p-2">
-      <svg viewBox="0 0 160 50" className="w-full h-full text-black/80" fill="none" stroke="currentColor">
-        {/* Connecting Lines */}
-        <line x1="80" y1="12" x2="35" y2="38" strokeWidth="1.2" strokeDasharray="3 2" className="text-black/40" />
-        <line x1="80" y1="12" x2="80" y2="38" strokeWidth="1.2" className="text-black/50" />
-        <line x1="80" y1="12" x2="125" y2="38" strokeWidth="1.2" strokeDasharray="3 2" className="text-black/40" />
-        
-        {/* Top Central Leader Node */}
-        <circle cx="80" cy="12" r="6" fill="#000000" />
-        <circle cx="80" cy="12" r="2.5" fill="#bdefff" />
-
-        {/* Subordinate Agent Nodes */}
-        <circle cx="35" cy="38" r="5" fill="#000000" />
-        <circle cx="80" cy="38" r="5" fill="#000000" />
-        <circle cx="125" cy="38" r="5" fill="#000000" />
-      </svg>
-    </div>
-  );
-}
-
-/** Pipper: Minimal terminal / workspace motif */
-function PipperWorkspaceVisual() {
-  return (
-    <div className="w-full h-16 rounded-xl bg-black/[0.04] border border-black/10 flex flex-col justify-center px-3 py-2 space-y-1.5 font-mono text-[9px]">
-      <div className="flex items-center justify-between bg-black/10 rounded px-2 py-1">
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-black/70" />
-          <span className="text-black/80 font-bold">agent://codex-main</span>
-        </div>
-        <span className="w-8 h-1 bg-black/30 rounded" />
-      </div>
-      <div className="flex items-center justify-between bg-black/5 rounded px-2 py-1">
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-black/40" />
-          <span className="text-black/60">agent://claude-code</span>
-        </div>
-        <span className="w-5 h-1 bg-black/20 rounded" />
-      </div>
-    </div>
-  );
-}
-
-/** ResumeForgeAI: Subtle document / resume version composition */
-function ResumeDocumentVisual() {
-  return (
-    <div className="w-full h-16 rounded-xl bg-black/[0.04] border border-black/10 flex items-center justify-center px-4 py-2">
-      <div className="w-28 h-12 bg-white/60 border border-black/15 rounded-md p-1.5 flex flex-col justify-between shadow-xs">
-        <div className="flex items-center justify-between">
-          <div className="w-5 h-2 bg-black/80 rounded-[2px]" />
-          <span className="text-[7px] font-mono font-bold text-black/60 bg-black/10 px-1 rounded">v2.4</span>
-        </div>
-        <div className="space-y-1">
-          <div className="w-full h-1 bg-black/30 rounded-full" />
-          <div className="w-3/4 h-1 bg-black/20 rounded-full" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** UniversalAI: 3 conversational model blocks converging into one response */
-function UniversalChatVisual() {
-  return (
-    <div className="w-full h-16 rounded-xl bg-black/[0.04] border border-black/10 flex items-center justify-between px-3 py-2">
-      {/* 3 Model Inputs */}
-      <div className="flex flex-col gap-1">
-        <span className="text-[7.5px] font-mono font-bold bg-black/10 text-black px-1.5 py-0.5 rounded">GPT-5</span>
-        <span className="text-[7.5px] font-mono font-bold bg-black/10 text-black px-1.5 py-0.5 rounded">Claude 3.5</span>
-        <span className="text-[7.5px] font-mono font-bold bg-black/10 text-black px-1.5 py-0.5 rounded">Gemini</span>
-      </div>
-      
-      {/* Arrow Divider */}
-      <span className="text-black/40 text-xs font-mono">→</span>
-
-      {/* Unified Response Bubble */}
-      <div className="bg-black text-[#bdefff] text-[8px] font-mono font-bold px-2.5 py-2 rounded-lg flex items-center gap-1 shadow-xs">
-        <span>Combined Output</span>
-      </div>
-    </div>
-  );
-}
-
-/** RecruitAI: 3 profile comparison rows with one selected */
-function RecruitCandidateVisual() {
-  return (
-    <div className="w-full h-16 rounded-xl bg-black/[0.04] border border-black/10 flex flex-col justify-center px-3 py-1.5 space-y-1">
-      <div className="flex items-center justify-between px-1.5 py-0.5 opacity-40">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-black/60" />
-          <div className="w-14 h-1 bg-black/50 rounded" />
-        </div>
-        <span className="text-[7px] font-mono text-black/60">82%</span>
-      </div>
-      <div className="flex items-center justify-between bg-black text-white px-2 py-1 rounded-md shadow-xs">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#bdefff]" />
-          <div className="w-16 h-1 bg-white/90 rounded" />
-        </div>
-        <span className="text-[7.5px] font-mono font-bold text-[#bdefff]">96% Match</span>
-      </div>
-      <div className="flex items-center justify-between px-1.5 py-0.5 opacity-40">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-black/60" />
-          <div className="w-12 h-1 bg-black/50 rounded" />
-        </div>
-        <span className="text-[7px] font-mono text-black/60">78%</span>
-      </div>
-    </div>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════════
-// Product Family Configuration
-// ══════════════════════════════════════════════════════════════════
-
-const products = [
+const PRODUCTS = [
   {
-    title: "3RDMIND",
-    category: "// STARTUP SIMULATION",
-    description: "AI leaders take different roles, work together, make decisions and see how the startup responds.",
-    icon: Network,
-    visual: MindNodesVisual,
-    href: "/contact",
-  },
-  {
-    title: "Pipper",
-    category: "// HARNESS",
-    description: "A desktop workspace for running coding agents and seeing their work together in one place.",
-    icon: Terminal,
-    visual: PipperWorkspaceVisual,
-    href: "https://pipper.dev?utm_source=growxlabswebsite",
-  },
-  {
-    title: "ResumeForgeAI",
-    category: "// DEVELOPERS",
-    description: "Build and improve role-specific resumes with clear control over every version.",
-    icon: FileText,
-    visual: ResumeDocumentVisual,
-    href: "https://resumeforgeai.in?utm_source=growxlabswebsite",
-  },
-  {
-    title: "UniversalAI",
-    category: "// MULTI-MODEL CHAT",
-    description: "Chat with different AI models from one place and choose the model you want for each conversation.",
-    icon: MessageSquare,
-    visual: UniversalChatVisual,
-    href: "/contact",
-  },
-  {
-    title: "RecruitAI",
-    category: "// RECRUITERS",
-    description: "Review candidates, compare applications and manage communication throughout hiring.",
-    icon: Users,
-    visual: RecruitCandidateVisual,
+    name: "RecruitAI™",
+    label: "AUTONOMOUS TALENT ACQUISITION",
+    shortName: "RECRUITAI",
+    image: "/images/products/recruitai.png",
+    taglineLead: "Your autonomous screening platform that is",
+    taglineBold: "rigorous, unbiased and scalable.",
+    subtext: "It evaluates candidate proof-of-work, generates scorecards, and streamlines hiring.",
+    description:
+      "An end-to-end recruitment intelligence platform that automates technical candidate screening, scorecard evaluation, and applicant communication. It matches applicant portfolios against customized engineering rubrics with verifiable proof of work, enabling hiring teams to identify top engineering talent in minutes.",
     href: "https://recruitaitech.in?utm_source=growxlabswebsite",
+    isExternal: true,
+  },
+  {
+    name: "Pipper™",
+    label: "DESKTOP AGENT HARNESS",
+    shortName: "PIPPER",
+    image: "/images/products/pipper.png",
+    taglineLead: "Your desktop workspace for running and seeing",
+    taglineBold: "autonomous coding agents.",
+    subtext: "It executes in parallel, tracks live diffs and compiles deterministically.",
+    description:
+      "A desktop workspace for running and seeing autonomous coding agents work together. Pipper orchestrates parallel model execution, visualizes live file changes across branches, and runs deterministic AST compilations before merging into your codebase. Its companion dashboard gives full visibility over agent prompts, test coverage, and sandbox rollbacks.",
+    href: "https://pipper.dev?utm_source=growxlabswebsite",
+    isExternal: true,
+  },
+  {
+    name: "ResumeForgeAI™",
+    label: "CAREER & RESUME INTELLIGENCE",
+    shortName: "RESUMEFORGE",
+    image: "/images/products/resumeforgeai.png",
+    taglineLead: "Your role-targeted career platform that is",
+    taglineBold: "optimized, versioned and verified.",
+    subtext: "It aligns ATS vector scores, manages multiple roles, and builds publication-ready resumes.",
+    description:
+      "An AI-native resume engineering platform designed for software engineers and technical leaders. It builds role-specific resumes with granular version branching, ATS semantic match benchmarking, and publication-ready typography. The system ensures every bullet point is grounded in verifiable impact metrics tailored to target job descriptions.",
+    href: "https://resumeforgeai.in?utm_source=growxlabswebsite",
+    isExternal: true,
+  },
+  {
+    name: "UniversalAI™",
+    label: "UNIFIED AI GATEWAY",
+    shortName: "UNIVERSAL",
+    image: "/images/products/universalai.png",
+    taglineLead: "Your unified AI switchboard that is",
+    taglineBold: "multi-model, ultra-fast and cost-optimized.",
+    subtext: "It routes between Claude, GPT-5 and Gemini with sub-15ms latency.",
+    description:
+      "A unified AI gateway enabling seamless switching, side-by-side comparison, and automated intent routing across leading frontier models. UniversalAI allows you to choose the exact reasoning depth and latency profile needed for every conversation, drastically reducing API costs while guaranteeing high-precision outputs.",
+    href: "/contact",
+    isExternal: false,
   },
 ];
 
@@ -177,107 +70,104 @@ export default function ProductsPage() {
       <PageHero
         title="Products"
         viewingText="PRODUCTS"
-        exploreText="PRODUCTS"
+        exploreText="PLATFORMS"
         tagline="OWN PRODUCTS"
       />
 
-      <div className="w-full bg-background px-4 sm:px-6 md:px-8 xl:px-12 pb-24 border-t border-border/20 pt-16">
-        <div className="max-w-[1780px] mx-auto">
-          {/* Header Block */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-14 md:mb-16 text-center pt-8 md:pt-10"
-          >
-            <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-primary mb-3 block font-mono">
-              PRODUCTS
-            </span>
-            <h2 className="text-[clamp(1.65rem,4vw,2.75rem)] font-black text-foreground tracking-tight mb-4 leading-[1.12] max-w-4xl mx-auto">
-              Products that prove our engineering speed.
-            </h2>
-            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-              Explore AI-native software and developer platforms built by GrowXLabs.
-            </p>
-          </motion.div>
+      <div className="w-full bg-background pb-32 pt-8">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+          
+          {/* Stacked Product Showcase Rows as independent floating editorial sheets */}
+          <div className="space-y-16 sm:space-y-20 md:space-y-24">
+            {PRODUCTS.map((product) => {
+              const LeftVisual = product.image ? (
+                <div className="w-full bg-black border border-black min-h-[300px] sm:min-h-[340px] md:min-h-[380px] h-full relative overflow-hidden flex items-center justify-center">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority
+                  />
+                </div>
+              ) : (
+                <div className="w-full bg-black border border-black p-8 sm:p-10 md:p-12 min-h-[300px] sm:min-h-[340px] md:min-h-[380px] flex flex-col justify-between text-center">
+                  {/* Top Tag */}
+                  <span className="font-mono text-[9.5px] sm:text-[10px] tracking-[0.25em] text-white/50 uppercase block">
+                    {product.label}
+                  </span>
 
-          {/* 5-Column Grid with Target Dimensions: ~290-310px width, ~410-430px height */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-stretch justify-center max-w-[1600px] mx-auto">
-            {products.map((product, index) => {
-              const isExternal = product.href.startsWith("http");
-              const VisualComponent = product.visual;
+                  {/* Giant Product Title */}
+                  <h4 className="font-sans font-black text-4xl sm:text-5xl md:text-6xl tracking-tight text-white my-6">
+                    {product.shortName}
+                  </h4>
 
-              const CardContent = (
-                <div className="bg-[#bdefff] text-black rounded-[28px] p-7 md:p-8 flex flex-col justify-between h-[420px] w-full max-w-[310px] mx-auto shadow-[0_16px_40px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(189,239,255,0.3)] group cursor-pointer">
-                  
-                  {/* Top Section */}
-                  <div className="space-y-4">
-                    {/* Category Label + Top Right Icon */}
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-[10px] font-bold tracking-[0.18em] text-black/60 uppercase">
-                        {product.category}
+                  {/* Bottom Philosophy & Subtitle */}
+                  <div className="space-y-2">
+                    <p className="text-xs sm:text-[13px] text-white/80 font-sans">
+                      {product.taglineLead}{" "}
+                      <span className="font-bold text-[#C0F0FB]">
+                        {product.taglineBold}
                       </span>
-                      <div className="w-8 h-8 rounded-lg bg-black text-[#bdefff] flex items-center justify-center shadow-xs">
-                        <product.icon size={16} aria-hidden="true" />
-                      </div>
-                    </div>
-
-                    {/* Product Name (Large Serif) */}
-                    <div>
-                      <h3 className="font-serif font-black text-2xl md:text-[26px] text-black tracking-tight leading-tight">
-                        {product.title}
-                      </h3>
-                      {/* Short Human Description */}
-                      <p className="text-black/80 text-[13.5px] leading-relaxed mt-2 font-sans">
-                        {product.description}
-                      </p>
-                    </div>
+                    </p>
+                    <p className="text-[10.5px] sm:text-xs text-white/40 font-sans">
+                      {product.subtext}
+                    </p>
                   </div>
-
-                  {/* Lower-Middle Area: Subtle Product Visual Element */}
-                  <div className="my-auto py-2">
-                    <VisualComponent />
-                  </div>
-
-                  {/* Bottom Action Row */}
-                  <div className="pt-4 border-t border-black/15 flex items-center justify-between">
-                    <span className="text-sm font-bold text-black tracking-wide">
-                      Explore
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1">
-                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                  </div>
-
                 </div>
               );
 
-              return (
-                <motion.div
-                  key={product.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + index * 0.08 }}
-                  className="h-full flex justify-center"
+              const PanelInner = (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-center">
+                  {/* LEFT SIDE: Visual Artwork / Image (Flat inside panel) */}
+                  <div className="lg:col-span-6 w-full h-full">
+                    {LeftVisual}
+                  </div>
+
+                  {/* RIGHT SIDE: Product Name + Editorial Description */}
+                  <div className="lg:col-span-6 space-y-5">
+                    <h2 className="font-sans font-black text-3xl sm:text-4xl md:text-[40px] text-black tracking-tight leading-tight">
+                      {product.name}
+                    </h2>
+
+                    <p className="text-black/80 text-sm sm:text-base md:text-[16.5px] leading-relaxed font-sans font-medium">
+                      {product.description}
+                    </p>
+                  </div>
+                </div>
+              );
+
+              return product.isExternal ? (
+                <a
+                  key={product.name}
+                  href={product.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block border border-black/15 bg-[#C0F0FB] p-6 sm:p-8 md:p-10 lg:p-12 text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer"
                 >
-                  {isExternal ? (
-                    <a
-                      href={product.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full h-full"
-                    >
-                      {CardContent}
-                    </a>
-                  ) : (
-                    <Link href={product.href} className="block w-full h-full">
-                      {CardContent}
-                    </Link>
-                  )}
-                </motion.div>
+                  {PanelInner}
+                </a>
+              ) : (
+                <Link
+                  key={product.name}
+                  href={product.href}
+                  className="block border border-black/15 bg-[#C0F0FB] p-6 sm:p-8 md:p-10 lg:p-12 text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer"
+                >
+                  {PanelInner}
+                </Link>
               );
             })}
           </div>
+
+          {/* End of Products Separator & Count */}
+          <div className="mt-20 sm:mt-24 border-t border-white/10 pt-6">
+            <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
+              <span>// End of Products</span>
+              <span>4 Products</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </>

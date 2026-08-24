@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { ArrowRight, Search, X } from "lucide-react";
+import { X } from "lucide-react";
+import { GrowxArrowRight, GrowxSearch } from "@/components/icons";
 import { Link } from "@/navigation";
 
 interface BlogPost { slug: string; title: string; excerpt: string; category: string; date: string; readTime: string; image?: string; }
@@ -91,7 +92,7 @@ function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost;
         </article>
 
         <aside className="order-3 lg:col-span-3 lg:pl-5" aria-label="Recent essays">
-          <div className="flex items-center justify-between border-b border-white/20 pb-4"><h3 className="blog-ui-heading text-[20px] font-bold uppercase tracking-[-0.03em]">Recent essays</h3><ArrowRight className="h-5 w-5" /></div>
+          <div className="flex items-center justify-between border-b border-white/20 pb-4"><h3 className="blog-ui-heading text-[20px] font-bold uppercase tracking-[-0.03em]">Recent essays</h3><GrowxArrowRight size={20} /></div>
           <div>
             {recentStories.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="group grid grid-cols-[88px_1fr] gap-4 border-b border-dashed border-white/25 py-5">
@@ -118,7 +119,7 @@ function ProductStudio() {
     <section aria-labelledby="built-by-growxlabs" className="scroll-mt-28 pt-16 md:pt-20">
       <div className="flex items-end justify-between gap-6 border-y border-dashed border-white/25 py-8">
         <div><h2 id="built-by-growxlabs" className="blog-ui-heading scroll-mt-28 text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">Built by GrowXLabs</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">Explore our AI-native products.</p></div>
-        <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
+        <GrowxArrowRight size={28} className="hidden shrink-0 text-white/80 sm:block" aria-hidden="true" />
       </div>
       <div className="grid gap-5 pt-8 md:grid-cols-2 lg:grid-cols-4">
         {growxProducts.map((product) => (
@@ -129,7 +130,7 @@ function ProductStudio() {
             <div className="flex min-h-[220px] flex-1 flex-col px-1 pb-2 pt-5 md:px-0 md:pb-1">
               <h3 className={`blog-ui-heading text-[30px] font-bold leading-none tracking-[-0.035em] ${product.accent}`}>{product.name}</h3>
               <p className="mt-3 text-[17px] leading-[1.35] text-white/80">{product.description}</p>
-              <div className="mt-auto pt-6"><a href={product.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[15px] font-bold text-black transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Try it <ArrowRight className="ml-2 h-4 w-4" /></a></div>
+              <div className="mt-auto pt-6"><a href={product.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[15px] font-bold text-black transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Try it <GrowxArrowRight size={16} className="ml-2" /></a></div>
             </div>
           </article>
         ))}
@@ -172,7 +173,7 @@ function GrowXLabsStudioBanner() {
       </a>
       <div className="flex items-center justify-between border-b border-dashed border-white/25 py-7">
         <div><h3 className="blog-ui-heading text-[22px] font-bold uppercase tracking-[-0.025em] text-white md:text-[27px]">Built to put AI to work</h3><p className="mt-1 text-base text-white/70 md:text-xl">Explore the products coming out of the GrowXLabs studio.</p></div>
-        <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
+        <GrowxArrowRight size={28} className="hidden shrink-0 text-white/80 sm:block" aria-hidden="true" />
       </div>
     </section>
   );
@@ -201,9 +202,9 @@ export function BlogInteractiveList({ posts, featuredPost }: BlogInteractiveList
           <nav aria-label="Article topics" className="flex min-w-0 items-center gap-6 overflow-x-auto py-5 [scrollbar-width:none]">
             {categories.map((category) => <button key={category} type="button" onClick={() => setActiveCategory(category)} className={`shrink-0 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors ${activeCategory === category ? "text-[#bdefff]" : "text-white/50 hover:text-white"}`}>{category}</button>)}
           </nav>
-          <button type="button" onClick={() => setSearchOpen((value) => !value)} aria-label="Search articles" aria-expanded={searchOpen} className="shrink-0 p-2 text-white/75 hover:text-white">{searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}</button>
+          <button type="button" onClick={() => setSearchOpen((value) => !value)} aria-label="Search articles" aria-expanded={searchOpen} className="shrink-0 p-2 text-white/75 hover:text-white">{searchOpen ? <X className="h-5 w-5" /> : <GrowxSearch size={20} />}</button>
         </div>
-        {searchOpen && <div className="mx-auto max-w-[1600px] border-t border-white/10 py-4"><label className="flex items-center gap-3"><Search className="h-4 w-4 text-white/40" /><span className="sr-only">Search insights</span><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search GrowXLabs insights…" className="w-full bg-transparent py-2 text-base text-white outline-none placeholder:text-white/35" /></label></div>}
+        {searchOpen && <div className="mx-auto max-w-[1600px] border-t border-white/10 py-4"><label className="flex items-center gap-3"><GrowxSearch size={16} className="text-white/40" /><span className="sr-only">Search insights</span><input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search GrowXLabs insights…" className="w-full bg-transparent py-2 text-base text-white outline-none placeholder:text-white/35" /></label></div>}
       </div>
 
       {isDefaultView && <FeaturedEdition lead={featuredPost} sideStories={posts.slice(0, 2)} recentStories={posts.slice(2, 6)} />}
@@ -215,7 +216,7 @@ export function BlogInteractiveList({ posts, featuredPost }: BlogInteractiveList
               <section aria-labelledby={`editorial-row-${rowIndex}`} className="pt-16 md:pt-20">
                 <div className="flex items-end justify-between gap-6 border-b border-dashed border-white/25 pb-8">
                   <div><h2 id={`editorial-row-${rowIndex}`} className="blog-ui-heading text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">{row.title}</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">{row.subtitle}</p></div>
-                  <ArrowRight className="hidden h-7 w-7 shrink-0 text-white/80 sm:block" aria-hidden="true" />
+                  <GrowxArrowRight size={28} className="hidden shrink-0 text-white/80 sm:block" aria-hidden="true" />
                 </div>
                 <div className="grid gap-x-5 gap-y-12 pt-8 md:grid-cols-2 lg:grid-cols-4">{row.posts.map((post, index) => <ArticleCard key={post.slug} post={post} priority={rowIndex === 0} index={index} />)}</div>
               </section>
@@ -225,7 +226,7 @@ export function BlogInteractiveList({ posts, featuredPost }: BlogInteractiveList
         </div>
       ) : (
         <section aria-labelledby="filtered-insights" className="pt-14 md:pt-20">
-          <div className="flex items-end justify-between gap-6 border-b border-dashed border-white/25 pb-8"><div><h2 id="filtered-insights" className="blog-ui-heading text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">Filtered Insights</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">Stories selected from the GrowXLabs archive.</p></div><ArrowRight className="hidden h-7 w-7 text-white/80 sm:block" /></div>
+          <div className="flex items-end justify-between gap-6 border-b border-dashed border-white/25 pb-8"><div><h2 id="filtered-insights" className="blog-ui-heading text-[26px] font-bold uppercase tracking-[-0.03em] text-white md:text-[30px]">Filtered Insights</h2><p className="mt-1 text-lg text-white/75 md:text-[22px]">Stories selected from the GrowXLabs archive.</p></div><GrowxArrowRight size={28} className="hidden text-white/80 sm:block" /></div>
           {displayPosts.length > 0 ? <div className="grid gap-x-5 gap-y-12 pt-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-y-16">{displayPosts.map((post, index) => <ArticleCard key={post.slug} post={post} priority={index < 4} index={index} />)}</div> : <div className="border-b border-white/20 py-24 text-center"><p className="font-serif text-3xl text-white">No stories match that search.</p><button type="button" onClick={() => { setQuery(""); setActiveCategory("All"); }} className="mt-5 text-sm font-semibold text-[#bdefff] underline underline-offset-4">Show all stories</button></div>}
         </section>
       )}
