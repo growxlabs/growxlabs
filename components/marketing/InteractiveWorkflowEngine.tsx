@@ -65,7 +65,7 @@ const nodeDetails: Record<string, NodeDetail> = {
     title: "API Endpoint POST",
     category: "Gateway Route",
     description: "Receives raw request streams, parses JSON payloads, and validates schemas against event endpoints.",
-    metrics: "Route: /v1/webhook/n8n // Method: POST"
+    metrics: "Route: /v1/webhook/pipeline // Method: POST"
   },
   workflow_def: {
     title: "Workflow Definition Schema",

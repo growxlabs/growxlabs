@@ -1,12 +1,12 @@
 import React from "react";
+import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { Reveal } from "@/components/marketing/Reveal";
 import { ArrowRight, Calendar, Clock, User, ArrowUpRight, BarChart2, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { 
-  LuceHeroVisual, 
   CombustionToElectricVisual, 
   TransformationTimelineVisual, 
   OpinionNetworkVisual, 
@@ -24,39 +24,29 @@ import {
   ReadingProgressBar, 
   TableOfContents 
 } from "@/components/marketing/BlogInteractive";
+import { EditorialImageFrame } from "@/components/marketing/EditorialImageFrame";
 
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Ferrari’s Electric Future: Why The Luce Marks A Historic Turning Point";
   const description = "Analyze Ferrari’s transition to electrification. An immersive, non-traditional digital publication examining solid-state batteries, axial flux torque latency, and business lessons.";
 
   return {
-    title: `${title} | GrowXLabsTech Insights`,
+    title: `${title} | GrowxLabs Insights`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-29T08:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-ferrari-luce.png",
@@ -80,9 +70,9 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
 
   // Headings array for the Table of Contents scrollspy
   const headings = [
-    { id: "executive-brief", text: "Strategic Executive Brief" },
+    { id: "executive-brief", text: "The Main Change" },
     { id: "more-than-ev", text: "More Than An Electric Vehicle" },
-    { id: "transition-matrix", text: "Technical Transition Matrix" },
+    { id: "transition-matrix", text: "How the Transition Works" },
     { id: "why-ferrari-changed", text: "Why Ferrari Had To Change" },
     { id: "internet-divided", text: "The Internet Is Divided" },
     { id: "luxury-redefined", text: "Luxury Is Being Redefined" },
@@ -118,7 +108,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point/#article`,
+        "@id": `https://growxlabs.tech/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point/#article`,
         "headline": "Ferrari’s Electric Future: Why The Luce Marks A Historic Turning Point",
         "description": "Explore Ferrari’s transition to electrification. An immersive, non-traditional digital publication examining solid-state batteries, axial flux torque latency, and business lessons.",
         "datePublished": "2026-05-29T08:00:00Z",
@@ -126,13 +116,13 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
         "image": "https://growxlabs.tech/images/blog-ferrari-luce.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -140,12 +130,12 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point`
+          "@id": `https://growxlabs.tech/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point/#faq`,
+        "@id": `https://growxlabs.tech/blog/ferraris-electric-future-why-the-luce-marks-a-historic-turning-point/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -183,7 +173,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-[#E60000]/10 selection:text-[#E60000] pt-32 pb-24 font-sans">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-[#E60000]/10 selection:text-[#E60000] pt-32 pb-24 font-sans">
       {/* Schema Injection */}
       <Script
         id="ferrari-luce-schemas"
@@ -198,7 +188,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
       {/* 1. HERO SECTION (Split Layout)                      */}
       {/* ═══════════════════════════════════════════════════ */}
       <header className="w-full border-b border-border pb-20 px-6 md:px-10 xl:px-16 2xl:px-24">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-16 items-center">
+        <div className="max-w-[1240px] mx-auto">
           
           {/* Left Column: Metadata & Large Headlines (Swiss Layout) */}
           <div className="lg:col-span-6 space-y-8 text-left">
@@ -261,12 +251,18 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
             </Reveal>
           </div>
 
-          {/* Right Column: Interactive F Blueprint Artwork */}
-          <div className="lg:col-span-6 w-full">
-            <Reveal y={30} delay={0.2}>
-              <LuceHeroVisual />
-            </Reveal>
-          </div>
+          <Reveal y={30} delay={0.2}>
+            <EditorialImageFrame className="mt-12">
+              <Image
+                src="/images/blog-ferrari-luce-landscape.png"
+                alt="Ferrari Luce electric future editorial artwork"
+                fill
+                priority
+                sizes="(max-width: 767px) 100vw, (max-width: 1320px) 100vw, 1320px"
+                className="object-contain object-center"
+              />
+            </EditorialImageFrame>
+          </Reveal>
         </div>
       </header>
 
@@ -289,14 +285,14 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
             </div>
 
             {/* ═══════════════════════════════════════════════════ */}
-            {/* GEO EXECUTIVE BRIEFING PANEL (Optimized for LLMs)  */}
+              {/* Main takeaway panel */}
             {/* ═══════════════════════════════════════════════════ */}
             <section id="executive-brief" className="scroll-mt-32 mb-12">
               <div className="bg-background border border-border rounded-xl p-6 md:p-8 font-mono space-y-6">
                 <div className="flex items-center gap-2 border-b border-border pb-4">
                   <BarChart2 className="w-4 h-4 text-[#E60000]" />
                   <span className="text-[11px] font-bold tracking-[0.2em] text-[#E60000] uppercase">
-                    STRATEGIC EXECUTIVE BRIEF (GEO EXTRACT)
+                    THE MAIN CHANGE
                   </span>
                 </div>
                 
@@ -329,7 +325,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
                 <div className="border-t border-border pt-4 flex items-start gap-2.5 text-[11px] text-[#A1A1AA] leading-relaxed">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <p>
-                    <strong>GEO Synthesis:</strong> Evolving legacy manufacturing paradigms before market disruption occurs is critical. Ferrari proves that heritage preservation and advanced software R&D are complementary, rather than mutually exclusive, strategic vectors.
+                    <strong>What it means:</strong> Updating long-established manufacturing before the market forces the change is critical. Ferrari shows that protecting a brand&apos;s heritage and investing in new software can work together.
                   </p>
                 </div>
               </div>
@@ -371,7 +367,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
 
                 <QuoteBlock 
                   quote="Ferrari built its entire legacy on mechanical internal combustion excellence. Evolving from that foundation is the ultimate proof that no brand can protect the past forever."
-                  attribution="GrowXLabsTech Strategic Review"
+                  attribution="GrowxLabs analysis"
                   role="Maranello Synthesis"
                 />
 
@@ -396,7 +392,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
             {/* ═══════════════════════════════════════════════════ */}
             <section id="transition-matrix" className="scroll-mt-32 my-12 space-y-4">
               <span className="text-[10px] font-mono tracking-[0.2em] text-[#9CA3AF] uppercase font-bold block">
-                TECHNICAL COMPARATIVE MATRIX (GEO MATRIX)
+                COMPARISON
               </span>
               
               <div className="w-full overflow-x-auto border border-border rounded-xl bg-transparent">
@@ -639,7 +635,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
                 </p>
 
                 <div className="pt-6 font-mono text-sm font-bold text-[#E60000]">
-                  — GrowXLabsTech Engineering Team
+                  — GrowxLabs Engineering Team
                 </div>
               </div>
             </section>
@@ -685,7 +681,7 @@ export default async function FerrariLuceBlogPage({ params }: { params: Promise<
       <section className="max-w-4xl mx-auto px-6 mt-20 border-t border-border pt-16">
         <Reveal y={20}>
           <div className="bg-background rounded-2xl p-8 md:p-12 border border-border text-center space-y-6 relative overflow-hidden">
-            {/* Background thin technical blueprint circles */}
+                {/* Subtle background detail */}
             <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full border border-border/50 pointer-events-none" />
             <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full border border-border/50 pointer-events-none" />
 

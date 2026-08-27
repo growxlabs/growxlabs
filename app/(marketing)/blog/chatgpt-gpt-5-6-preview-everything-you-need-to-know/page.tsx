@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -14,35 +14,24 @@ import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { InsightCallout, WhyThisMatters, EditorialDivider, RelatedArticlesGrid } from "@/components/marketing/BlogEditorial";
 import { GPT56MatrixBanner } from "@/components/marketing/GPT56MatrixBanner";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "ChatGPT GPT-5.6 Preview: Everything You Need to Know";
   const description = "Explore OpenAI's new GPT-5.6 Preview family (Sol, Terra, Luna). Discover its advanced reasoning, coding capabilities, safety stack, and benchmarks.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-06-30T08:30:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-gpt56-preview.png",
@@ -151,7 +140,7 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know/#article`,
+        "@id": `https://growxlabs.tech/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know/#article`,
         "headline": "ChatGPT GPT-5.6 Preview — Complete Global Guide 2026",
         "description": "Explore OpenAI's new GPT-5.6 Preview family (Sol, Terra, Luna). Discover its advanced reasoning, coding capabilities, safety stack, and benchmarks.",
         "datePublished": "2026-06-30T08:30:00Z",
@@ -159,13 +148,13 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
         "image": "https://growxlabs.tech/logo.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -173,12 +162,12 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know`
+          "@id": `https://growxlabs.tech/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know/#faq`,
+        "@id": `https://growxlabs.tech/blog/chatgpt-gpt-5-6-preview-everything-you-need-to-know/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -216,7 +205,7 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       <Script
         id="gpt56-preview-schemas"
         type="application/ld+json"
@@ -255,7 +244,7 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
 
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               ChatGPT GPT-5.6 Preview:
-              <br />
+              {" "}
               <span className="text-primary">Everything You Need to Know</span>
             </h2>
 
@@ -266,7 +255,7 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -609,7 +598,7 @@ export default async function Gpt56PreviewGuidePage({ params }: { params: Promis
               <div className="pt-4">
                 <Link href="/contact">
                   <Button variant="outline" className="border-primary/20 hover:border-primary/50 text-primary rounded-md px-8 h-12 text-[15px] font-semibold transition-all">
-                    <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowXLabsTech <ArrowRight className="w-4 h-4 shrink-0" /></span>
+                    <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowxLabs <ArrowRight className="w-4 h-4 shrink-0" /></span>
                   </Button>
                 </Link>
               </div>

@@ -197,7 +197,7 @@ interface RelatedArticle {
 
 export function RelatedArticlesGrid({ articles }: { articles: RelatedArticle[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div data-editorial-legacy-related="true" className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {articles.map((article, index) => (
         <Link
           key={index}
@@ -308,7 +308,7 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
   const [copied, setCopied] = useState(false);
   const [copiedAi, setCopiedAi] = useState(false);
 
-  const shareUrl = typeof window !== "undefined" ? window.location.href : `https://growxlabs.tech/blog/${slug}`;
+  const shareUrl = `https://growxlabs.tech/blog/${slug}`;
 
   const aiPrompt = `Read this GrowxLabs article: ${shareUrl}. Help me understand the article and answer my questions about it.`;
   const chatGptUrl = `https://chatgpt.com/?q=${encodeURIComponent(aiPrompt)}`;
@@ -346,7 +346,7 @@ export function BlogActionBar({ title, slug }: BlogActionBarProps) {
   };
 
   return (
-    <div className="w-full border-t border-b border-neutral-800/80 py-3 my-6 flex items-center justify-between gap-4 text-xs">
+    <div className="legacy-blog-action-bar w-full border-t border-b border-neutral-800/80 py-3 my-6 flex items-center justify-between gap-4 text-xs">
       {/* Left: Read with AI */}
       <div className="flex items-center gap-2.5">
         <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary">
@@ -459,7 +459,7 @@ interface RelatedEssaysListProps {
 
 export function RelatedEssaysList({ essays }: RelatedEssaysListProps) {
   return (
-    <div className="space-y-12">
+    <div data-editorial-legacy-related="true" className="space-y-12">
       {essays.map((essay, index) => {
         // Find if accentWord exists in title and split it to render in italics
         let renderedTitle: React.ReactNode = essay.title;

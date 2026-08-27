@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -45,36 +45,25 @@ import {
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO, AEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/stripe-openrouter-ai-infrastructure-acquisition";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Stripe Is Buying OpenRouter: Why a Payments Company Wants to Own Part of the AI Infrastructure Layer";
   const description = "Stripe agreed to acquire OpenRouter on August 19, 2026. Here's how model routing, token usage, billing and payments are converging into a new AI infrastructure layer.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages,
+      canonical: "https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-08-19T08:00:00.000Z",
       modifiedTime: "2026-08-21T08:00:00.000Z",
-      authors: ["GrowXLabs Tech Editorial"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-stripe-openrouter-acquisition.png",
@@ -164,7 +153,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/stripe-openrouter-ai-infrastructure-acquisition/#article`,
+        "@id": `https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition/#article`,
         "headline": "Stripe Is Buying OpenRouter: Why a Payments Company Wants to Own Part of the AI Infrastructure Layer",
         "alternativeHeadline": "Stripe Acquires OpenRouter for $8B: The Convergence of Payments, Token Billing, and AI Model Routing",
         "description": "Stripe agreed to acquire OpenRouter on August 19, 2026. Here's how model routing, token usage, billing and payments are converging into a new AI infrastructure layer.",
@@ -180,7 +169,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
         },
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabs Tech Editorial",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": {
             "@type": "ImageObject",
@@ -189,7 +178,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": {
             "@type": "ImageObject",
@@ -198,7 +187,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/stripe-openrouter-ai-infrastructure-acquisition`,
+          "@id": `https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition`,
         },
         "keywords": [
           "Stripe",
@@ -252,7 +241,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/stripe-openrouter-ai-infrastructure-acquisition/#faq`,
+        "@id": `https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition/#faq`,
         "mainEntity": faqData.map((faq) => ({
           "@type": "Question",
           "name": faq.question,
@@ -274,14 +263,14 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Editorial Insights",
-            "item": `https://growxlabs.tech/${locale}/blog`,
+            "name": "Insights",
+            "item": `https://growxlabs.tech/blog`,
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Stripe OpenRouter Acquisition",
-            "item": `https://growxlabs.tech/${locale}/blog/stripe-openrouter-ai-infrastructure-acquisition`,
+            "item": `https://growxlabs.tech/blog/stripe-openrouter-ai-infrastructure-acquisition`,
           },
         ],
       },
@@ -289,7 +278,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
   };
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/20 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/20 selection:text-primary pt-32 pb-24">
       {/* Dynamic Reading Progress Bar */}
       <ReadingProgressBar />
 
@@ -301,15 +290,6 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
       />
 
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-6 md:px-10 xl:px-16 2xl:px-24">
-        {/* Top Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs font-mono text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/blog" className="hover:text-foreground transition-colors">Insights</Link>
-          <span>/</span>
-          <span className="text-foreground truncate max-w-xs md:max-w-md">Stripe Acquires OpenRouter</span>
-        </nav>
-
         {/* Header Block */}
         <header className="pb-10 border-b border-border/60">
           <Reveal y={15}>
@@ -344,28 +324,27 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
                 GX
               </div>
               <div>
-                <p className="text-xs font-bold text-foreground">GrowXLabs Tech Editorial Staff</p>
-                <p className="text-[11px] font-mono text-muted-foreground">Systems Architecture & FinTech Research Group</p>
+              <p className="text-xs font-bold text-foreground">GrowxLabs</p>
+              <p className="text-[11px] font-mono text-muted-foreground">AI business and infrastructure analysis</p>
               </div>
             </div>
           </Reveal>
         </header>
 
-        {/* Hero Editorial Illustration */}
-        <figure className="my-10 rounded-2xl overflow-hidden border border-border/80 bg-card shadow-2xl">
+        {/* Hero image */}
+        <figure className="blog-editorial-image-frame my-10 rounded-2xl overflow-hidden border border-border/80 bg-card shadow-2xl">
           <div className="relative w-full aspect-[16/9] md:aspect-[21/9] bg-neutral-950">
             <Image
               src="/images/blog-stripe-openrouter-acquisition.png"
               alt="Stripe Acquires OpenRouter: The Convergence of Money and AI Token Routing Infrastructure"
               fill
               priority
-              className="object-cover object-center"
+              className="object-contain object-center"
               sizes="(max-width: 1200px) 100vw, 1400px"
             />
           </div>
           <figcaption className="p-4 bg-muted/20 border-t border-border/60 text-xs font-mono text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <span>FIGURE 1.0: Architectural synthesis of Stripe money flow and OpenRouter dynamic token distribution across foundation model providers.</span>
-            <span className="text-foreground font-semibold shrink-0">GrowXLabs Technical Blueprint Series</span>
+            <span>How Stripe&apos;s payment flow connects with OpenRouter&apos;s model routing.</span>
           </figcaption>
         </figure>
 
@@ -374,15 +353,15 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
 
         {/* Main Content Layout with Sticky Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
-          {/* Left Column: Sticky Table of Contents & Editorial Badges */}
+          {/* Left Column: Sticky Table of Contents */}
           <aside className="hidden lg:block lg:col-span-4 space-y-8">
             <div className="sticky top-28 space-y-6">
               <TableOfContents headings={headings} />
               <AuthorProfileSidebar 
-                authorName="GrowXLabs Tech Editorial"
-                authorRole="Systems Architecture & AI FinTech Research"
-                category="AI Infrastructure & Token Economics"
-                bio="In-depth analysis of AI infrastructure, multi-model agent systems, usage-based token economics, and scalable software architecture."
+                authorName="GrowxLabs"
+                authorRole="AI business and infrastructure analysis"
+                category="AI and payments"
+                bio="Clear analysis of model routing, usage-based pricing, payments, and the software businesses built around AI."
               />
               <NewsletterForwardBanner />
             </div>
@@ -394,7 +373,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
             {/* Section 1 */}
             <section id="introduction" className="scroll-mt-32 space-y-6">
               <span className="text-xs font-mono font-bold text-primary tracking-widest uppercase">
-                Section 01 // Executive Briefing
+                01 // What the deal changes
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground not-prose">
                 The $8B Acquisition: Moving Money vs. Moving Tokens
@@ -552,7 +531,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
             {/* Section 5 */}
             <section id="why-stripe-wants-openrouter" className="scroll-mt-32 space-y-6">
               <span className="text-xs font-mono font-bold text-primary tracking-widest uppercase">
-                Section 05 // Economic Architecture
+                05 // How the economics work
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground not-prose">
                 Why Stripe Wants OpenRouter: Inflow vs. Outflow
@@ -577,7 +556,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
                     src="/images/blog-stripe-openrouter-architecture.png"
                     alt="The AI Economic Layer: Combining Stripe Payments and OpenRouter Token Routing"
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     sizes="(max-width: 1200px) 100vw, 1000px"
                   />
                 </div>
@@ -940,7 +919,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
                 excerpt: "Technical breakdown of Moonshot AI's 2.8T Mixture-of-Experts architecture, Delta Attention, and software engineering benchmarks.",
                 href: "/blog/kimi-k3-open-frontier-intelligence-model",
                 date: "July 21, 2026",
-                author: "GrowXLabs Editorial",
+                author: "GrowxLabs",
                 imageSrc: "/images/blog-kimi-k3-woodcut.png",
               },
               {
@@ -949,7 +928,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
                 excerpt: "Analyze Jensen Huang's GTC vision: CUDA-X, AI Factories, Physical AI, and the historic shift from chatbots to proactive execution systems.",
                 href: "/blog/nvidia-vision-agentic-to-useful-ai",
                 date: "June 4, 2026",
-                author: "GrowXLabs Editorial",
+                author: "GrowxLabs",
                 imageSrc: "/images/blog-nvidia-vision-agentic-to-useful-ai.png",
               },
               {
@@ -958,7 +937,7 @@ export default async function StripeOpenRouterBlogPage({ params }: { params: Pro
                 excerpt: "Analyze how Anthropic's Claude is quietly challenging OpenAI's dominance. Explore developer migration and long-context mechanics.",
                 href: "/blog/why-anthropic-is-becoming-a-serious-threat-to-openai",
                 date: "May 27, 2026",
-                author: "GrowXLabs Editorial",
+                author: "GrowxLabs",
                 imageSrc: "/images/hero-anthropic-openai.png",
               },
             ]}

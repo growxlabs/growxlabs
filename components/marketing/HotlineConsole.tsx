@@ -11,12 +11,12 @@ const neofetchArt = `  ______ ______   ______ _   _
 | \\\\____/| |     | \\\\____/|/ _ \\\\ 
  \\\\_____/|_|      \\\\_____/_/   \\\\_|
 
-OS: GrowX-OS v2.0
+OS: GrowxLabs-OS v2.0
 Host: growxlabs-core-node-1
 Uptime: 247d 8h 12m
 Shell: growxsh v3.5-secure
 AI Core: Claude 3.5 Sonnet / GPT-4o
-Workflows: n8n / Node.js / TypeScript
+Workflows: Multi-Agent Runtime / Node.js / TypeScript
 Availability: OPEN TO PROJECTS (Type 'whatsapp' or 'schedule')`;
 
 export function HotlineConsole() {
@@ -104,8 +104,8 @@ export function HotlineConsole() {
         case "about":
           setLogs(prev => [
             ...prev,
-            "GrowXLabs.tech is an AI-native product studio building secure automated digital platforms.",
-            "We engineer custom Next.js web applications, n8n automations, and CRM integrations."
+            "GrowxLabs is an AI-native software engineering company and product studio.",
+            "We engineer custom enterprise software, autonomous agent architectures, and web platforms."
           ]);
           break;
         case "specs":
@@ -331,7 +331,7 @@ export function HotlineConsole() {
                 <pre className="text-white/80 overflow-x-auto text-[12.5px] leading-relaxed">
                   {JSON.stringify(
                     {
-                      studio: "GrowXLabs.tech",
+                      studio: "GrowxLabs",
                       status: "ONLINE",
                       average_response: "4 mins",
                       encryption: "TLS_1.3_AES_256",
@@ -355,7 +355,7 @@ export function HotlineConsole() {
                     <div className="text-white/40">Core AI Engine</div>
                     <div className="text-white/90">Claude 3.5 Sonnet / GPT-4o</div>
                     <div className="text-white/40">Integration Hub</div>
-                    <div className="text-white/90">n8n / custom-workflows</div>
+                    <div className="text-white/90">Agentic Workflows / APIs</div>
                   </div>
                 </div>
               )}

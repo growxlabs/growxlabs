@@ -26,8 +26,8 @@ export interface CaseStudy {
 }
 
 /**
- * Portfolio Projects (Real client and enterprise projects built by GrowXLabs)
- * GrowXLabs-owned products (3RDMIND, Pipper, ResumeForgeAI, UniversalAI, RecruitAI)
+ * Portfolio Projects (Real client and enterprise projects built by GrowxLabs)
+ * GrowxLabs-owned products (3RDMIND, Pipper, ResumeForgeAI, UniversalAI, RecruitAI)
  * are presented on the dedicated /products and /ailab pages.
  */
 export const projects: CaseStudy[] = [

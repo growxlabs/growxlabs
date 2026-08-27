@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700;800&family=Inter:wght@400;500;700;800;900&display=swap');
 @import "tailwindcss";
+@import "./blog-article-system.css";
 
 :root {
   --font-sans: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;

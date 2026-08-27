@@ -8,6 +8,10 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/',
+          '/admin/',
+          '/client/',
+          '/dashboard/',
+          '/workspace/',
           '/*/admin/',
           '/*/client/',
           '/*/dashboard/',
@@ -18,7 +22,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       }
     ],
-
     sitemap: 'https://growxlabs.tech/sitemap.xml',
   };
 }

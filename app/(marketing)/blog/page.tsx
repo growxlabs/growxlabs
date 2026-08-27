@@ -6,29 +6,17 @@ import { BlogInteractiveList } from "@/components/marketing/BlogInteractiveList"
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / Directory SEO)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   return {
-    title: "GrowXLabsTech Insights — AI, Automation & High-Performance Engineering",
-    description: "Explore engineering insights, research papers, and technical deep-dives on background AI agents, backend automation engines, Next.js architecture, and AI-native software infrastructure from the GrowXLabsTech team.",
+    title: "GrowxLabs Insights — AI, Research & Software Engineering",
+    description: "Technical deep-dives and engineering analysis on AI agents, model architectures, developer infrastructure, and modern software systems from GrowxLabs.",
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog"
     }
   };
 }
 
-export default async function BlogIndexPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
+export default async function BlogIndexPage() {
   // Blog posts database
   const featuredPost = {
     slug: "cursor-origin-github-ai-code-hosting",
@@ -37,7 +25,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
     category: "Developer Infrastructure • AI Agents • Code Hosting",
     date: "August 17, 2026",
     readTime: "11 min read",
-    image: "/images/blog-cursor-origin.png"
+    image: "/images/blog-cursor-origin-landscape.png"
   };
 
   const regularPosts = [
@@ -189,38 +177,6 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
       category: "Engineering / Code / AI Tools",
       date: "May 27, 2026",
       readTime: "5 min read"
-    },
-    {
-      slug: "n8n-automation-for-business",
-      title: "n8n Automation for Business — Complete Global Guide 2026",
-      excerpt: "Stop doing manual work. Learn how n8n can handle your leads, emails, and CRM data 24/7 so your team can focus on growing your business globally.",
-      category: "Automation / n8n / Workflow",
-      date: "Apr 12, 2026",
-      readTime: "5 min read"
-    },
-    {
-      slug: "whatsapp-automation-for-lead-nurturing",
-      title: "WhatsApp Automation for Lead Nurturing — The 2026 Strategy",
-      excerpt: "Emails get ignored, but WhatsApp has a 98% open rate. Discover how to use automated WhatsApp pipelines to engage leads, answer FAQs, and secure deals while you sleep.",
-      category: "WhatsApp / Marketing / Sales",
-      date: "Mar 28, 2026",
-      readTime: "4 min read"
-    },
-    {
-      slug: "restaurant-customer-retention-automation",
-      title: "How Restaurants Worldwide Lose 30% of Regulars (And the Automation Fix)",
-      excerpt: "A technical perspective on retention workflows, loyalty data, and AI capabilities in competitive service environments.",
-      category: "FoodTech / Retention / Systems",
-      date: "Feb 18, 2026",
-      readTime: "6 min read"
-    },
-    {
-      slug: "indian-restaurant-website-usa",
-      title: "Indian Restaurant Website USA — Stop Paying 30% Commission to Platforms",
-      excerpt: "A direct strategy guide for Indian restaurant owners in the US to escape third-party commission models. Build your own digital infrastructure and capture direct client data.",
-      category: "Restaurant / Web / Growth",
-      date: "Jan 15, 2026",
-      readTime: "5 min read"
     }
   ];
 
@@ -228,13 +184,13 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": `https://growxlabs.tech/${locale}/blog/#webpage`,
-    "url": `https://growxlabs.tech/${locale}/blog`,
-    "name": "GrowXLabsTech Insights — AI, Automation & High-Performance Engineering",
-    "description": "Explore engineering insights, research papers, and technical deep-dives on background AI agents, backend automation engines, Next.js architecture, and AI-native software infrastructure from the GrowXLabsTech team.",
+    "@id": "https://growxlabs.tech/blog/#webpage",
+    "url": "https://growxlabs.tech/blog",
+    "name": "GrowxLabs Insights — AI, Research & Software Engineering",
+    "description": "Technical deep-dives and engineering analysis on AI agents, model architectures, developer infrastructure, and modern software systems from GrowxLabs.",
     "publisher": {
       "@type": "Organization",
-      "name": "GrowXLabsTech",
+      "name": "GrowxLabs",
       "logo": "https://growxlabs.tech/logo.png"
     },
     "about": [
@@ -244,7 +200,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
       },
       {
         "@type": "Thing",
-        "name": "Automation"
+        "name": "Software Engineering"
       },
       {
         "@type": "Thing",

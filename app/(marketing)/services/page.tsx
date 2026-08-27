@@ -107,19 +107,19 @@ const services = [
     title: "Custom Software Builds",
     type: "software",
     mission: "Problem to prototype",
-    useCases: "Custom apps, tools, automations",
-    weight: "Medium build",
-    dimensions: "24h prototype / scoped delivery",
+    useCases: "Custom enterprise apps, platforms, integrations",
+    weight: "Scoped build",
+    dimensions: "Architecture to production delivery",
     buttonText: "GET IN TOUCH",
-    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Custom%20Software%20Build%20at%20GrowXLabs.",
+    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Custom%20Software%20Build%20at%20GrowxLabs.",
   },
   {
-    title: "Labs & Pre-built Tools",
+    title: "Labs & Platforms",
     type: "ai",
-    mission: "Deploy proven platforms",
-    useCases: "Healthcare, logistics, maps, ops",
-    weight: "Fast launch",
-    dimensions: "Configurable / live in 72h",
+    mission: "Deploy proven architectures",
+    useCases: "Scraping, developer harnesses, talent systems",
+    weight: "Fast deployment",
+    dimensions: "Configurable / production-ready",
     buttonText: "EXPLORE LABS",
     buttonHref: "/products",
   },
@@ -127,40 +127,30 @@ const services = [
     title: "Fractional CTO",
     type: "cto",
     mission: "Own product and architecture",
-    useCases: "Roadmaps, architecture, hiring",
+    useCases: "Roadmaps, system design, technical strategy",
     weight: "Strategic",
-    dimensions: "Base build + revenue share",
+    dimensions: "Architecture & technical leadership",
     buttonText: "GET IN TOUCH",
-    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20Fractional%20CTO%20services%20at%20GrowXLabs.",
+    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20Fractional%20CTO%20services%20at%20GrowxLabs.",
   },
   {
     title: "Technical Co-founders",
     type: "founder",
     mission: "Embed from day one",
-    useCases: "MVPs, stack, delivery, scale",
+    useCases: "MVPs, technology stack, delivery, scaling",
     weight: "Deep partnership",
-    dimensions: "Equity or revenue aligned",
+    dimensions: "Long-term aligned engineering",
     buttonText: "GET IN TOUCH",
-    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Technical%20Co-founder%20partnership%20at%20GrowXLabs.",
+    buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Technical%20Co-founder%20partnership%20at%20GrowxLabs.",
   },
 ];
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-
-  const languages: Record<string, string> = {
-    "x-default": "https://growxlabs.tech/en-IN/services",
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/services`;
-  });
-
+export async function generateMetadata() {
   return {
-    title: "Global Web Development & Automation Services | GrowXLabsTech",
-    description: "AI engineering, product development, web platforms, and intelligent workflow integration for organizations operating in complex environments.",
+    title: "Software Engineering, Web Platforms & Enterprise AI Services | GrowxLabs",
+    description: "GrowxLabs provides custom enterprise software development, product engineering, web platform engineering, modernization, and intelligent workflow integrations.",
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/services`,
-      languages
+      canonical: "https://growxlabs.tech/services"
     }
   };
 }
@@ -172,19 +162,19 @@ export default function ServicesPage() {
         graph={[
           {
             "@type": "Service",
-            "@id": "https://growxlabs.tech/services/ai#service",
-            "name": "AI Development",
+            "@id": "https://growxlabs.tech/services/software#service",
+            "name": "Enterprise Software Engineering",
             "provider": { "@id": "https://growxlabs.tech/#organization" },
             "areaServed": "Global",
-            "description": "Custom AI capabilities, intelligent workflows, and production software applications."
+            "description": "Custom enterprise software development, modern web platform engineering, and scalable digital architectures."
           },
           {
             "@type": "Service",
-            "@id": "https://growxlabs.tech/services/web#service",
-            "name": "Web Platforms",
+            "@id": "https://growxlabs.tech/services/ai#service",
+            "name": "AI & Intelligent Workflows",
             "provider": { "@id": "https://growxlabs.tech/#organization" },
             "areaServed": "Global",
-            "description": "Production-grade web platforms engineered for performance, accessibility, and native AI integration."
+            "description": "Multi-agent systems, document intelligence pipelines, and secure enterprise AI integrations."
           }
         ]}
       />
@@ -193,7 +183,7 @@ export default function ServicesPage() {
         title="Services"
         viewingText="SERVICES"
         exploreText="WHAT WE DO"
-        tagline="SYSTEMS & AUTOMATION"
+        tagline="SOFTWARE & PRODUCT ENGINEERING"
       />
 
       <div className="pb-12 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-border/20 pt-16">

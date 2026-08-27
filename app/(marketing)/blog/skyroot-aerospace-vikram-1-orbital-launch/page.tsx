@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -20,35 +20,24 @@ import { BlogShare } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/skyroot-aerospace-vikram-1-orbital-launch";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Skyroot Aerospace Launches Vikram-1, Ushering India Into Private Orbital Era";
   const description = "Skyroot Aerospace successfully launches Vikram-1, becoming India's first private company to achieve orbital insertion. Read our deep technical analysis of the mission.";
 
   return {
-    title: `${title} | GrowXLabs Tech Insights`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/skyroot-aerospace-vikram-1-orbital-launch"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/skyroot-aerospace-vikram-1-orbital-launch",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-07-21T00:00:00.000Z",
-      authors: ["GrowXLabs Tech Editorial"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-skyroot-vikram1.png",
@@ -101,7 +90,7 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/skyroot-aerospace-vikram-1-orbital-launch/#article`,
+        "@id": `https://growxlabs.tech/blog/skyroot-aerospace-vikram-1-orbital-launch/#article`,
         "headline": "Skyroot Aerospace Launches Vikram-1, Ushering India Into Private Orbital Era",
         "description": "Skyroot Aerospace successfully launches Vikram-1, becoming India's first private company to achieve orbital insertion.",
         "datePublished": "2026-07-21T00:00:00.000Z",
@@ -109,13 +98,13 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
         "image": "https://growxlabs.tech/images/blog-skyroot-vikram1.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -123,7 +112,7 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/skyroot-aerospace-vikram-1-orbital-launch`
+          "@id": `https://growxlabs.tech/blog/skyroot-aerospace-vikram-1-orbital-launch`
         }
       },
       {
@@ -139,13 +128,13 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Skyroot Launch",
-            "item": `https://growxlabs.tech/${locale}/blog/skyroot-aerospace-vikram-1-orbital-launch`
+            "item": `https://growxlabs.tech/blog/skyroot-aerospace-vikram-1-orbital-launch`
           }
         ]
       }
@@ -190,7 +179,7 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="skyroot-launch-schema"
@@ -236,7 +225,7 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
               Skyroot Aerospace Launches Vikram-1: <span className="italic font-serif font-normal">Private Orbital</span> Era
-              <br />
+              {" "}
               <span className="text-primary font-sans font-black tracking-tighter block mt-2">India’s Historic Commercial Spaceflight Milestone</span>
             </h2>
 
@@ -244,7 +233,7 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -259,13 +248,13 @@ export default async function SkyrootBlogPage({ params }: { params: Promise<{ lo
 
           {/* Hero Visual — Featured Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12] rounded-xl border border-white/10">
                 <Image
                   src="/images/blog-skyroot-vikram1.png"
                   alt="Skyroot Aerospace Vikram-1 Rocket Woodcut Engraving"
                   fill
-                  className="object-cover scale-[1.05] transition-transform duration-700 hover:scale-[1.08]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>

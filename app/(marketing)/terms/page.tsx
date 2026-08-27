@@ -1,23 +1,11 @@
-import { locales } from "@/navigation";
 import { TermsContent } from "./TermsContent";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "terms";
-  
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   return {
-    title: "Terms of Service | GrowX Labs",
-    description: "Read the terms and conditions governing the professional digital engineering and automation services provided by GrowX Labs.",
+    title: "Terms of Service | GrowxLabs",
+    description: "Read the terms and conditions governing professional digital engineering and software services provided by GrowxLabs.",
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/terms"
     }
   };
 }

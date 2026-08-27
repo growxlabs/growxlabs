@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -17,35 +17,24 @@ import { InteractiveIOArchitecture } from "@/components/marketing/InteractiveIOA
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/google-io-2026";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Google I/O 2026: Gemini Spark, AI Agents & The Future of AI-Native Development";
   const description = "Explore everything announced at Google I/O 2026 including Gemini 3.5 Flash, Gemini Spark, AI agents, multimodal AI, Antigravity, and the future of AI-native software development.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/google-io-2026"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/google-io-2026",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-27T08:30:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-google-io-2026.png",
@@ -106,7 +95,7 @@ export default async function GoogleIOPage({ params }: { params: Promise<{ local
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/google-io-2026/#article`,
+        "@id": `https://growxlabs.tech/blog/google-io-2026/#article`,
         "headline": "Google I/O 2026: The Beginning of the AI-Native Internet",
         "description": "Explore everything announced at Google I/O 2026 including Gemini 3.5 Flash, Gemini Spark, AI agents, multimodal AI, Antigravity, and the future of AI-native software development.",
         "datePublished": "2026-05-27T08:30:00Z",
@@ -114,13 +103,13 @@ export default async function GoogleIOPage({ params }: { params: Promise<{ local
         "image": "https://growxlabs.tech/images/blog-google-io-2026.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -128,12 +117,12 @@ export default async function GoogleIOPage({ params }: { params: Promise<{ local
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/google-io-2026`
+          "@id": `https://growxlabs.tech/blog/google-io-2026`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/google-io-2026/#faq`,
+        "@id": `https://growxlabs.tech/blog/google-io-2026/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -198,7 +187,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* Dynamic JSON-LD Structured Data */}
       <Script
         id="google-io-schemas"
@@ -244,7 +233,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
             {/* Editorial Title */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Google I/O 2026:
-              <br />
+              {" "}
               <span className="text-primary">The Beginning of the AI-Native Internet</span>
             </h2>
 
@@ -257,7 +246,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -272,7 +261,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
 
           {/* Interactive Blueprint Architectures Diagram */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto text-left">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto text-left">
               <InteractiveIOArchitecture />
             </div>
           </Reveal>
@@ -585,7 +574,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
                   And that changes everything.
                 </p>
                 <p className="mt-8 font-sans font-bold text-foreground not-italic text-sm tracking-[0.1em] uppercase">
-                  — GrowXLabsTech
+                  — GrowxLabs
                 </p>
               </div>
             </section>
@@ -632,7 +621,7 @@ npx antigravity run --orchestrate=asynchronous-workflow`;
                 <div className="pt-4">
                   <Link href="/contact">
                     <Button variant="outline" className="border-primary/20 hover:border-primary/50 text-primary rounded-md px-8 h-12 text-[15px] font-semibold transition-all">
-                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowXLabsTech <ArrowRight className="w-4 h-4 shrink-0" /></span>
+                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowxLabs <ArrowRight className="w-4 h-4 shrink-0" /></span>
                     </Button>
                   </Link>
                 </div>

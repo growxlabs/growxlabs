@@ -1,28 +1,15 @@
-import { locales } from "@/navigation";
 import { ContactContent } from "./ContactContent";
+import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "contact";
-  
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   return {
-    title: "Work With GrowXLabsTech | Book a Free Global Call",
-    description: "Schedule a technical discovery conversation with GrowXLabsTech. We work with organizations globally. sai@growxlabs.tech",
+    title: "Contact GrowxLabs | Technical Discovery & Engagements",
+    description: "Schedule a technical discovery conversation with GrowxLabs. We work with organizations globally. sai@growxlabs.tech",
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/contact"
     }
   };
 }
-
-import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 
 export default function ContactPage() {
   return (
@@ -40,4 +27,3 @@ export default function ContactPage() {
     </>
   );
 }
-

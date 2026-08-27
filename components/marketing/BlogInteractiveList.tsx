@@ -5,28 +5,25 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { GrowxArrowRight, GrowxSearch } from "@/components/icons";
 import { Link } from "@/navigation";
+import { EditorialImageFrame } from "@/components/marketing/EditorialImageFrame";
 
 interface BlogPost { slug: string; title: string; excerpt: string; category: string; date: string; readTime: string; image?: string; }
 interface BlogInteractiveListProps { posts: BlogPost[]; featuredPost: BlogPost; }
 
 const images: Record<string, string> = {
   "nvidia-vision-agentic-to-useful-ai": "/images/nvidia-vision-agentic-to-useful-ai.png",
-  "chatbots-are-dying-agents-are-taking-over": "/images/chatbots-are-dying-agents-are-taking-over.png",
-  "blue-origin-new-glenn-rocket-explosion": "/images/blue-origin-new-glenn-rocket-explosion.png",
-  "claude-opus-4-8-anthropic-ai-model": "/images/claude_blog_woodcut_1780853620986.png",
+  "chatbots-are-dying-agents-are-taking-over": "/images/blog-chatbots-agents-landscape.png",
+  "blue-origin-new-glenn-rocket-explosion": "/images/blog-blue-origin-landscape.png",
+  "claude-opus-4-8-anthropic-ai-model": "/images/blog-claude-opus-landscape.png",
   "google-io-2026": "/images/blog-google-io-2026.png",
-  "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point": "/images/blog-ferrari-luce.png",
-  "google-search-is-no-longer-just-search": "/images/search_blog_woodcut_1780853646113.png",
-  "why-anthropic-is-becoming-a-serious-threat-to-openai": "/images/anthropic_openai_woodcut_1780853674501.png",
-  "ai-coding-tools-are-reshaping-modern-software-engineering": "/images/coding_blog_woodcut_1780853698423.png",
-  "n8n-automation-for-business": "/images/blog-n8n-automation.png",
-  "whatsapp-automation-for-lead-nurturing": "/images/blog-whatsapp-nurture.png",
-  "restaurant-customer-retention-automation": "/images/blog-restaurant-retention.png",
-  "indian-restaurant-website-usa": "/images/blog-restaurant-website.png",
+  "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point": "/images/blog-ferrari-luce-landscape.png",
+  "google-search-is-no-longer-just-search": "/images/hero-google-search.png",
+  "why-anthropic-is-becoming-a-serious-threat-to-openai": "/images/hero-anthropic-openai.png",
+  "ai-coding-tools-are-reshaping-modern-software-engineering": "/images/blog-ai-coding-landscape-v2.png",
   "claude-fable-5-mythos-5-anthropic-models": "/images/blog-claude-fable-5-mythos-5.png",
-  "claude-fable-5-mythos-5-banned-us-government": "/images/blog-claude-fable-5-mythos-5-banned.png",
-  "elon-musks-path-to-becoming-the-worlds-first-trillionaire": "/images/blog-elon-trillionaire.png",
-  "chatgpt-gpt-5-6-preview-everything-you-need-to-know": "/images/blog-gpt56-preview.png",
+  "claude-fable-5-mythos-5-banned-us-government": "/images/blog-claude-fable-banned-landscape.png",
+  "elon-musks-path-to-becoming-the-worlds-first-trillionaire": "/images/blog-elon-trillionaire-landscape.png",
+  "chatgpt-gpt-5-6-preview-everything-you-need-to-know": "/images/blog-chatgpt-gpt56-landscape.png",
   "skyroot-aerospace-vikram-1-orbital-launch": "/images/blog-skyroot-vikram1.png",
   "kimi-k3-open-frontier-intelligence-model": "/images/blog-kimi-k3-woodcut.png",
 };
@@ -34,8 +31,8 @@ const images: Record<string, string> = {
 const getImage = (post: BlogPost) => post.image || images[post.slug] || images["nvidia-vision-agentic-to-useful-ai"];
 const group = (category: string) => {
   const value = category.toLowerCase();
-  if (value.includes("automation") || value.includes("whatsapp") || value.includes("n8n")) return "Automation";
-  if (value.includes("engineering") || value.includes("code") || value.includes("web")) return "Engineering";
+  if (value.includes("automation") || value.includes("workflow")) return "Automation";
+  if (value.includes("engineering") || value.includes("code") || value.includes("web") || value.includes("developer")) return "Engineering";
   if (value.includes("space") || value.includes("automotive") || value.includes("future") || value.includes("science")) return "Tech & Science";
   return "AI & Agents";
 };
@@ -43,8 +40,10 @@ const group = (category: string) => {
 function ArticleCard({ post, priority = false, index }: { post: BlogPost; priority?: boolean; index: number }) {
   return (
     <article className={`group flex min-w-0 flex-col border-b border-white/20 pb-10 md:border-b-0 ${index >= 2 ? "md:border-t md:border-dashed md:border-white/25 md:pt-12" : ""} ${index === 2 || index === 3 ? "lg:border-t-0 lg:pt-0" : ""} ${index >= 4 ? "lg:border-t lg:border-dashed lg:border-white/25 lg:pt-16" : ""} lg:border-r lg:pr-5 last:border-r-0`}>
-      <Link href={`/blog/${post.slug}`} className="relative block aspect-[1.04/1] overflow-hidden bg-[#151515] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]">
-        <Image src={getImage(post)} alt={post.title} fill priority={priority} sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-cover transition duration-500 ease-out group-hover:scale-[1.025] group-hover:brightness-110" />
+      <Link href={`/blog/${post.slug}`} className="relative block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]">
+        <EditorialImageFrame>
+          <Image src={getImage(post)} alt={post.title} fill priority={priority} sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-contain transition duration-500 ease-out group-hover:brightness-110" />
+        </EditorialImageFrame>
       </Link>
       <div className="flex flex-1 flex-col pt-6">
         <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/55">{group(post.category)}</p>
@@ -54,7 +53,7 @@ function ArticleCard({ post, priority = false, index }: { post: BlogPost; priori
         <p className="mt-5 line-clamp-4 font-serif text-[18px] leading-[1.45] text-white/70">{post.excerpt}</p>
         <div className="mt-auto flex items-center gap-3 pt-7 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">
           <span className="grid h-7 w-7 place-items-center rounded-full bg-[#bdefff] text-[9px] font-black text-black">GX</span>
-          <span>GrowXLabs Team</span><span className="text-white/30">·</span><span className="text-white/45">{post.readTime}</span>
+          <span>GrowxLabs Team</span><span className="text-white/30">·</span><span className="text-white/45">{post.readTime}</span>
         </div>
       </div>
     </article>
@@ -70,10 +69,10 @@ function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost;
           {sideStories.map((post) => (
             <article key={post.slug} className="border-b border-dashed border-white/25 pb-7 last:border-b-0">
               <Link href={`/blog/${post.slug}`} className="group block">
-                <div className="relative aspect-[1.72/1] overflow-hidden bg-[#151515]"><Image src={getImage(post)} alt={post.title} fill sizes="(max-width: 1023px) 100vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.025]" /></div>
+                <EditorialImageFrame><Image src={getImage(post)} alt={post.title} fill sizes="(max-width: 1023px) 100vw, 25vw" className="object-contain transition-transform duration-500" /></EditorialImageFrame>
                 <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/60">{post.date} · {group(post.category)}</p>
                 <h3 className="mt-3 font-serif text-[clamp(1.65rem,2vw,2.2rem)] leading-[1.08] tracking-[-0.025em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h3>
-                <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">GrowXLabs Team</p>
+                <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">GrowxLabs Team</p>
               </Link>
             </article>
           ))}
@@ -81,12 +80,12 @@ function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost;
 
         <article className="group order-1 lg:order-2 lg:col-span-6 lg:border-r lg:border-dashed lg:border-white/25 lg:px-5">
           <Link href={`/blog/${lead.slug}`} className="block">
-            <div className="relative aspect-[1.3/1] overflow-hidden bg-[#151515]"><Image src={getImage(lead)} alt={lead.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.02]" /></div>
+            <EditorialImageFrame><Image src={getImage(lead)} alt={lead.title} fill priority sizes="(max-width: 1023px) 100vw, 50vw" className="object-contain transition-transform duration-500" /></EditorialImageFrame>
             <div className="pt-5 text-center">
               <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-white/65">{lead.date} · Featured analysis</p>
               <h3 className="mt-4 font-serif text-[clamp(2.7rem,3.5vw,4rem)] font-medium leading-[0.98] tracking-[-0.04em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{lead.title}</h3>
               <p className="mx-auto mt-5 max-w-3xl line-clamp-2 font-serif text-xl leading-[1.4] text-white/70">{lead.excerpt}</p>
-              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.05em] text-white/75">GrowXLabs Team · {lead.readTime}</p>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.05em] text-white/75">GrowxLabs Team · {lead.readTime}</p>
             </div>
           </Link>
         </article>
@@ -95,9 +94,9 @@ function FeaturedEdition({ lead, sideStories, recentStories }: { lead: BlogPost;
           <div className="flex items-center justify-between border-b border-white/20 pb-4"><h3 className="blog-ui-heading text-[20px] font-bold uppercase tracking-[-0.03em]">Recent essays</h3><GrowxArrowRight size={20} /></div>
           <div>
             {recentStories.map((post) => (
-              <Link key={post.slug} href={`/blog/${post.slug}`} className="group grid grid-cols-[88px_1fr] gap-4 border-b border-dashed border-white/25 py-5">
-                <div className="relative aspect-square overflow-hidden bg-[#151515]"><Image src={getImage(post)} alt="" fill sizes="88px" className="object-cover transition-transform duration-500 group-hover:scale-105" /></div>
-                <div className="min-w-0"><h4 className="font-serif text-[22px] leading-[1.08] tracking-[-0.02em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h4><p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.05em] text-white/65">GrowXLabs Team</p></div>
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="group block border-b border-dashed border-white/25 py-5">
+                <EditorialImageFrame><Image src={getImage(post)} alt={post.title} fill sizes="(max-width: 1023px) 100vw, 25vw" className="object-contain transition-transform duration-500" /></EditorialImageFrame>
+                <div className="min-w-0 pt-4"><p className="text-[10px] font-semibold uppercase tracking-[0.05em] text-white/65">{post.date} · {group(post.category)}</p><h4 className="mt-3 font-serif text-[22px] leading-[1.08] tracking-[-0.02em] text-[#f5f3ee] transition-colors group-hover:text-[#bdefff]">{post.title}</h4><p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/70">GrowXLabs Team</p></div>
               </Link>
             ))}
           </div>
@@ -125,7 +124,7 @@ function ProductStudio() {
         {growxProducts.map((product) => (
           <article key={product.name} className={`group flex flex-col overflow-hidden rounded-[14px] p-3 ${product.tone}`}>
             <a href={product.href} target="_blank" rel="noreferrer" className="relative block aspect-[1.34/1] overflow-hidden rounded-[8px] bg-black/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#bdefff]">
-              <Image src={product.image} alt={`${product.name} product interface`} fill sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.025]" />
+              <Image src={product.image} alt={`${product.name} product interface`} fill sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 25vw" className="object-contain object-top transition-transform duration-500" />
             </a>
             <div className="flex min-h-[220px] flex-1 flex-col px-1 pb-2 pt-5 md:px-0 md:pb-1">
               <h3 className={`blog-ui-heading text-[30px] font-bold leading-none tracking-[-0.035em] ${product.accent}`}>{product.name}</h3>
@@ -163,7 +162,7 @@ function GrowXLabsStudioBanner() {
               className={`relative aspect-square w-[28%] max-w-[280px] shrink-0 overflow-hidden rounded-t-[28px] border-[5px] border-[#bdefff] bg-black shadow-[0_18px_45px_rgba(0,0,0,0.22)] transition-transform duration-500 group-hover:-translate-y-2 sm:rounded-t-[38px] ${index > 0 ? "-ml-[5%]" : ""} ${index % 2 === 0 ? "translate-y-5" : ""}`}
               style={{ zIndex: index + 1 }}
             >
-              <Image src={product.image} alt={`${product.name} interface`} fill sizes="(max-width: 767px) 28vw, 280px" className="object-cover object-top" />
+              <Image src={product.image} alt={`${product.name} interface`} fill sizes="(max-width: 767px) 28vw, 280px" className="object-contain object-top" />
               <div className="absolute inset-x-0 bottom-0 bg-black/85 px-2 py-3 text-center sm:px-4 sm:py-4">
                 <span className="blog-ui-heading text-[10px] font-bold text-white sm:text-sm md:text-base">{product.name}</span>
               </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -20,17 +20,7 @@ import { BlogShare, NewsletterCTA, AgentCTA } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Directory Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/chatbots-are-dying-agents-are-taking-over";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Chatbots Are Dying. Agents Are Taking Over.";
   const description = "AI is evolving from chatbots to autonomous agents. Discover why AI agents will transform business operations, automation, sales, marketing, and execution.";
 
@@ -38,14 +28,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: `${title} | GrowXLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/chatbots-are-dying-agents-are-taking-over"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabs",
+      url: "https://growxlabs.tech/blog/chatbots-are-dying-agents-are-taking-over",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-06-01T17:00:00.000Z",
       authors: ["GrowXLabs Team"],
@@ -101,7 +90,7 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/chatbots-are-dying-agents-are-taking-over/#article`,
+        "@id": `https://growxlabs.tech/blog/chatbots-are-dying-agents-are-taking-over/#article`,
         "headline": "Chatbots Are Dying. Agents Are Taking Over.",
         "description": "AI is evolving from chatbots to autonomous agents. Discover why AI agents will transform business operations, automation, sales, marketing, and execution.",
         "datePublished": "2026-06-01T17:00:00Z",
@@ -123,7 +112,7 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/chatbots-are-dying-agents-are-taking-over`
+          "@id": `https://growxlabs.tech/blog/chatbots-are-dying-agents-are-taking-over`
         }
       },
       {
@@ -139,13 +128,13 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "AI Agents vs Chatbots",
-            "item": `https://growxlabs.tech/${locale}/blog/chatbots-are-dying-agents-are-taking-over`
+            "item": `https://growxlabs.tech/blog/chatbots-are-dying-agents-are-taking-over`
           }
         ]
       }
@@ -185,7 +174,7 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="ai-agents-explosion-schema"
@@ -231,7 +220,7 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
               Chatbots Are <span className="italic font-serif font-normal">Dying</span>.
-              <br />
+              {" "}
               <span className="text-primary font-sans font-black tracking-tighter block mt-2">Agents Are Taking Over.</span>
             </h2>
 
@@ -254,13 +243,13 @@ export default async function ChatbotsDyingPage({ params }: { params: Promise<{ 
 
           {/* Hero Visual — Widescreen Cover Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12]">
                 <Image
-                  src="/images/chatbots-are-dying-agents-are-taking-over.png"
+                  src="/images/blog-chatbots-agents-landscape.png"
                   alt="Sleek autonomous AI Agent network workflow"
                   fill
-                  className="object-cover scale-[1.10] transition-transform duration-700 hover:scale-[1.12]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>

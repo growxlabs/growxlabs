@@ -36,10 +36,10 @@ export function ChatAssistant() {
         if (Array.isArray(data) && data.length > 0) {
           setMessages(data.map(m => ({ role: m.role, content: m.message })));
         } else {
-          setMessages([{ role: "assistant", content: "Welcome to GrowXLabsTech. How can I assist with your technical or automation requirements today?" }]);
+          setMessages([{ role: "assistant", content: "Welcome to GrowxLabs. How can I assist with your software engineering or technical requirements today?" }]);
         }
       } catch (e) {
-        setMessages([{ role: "assistant", content: "Welcome to GrowXLabsTech. How can I assist with your technical or automation requirements today?" }]);
+        setMessages([{ role: "assistant", content: "Welcome to GrowxLabs. How can I assist with your software engineering or technical requirements today?" }]);
       }
     };
     loadHistory();

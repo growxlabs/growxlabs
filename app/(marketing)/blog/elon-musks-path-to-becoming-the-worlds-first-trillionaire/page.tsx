@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -16,35 +16,24 @@ import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Elon Musk's Path to Becoming the World's First Trillionaire: The Blueprint Behind the Empire";
   const description = "Analyze Elon Musk's path to becoming the world's first trillionaire. Explore valuation trends across Tesla, SpaceX, xAI, Starlink, and Neuralink, with data-driven projections, risks, and AGI trends.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-06-16T20:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-elon-trillionaire.png",
@@ -115,7 +104,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire/#article`,
+        "@id": `https://growxlabs.tech/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire/#article`,
         "headline": "Elon Musk's Path to Becoming the World's First Trillionaire: The Blueprint Behind the Empire",
         "description": "Analyze Elon Musk's path to becoming the world's first trillionaire. Explore valuation trends across Tesla, SpaceX, xAI, Starlink, and Neuralink, with data-driven projections, risks, and AGI trends.",
         "datePublished": "2026-06-16T20:00:00Z",
@@ -123,13 +112,13 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
         "image": "https://growxlabs.tech/images/blog-elon-trillionaire.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -137,12 +126,12 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "id": `https://growxlabs.tech/${locale}/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire`
+          "id": `https://growxlabs.tech/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire/#faq`,
+        "@id": `https://growxlabs.tech/blog/elon-musks-path-to-becoming-the-worlds-first-trillionaire/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -177,7 +166,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* Dynamic JSON-LD Structured Data */}
       <Script
         id="elon-trillionaire-schemas"
@@ -223,7 +212,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
             {/* Editorial Title */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Elon Musk's Path to Becoming the
-              <br />
+              {" "}
               <span className="text-primary">World's First Trillionaire</span>
             </h2>
 
@@ -236,7 +225,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-muted-foreground border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -251,7 +240,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
 
           {/* Premium Banner gradient block */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto rounded-2xl overflow-hidden border border-white/10 relative aspect-[16/10] md:aspect-[21/9] bg-gradient-to-br from-[#0B0D19] via-[#020205] to-[#120516] flex items-center justify-center">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto rounded-2xl overflow-hidden border border-white/10 relative aspect-[16/10] md:aspect-[21/9] bg-gradient-to-br from-[#0B0D19] via-[#020205] to-[#120516] flex items-center justify-center">
               <div className="absolute w-[300px] h-[300px] rounded-full bg-primary/5 blur-[120px]" />
               <div className="absolute w-[150px] h-[150px] rounded-full bg-cyan-500/5 blur-[80px] animate-pulse" />
               <span className="font-sans font-black text-white/5 text-[180px] select-none tracking-tighter">X</span>
@@ -460,7 +449,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
                   From electric vehicles to Mars missions, from AI systems to satellite networks, the pieces of a trillion-dollar empire are already taking shape. Whether history remembers him as the world's first trillionaire remains uncertain. But one thing is clear: few people have influenced the future as aggressively—or as visibly—as Elon Musk.
                 </p>
                 <p className="mt-8 font-sans font-bold text-foreground not-italic text-sm tracking-[0.1em] uppercase">
-                  — GrowXLabsTech
+                  — GrowxLabs
                 </p>
               </div>
             </section>
@@ -503,7 +492,7 @@ export default async function ElonTrillionairePage({ params }: { params: Promise
                 <div className="pt-4">
                   <Link href="/contact">
                     <Button variant="outline" className="border-primary/20 hover:border-primary/50 text-primary rounded-md px-8 h-12 text-[15px] font-semibold transition-all">
-                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowXLabsTech <ArrowRight className="w-4 h-4 shrink-0" /></span>
+                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowxLabs <ArrowRight className="w-4 h-4 shrink-0" /></span>
                     </Button>
                   </Link>
                 </div>

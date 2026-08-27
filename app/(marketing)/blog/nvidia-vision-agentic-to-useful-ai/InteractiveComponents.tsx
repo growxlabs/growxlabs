@@ -53,7 +53,7 @@ export function BlogShare({ title, slug }: { title: string; slug: string }) {
   ];
 
   return (
-    <div className="flex flex-col gap-4 py-6 border-t border-b border-border my-10 animate-fade-in">
+    <div data-editorial-legacy-share="true" className="flex flex-col gap-4 py-6 border-t border-b border-border my-10 animate-fade-in">
       <p className="font-mono text-[10px] tracking-[0.2em] text-[#9CA3AF] uppercase">Share this article</p>
       <div className="flex flex-wrap items-center gap-3">
         {shareLinks.map((link) => (
@@ -112,7 +112,7 @@ export function NewsletterCTA() {
   };
 
   return (
-    <div className="bg-[#0F0F12] text-white rounded-2xl p-8 md:p-10 relative overflow-hidden border border-white/5 shadow-2xl my-16">
+    <div data-editorial-legacy-newsletter="true" className="bg-[#0F0F12] text-white rounded-2xl p-8 md:p-10 relative overflow-hidden border border-white/5 shadow-2xl my-16">
       <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#C0F0FB]/8 rounded-full blur-[100px] -mr-32 -mt-32" />
       <div className="relative z-10 space-y-6 max-w-2xl">
         <div className="inline-flex p-3 rounded-xl bg-white/5 border border-white/10">
@@ -160,34 +160,5 @@ export function NewsletterCTA() {
 }
 
 export function AgentCTA() {
-  return (
-    <div className="bg-card border border-border rounded-2xl p-8 md:p-12 relative overflow-hidden shadow-sm my-16 text-center max-w-3xl mx-auto border-t-4 border-t-[#C0F0FB]">
-      <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#C0F0FB]/3 rounded-full blur-[80px] -mr-20 -mt-20" />
-      <div className="relative z-10 space-y-6">
-        <span className="text-[11px] font-mono tracking-[0.2em] text-primary uppercase font-bold bg-primary/5 px-3 py-1.5 rounded-full">
-          Partner With Us
-        </span>
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-foreground">
-          Ready to Build AI Agents For Your Business?
-        </h3>
-        <p className="text-[#9CA3AF] text-[16px] md:text-[18px] leading-relaxed max-w-2xl mx-auto">
-          GrowXLabs helps organizations design AI-native software, automation workflows, and intelligent agents for operational execution.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link
-            href="/contact"
-            className="w-full sm:w-auto bg-[#C0F0FB] hover:bg-[#C0F0FB]/90 text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all duration-300 active:scale-[0.98] shadow-md shadow-[#C0F0FB]/10 text-center"
-          >
-            Book a Strategy Call
-          </Link>
-          <Link
-            href="/portfolio"
-            className="w-full sm:w-auto bg-card border border-border hover:border-[#1A1A1A] hover:bg-background text-foreground font-bold text-[15px] px-8 py-4 rounded-xl transition-all duration-300 active:scale-[0.98] text-center"
-          >
-            View Our Work
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
+  return null;
 }

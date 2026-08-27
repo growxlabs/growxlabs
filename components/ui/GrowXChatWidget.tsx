@@ -20,7 +20,7 @@ export function GrowXChatWidget() {
   const QUESTIONS = [
     {
       key: "business_city",
-      question: "Welcome to GrowXLabsTech! To get started, what is your Business Name and City?",
+      question: "Welcome to GrowxLabs! To get started, what is your Business Name and City?",
       placeholder: "e.g. Acme Corp, New York",
       icon: Building2
     },

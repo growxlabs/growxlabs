@@ -99,10 +99,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
   };
 
   return (
-    <nav className="space-y-5" aria-label="Table of contents">
+    <nav className="blog-table-of-contents space-y-5" aria-label="On this page">
       <div className="flex items-center gap-2 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase pb-3 border-b border-border">
         <List className="w-3.5 h-3.5" />
-        <span>In this article</span>
+        <span>On this page</span>
       </div>
       <ul className="space-y-2.5">
         {headings.map((heading) => {

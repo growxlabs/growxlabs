@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -20,35 +20,24 @@ import { BlogShare, NewsletterCTA } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/blue-origin-new-glenn-rocket-explosion";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Blue Origin’s New Glenn Rocket Explodes During Test: What Happened?";
   const description = "Blue Origin's New Glenn rocket exploded during a hot-fire test in Florida. Here's what happened, why it matters, and what it means for the future of space technology.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/blue-origin-new-glenn-rocket-explosion"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/blue-origin-new-glenn-rocket-explosion",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-30T17:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blue-origin-new-glenn-rocket-explosion.png",
@@ -102,7 +91,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/blue-origin-new-glenn-rocket-explosion/#article`,
+        "@id": `https://growxlabs.tech/blog/blue-origin-new-glenn-rocket-explosion/#article`,
         "headline": "Blue Origin’s New Glenn Rocket Explodes During Test: What Happened?",
         "description": "Blue Origin's New Glenn rocket exploded during a hot-fire test in Florida. Here's what happened, why it matters, and what it means for the future of space technology.",
         "datePublished": "2026-05-30T17:00:00Z",
@@ -110,13 +99,13 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
         "image": "https://growxlabs.tech/images/blue-origin-new-glenn-rocket-explosion.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -124,7 +113,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/blue-origin-new-glenn-rocket-explosion`
+          "@id": `https://growxlabs.tech/blog/blue-origin-new-glenn-rocket-explosion`
         }
       },
       {
@@ -140,13 +129,13 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "New Glenn Explosion",
-            "item": `https://growxlabs.tech/${locale}/blog/blue-origin-new-glenn-rocket-explosion`
+            "item": `https://growxlabs.tech/blog/blue-origin-new-glenn-rocket-explosion`
           }
         ]
       }
@@ -185,7 +174,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="blue-origin-explosion-schema"
@@ -231,7 +220,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
               Blue Origin’s New Glenn Rocket <span className="italic font-serif font-normal">Explodes</span> During Test:
-              <br />
+              {" "}
               <span className="text-primary font-sans font-black tracking-tighter block mt-2">What Happened?</span>
             </h2>
 
@@ -239,7 +228,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -254,13 +243,13 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
 
           {/* Hero Visual — Featured Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12]">
                 <Image
-                  src="/images/blue-origin-new-glenn-rocket-explosion.png"
+                  src="/images/blog-blue-origin-landscape.png"
                   alt="Blue Origin New Glenn Rocket Explosion Test Anomaly"
                   fill
-                  className="object-cover scale-[1.10] transition-transform duration-700 hover:scale-[1.12]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>
@@ -506,7 +495,7 @@ export default async function NewGlennExplosionPage({ params }: { params: Promis
                   The question is how quickly they can learn from this failure and return to the launch pad.
                 </p>
                 <p className="pt-4 font-semibold text-[#1D1D21]">
-                  Follow GrowXLabsTech for the latest updates in AI, space technology, startups, automation, and future innovation.
+                  Follow GrowxLabs for the latest updates in AI, space technology, startups, automation, and future innovation.
                 </p>
               </div>
             </section>

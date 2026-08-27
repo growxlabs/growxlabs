@@ -52,7 +52,7 @@ export function BlogShare({ title, slug }: { title: string; slug: string }) {
   ];
 
   return (
-    <div className="flex flex-col gap-4 py-6 border-t border-b border-border my-10 animate-fade-in">
+    <div data-editorial-legacy-share="true" className="flex flex-col gap-4 py-6 border-t border-b border-border my-10 animate-fade-in">
       <p className="font-mono text-[10px] tracking-[0.2em] text-[#9CA3AF] uppercase">Share this article</p>
       <div className="flex flex-wrap items-center gap-3">
         {shareLinks.map((link) => (

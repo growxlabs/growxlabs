@@ -1,13 +1,43 @@
 "use client";
 
 import React, { useState } from "react";
-import { Copy, Check, Send, Mail, GitBranch, GitPullRequest, GitCommit, Play, ArrowRight, Activity, Terminal, ShieldAlert, Cpu, Sparkles, CheckCircle2, RefreshCw } from "lucide-react";
+import { Check, GitBranch, Play, ArrowRight, Activity, Terminal, CheckCircle2 } from "lucide-react";
 import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
 
+export function AIReadLinks({ title }: { title: string }) {
+  const articleUrl = "https://growxlabs.tech/blog/cursor-origin-github-ai-code-hosting";
+  const prompt = `Read this GrowxLabs article titled "${title}": ${articleUrl}. Help me understand the article and answer my questions about it.`;
+
+  return (
+    <div data-editorial-legacy-ai="true" className="flex flex-wrap items-center justify-between gap-4 border-t border-b border-neutral-800/80 py-4 my-8 font-mono text-xs text-muted-foreground">
+      <span className="text-[10px] tracking-[0.16em] uppercase text-neutral-400">Read with AI:</span>
+      <div className="flex items-center gap-4">
+        <a
+          href={`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-colors hover:text-foreground"
+        >
+          ChatGPT ↗
+        </a>
+        <span className="text-neutral-700">·</span>
+        <a
+          href={`https://claude.ai/new?q=${encodeURIComponent(prompt)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-colors hover:text-foreground"
+        >
+          Claude ↗
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export function BlogShare({ title, slug, url }: { title: string; slug?: string; url?: string }) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = url || (slug ? `https://growxlabs.tech/blog/${slug}` : (typeof window !== "undefined" ? window.location.href : "https://growxlabs.tech"));
+  const shareUrl = url || (slug ? `https://growxlabs.tech/blog/${slug}` : "https://growxlabs.tech");
 
   const handleCopy = async () => {
     try {
@@ -20,8 +50,8 @@ export function BlogShare({ title, slug, url }: { title: string; slug?: string; 
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-neutral-800/80 font-mono text-xs text-muted-foreground my-8">
-      <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-400">Share this briefing</span>
+    <div data-editorial-legacy-share="true" className="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-neutral-800/80 font-mono text-xs text-muted-foreground my-8">
+      <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-400">Share this article</span>
       <div className="flex items-center gap-4">
         <a
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`}
@@ -61,7 +91,7 @@ export function BlogShare({ title, slug, url }: { title: string; slug?: string; 
 
 export function OriginMetricsGrid() {
   const metrics = [
-    { label: "Launch Status", value: "Early Beta", detail: "Active on Pro & Business plans", change: "Full Git Forge inside IDE" },
+    { label: "Launch Status", value: "Early Beta", detail: "Active on Pro & Business plans", change: "Code hosting inside Cursor" },
     { label: "Sync Engine", value: "Two-Way", detail: "Bidirectional GitHub synchronization", change: "GitHub remains upstream truth" },
     { label: "Agent Capability", value: "Cloud Git", detail: "Clone → Branch → Commit → PR", change: "Zero local machine lock-in" },
     { label: "CI & Deployments", value: "Instant", detail: "Vercel, Depot & Buildkite native", change: "PR preview URL on commit" },
@@ -95,7 +125,7 @@ export function AgentWorkflowSimulator() {
       role: "Human Developer",
       desc: "Prompt: 'Refactor our authentication middleware to support JWT refresh rotation and add rate-limiting Redis checks.'",
       badge: "Intent Specification",
-      action: "Initiate Autonomous Task",
+      action: "Start coding task",
     },
     {
       title: "2. Cloud Agent Clones & Analyzes Repo",
@@ -105,18 +135,18 @@ export function AgentWorkflowSimulator() {
       action: "Synthesize Multi-File Edits",
     },
     {
-      title: "3. Multi-File Refactor & Check Execution",
-      role: "Autonomous Agent Execution",
+      title: "3. Multiple Files Changed and Checked",
+      role: "AI Coding Agent",
       desc: "Agent modifies 4 files (`middleware.ts`, `auth.ts`, `rate-limit.ts`, `auth.test.ts`), runs local test suite and TypeScript validation.",
       badge: "Code Synthesis & Validation",
       action: "Commit & Push to Origin Remote",
     },
     {
       title: "4. Origin Opens Pull Request & Triggers CI",
-      role: "Cursor Origin Git Forge",
+      role: "Cursor Origin",
       desc: "Origin opens PR #142 with structured changelog, diff summary, and triggers Vercel Preview + Depot CI checks.",
       badge: "Automated PR Creation",
-      action: "Pass to Human Review Boundary",
+      action: "Send for human review",
     },
     {
       title: "5. Human Inspects Diff & Approves Merge",
@@ -157,13 +187,13 @@ export function AgentWorkflowSimulator() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border/60">
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-mono font-semibold uppercase tracking-wider mb-2">
-            <GitBranch className="w-3.5 h-3.5" /> Agent-Scale Development Loop
+            <GitBranch className="w-3.5 h-3.5" /> AI Coding Workflow
           </div>
           <h3 className="text-xl font-bold tracking-tight text-foreground">
-            From Intent to Merged PR: The Origin Execution Cycle
+            From a coding task to a reviewed pull request
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            See how the boundary between editor, coding agent, repository forge, and deployment collapses.
+            See how a coding task moves from the editor to a reviewed pull request.
           </p>
         </div>
 
@@ -237,32 +267,32 @@ export function GitForgeEvolutionComparison() {
     {
       feature: "Primary Actor",
       traditional: "Human developer writing 95%+ of code manually",
-      agentic: "Autonomous AI agents executing multi-file implementation tasks",
+      origin: "AI agents making changes across multiple files",
     },
     {
       feature: "Repository Role",
       traditional: "Passive remote file storage and commit archive",
-      agentic: "Active execution environment next to the AI reasoning engine",
+      origin: "The repository is available where the AI is working",
     },
     {
       feature: "Pull Request Purpose",
       traditional: "Human-to-human peer code review",
-      agentic: "Safety & verification boundary between AI output and production",
+      origin: "A review step between AI changes and production",
     },
     {
       feature: "Commit & Branch Volume",
       traditional: "Low frequency (3–8 commits per developer per day)",
-      agentic: "High frequency (hundreds of parallel agent iterations)",
+      origin: "More branches and commits as agents work in parallel",
     },
     {
       feature: "CI/CD Integration",
       traditional: "Triggered asynchronously after manual push",
-      agentic: "Streaming instant preview deployments (Vercel/Depot) during agent execution",
+      origin: "Preview deployments during the coding task",
     },
     {
-      feature: "Ecosystem Strategy",
+      feature: "GitHub Relationship",
       traditional: "Walled garden requiring full repository lock-in",
-      agentic: "Seamless two-way GitHub sync with non-disruptive onboarding",
+      origin: "Two-way GitHub sync without a forced migration",
     },
   ];
 
@@ -270,13 +300,13 @@ export function GitForgeEvolutionComparison() {
     <div className="my-12 rounded-2xl border border-border/80 bg-card/80 backdrop-blur-md p-6 md:p-8 shadow-xl overflow-hidden">
       <div className="mb-6">
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-mono font-semibold uppercase tracking-wider mb-2">
-          <Terminal className="w-3.5 h-3.5" /> Architectural Paradigm Shift
+          <Terminal className="w-3.5 h-3.5" /> How the Workflow Changes
         </div>
         <h3 className="text-xl font-bold tracking-tight text-foreground">
-          Traditional Git Forge (GitHub) vs. Agent-Scale Forge (Cursor Origin)
+          GitHub and Cursor Origin: Two Ways to Host Code
         </h3>
         <p className="text-xs text-muted-foreground mt-1">
-          How developer infrastructure transforms when coding agents become primary software authors.
+          How developer tools change when AI can write more of the code.
         </p>
       </div>
 
@@ -286,7 +316,7 @@ export function GitForgeEvolutionComparison() {
             <tr className="border-b border-border/70 text-[11px] font-mono text-muted-foreground uppercase">
               <th className="pb-3 pr-4">Dimension</th>
               <th className="pb-3 px-4 text-muted-foreground">Traditional Git (GitHub)</th>
-              <th className="pb-3 pl-4 text-primary font-bold">Agent-Scale Git (Cursor Origin)</th>
+              <th className="pb-3 pl-4 text-primary font-bold">Cursor Origin</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
@@ -299,7 +329,7 @@ export function GitForgeEvolutionComparison() {
                   {item.traditional}
                 </td>
                 <td className="py-3.5 pl-4 text-xs text-foreground font-medium bg-primary/[0.02]">
-                  {item.agentic}
+                  {item.origin}
                 </td>
               </tr>
             ))}
@@ -324,23 +354,23 @@ export function NewsletterCTA() {
   };
 
   return (
-    <section className="border-t border-neutral-800/80 pt-12 pb-6 space-y-6">
+    <section data-editorial-legacy-newsletter="true" className="border-t border-neutral-800/80 pt-12 pb-6 space-y-6">
       <div className="space-y-2">
         <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-primary font-bold">
-          // DEVELOPER BRIEFING
+          More from GrowxLabs
         </span>
         <h3 className="text-xl sm:text-2xl font-bold font-serif tracking-tight text-foreground">
-          Stay ahead of agentic software development and modern Git infrastructure.
+          Clear analysis of AI coding tools, developer workflows, and software delivery.
         </h3>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-          Weekly technical deep dives on AI coding agents, systems architecture, and developer productivity tools from GrowXLabs.
+          Short updates on the tools and decisions shaping how software gets built.
         </p>
       </div>
 
       {status === "success" ? (
         <div className="p-3 text-emerald-400 font-mono text-xs flex items-center gap-2">
           <Check className="w-4 h-4" />
-          <span>Subscribed. You are on the priority dispatch list.</span>
+          <span>Subscribed. You&apos;ll receive the next update.</span>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md">
@@ -370,22 +400,22 @@ export function AgentCTA() {
     <section className="border-t border-neutral-800/80 pt-12 pb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
       <div className="space-y-2 max-w-xl">
         <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-primary block">
-          // ENGINEERING CONSULTATION
+          More articles
         </span>
         <h3 className="font-serif font-black text-2xl sm:text-3xl text-foreground tracking-tight">
-          Integrate Agentic AI Workflows into Your Engineering Team
+          More from GrowxLabs on how software gets built
         </h3>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          GrowXLabs helps high-growth companies architect autonomous coding agent pipelines, review automation, and modern CI/CD systems that accelerate development velocity safely.
+          Browse practical articles about AI coding tools, developer workflows, and software delivery.
         </p>
       </div>
 
       <div className="shrink-0">
         <Link
-          href="/contact"
+          href="/blog"
           className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-all shadow-md group"
         >
-          <span>Schedule Engineering Review</span>
+          <span>Browse more articles</span>
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>

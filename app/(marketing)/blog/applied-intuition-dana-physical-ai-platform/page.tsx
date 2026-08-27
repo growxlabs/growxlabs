@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -25,35 +25,24 @@ import { BlogShare } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/applied-intuition-dana-physical-ai-platform";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Dana: Applied Intuition's Bold Bet on the Future of Physical AI";
   const description = "Applied Intuition has launched Dana, the first agentic platform for Physical AI. Discover how Dana bridges digital intelligence with physical systems, robotics, and vehicles.";
 
   return {
-    title: `${title} | GrowXLabs Tech Insights`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/applied-intuition-dana-physical-ai-platform"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/applied-intuition-dana-physical-ai-platform",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-07-23T00:00:00.000Z",
-      authors: ["GrowXLabs Tech Editorial"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-applied-intuition-dana.jpg",
@@ -107,7 +96,7 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/applied-intuition-dana-physical-ai-platform/#article`,
+        "@id": `https://growxlabs.tech/blog/applied-intuition-dana-physical-ai-platform/#article`,
         "headline": "Dana: Applied Intuition's Bold Bet on the Future of Physical AI",
         "description": "Applied Intuition has launched Dana, the first agentic platform for Physical AI. Discover how Dana bridges digital intelligence with physical systems, robotics, and vehicles.",
         "datePublished": "2026-07-23T00:00:00.000Z",
@@ -115,13 +104,13 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
         "image": "https://growxlabs.tech/images/blog-applied-intuition-dana.jpg",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -129,7 +118,7 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "id": `https://growxlabs.tech/${locale}/blog/applied-intuition-dana-physical-ai-platform`
+          "id": `https://growxlabs.tech/blog/applied-intuition-dana-physical-ai-platform`
         }
       },
       {
@@ -145,13 +134,13 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Applied Intuition Dana",
-            "item": `https://growxlabs.tech/${locale}/blog/applied-intuition-dana-physical-ai-platform`
+            "item": `https://growxlabs.tech/blog/applied-intuition-dana-physical-ai-platform`
           }
         ]
       }
@@ -196,7 +185,7 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="applied-intuition-dana-schema"
@@ -241,7 +230,7 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
 
             {/* Headline */}
             <h2 className="text-[clamp(30px,4.2vw,52px)] font-black leading-[1.15] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
-              Dana: Applied Intuition's Bold Bet <br className="hidden md:inline" />
+              Dana: Applied Intuition's Bold Bet{" "}
               On the Future of <span className="italic font-serif font-normal text-primary">Physical AI</span>
             </h2>
 
@@ -264,13 +253,13 @@ export default async function AppliedIntuitionDanaBlogPage({ params }: { params:
 
           {/* Hero Visual — Woodcut Illustration */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-xl border border-white/10 p-1 bg-black">
                 <Image
                   src="/images/blog-applied-intuition-dana.jpg"
                   alt="Steampunk technical woodcut illustration of physical AI systems and robotics gears"
                   fill
-                  className="object-cover transition-transform duration-700 hover:scale-[1.03]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>

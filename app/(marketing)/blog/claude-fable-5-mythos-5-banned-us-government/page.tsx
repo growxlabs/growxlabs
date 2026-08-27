@@ -1,6 +1,6 @@
 import React from "react";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -14,35 +14,24 @@ import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO / GEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/claude-fable-5-mythos-5-banned-us-government";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Claude Fable 5 & Mythos 5 Banned: Timeline & Impact";
   const description = "Analyze the U.S. government export controls and global suspension of Anthropic's Claude Fable 5 and Mythos 5, cybersecurity concerns, and business mitigation strategies.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-06-19T08:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-claude-fable-5-mythos-5-banned.png",
@@ -121,7 +110,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/claude-fable-5-mythos-5-banned-us-government/#article`,
+        "@id": `https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government/#article`,
         "headline": "Claude Fable 5 and Mythos 5 Banned by the U.S. Government: What Happened and Why It Matters",
         "description": "Analyze the U.S. government export controls and global suspension of Anthropic's Claude Fable 5 and Mythos 5, cybersecurity concerns, and business mitigation strategies.",
         "datePublished": "2026-06-19T08:00:00Z",
@@ -129,13 +118,13 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
         "image": "https://growxlabs.tech/images/blog-claude-fable-5-mythos-5-banned.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -143,12 +132,12 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/claude-fable-5-mythos-5-banned-us-government`
+          "@id": `https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/claude-fable-5-mythos-5-banned-us-government/#faq`,
+        "@id": `https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -171,13 +160,13 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Claude Fable 5 & Mythos 5 Restrictions",
-            "item": `https://growxlabs.tech/${locale}/blog/claude-fable-5-mythos-5-banned-us-government`
+            "item": `https://growxlabs.tech/blog/claude-fable-5-mythos-5-banned-us-government`
           }
         ]
       }
@@ -207,7 +196,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="claude-ban-schemas"
@@ -253,7 +242,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Claude Fable 5 &amp; Mythos 5 Banned by U.S. Government:
-              <br />
+              {" "}
               <span className="text-primary">What Happened &amp; Why It Matters</span>
             </h2>
 
@@ -266,7 +255,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -281,7 +270,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
 
           {/* Hero Visual Card */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-4xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-4xl mx-auto">
               <div className="bg-[#0F0F12] rounded-2xl p-10 md:p-14 text-white relative overflow-hidden border border-white/5">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-red-950/20 rounded-full blur-[120px] -mr-48 -mt-48" />
                 <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-amber-950/20 rounded-full blur-[100px] -ml-32 -mb-32" />
@@ -607,7 +596,7 @@ export default async function ClaudeBannedPage({ params }: { params: Promise<{ l
               </div>
               <div className="space-y-2">
                 <p className="text-[11px] font-mono tracking-[0.15em] text-[#9CA3AF] uppercase">Published by</p>
-                <p className="text-lg font-bold text-foreground">GrowXLabsTech</p>
+                <p className="text-lg font-bold text-foreground">GrowxLabs</p>
                 <p className="text-[15px] text-[#9CA3AF] leading-relaxed">
                   Developing scalable software systems, advanced automation engines, and AGI-native infrastructure. Based in India, serving businesses globally.
                 </p>

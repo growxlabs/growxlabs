@@ -1,6 +1,6 @@
 import React from "react";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -20,35 +20,24 @@ import {
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO / GEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/claude-opus-4-8-anthropic-ai-model";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Claude Opus 4.8: Anthropic's Most Advanced AI Model — Benchmarks, Features & Full Review";
   const description = "Complete analysis of Claude Opus 4.8 released May 28, 2026. Explore benchmark results (SWE-Bench 69.2%, Terminal-Bench 74.2%), Dynamic Workflows, Effort Control, pricing, API access, and what's next with Claude Mythos.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-29T08:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-claude-opus-4-8.png",
@@ -137,7 +126,7 @@ export default async function ClaudeOpus48Page({ params }: { params: Promise<{ l
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/claude-opus-4-8-anthropic-ai-model/#article`,
+        "@id": `https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model/#article`,
         "headline": "Claude Opus 4.8: Anthropic's Most Advanced AI Model — Benchmarks, Features & Full Review",
         "description": "Complete analysis of Claude Opus 4.8 released May 28, 2026. Explore benchmark results, Dynamic Workflows, Effort Control, pricing, API access, and what's next with Claude Mythos.",
         "datePublished": "2026-05-29T08:00:00Z",
@@ -145,13 +134,13 @@ export default async function ClaudeOpus48Page({ params }: { params: Promise<{ l
         "image": "https://growxlabs.tech/images/blog-claude-opus-4-8.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -159,12 +148,12 @@ export default async function ClaudeOpus48Page({ params }: { params: Promise<{ l
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/claude-opus-4-8-anthropic-ai-model`
+          "@id": `https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/claude-opus-4-8-anthropic-ai-model/#faq`,
+        "@id": `https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -187,13 +176,13 @@ export default async function ClaudeOpus48Page({ params }: { params: Promise<{ l
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Claude Opus 4.8",
-            "item": `https://growxlabs.tech/${locale}/blog/claude-opus-4-8-anthropic-ai-model`
+            "item": `https://growxlabs.tech/blog/claude-opus-4-8-anthropic-ai-model`
           }
         ]
       }
@@ -269,7 +258,7 @@ console.log(data.content);`;
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="claude-opus-schemas"
@@ -315,7 +304,7 @@ console.log(data.content);`;
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Claude Opus 4.8:
-              <br />
+              {" "}
               <span className="text-primary">Anthropic&apos;s Most Advanced AI Model</span>
             </h2>
 
@@ -328,7 +317,7 @@ console.log(data.content);`;
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -343,7 +332,7 @@ console.log(data.content);`;
 
           {/* Hero Visual — Opus 4.8 Identity Block */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-4xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-4xl mx-auto">
               <div className="bg-[#0F0F12] rounded-2xl p-10 md:p-14 text-white relative overflow-hidden border border-white/5">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#C0F0FB]/8 rounded-full blur-[120px] -mr-48 -mt-48" />
                 <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#D97706]/5 rounded-full blur-[100px] -ml-32 -mb-32" />
@@ -1182,7 +1171,7 @@ console.log(data.content);`;
               </div>
               <div className="space-y-2">
                 <p className="text-[11px] font-mono tracking-[0.15em] text-[#9CA3AF] uppercase">Published by</p>
-                <p className="text-lg font-bold text-foreground">GrowXLabsTech</p>
+                <p className="text-lg font-bold text-foreground">GrowxLabs</p>
                 <p className="text-[15px] text-[#9CA3AF] leading-relaxed">
                   Developing scalable software systems, advanced automation engines, and AGI-native infrastructure. Based in India, serving businesses globally.
                 </p>

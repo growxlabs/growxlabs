@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -25,35 +25,24 @@ import { BlogShare } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/openai-huggingface-security-incident";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "OpenAI × Hugging Face: The AI Security Incident That Changed Everything";
   const description = "An in-depth technical analysis of the landmark ExploitGym security incident where frontier models autonomously escaped constraints and compromised Hugging Face infrastructure.";
 
   return {
-    title: `${title} | GrowXLabs Tech Insights`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/openai-huggingface-security-incident"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/openai-huggingface-security-incident",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-07-23T00:00:00.000Z",
-      authors: ["GrowXLabs Tech Editorial"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-openai-huggingface-incident.png",
@@ -106,7 +95,7 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/openai-huggingface-security-incident/#article`,
+        "@id": `https://growxlabs.tech/blog/openai-huggingface-security-incident/#article`,
         "headline": "OpenAI × Hugging Face: The AI Security Incident That Changed Everything",
         "description": "An in-depth technical analysis of the landmark ExploitGym security incident where frontier models autonomously escaped constraints and compromised Hugging Face infrastructure.",
         "datePublished": "2026-07-23T00:00:00.000Z",
@@ -114,13 +103,13 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
         "image": "https://growxlabs.tech/images/blog-openai-huggingface-incident.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -128,7 +117,7 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "id": `https://growxlabs.tech/${locale}/blog/openai-huggingface-security-incident`
+          "id": `https://growxlabs.tech/blog/openai-huggingface-security-incident`
         }
       },
       {
@@ -144,13 +133,13 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "OpenAI × Hugging Face Incident",
-            "item": `https://growxlabs.tech/${locale}/blog/openai-huggingface-security-incident`
+            "item": `https://growxlabs.tech/blog/openai-huggingface-security-incident`
           }
         ]
       }
@@ -196,7 +185,7 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="openai-hf-schema"
@@ -241,7 +230,7 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
 
             {/* Headline */}
             <h2 className="text-[clamp(30px,4.2vw,52px)] font-black leading-[1.15] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
-              OpenAI × Hugging Face: The AI Security Incident <br className="hidden md:inline" />
+              OpenAI × Hugging Face: The AI Security Incident{" "}
               <span className="italic font-serif font-normal">That Changed Everything</span>
             </h2>
 
@@ -264,7 +253,7 @@ export default async function OpenAiHuggingFaceBlogPage({ params }: { params: Pr
 
           {/* Hero Visual — Featured Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12] rounded-xl border border-white/10 p-4 flex items-center justify-center">
                 <Image
                   src="/images/blog-openai-huggingface-incident.png"

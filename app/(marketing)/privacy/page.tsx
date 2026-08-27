@@ -1,23 +1,11 @@
-import { locales } from "@/navigation";
 import { PrivacyContent } from "./PrivacyContent";
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "privacy";
-  
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   return {
-    title: "Privacy Policy | GrowX Labs",
-    description: "Learn how we protect your digital identity and project intelligence within the GrowX ecosystem.",
+    title: "Privacy Policy | GrowxLabs",
+    description: "Learn how we protect your digital identity and project data within GrowxLabs.",
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/privacy"
     }
   };
 }

@@ -6,7 +6,7 @@ import { PageHero } from "@/components/marketing/PageHero";
 
 export async function generateMetadata() {
   return {
-    title: "Portfolio | GrowXLabsTech",
+    title: "Portfolio | GrowxLabs",
     description: "Case studies of our successful AI-native digital systems, from full-stack platforms to complex automation workflows.",
     alternates: {
       canonical: "https://growxlabs.tech/portfolio",

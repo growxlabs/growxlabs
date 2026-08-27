@@ -43,7 +43,7 @@ export function BlogShare({ title, slug }: { title: string; slug: string }) {
   ];
 
   return (
-    <div className="flex flex-col gap-4 py-6 border-t border-b border-border/60 my-10 animate-fade-in">
+    <div data-editorial-legacy-share="true" className="flex flex-col gap-4 py-6 border-t border-b border-border/60 my-10 animate-fade-in">
       <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">Share this briefing</p>
       <div className="flex flex-wrap items-center gap-3">
         {shareLinks.map((link) => (
@@ -417,7 +417,7 @@ export function NewsletterCTA() {
   };
 
   return (
-    <div className="my-14 rounded-2xl border border-border/80 bg-gradient-to-b from-card to-background p-8 md:p-10 shadow-2xl relative overflow-hidden">
+    <div data-editorial-legacy-newsletter="true" className="my-14 rounded-2xl border border-border/80 bg-gradient-to-b from-card to-background p-8 md:p-10 shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
       <div className="max-w-2xl relative z-10">
         <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary font-bold">
@@ -461,28 +461,5 @@ export function NewsletterCTA() {
 }
 
 export function AgentCTA() {
-  return (
-    <div className="my-16 rounded-2xl border border-primary/40 bg-primary/[0.04] p-8 md:p-10 relative overflow-hidden">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-2 max-w-xl">
-          <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-primary">
-            Engineering Consultation
-          </span>
-          <h3 className="text-2xl font-bold text-foreground">
-            Optimize Your Multi-Model Architecture & Token Unit Economics
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            GrowXLabs helps enterprise engineering teams architect multi-model gateways, automated token billing pipelines, and resilient fallback systems that protect gross margins.
-          </p>
-        </div>
-        <Link
-          href="/contact"
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-foreground text-background font-semibold text-sm hover:bg-foreground/90 transition-all shrink-0"
-        >
-          <span>Schedule Architecture Review</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    </div>
-  );
+  return null;
 }

@@ -3,8 +3,38 @@ import type { NextRequest } from "next/server";
 
 // Known legacy i18n locale prefixes to strip & 301 redirect for Googlebot & incoming traffic
 const LEGACY_LOCALES = [
-  "en-IN", "en-US", "en-GB", "en", "es", "de", "fr", "hi", "ja", "zh", "pt", "it", "ru", "ar", "ko"
+  "en-IN", "en-US", "en-GB", "en-AU", "en", "es", "de", "fr", "hi", "ja", "zh", "pt", "it", "ru", "ar", "ko"
 ];
+
+// Permanently eliminated legacy routes that have no equivalent -> HTTP 410 Gone
+const GONE_EXACT_ROUTES = new Set([
+  "/website-vs-growth-system",
+  "/how-to-get-clients-from-website",
+  "/best-website-for-small-business",
+  "/subscriptions",
+  "/pricing",
+  "/demos",
+  "/demos/hotel",
+  "/demos/real-estate",
+  "/demos/restaurant",
+  "/blog/n8n-automation-for-business",
+  "/blog/whatsapp-automation-for-lead-nurturing",
+  "/blog/restaurant-customer-retention-automation",
+  "/blog/indian-restaurant-website-usa",
+]);
+
+const GONE_PREFIX_ROUTES = [
+  "/hotel",
+  "/realestate",
+  "/restaurant",
+  "/demos/",
+];
+
+function isGonePath(path: string): boolean {
+  const normalized = path.replace(/\/+$/, "") || "/";
+  if (GONE_EXACT_ROUTES.has(normalized)) return true;
+  return GONE_PREFIX_ROUTES.some(prefix => normalized === prefix.replace(/\/+$/, "") || normalized.startsWith(prefix));
+}
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -34,13 +64,34 @@ export function proxy(request: NextRequest) {
   const segments = pathname.split("/");
   const firstSegment = segments[1];
 
+  let activePath = pathname;
+
   if (firstSegment && LEGACY_LOCALES.includes(firstSegment)) {
     // Strip locale segment (e.g. /en-IN/blog/slug -> /blog/slug)
     const cleanPath = "/" + segments.slice(2).join("/");
+    activePath = cleanPath || "/";
+
+    // If the stripped path is a permanently deleted legacy route -> 410 Gone
+    if (isGonePath(activePath)) {
+      return new NextResponse("410 Gone: This legacy content has been permanently removed.", {
+        status: 410,
+        statusText: "Gone",
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+
     const targetUrl = new URL((cleanPath || "/") + search, request.url);
-    
     // Return HTTP 301 Moved Permanently for Googlebot & Search Engines to transfer PageRank
     return secureResponse(NextResponse.redirect(targetUrl, 301), requestId);
+  }
+
+  // 3. Intercept direct legacy routes -> HTTP 410 Gone
+  if (isGonePath(activePath)) {
+    return new NextResponse("410 Gone: This legacy content has been permanently removed.", {
+      status: 410,
+      statusText: "Gone",
+      headers: { "Content-Type": "text/plain" }
+    });
   }
 
   return secureResponse(NextResponse.next({ request: { headers: requestHeaders } }), requestId);

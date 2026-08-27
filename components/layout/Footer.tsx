@@ -46,9 +46,9 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
           {/* Left side: Brand + Email + Socials */}
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <Link href="/" className="flex items-center group" aria-label="GrowXLabsTech home">
+            <Link href="/" className="flex items-center group" aria-label="GrowxLabs home">
               <div className="flex items-center text-xl font-serif tracking-normal transition-transform group-hover:scale-[1.02] duration-300">
-                <span className={logoColor1}>GrowX</span>
+                <span className={logoColor1}>Growx</span>
                 <span className={logoColor1}>Labs</span>
                 <span className={logoColor2}>.tech</span>
               </div>
@@ -149,7 +149,7 @@ export function Footer() {
 
         <div className={`border-t pt-8 flex items-center justify-center ${isBlog ? "border-neutral-900" : "border-[#2B2D31]"}`}>
           <p className={`text-[13px] text-center ${textColor}`}>
-            Copyright 2026 GrowXLabsTech. All rights reserved.
+            Copyright 2026 GrowxLabs. All rights reserved.
           </p>
         </div>
       </div>

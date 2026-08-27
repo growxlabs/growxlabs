@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -18,35 +18,24 @@ import { InteractiveSearchEvolution } from "@/components/marketing/InteractiveSe
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/google-search-is-no-longer-just-search";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Google Search Is No Longer Just Search: The Rise of the Execution Engine";
   const description = "Explore the historic transition of Google Search from an index of web links to an AI-native execution workspace. What Gemini's infrastructure layer and AEO mean for businesses.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/google-search-is-no-longer-just-search"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/google-search-is-no-longer-just-search",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-27T09:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/hero-google-search.png",
@@ -104,7 +93,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/google-search-is-no-longer-just-search/#article`,
+        "@id": `https://growxlabs.tech/blog/google-search-is-no-longer-just-search/#article`,
         "headline": "Google Search Is No Longer Just Search: The Rise of the Execution Engine",
         "description": "Explore the historic transition of Google Search from an index of web links to an AI-native execution workspace. What Gemini's infrastructure layer and AEO mean for businesses.",
         "datePublished": "2026-05-27T09:00:00Z",
@@ -112,13 +101,13 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
         "image": "https://growxlabs.tech/images/blog-google-io-2026.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -126,12 +115,12 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/google-search-is-no-longer-just-search`
+          "@id": `https://growxlabs.tech/blog/google-search-is-no-longer-just-search`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/google-search-is-no-longer-just-search/#faq`,
+        "@id": `https://growxlabs.tech/blog/google-search-is-no-longer-just-search/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -170,7 +159,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* Dynamic JSON-LD Structured Data */}
       <Script
         id="google-search-evolution-schemas"
@@ -216,7 +205,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
             {/* Editorial Title */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Google Search Is No Longer
-              <br />
+              {" "}
               <span className="text-primary">Just Search</span>
             </h2>
 
@@ -229,7 +218,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -244,7 +233,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
 
           {/* Interactive Evolution Banner */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full">
+            <div className="blog-editorial-image-frame mt-14 w-full">
               <InteractiveSearchEvolution />
             </div>
           </Reveal>
@@ -427,7 +416,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
                 This transformation will reshape software, design, branding, and engineering teams. The AI-native era has begun, and the rules of the digital space are being rewritten in real-time.
               </p>
               <p className="mt-8 font-sans font-bold text-foreground not-italic text-sm tracking-[0.1em] uppercase">
-                — GrowXLabsTech
+                — GrowxLabs
               </p>
             </section>
 
@@ -473,7 +462,7 @@ export default async function GoogleSearchEvolutionPage({ params }: { params: Pr
                 <div className="pt-4">
                   <Link href="/contact">
                     <Button variant="outline" className="border-primary/20 hover:border-primary/50 text-primary rounded-md px-8 h-12 text-[15px] font-semibold transition-all">
-                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowXLabsTech <ArrowRight className="w-4 h-4 shrink-0" /></span>
+                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowxLabs <ArrowRight className="w-4 h-4 shrink-0" /></span>
                     </Button>
                   </Link>
                 </div>

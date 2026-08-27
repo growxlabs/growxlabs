@@ -2,42 +2,35 @@ import { notFound } from "next/navigation";
 import { projects } from "@/lib/data/projects";
 import Image from "next/image";
 import { ArrowLeft, CheckCircle2, Cpu, FileText, Play, Server } from "lucide-react";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { Button } from "@/components/ui/Button";
 import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 
 export async function generateStaticParams() {
-  const paths: { locale: string; slug: string }[] = [];
-  locales.forEach((locale) => {
-    projects.forEach((p) => {
-      paths.push({
-        locale,
-        slug: p.slug,
-      });
-    });
-  });
-  return paths;
+  return projects.map((p) => ({
+    slug: p.slug,
+  }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
   if (!project) return {};
   return {
-    title: `${project.title} — Built by GrowXLabs Product Studio`,
+    title: `${project.title} — Built by GrowxLabs Product Studio`,
     description: project.description,
     alternates: {
       canonical: `https://growxlabs.tech/portfolio/${slug}`,
     },
     openGraph: {
-      title: `${project.title} — GrowXLabs`,
+      title: `${project.title} — GrowxLabs`,
       description: project.description,
       images: [{ url: project.image }],
     }
   };
 }
 
-export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
 

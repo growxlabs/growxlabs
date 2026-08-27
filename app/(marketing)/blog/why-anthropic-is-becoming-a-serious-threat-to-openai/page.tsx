@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Script from "next/script";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents, 
@@ -19,35 +19,24 @@ import { InteractiveModelComparison } from "@/components/marketing/InteractiveMo
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (Perfect SEO / AEO Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/why-anthropic-is-becoming-a-serious-threat-to-openai";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Why Anthropic Is Becoming a Serious Threat to OpenAI";
   const description = "Analyze how Anthropic's Claude is quietly challenging OpenAI's dominance. Explore the developer migration, long-context mechanics, and smart enterprise positioning.";
 
   return {
-    title: `${title} | GrowXLabsTech`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/why-anthropic-is-becoming-a-serious-threat-to-openai"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/why-anthropic-is-becoming-a-serious-threat-to-openai",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-05-27T09:00:00.000Z",
-      authors: ["GrowXLabsTech"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/hero-anthropic-openai.png",
@@ -105,7 +94,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/why-anthropic-is-becoming-a-serious-threat-to-openai/#article`,
+        "@id": `https://growxlabs.tech/blog/why-anthropic-is-becoming-a-serious-threat-to-openai/#article`,
         "headline": "Why Anthropic Is Becoming a Serious Threat to OpenAI",
         "description": "Analyze how Anthropic's Claude is quietly challenging OpenAI's dominance. Explore the developer migration, long-context mechanics, and smart enterprise positioning.",
         "datePublished": "2026-05-27T09:00:00Z",
@@ -113,13 +102,13 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
         "image": "https://growxlabs.tech/images/blog-google-io-2026.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -127,12 +116,12 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/why-anthropic-is-becoming-a-serious-threat-to-openai`
+          "@id": `https://growxlabs.tech/blog/why-anthropic-is-becoming-a-serious-threat-to-openai`
         }
       },
       {
         "@type": "FAQPage",
-        "@id": `https://growxlabs.tech/${locale}/blog/why-anthropic-is-becoming-a-serious-threat-to-openai/#faq`,
+        "@id": `https://growxlabs.tech/blog/why-anthropic-is-becoming-a-serious-threat-to-openai/#faq`,
         "mainEntity": faqData.map(faq => ({
           "@type": "Question",
           "name": faq.question,
@@ -171,7 +160,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* Dynamic JSON-LD Structured Data */}
       <Script
         id="anthropic-openai-schemas"
@@ -217,7 +206,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
             {/* Editorial Title */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto">
               Why Anthropic Is Becoming a
-              <br />
+              {" "}
               <span className="text-primary">Serious Threat to OpenAI</span>
             </h2>
 
@@ -230,7 +219,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -245,7 +234,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
 
           {/* Editorial Hero Banner */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <InteractiveModelComparison />
             </div>
           </Reveal>
@@ -409,7 +398,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
                 In the AI-native era, reliability and deep reasoning are what scale businesses. Anthropic is moving aggressively, and their developer-first ecosystem is reshaping the race for the next operating system of software engineering.
               </p>
               <p className="mt-8 font-sans font-bold text-foreground not-italic text-sm tracking-[0.1em] uppercase">
-                — GrowXLabsTech
+                — GrowxLabs
               </p>
             </section>
 
@@ -455,7 +444,7 @@ export default async function AnthropicOpenAIPage({ params }: { params: Promise<
                 <div className="pt-4">
                   <Link href="/contact">
                     <Button variant="outline" className="border-primary/20 hover:border-primary/50 text-primary rounded-md px-8 h-12 text-[15px] font-semibold transition-all">
-                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowXLabsTech <ArrowRight className="w-4 h-4 shrink-0" /></span>
+                      <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">Work With GrowxLabs <ArrowRight className="w-4 h-4 shrink-0" /></span>
                     </Button>
                   </Link>
                 </div>

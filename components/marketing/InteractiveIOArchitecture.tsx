@@ -72,9 +72,9 @@ const moduleDetails: Record<string, ModuleDetail> = {
     metrics: "Consensus delay: 42ms // Ledger integrity: 100%"
   },
   seamless_ecosystem: {
-    title: "Workspace & n8n Integration",
+    title: "Enterprise & Workflow Integration",
     category: "Ecosystem Reconciler",
-    description: "Consolidates Workspace triggers (Gmail, Docs), active n8n automation webhooks, and external API inputs into finalized business settlements.",
+    description: "Consolidates workspace triggers, active agent automation webhooks, and external API inputs into finalized business settlements.",
     metrics: "Throughput: 28k req/s // Connectors: REST, gRPC, WASM"
   }
 };
@@ -586,16 +586,16 @@ export function InteractiveIOArchitecture() {
               />
 
               <text x="535" y="500" fill="#FFFFFF" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="bold" letterSpacing="0.08em">
-                WORKSPACE & N8N INTEGRATION
+                ENTERPRISE & WORKFLOW INTEGRATION
               </text>
               <text x="535" y="515" fill="#A1A1AA" fontFamily="monospace" fontSize="8" letterSpacing="0.1em">
-                GMAIL & DOCS EVENT TRIGGERS // N8N PIPELINE SETTLEMENTS
+                WORKSPACE EVENT TRIGGERS // AGENT PIPELINE SETTLEMENTS
               </text>
 
               {/* Incoming gRPC/REST Integrations */}
               {[
                 { label: "Gmail Triggers", x: 535, y: 540 },
-                { label: "n8n Webhooks", x: 670, y: 540 },
+                { label: "Agent Webhooks", x: 670, y: 540 },
                 { label: "External APIs", x: 805, y: 540 }
               ].map((input, idx) => (
                 <g key={idx}>

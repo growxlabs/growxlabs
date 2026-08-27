@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -25,35 +25,24 @@ import { BlogShare } from "./InteractiveComponents";
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Social Previews)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/kimi-k3-open-frontier-intelligence-model";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "Kimi K3 Technical Analysis: Inside Moonshot AI's Open Frontier Intelligence Model";
   const description = "Technical deep-dive into Moonshot AI's Kimi K3 2.8T open-weight Mixture-of-Experts model, analyzing its Delta Attention, sparse routing, and long-horizon benchmark performance.";
 
   return {
-    title: `${title} | GrowXLabs Tech Insights`,
+    title: `${title} | GrowxLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/kimi-k3-open-frontier-intelligence-model"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabsTech",
+      url: "https://growxlabs.tech/blog/kimi-k3-open-frontier-intelligence-model",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-07-21T00:00:00.000Z",
-      authors: ["GrowXLabs Tech Editorial"],
+      authors: ["GrowxLabs"],
       images: [
         {
           url: "https://growxlabs.tech/images/blog-kimi-k3-woodcut.png",
@@ -109,7 +98,7 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/kimi-k3-open-frontier-intelligence-model/#article`,
+        "@id": `https://growxlabs.tech/blog/kimi-k3-open-frontier-intelligence-model/#article`,
         "headline": "Kimi K3 Technical Analysis: Inside Moonshot AI's Open Frontier Intelligence Model",
         "description": "Technical analysis of Moonshot AI's Kimi K3 2.8T open-weight Mixture-of-Experts architecture, Delta Attention, and software engineering benchmarks.",
         "datePublished": "2026-07-21T00:00:00.000Z",
@@ -117,13 +106,13 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
         "image": "https://growxlabs.tech/images/blog-kimi-k3-woodcut.png",
         "author": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "url": "https://growxlabs.tech",
           "logo": "https://growxlabs.tech/logo.png"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "GrowXLabsTech",
+          "name": "GrowxLabs",
           "logo": {
             "@type": "ImageObject",
             "url": "https://growxlabs.tech/logo.png"
@@ -131,7 +120,7 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/kimi-k3-open-frontier-intelligence-model`
+          "@id": `https://growxlabs.tech/blog/kimi-k3-open-frontier-intelligence-model`
         }
       },
       {
@@ -147,13 +136,13 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "Kimi K3 Analysis",
-            "item": `https://growxlabs.tech/${locale}/blog/kimi-k3-open-frontier-intelligence-model`
+            "item": `https://growxlabs.tech/blog/kimi-k3-open-frontier-intelligence-model`
           }
         ]
       }
@@ -200,7 +189,7 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="kimi-k3-schema"
@@ -246,7 +235,7 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
               Kimi K3: Inside Moonshot AI’s <span className="italic font-serif font-normal">Open Frontier</span> Model
-              <br />
+              {" "}
               <span className="text-primary font-sans font-black tracking-tighter block mt-2">Technical Deep-Dive into the 2.8T MoE Architecture</span>
             </h2>
 
@@ -254,7 +243,7 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
             <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-6 sm:gap-10 font-mono text-[11px] tracking-[0.1em] text-[#9CA3AF] uppercase border-t border-b border-border py-5">
               <div className="flex items-center gap-2">
                 <User className="w-3.5 h-3.5 text-primary" />
-                <span>By GrowXLabsTech</span>
+                <span>By GrowxLabs</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-primary" />
@@ -269,13 +258,13 @@ export default async function KimiK3BlogPage({ params }: { params: Promise<{ loc
 
           {/* Hero Visual — Featured Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12] rounded-xl border border-white/10">
                 <Image
                   src="/images/blog-kimi-k3-woodcut.png"
                   alt="Moonshot AI Kimi K3 Neural Architecture Woodcut Illustration"
                   fill
-                  className="object-cover scale-[1.05] transition-transform duration-700 hover:scale-[1.08]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>

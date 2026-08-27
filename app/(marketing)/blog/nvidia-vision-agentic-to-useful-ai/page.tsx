@@ -1,7 +1,7 @@
 import React from "react";
 import Script from "next/script";
 import Image from "next/image";
-import { Link, locales } from "@/navigation";
+import { Link } from "@/navigation";
 import { 
   ReadingProgressBar, 
   TableOfContents 
@@ -21,17 +21,7 @@ import { AIFactoryVisualizerClient, AIPipelineEvolution, CudaXSkillsExplorer, Mo
 // ═══════════════════════════════════════════════════
 // METADATA GENERATOR (SEO & Directory Optimization)
 // ═══════════════════════════════════════════════════
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const path = "blog/nvidia-vision-agentic-to-useful-ai";
-
-  const languages: Record<string, string> = {
-    'x-default': `https://growxlabs.tech/en-IN/${path}`,
-  };
-  locales.forEach((l) => {
-    languages[l] = `https://growxlabs.tech/${l}/${path}`;
-  });
-
+export async function generateMetadata() {
   const title = "NVIDIA's Vision for the Future of AI: From Agentic AI to Useful AI";
   const description = "Analyze Jensen Huang's GTC vision: CUDA-X, AI Factories, Physical AI, and the historic shift from reactive chatbots to proactive execution systems.";
 
@@ -39,14 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: `${title} | GrowXLabs`,
     description,
     alternates: {
-      canonical: `https://growxlabs.tech/${locale}/${path}`,
-      languages
+      canonical: "https://growxlabs.tech/blog/nvidia-vision-agentic-to-useful-ai"
     },
     openGraph: {
       title,
       description,
-      url: `https://growxlabs.tech/${locale}/${path}`,
-      siteName: "GrowXLabs",
+      url: "https://growxlabs.tech/blog/nvidia-vision-agentic-to-useful-ai",
+      siteName: "GrowxLabs",
       type: "article",
       publishedTime: "2026-06-04T17:00:00.000Z",
       authors: ["GrowXLabs Team"],
@@ -106,7 +95,7 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `https://growxlabs.tech/${locale}/blog/nvidia-vision-agentic-to-useful-ai/#article`,
+        "@id": `https://growxlabs.tech/blog/nvidia-vision-agentic-to-useful-ai/#article`,
         "headline": "NVIDIA's Vision for the Future of AI: From Agentic AI to Useful AI",
         "description": "Analyze Jensen Huang's GTC vision: CUDA-X, AI Factories, Physical AI, and the historic shift from reactive chatbots to proactive execution systems.",
         "datePublished": "2026-06-04T17:00:00Z",
@@ -128,7 +117,7 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://growxlabs.tech/${locale}/blog/nvidia-vision-agentic-to-useful-ai`
+          "@id": `https://growxlabs.tech/blog/nvidia-vision-agentic-to-useful-ai`
         }
       },
       {
@@ -144,13 +133,13 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": `https://growxlabs.tech/${locale}/blog`
+            "item": `https://growxlabs.tech/blog`
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": "NVIDIA Vision: Agentic to Useful AI",
-            "item": `https://growxlabs.tech/${locale}/blog/nvidia-vision-agentic-to-useful-ai`
+            "item": `https://growxlabs.tech/blog/nvidia-vision-agentic-to-useful-ai`
           }
         ]
       }
@@ -189,7 +178,7 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
   ];
 
   return (
-    <div className="w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
+    <div className="blog-article-page w-full bg-background min-h-screen text-foreground selection:bg-primary/10 selection:text-primary pt-32 pb-24">
       {/* JSON-LD Structured Data */}
       <Script
         id="nvidia-gtc-editorial-schema"
@@ -235,7 +224,7 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
             {/* Headline */}
             <h2 className="text-[clamp(32px,4.5vw,56px)] font-black leading-[1.1] tracking-tighter text-foreground mb-8 max-w-4xl mx-auto font-serif">
               NVIDIA&apos;s Vision for the <span className="italic font-serif font-normal">Future</span> of AI:
-              <br />
+              {" "}
               <span className="text-primary font-sans font-black tracking-tighter block mt-2">From Agentic AI to Useful AI</span>
             </h2>
 
@@ -258,13 +247,13 @@ export default async function NvidiaGtcPage({ params }: { params: Promise<{ loca
 
           {/* Hero Visual — Widescreen Cover Image */}
           <Reveal y={30} delay={0.2}>
-            <div className="mt-14 w-full max-w-5xl mx-auto">
+            <div className="blog-editorial-image-frame mt-14 w-full max-w-5xl mx-auto">
               <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-[#0F0F12]">
                 <Image
                   src="/images/nvidia-vision-agentic-to-useful-ai.png"
                   alt="NVIDIA GTC 2026 AI Infrastructure and Agentic System Roadmaps"
                   fill
-                  className="object-cover scale-[1.10] transition-transform duration-700 hover:scale-[1.12]"
+                  className="object-contain transition-transform duration-700"
                   priority
                 />
               </div>
