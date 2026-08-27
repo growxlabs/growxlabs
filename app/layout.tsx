@@ -13,21 +13,33 @@ import "./globals.css";
 
 export const metadata = {
   metadataBase: new URL("https://growxlabs.tech"),
+
   title: {
-    default: "GrowxLabs — AI-Native Software Company | Product Studio | AI Engineering Lab",
+    default:
+      "GrowxLabs — AI-Native Software Company | Product Studio | AI Engineering Lab",
     template: "%s | GrowxLabs",
   },
+
   description:
-    "GrowxLabs is an AI-native software company, product studio, and engineering lab. We research, design, and deploy enterprise software, AI capabilities, and production-grade digital platforms.",
+    "GrowxLabs is an AI-native software company, product studio, and AI Engineering Lab. We research, design, and engineer enterprise software, AI capabilities, digital platforms, intelligent workflows, and operational intelligence.",
+
   alternates: {
     canonical: "https://growxlabs.tech/",
   },
+
   openGraph: {
     url: "https://growxlabs.tech/",
     siteName: "GrowxLabs",
     type: "website",
-    images: [{ url: "https://growxlabs.tech/og-image.png", width: 1200, height: 630 }],
+    images: [
+      {
+        url: "https://growxlabs.tech/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
+
   icons: {
     icon: "/logo-symbol.svg",
   },
@@ -39,123 +51,119 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+    <html
+      lang="en"
+      className="h-full antialiased"
+      suppressHydrationWarning
+    >
       <head>
-        {/* 🧠 MASTER AEO KNOWLEDGE GRAPH (Verified Architecture) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
+
               "@graph": [
                 {
                   "@type": "Organization",
                   "@id": "https://growxlabs.tech/#organization",
-                  "name": "GrowxLabs",
-                  "alternateName": ["GrowxLabs Tech", "GrowxLabs.tech"],
-                  "url": "https://growxlabs.tech",
-                  "logo": "https://growxlabs.tech/logo.png",
-                  "description":
-                    "GrowxLabs is an AI-native software company, product studio, and AI engineering lab researching, designing, and engineering enterprise software, AI capabilities, digital platforms, intelligent workflows, and operational intelligence.",
-                  "founder": [
-                    { "@id": "https://growxlabs.tech/#varshith" },
-                    { "@id": "https://growxlabs.tech/#akhilesh" },
+
+                  name: "GrowxLabs",
+
+                  alternateName: [
+                    "GrowxLabs Tech",
+                    "GrowxLabs.tech",
                   ],
-                  "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Guntur",
-                    "addressRegion": "Andhra Pradesh",
-                    "addressCountry": "IN",
+
+                  url: "https://growxlabs.tech",
+
+                  logo: {
+                    "@type": "ImageObject",
+                    url: "https://growxlabs.tech/logo.png",
                   },
-                  "contactPoint": {
+
+                  description:
+                    "GrowxLabs is an AI-native software company, product studio, and AI Engineering Lab researching, designing, and engineering enterprise software, AI capabilities, digital platforms, intelligent workflows, and operational intelligence.",
+
+                  founder: {
+                    "@id": "https://growxlabs.tech/#varshith",
+                  },
+
+                  location: {
+                    "@type": "Country",
+                    name: "India",
+                  },
+
+                  contactPoint: {
                     "@type": "ContactPoint",
-                    "email": "sai@growxlabs.tech",
-                    "contactType": "general inquiries",
-                    "availableLanguage": ["English"],
+                    email: "sai@growxlabs.tech",
+                    contactType: "general inquiries",
+                    availableLanguage: ["English"],
                   },
-                  "areaServed": "Worldwide",
-                  "serviceArea": {
-                    "@type": "GeoShape",
-                    "description": "Worldwide — serving clients across all countries",
+
+                  areaServed: {
+                    "@type": "Place",
+                    name: "Worldwide",
                   },
-                  "knowsAbout": [
-                    "AI Engineering",
+
+                  knowsAbout: [
                     "Enterprise Software Engineering",
                     "Product Engineering",
                     "Web Platform Engineering",
-                    "Intelligent Workflow Automation",
-                    "Modernization and Integrations",
+                    "Enterprise Modernization",
+                    "Software Architecture",
+                    "Systems Integration",
+                    "AI Engineering",
+                    "Intelligent Workflows",
                     "Operational Intelligence",
                     "Agentic AI",
-                    "Multi-Agent Orchestration",
+                    "Multi-Agent Systems",
                     "AI Developer Infrastructure",
                     "Generative AI",
                     "Retrieval-Augmented Generation",
+                    "Cloud-Native Architecture",
                   ],
-                  "sameAs": [
+
+                  sameAs: [
                     "https://www.linkedin.com/company/growxlabs-tech/",
                     "https://instagram.com/growxlabs.tech",
                   ],
                 },
+
                 {
                   "@type": "Person",
                   "@id": "https://growxlabs.tech/#varshith",
-                  "name": "Varshith Pujala",
-                  "jobTitle": "Co Founder",
-                  "worksFor": { "@id": "https://growxlabs.tech/#organization" },
+
+                  name: "Sai Varshith Pujala",
+
+                  jobTitle: "Founder & CEO",
+
+                  url: "https://www.linkedin.com/in/sai-varshith-pujala/",
+
+                  sameAs: [
+                    "https://www.linkedin.com/in/sai-varshith-pujala/",
+                  ],
+
+                  worksFor: {
+                    "@id": "https://growxlabs.tech/#organization",
+                  },
                 },
-                {
-                  "@type": "Person",
-                  "@id": "https://growxlabs.tech/#akhilesh",
-                  "name": "Akhilesh",
-                  "jobTitle": "Co Founder",
-                  "worksFor": { "@id": "https://growxlabs.tech/#organization" },
-                },
+
                 {
                   "@type": "WebSite",
                   "@id": "https://growxlabs.tech/#website",
-                  "url": "https://growxlabs.tech",
-                  "name": "GrowxLabs",
-                  "publisher": { "@id": "https://growxlabs.tech/#organization" },
-                },
-                {
-                  "@type": "SoftwareApplication",
-                  "@id": "https://growxlabs.tech/products/resumeforgeai#product",
-                  "name": "ResumeForgeAI",
-                  "applicationCategory": "BusinessApplication",
-                  "operatingSystem": "Web",
-                  "creator": { "@id": "https://growxlabs.tech/#organization" },
-                  "description": "AI powered resume builder with intelligent optimization.",
-                  "url": "https://growxlabs.tech/products/resumeforgeai",
-                },
-                {
-                  "@type": "SoftwareApplication",
-                  "@id": "https://growxlabs.tech/products/universalai#product",
-                  "name": "UniversalAI",
-                  "applicationCategory": "BusinessApplication",
-                  "operatingSystem": "Web",
-                  "creator": { "@id": "https://growxlabs.tech/#organization" },
-                  "description": "Cross-platform AI intelligence for enterprise automation.",
-                },
-                {
-                  "@type": "SoftwareApplication",
-                  "@id": "https://growxlabs.tech/products/recruitai#product",
-                  "name": "RecruitAI",
-                  "applicationCategory": "BusinessApplication",
-                  "operatingSystem": "Web",
-                  "creator": { "@id": "https://growxlabs.tech/#organization" },
-                  "description": "AI driven recruitment and talent acquisition platform.",
-                },
-                {
-                  "@type": "SoftwareApplication",
-                  "@id": "https://growxlabs.tech/products/pipper#product",
-                  "name": "Pipper",
-                  "applicationCategory": "DeveloperApplication",
-                  "operatingSystem": "All",
-                  "creator": { "@id": "https://growxlabs.tech/#organization" },
-                  "description":
-                    "Unified agent developer harness and desktop runtime for Codex, Claude-Code, and OpenCode orchestration.",
-                  "url": "https://growxlabs.tech/products/pipper",
+
+                  url: "https://growxlabs.tech",
+
+                  name: "GrowxLabs",
+
+                  alternateName: "GrowxLabs.tech",
+
+                  publisher: {
+                    "@id": "https://growxlabs.tech/#organization",
+                  },
+
+                  inLanguage: "en",
                 },
               ],
             }),
@@ -168,18 +176,30 @@ export default async function RootLayout({
               src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
               strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="lazyOnload">
+
+            <Script
+              id="google-analytics"
+              strategy="lazyOnload"
+            >
               {`
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
+
+                function gtag(){
+                  dataLayer.push(arguments);
+                }
+
                 gtag('js', new Date());
 
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                gtag(
+                  'config',
+                  '${process.env.NEXT_PUBLIC_GA_ID}'
+                );
               `}
             </Script>
           </>
         )}
       </head>
+
       <body
         className="min-h-full flex flex-col bg-background text-foreground font-sans relative"
         suppressHydrationWarning
@@ -195,11 +215,19 @@ export default async function RootLayout({
               >
                 <GlobalBackground />
 
-                <ConditionalLayout>{children}</ConditionalLayout>
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
 
                 <CookieConsent />
+
                 <WhatsAppWidget />
-                <Toaster position="top-right" expand={false} richColors />
+
+                <Toaster
+                  position="top-right"
+                  expand={false}
+                  richColors
+                />
               </ThemeProvider>
             </QueryProvider>
           </AuthProvider>
