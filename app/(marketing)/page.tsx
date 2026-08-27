@@ -31,32 +31,52 @@ export async function generateMetadata() {
 export default function Home() {
   const faqData = [
     {
-      question: "What is GrowxLabs and what does the studio do?",
-      answer: "GrowxLabs is an AI-native software company, product studio, and engineering lab. We research, design, and engineer custom enterprise software, production web platforms, intelligent workflows, and multi-agent systems designed for scale and operational continuity."
+      question: "What is GrowxLabs and what services do you offer?",
+      answer: "GrowxLabs is an AI-native software company and product studio based in India. We specialize in custom software development, AI agent engineering, intelligent automation solutions, and mobile and web application development. We combine deep AI expertise with rapid product development to ship production-ready solutions, built to scale from day one. We don't build off-the-shelf systems. We build products."
     },
     {
-      question: "How does GrowxLabs collaborate with engineering and product teams?",
-      answer: "We operate as an AI-native software lab that prioritizes production-grade software. We collaborate directly with founders, CTOs, and technical leaders, building modular, maintainable architectures with clear governance, rigorous testing, and observable deployment."
+      question: "How is GrowxLabs different from other consultancies?",
+      answer: "Traditional IT firms often operate as body shops or spend months writing discovery documents before writing any code. We do the opposite: we are an AI-first software lab that prioritizes working software. Within 24 hours of kickoff, you get a functional prototype, and we deploy complete, scalable production systems. Every engineer on our team has been building with LLMs and neural architectures natively from day one—we don't 'retrofit' AI into legacy software. When you build with us, you collaborate directly with the core developers writing your code, eliminating project management overhead and junior developer errors."
     },
     {
-      question: "What industries does GrowxLabs engineer systems for?",
-      answer: "We build systems across fintech, enterprise logistics, manufacturing, healthcare, technology infrastructure, and commerce, engineering tailored software architectures that solve complex domain constraints."
+      question: "What industries does GrowxLabs work with?",
+      answer: "We work across multiple sectors including fintech, e-commerce, healthcare, retail, manufacturing, logistics, education, and professional services. Our AI solutions are industry-agnostic but highly customisable: whether you need intelligent document processing for banking, AI-powered inventory management for retail, or automated customer support for SaaS, we build solutions tailored to your specific domain requirements."
     },
     {
-      question: "How does GrowxLabs handle enterprise modernization and legacy systems?",
-      answer: "We evaluate existing software architecture, map operational workflows, and engineer targeted AI capabilities and secure API integrations that connect with existing databases, ERPs, and cloud environments without disruptive migrations."
+      question: "Can GrowxLabs help with enterprise AI implementation and digital transformation?",
+      answer: "Yes. We help mid-size companies and enterprise teams deploy AI across their operations. This covers AI strategy consulting, workflow automation, intelligent process automation (IPA), custom LLM deployment, RAG systems for enterprise knowledge management, and AI-driven analytics dashboards. We start with a discovery sprint to identify high-impact opportunities, then deliver proof-of-concept systems designed to scale."
     },
     {
-      question: "What software and AI capabilities does GrowxLabs develop?",
-      answer: "We engineer custom enterprise applications, autonomous background agent harnesses, high-performance web platforms, document intelligence systems, and secure platform integrations connecting enterprise systems."
+      question: "What AI and automation solutions does GrowxLabs build?",
+      answer: "We engineer custom AI agents for service operations, knowledge workflows, document processing, data extraction, and application integrations. Our capabilities connect with platforms such as Salesforce, HubSpot, Zoho, SAP, and custom enterprise applications."
     },
     {
-      question: "What technologies and architecture patterns does GrowxLabs use?",
-      answer: "We build with modern production technologies: TypeScript, Next.js, Node.js, Python, PostgreSQL, Redis, vector systems, multi-agent frameworks, frontier LLM architectures, and major cloud providers (AWS, GCP, Vercel)."
+      question: "How much does custom software development cost at GrowxLabs?",
+      answer: "Our custom software development projects typically start at ₹1 lakh (approximately $1,200 USD) for focused AI agents and automations. Mid-complexity web and mobile applications range from ₹3-10 lakhs, while enterprise-grade platforms with multiple integrations start at ₹10 lakhs and above. We offer transparent pricing upfront based on scope, providing highly competitive rates compared to traditional IT consultancies while delivering faster results."
     },
     {
-      question: "How do we start an engagement with GrowxLabs?",
-      answer: "Contact us at sai@growxlabs.tech or through our contact page to discuss your technical requirements, architectural constraints, and engineering scope."
+      question: "What is the typical project timeline for software development?",
+      answer: "We operate at high velocity. AI agents and automations typically take 1-2 weeks; web applications and MVPs take 4-6 weeks; and complex enterprise systems require 8-12 weeks. We deliver a working prototype within 24-48 hours of kickoff so you can validate the direction early, and our iterative development ensures you see regular progress every few days."
+    },
+    {
+      question: "Does GrowxLabs provide ongoing support and maintenance?",
+      answer: "Yes. We provide flexible support and maintenance plans that cover bug fixes, performance monitoring, security updates, feature enhancements, and 24/7 incident response for business-critical systems. Many clients begin with an initial build phase and transition to a monthly retainer to ensure continuous system optimization and ongoing support."
+    },
+    {
+      question: "Can you build AI chatbots and virtual assistants for customer service?",
+      answer: "Absolutely. We design and deploy intelligent customer support systems that handle FAQs, order tracking, appointment scheduling, complaint resolution, and complex multi-turn conversations. Our AI assistants integrate directly with the WhatsApp Business API, web chat, email, Slack, and Microsoft Teams. They learn from your proprietary knowledge base and escalate to human agents only when necessary, reducing customer support costs by 40-70%."
+    },
+    {
+      question: "Do you offer AI consulting and strategy services?",
+      answer: "Yes. Our AI consulting services include AI readiness assessments, use-case prioritization, technology stack recommendations, build-vs-buy analysis, AI governance frameworks, and implementation roadmaps. We help leadership teams understand where AI can drive the most value and construct actionable plans to achieve it, whether that involves engineering custom solutions or integrating existing AI tools."
+    },
+    {
+      question: "What technologies and frameworks does GrowxLabs use?",
+      answer: "We work with modern, production-grade technologies: React, Next.js, Node.js, Python, and TypeScript for applications; OpenAI, Anthropic Claude, and open-source LLMs for AI; PostgreSQL, MongoDB, and Redis for databases; AWS, Google Cloud, and Vercel for infrastructure; and tools like LangChain and LlamaIndex for AI orchestration. We choose the right stack for each project based on requirements, avoiding vendor lock-in."
+    },
+    {
+      question: "How do I get started with GrowxLabs?",
+      answer: "Contact us at sai@growxlabs.tech or through our website contact form. We will schedule a 30-minute discovery call to understand your requirements, assess fit, and outline a preliminary technical approach. If we are aligned, we can deliver a proposal within 48 hours and start work within a week, bypassing lengthy procurement processes or multi-month sales cycles."
     }
   ];
 
