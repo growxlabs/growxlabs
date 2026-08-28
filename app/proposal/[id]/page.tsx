@@ -378,8 +378,8 @@ export default function PublicProposalView() {
               <div className="grid grid-cols-1 gap-0 border border-neutral-100 divide-y divide-neutral-100">
                 {[
                   {
-                    title: "Web Engineering",
-                    description: "High-performance websites and applications built with modern frameworks. Optimized for speed, accessibility, and search visibility.",
+                    title: "Web Platform Engineering",
+                    description: "High-performance web platforms and applications built with modern frameworks. Optimized for speed, accessibility, and search visibility.",
                   },
                   {
                     title: "Process Automation",
