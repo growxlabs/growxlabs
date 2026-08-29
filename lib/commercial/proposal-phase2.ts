@@ -141,7 +141,20 @@ export async function sendProposal(id: string, actorId: string, origin: string) 
     relatedEntityId: id,
     clientId: current.client_id,
     companyId: current.company_id,
-    variables: { proposalNumber: current.proposal_number, proposalVersion: frozen.version.version, reviewUrl },
+    variables: {
+      proposalNumber: current.proposal_number,
+      proposalVersion: frozen.version.version,
+      reviewUrl,
+      portalNotification: {
+        type: "proposal_available",
+        title: `Proposal ${current.proposal_number} is ready for review`,
+        message: "Your GrowXLabs commercial proposal is available for review.",
+        referenceCode: current.proposal_number,
+        targetUrl: `/client/proposals/${encodeURIComponent(current.proposal_number)}`,
+        actionLabel: "Review Proposal",
+        validUntil: current.valid_until,
+      },
+    },
   }, actorId);
   const now = new Date().toISOString();
   const { error } = await supabaseAdmin.from("commercial_proposals").update({
