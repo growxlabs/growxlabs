@@ -354,14 +354,16 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
-  return [
-    <View style={styles.sectionHeading} minPresenceAhead={82} key={`${title}-heading`}>
-      {number ? <Text style={styles.sectionNumber}>{number}</Text> : null}
-      <Text style={styles.sectionTitle}>{title}</Text>
-    </View>,
-    children,
-    <View style={styles.sectionRule} key={`${title}-rule`} />,
-  ];
+  return (
+    <View>
+      <View style={styles.sectionHeading} minPresenceAhead={82}>
+        {number ? <Text style={styles.sectionNumber}>{number}</Text> : null}
+        <Text style={styles.sectionTitle}>{title}</Text>
+      </View>
+      <View>{children}</View>
+      <View style={styles.sectionRule} />
+    </View>
+  );
 }
 
 function EmptyContent() {
@@ -372,20 +374,50 @@ function SummaryContent({ value }: { value: unknown }) {
   const entries = asArray(value);
   if (!entries.length) return <EmptyContent />;
   return entries.map((entry, index) => (
-    <Text key={index} style={[styles.summary, index > 0 ? { marginTop: 8 } : undefined]} orphans={2} widows={2}>
+    <Text key={index} style={index > 0 ? [styles.summary, { marginTop: 8 }] : styles.summary} orphans={2} widows={2}>
       {itemBody(entry) || stringify(entry)}
     </Text>
   ));
 }
 
+function isLikelyTitle(value: string): boolean {
+  const text = value.trim();
+  return text.length > 0 && text.length <= 80 && !/[.!?:;]$/.test(text) && !/^[•*-]/.test(text);
+}
+
+function isLikelyBody(value: string): boolean {
+  const text = value.trim();
+  return text.length >= 45 || /[,]/.test(text);
+}
+
+function normalizeContentItems(value: unknown, pairStringItems: boolean): unknown[] {
+  const entries = asArray(value);
+  if (!pairStringItems) return entries;
+
+  const normalized: unknown[] = [];
+  for (let index = 0; index < entries.length; index += 1) {
+    const current = entries[index];
+    const next = entries[index + 1];
+    if (typeof current === "string" && typeof next === "string" && isLikelyTitle(current) && isLikelyBody(next)) {
+      normalized.push({ title: current.trim(), description: next.trim() });
+      index += 1;
+    } else {
+      normalized.push(current);
+    }
+  }
+  return normalized;
+}
+
 function ContentItems({
   value,
   numbered = false,
+  pairStringItems = false,
 }: {
   value: unknown;
   numbered?: boolean;
+  pairStringItems?: boolean;
 }) {
-  const entries = asArray(value);
+  const entries = normalizeContentItems(value, pairStringItems);
   if (!entries.length) return <EmptyContent />;
 
   return entries.map((entry, index) => {
@@ -396,13 +428,13 @@ function ContentItems({
     return (
       <View style={styles.itemBlock} key={index} minPresenceAhead={52}>
         {title ? (
-          <Text style={styles.itemTitle} minPresenceAhead={32} orphans={2} widows={2}>
+          <Text style={styles.itemTitle} orphans={2} widows={2}>
             {numbered ? `${index + 1}. ` : ""}
             {title}
           </Text>
         ) : null}
         {body ? (
-          <Text style={[styles.body, title ? styles.itemBody : undefined]} orphans={2} widows={2}>
+          <Text style={title ? [styles.body, styles.itemBody] : styles.body} orphans={2} widows={2}>
             {!title ? <Text style={styles.marker}>{marker}</Text> : null}
             {body}
           </Text>
@@ -558,7 +590,7 @@ export async function generateProposalPdf(
           <SummaryContent value={content.executiveSummary} />
         </Section>
         <Section number="02" title="Scope of Work">
-          <ContentItems value={content.scope} />
+          <ContentItems value={content.scope} pairStringItems />
         </Section>
         <Section number="03" title="Deliverables">
           <ContentItems value={content.deliverables} numbered />
