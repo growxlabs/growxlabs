@@ -1,3 +1,26 @@
-import { createAgreement, requireCommercialAdmin, commercialError, supabaseAdmin } from "@/lib/commercial/workflow";
-export async function GET(){try{await requireCommercialAdmin();const {data,error}=await supabaseAdmin.from("master_service_agreements").select("id,agreement_number,status,version,client_id,deal_id,updated_at").order("updated_at",{ascending:false});if(error)throw new Error(error.message);return Response.json({agreements:data||[]});}catch(error){return commercialError(error);}}
-export async function POST(request:Request){try{const admin=await requireCommercialAdmin();const body=await request.json() as {proposalId?:string};if(!body.proposalId)return Response.json({error:"Approved proposal is required."},{status:400});return Response.json({agreement:await createAgreement(body.proposalId,admin.userId)},{status:201});}catch(error){return commercialError(error);}}
+import { createAgreement, requireCommercialAdmin, commercialError } from "@/lib/commercial/workflow";
+import { listAdminAgreements, listEligibleProposals } from "@/lib/commercial/msa";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+
+export async function GET(){
+  try {
+    await requireCommercialAdmin();
+    const [agreements, eligibleProposals] = await Promise.all([listAdminAgreements(), listEligibleProposals()]);
+    return Response.json({ agreements, eligibleProposals });
+  } catch(error) { return commercialError(error); }
+}
+
+export async function POST(request:Request){
+  try {
+    const admin=await requireCommercialAdmin();
+    const body=await request.json() as {proposalId?:string; proposalNumber?:string};
+    let proposalId=body.proposalId;
+    if (!proposalId && body.proposalNumber) {
+      const result=await supabaseAdmin.from("commercial_proposals").select("id").eq("proposal_number",body.proposalNumber).eq("status","accepted").maybeSingle();
+      if (result.error) throw new Error(result.error.message);
+      proposalId=result.data?.id;
+    }
+    if(!proposalId)return Response.json({error:"An accepted proposal is required."},{status:400});
+    return Response.json({agreement:await createAgreement(proposalId,admin.userId)},{status:201});
+  } catch(error) { return commercialError(error); }
+}

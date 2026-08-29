@@ -1,91 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import AgreementContract from "@/components/admin/AgreementContract";
-import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
-export default function ClientAgreementPage() {
-  const [agreement, setAgreement] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [signing, setSigning] = useState(false);
+const label = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase());
 
-  useEffect(() => {
-    fetchAgreement();
-  }, []);
+type ClientAgreementSummary = { agreementNumber: string; version: number; status: string; issuedAt: string | null };
 
-  const fetchAgreement = async () => {
-    try {
-      const res = await fetch("/api/client/portal-data"); // Assuming portal-data contains agreement
-      const data = await res.json();
-      // Adjust fetching based on actual portal structure
-      const agreementData = data.agreements?.[0]; // Assuming first agreement for now
-      setAgreement(agreementData);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSign = async (party: "admin" | "client", signature: string | null) => {
-    setSigning(true);
-    try {
-      await fetch(`/api/agreements/sign`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agreementId: agreement.id,
-          party,
-          signature
-        })
-      });
-      fetchAgreement();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSigning(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="h-[80vh] flex items-center justify-center">
-        <Loader2 className="animate-spin text-white/20" size={48} />
-      </div>
-    );
-  }
-
-  if (!agreement) {
-    return (
-      <div className="h-[80vh] flex items-center justify-center text-white/40">
-        No active agreement found for your account.
-      </div>
-    );
-  }
-
-  return (
-    <div className="pt-24">
-      <AgreementContract 
-        role="client"
-        onSign={handleSign}
-        initialSignatures={{
-          admin: agreement.admin_signature,
-          client: agreement.client_signature
-        }}
-        data={{
-          client_name: agreement.users?.name,
-          business_name: agreement.users?.business_name,
-          email: agreement.users?.email,
-          phone: agreement.users?.phone,
-          service_type: agreement.service_type,
-          project_description: agreement.project_description,
-          total_amount: agreement.total_amount,
-          advance_amount: agreement.advance_amount,
-          start_date: agreement.start_date,
-          delivery_date: agreement.delivery_date,
-          invoice_no: agreement.id.slice(0, 8).toUpperCase()
-        }} 
-      />
-    </div>
-  );
+export default function ClientAgreementsPage() {
+  const query = useQuery({ queryKey: ["client", "agreements"], queryFn: async () => { const response = await fetch("/api/client/agreements", { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error || "Unable to load contracts."); return body.agreements as ClientAgreementSummary[]; } });
+  return <div className="mx-auto max-w-6xl space-y-7"><header><p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">Client Suite · Contracts</p><h1 className="mt-2 font-serif text-4xl text-slate-950">Service Agreements</h1><p className="mt-2 text-sm text-slate-600">Review agreements sent by GrowxLabs. Drafts and internal review records are not exposed here.</p></header><section className="overflow-hidden rounded-xl border border-slate-200 bg-white">{query.isPending ? <p className="p-6 text-sm text-slate-500">Loading contracts…</p> : query.error ? <p className="p-6 text-sm text-red-700">{query.error.message}</p> : !query.data?.length ? <p className="p-8 text-center text-sm text-slate-500">No service agreements are ready for your account.</p> : <div className="divide-y divide-slate-100">{query.data.map((agreement) => <Link key={agreement.agreementNumber} href={`/client/agreement/${encodeURIComponent(agreement.agreementNumber)}`} className="grid gap-3 p-5 hover:bg-slate-50 md:grid-cols-[1.2fr_1fr_1fr_auto] md:items-center"><div><strong className="text-slate-950">{agreement.agreementNumber}</strong><p className="mt-1 text-xs text-slate-500">Version {agreement.version}</p></div><span className="text-sm text-slate-600">Issued {agreement.issuedAt ? new Date(agreement.issuedAt).toLocaleDateString("en-IN") : "—"}</span><span className="text-sm text-slate-600">{label(agreement.status)}</span><span className="font-semibold text-blue-700">Review Agreement →</span></Link>)}</div>}</section></div>;
 }

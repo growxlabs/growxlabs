@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { ProposalDocument } from "@/components/proposal/ProposalDocument";
@@ -33,7 +33,7 @@ const normalizeLegacyDraft = (draft: any) => ({
   }),
 });
 export default function AdminProposalWorkspace() {
-  const { proposalId } = useParams<{ proposalId: string }>(),
+  const { proposalId } = useParams<{ proposalId: string }>(), router = useRouter(),
     q = useQuery({
       queryKey: ["admin", "proposal", proposalId],
       queryFn: async () => {
@@ -118,6 +118,18 @@ export default function AdminProposalWorkspace() {
     localStorage.removeItem(draftKey);
     setForm(null);
     await q.refetch();
+  }
+  async function compileAgreement() {
+    setBusy(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/agreements", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ proposalId }) });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Unable to compile Service Agreement.");
+      router.push(`/admin/agreements/${body.agreement.id}`);
+    } catch (cause) {
+      setMessage(cause instanceof Error ? cause.message : "Unable to compile Service Agreement.");
+    } finally { setBusy(false); }
   }
   if (q.isPending || !form) return <p>Loading proposal workspace…</p>;
   if (q.error) return <p className="text-red-700">{q.error.message}</p>;
@@ -446,9 +458,11 @@ export default function AdminProposalWorkspace() {
         </div>
       </section>
       {p.status === "accepted" && (
-        <p className="rounded border border-emerald-300 bg-emerald-50 p-5 font-bold text-emerald-800">
-          Ready for Agreement — agreement generation is intentionally not started.
-        </p>
+        <section className="rounded border border-emerald-300 bg-emerald-50 p-5 text-emerald-900">
+          <p className="font-bold">Accepted proposal — Service Agreement stage ready.</p>
+          <p className="mt-2 text-sm">Compile a draft from the accepted immutable Version {p.version} snapshot and linked Scope of Work. The draft will remain in the Admin Suite for internal review.</p>
+          <button disabled={busy} onClick={() => void compileAgreement()} className="mt-4 rounded bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Compiling…" : "Generate Service Agreement draft"}</button>
+        </section>
       )}
     </div>
   );

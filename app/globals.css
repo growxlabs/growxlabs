@@ -503,6 +503,11 @@ html.dark .notion-theme,
   color: var(--text-primary) !important;
 }
 
+/* Keep labels readable when a semantic button explicitly uses white text. */
+.notion-theme button.text-white {
+  color: #ffffff !important;
+}
+
 .notion-theme .text-white\/40,
 .notion-theme .text-white\/60,
 .notion-theme .text-\[var\(--text-secondary\)\] {
