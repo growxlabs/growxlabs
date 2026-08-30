@@ -1,116 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { CreditCard, Rocket, CheckCircle2, Loader2, ExternalLink, ShieldCheck } from "lucide-react";
-import { Invoice } from "@/types/lifecycle";
-import Script from "next/script";
+
+type Invoice = { invoiceNumber: string; status: string; currency: string; subtotal: number; taxTotal: number; total: number; amountPaid: number; balanceDue: number; dueDate: string | null; issuedAt: string | null; lineItems: Array<Record<string, any>>; paymentInstructions: Record<string, any>; agreementReference: string | null; proposalReference: string | null; scopeReference: string | null; payments?: Array<{ paymentNumber: string; amount: number; currency: string; method: string; transactionReference: string | null; status: string }>; receipts?: Array<{ receipt_number: string; amount: number; balance_after: number; created_at: string }> };
+const money = (value: number, currency = "INR") => currency === "INR" ? `₹${Number(value || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `${currency} ${Number(value || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const date = (value: string | null) => value ? new Date(value).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "Not specified";
+const status = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 export default function ClientInvoicesPage() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchInvoices();
-  }, []);
-
-  const fetchInvoices = async () => {
-    const res = await fetch("/api/client/invoices");
-    const json = await res.json();
-    setInvoices(json || []);
-  };
-
-  const handlePayment = async (invoice: Invoice) => {
-    setLoading(true);
-    // 1. Initialize Razorpay Checkout
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: invoice.amount,
-      currency: "USD",
-      name: "GrowXLabsTech",
-      description: "Project Payment",
-      order_id: invoice.razorpay_order_id,
-      handler: function (response: any) {
-        // Razorpay success callback
-        // The webhook handles the actual update, but we refresh the UI
-        window.location.reload();
-      },
-      prefill: {
-        name: "Client Name", // Should come from session
-        email: "client@example.com",
-      },
-      theme: {
-        color: "#000000",
-      },
-    };
-
-    const rzp = new (window as any).Razorpay(options);
-    rzp.open();
-    setLoading(false);
-  };
-
-  return (
-    <div className="max-w-4xl mx-auto space-y-12 py-12">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      
-      <div className="space-y-4">
-        <h1 className="text-6xl font-black text-white tracking-tighter italic">
-          Billing & Payments.
-        </h1>
-        <p className="text-xl text-white/40 font-light max-w-2xl leading-relaxed">
-          Pay safely via Razorpay. Keep track of your invoices 
-          and payments here.
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        {invoices.map((invoice) => (
-          <Card key={invoice.id} className="p-10 glass border-white/5 rounded-[2.5rem] bg-white/[0.02]">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-              <div className="flex items-center space-x-6">
-                <div className="h-16 w-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/5">
-                   <ShieldCheck className={invoice.status === 'paid' ? 'text-green-500' : 'text-primary'} />
-                </div>
-                <div>
-                   <h3 className="text-2xl font-black text-white tracking-tight">Invoice #{invoice.id.slice(0, 8).toUpperCase()}</h3>
-                   <div className="flex items-center space-x-3 mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
-                      <span>Due: {new Date(invoice.due_date || '').toLocaleDateString()}</span>
-                      <span className="w-1 h-1 rounded-full bg-white/10" />
-                      <span className={invoice.status === 'paid' ? 'text-green-500' : 'text-yellow-500'}>{invoice.status.toUpperCase()}</span>
-                   </div>
-                </div>
-              </div>
-
-              <div className="text-right w-full md:w-auto">
-                <p className="text-3xl font-black text-white mb-4">${invoice.amount}</p>
-                {invoice.status !== 'paid' ? (
-                   <Button 
-                    onClick={() => handlePayment(invoice)}
-                    disabled={loading}
-                    className="w-full h-14 px-10 rounded-2xl bg-primary text-white font-black hover:bg-neutral-200 transition-all uppercase tracking-tighter"
-                   >
-                     {loading ? <Loader2 className="animate-spin" /> : "Secure Pay Now"}
-                   </Button>
-                ) : (
-                   <div className="flex items-center text-green-500 font-black text-xs uppercase tracking-widest justify-end">
-                      <CheckCircle2 size={16} className="mr-2" /> Fully Paid
-                   </div>
-                )}
-              </div>
-            </div>
-            
-            {invoice.pdf_url && (
-              <div className="mt-8 pt-8 border-t border-white/5 flex justify-between items-center">
-                 <p className="text-[10px] font-black uppercase tracking-widest text-white/20">Invoice PDF ready for download</p>
-                 <a href={invoice.pdf_url} className="text-white/40 hover:text-white transition-all text-xs font-bold flex items-center">
-                    View PDF <ExternalLink size={14} className="ml-2" />
-                 </a>
-              </div>
-            )}
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+  const [invoices, setInvoices] = useState<Invoice[]>([]); const [error, setError] = useState(""); const [loading, setLoading] = useState(true); const [notice, setNotice] = useState("");
+  const load = async () => { setLoading(true); const response = await fetch("/api/client/consulting-invoices", { cache: "no-store" }); const body = await response.json(); if (!response.ok) setError(body.error || "Unable to load consulting invoices."); else setInvoices(body.invoices || []); setLoading(false); };
+  useEffect(() => { void load(); }, []);
+  if (loading) return <p>Loading consulting invoices…</p>;
+  return <main className="mx-auto max-w-6xl space-y-7"><header><p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Client Suite · Billing</p><h1 className="mt-2 text-3xl font-semibold text-slate-950">Consulting invoices</h1><p className="mt-2 text-slate-600">Review milestone invoices, payment status and receipts for your GrowXLabs engagement.</p></header>{error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</p>}{notice && <p className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">{notice}</p>}<div className="space-y-5">{invoices.map((invoice) => <InvoiceCard key={invoice.invoiceNumber} invoice={invoice} onSubmitted={(message) => { setNotice(message); void load(); }} />)}{!invoices.length && <section className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-slate-600">No consulting invoices are available yet.</section>}</div></main>;
 }
+
+function InvoiceCard({ invoice, onSubmitted }: { invoice: Invoice; onSubmitted: (message: string) => void }) {
+  const [showPayment, setShowPayment] = useState(false); const [showDetails, setShowDetails] = useState(false); const milestone = invoice.paymentInstructions?.milestoneDescription || invoice.lineItems?.[0]?.description || "Consulting milestone";
+  return <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"><div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between"><div><p className="text-xs font-bold uppercase tracking-wider text-slate-500">{invoice.invoiceNumber}</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">{milestone}</h2><p className="mt-2 text-sm text-slate-600">{invoice.paymentInstructions?.milestonePercentage ? `${invoice.paymentInstructions.milestonePercentage}% milestone · ` : ""}{invoice.agreementReference || "Agreement reference pending"}</p></div><span className="w-fit rounded-full bg-blue-50 px-3 py-1 text-xs font-bold capitalize text-blue-800">{status(invoice.status)}</span></div><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5"><Metric label="Issued" value={date(invoice.issuedAt)} /><Metric label="Due" value={date(invoice.dueDate)} /><Metric label="Invoice amount" value={money(invoice.total, invoice.currency)} /><Metric label="Amount paid" value={money(invoice.amountPaid, invoice.currency)} /><Metric label="Balance due" value={money(invoice.balanceDue, invoice.currency)} /></div><div className="mt-6 flex flex-wrap gap-3"><a href={`/api/client/consulting-invoices/${encodeURIComponent(invoice.invoiceNumber)}/pdf`} className="inline-flex min-h-10 items-center rounded-md bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab]">Download PDF</a><button type="button" onClick={() => setShowDetails((value) => !value)} className="min-h-10 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">{showDetails ? "Hide details" : "View invoice"}</button>{invoice.balanceDue > 0 && !["cancelled", "void", "paid"].includes(invoice.status) && <button type="button" onClick={() => setShowPayment((value) => !value)} className="min-h-10 rounded-md border border-[#0075de] bg-white px-4 py-2 text-sm font-semibold text-[#005bab]">{showPayment ? "Close payment details" : "Submit payment details"}</button>}</div>{showDetails && <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-5 text-sm text-slate-700 sm:grid-cols-2"><p><strong>Proposal:</strong> {invoice.proposalReference || "Not specified"}</p><p><strong>Scope of Work:</strong> {invoice.scopeReference || "Not specified"}</p><p><strong>Subtotal:</strong> {money(invoice.subtotal, invoice.currency)}</p><p><strong>Tax:</strong> {money(invoice.taxTotal, invoice.currency)}</p><p><strong>Total engagement value:</strong> {money(invoice.paymentInstructions?.totalEngagementValue, invoice.currency)}</p><p><strong>Remaining engagement balance:</strong> {money(invoice.paymentInstructions?.remainingEngagementBalance, invoice.currency)}</p><p className="sm:col-span-2"><strong>Payment trigger:</strong> {invoice.paymentInstructions?.trigger || "As agreed in the accepted proposal."}</p>{invoice.payments?.map((payment) => <p key={payment.paymentNumber} className="sm:col-span-2"><strong>Payment {payment.paymentNumber}:</strong> {money(payment.amount, payment.currency)} · {status(payment.status)}{payment.transactionReference ? ` · ${payment.transactionReference}` : ""}</p>)}{invoice.receipts?.map((receipt) => <p key={receipt.receipt_number} className="sm:col-span-2 text-emerald-700"><strong>Receipt {receipt.receipt_number}:</strong> {money(receipt.amount, invoice.currency)} · {date(receipt.created_at)}</p>)}</div>}{showPayment && <PaymentForm invoice={invoice} onSubmitted={onSubmitted} />}</section>;
+}
+
+function PaymentForm({ invoice, onSubmitted }: { invoice: Invoice; onSubmitted: (message: string) => void }) { const [amountValue, setAmountValue] = useState(String(invoice.balanceDue)); const [method, setMethod] = useState("bank_transfer"); const [reference, setReference] = useState(""); const [proof, setProof] = useState(""); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const submit = async (event: React.FormEvent) => { event.preventDefault(); setBusy(true); setError(""); const response = await fetch("/api/client/consulting-payments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ invoiceNumber: invoice.invoiceNumber, amount: Number(amountValue), method, transactionReference: reference, proofPath: proof }) }); const body = await response.json(); setBusy(false); if (!response.ok) return setError(body.error || "Payment details could not be submitted."); onSubmitted(`Payment ${body.payment.payment_number} submitted for verification.`); }; return <form onSubmit={submit} className="mt-5 grid gap-4 rounded-lg border border-blue-100 bg-blue-50/50 p-5 sm:grid-cols-2"><div className="sm:col-span-2"><h3 className="font-semibold text-slate-950">Submit payment details</h3><p className="mt-1 text-sm text-slate-600">Use bank transfer, UPI, card, gateway or another approved method. GrowXLabs will verify the submission before issuing a receipt.</p></div><label className="grid gap-2 text-sm font-semibold text-slate-800">Amount<input required min="0.01" max={invoice.balanceDue} step="0.01" type="number" value={amountValue} onChange={(event) => setAmountValue(event.target.value)} className="min-h-11 rounded-md border border-slate-300 bg-white px-3 font-normal" /></label><label className="grid gap-2 text-sm font-semibold text-slate-800">Payment method<select value={method} onChange={(event) => setMethod(event.target.value)} className="min-h-11 rounded-md border border-slate-300 bg-white px-3 font-normal"><option value="bank_transfer">Bank transfer</option><option value="upi">UPI</option><option value="card">Card</option><option value="gateway">Gateway</option><option value="other">Other</option></select></label><label className="grid gap-2 text-sm font-semibold text-slate-800">Transaction reference<input value={reference} onChange={(event) => setReference(event.target.value)} placeholder="Bank / UPI reference" className="min-h-11 rounded-md border border-slate-300 bg-white px-3 font-normal" /></label><label className="grid gap-2 text-sm font-semibold text-slate-800">Proof reference (optional)<input value={proof} onChange={(event) => setProof(event.target.value)} placeholder="Approved proof reference" className="min-h-11 rounded-md border border-slate-300 bg-white px-3 font-normal" /></label>{error && <p role="alert" className="sm:col-span-2 text-sm text-red-700">{error}</p>}<button disabled={busy} className="min-h-11 w-fit rounded-md bg-[#0075de] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Submitting…" : "Submit for verification"}</button></form>; }
+function Metric({ label, value }: { label: string; value: string }) { return <div className="rounded-lg border border-slate-200 p-3"><p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{label}</p><p className="mt-2 text-sm font-semibold text-slate-900">{value}</p></div>; }

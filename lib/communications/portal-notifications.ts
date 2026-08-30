@@ -48,6 +48,24 @@ const definitions: Record<string, NotificationDefinition> = {
     message: "Your GrowXLabs invoice is available for review.",
     actionLabel: "View Invoice",
   },
+  payment_submitted: {
+    label: "Payment Submitted",
+    title: (referenceCode) => referenceCode ? `Payment ${referenceCode} is awaiting verification` : "Payment is awaiting verification",
+    message: "Your payment details were submitted and are awaiting GrowXLabs verification.",
+    actionLabel: "View Payment",
+  },
+  payment_verified: {
+    label: "Payment Verified",
+    title: (referenceCode) => referenceCode ? `Payment ${referenceCode} has been verified` : "Your payment has been verified",
+    message: "Your GrowXLabs payment has been verified.",
+    actionLabel: "View Payment",
+  },
+  receipt_available: {
+    label: "Receipt Available",
+    title: (referenceCode) => referenceCode ? `Receipt ${referenceCode} is available` : "Your payment receipt is available",
+    message: "Your GrowXLabs payment receipt is available.",
+    actionLabel: "View Receipt",
+  },
   payment_received: {
     label: "Payment Received",
     title: (referenceCode) => referenceCode ? `Payment ${referenceCode} has been received` : "Your payment has been received",
@@ -59,6 +77,36 @@ const definitions: Record<string, NotificationDefinition> = {
     title: () => "Your onboarding request is ready",
     message: "Please review and complete your GrowXLabs onboarding request.",
     actionLabel: "Open Onboarding",
+  },
+  onboarding_available: {
+    label: "Onboarding Available",
+    title: () => "Your onboarding workspace is ready",
+    message: "Please complete the GrowXLabs onboarding workspace.",
+    actionLabel: "Open Onboarding",
+  },
+  onboarding_information_requested: {
+    label: "Information Requested",
+    title: () => "Additional onboarding information is required",
+    message: "GrowXLabs requested specific additional onboarding information.",
+    actionLabel: "Update Onboarding",
+  },
+  onboarding_approved: {
+    label: "Onboarding Approved",
+    title: () => "Your onboarding readiness was approved",
+    message: "Your project workspace is now being prepared.",
+    actionLabel: "View Project",
+  },
+  project_ready: {
+    label: "Project Ready",
+    title: (referenceCode) => referenceCode ? `Project ${referenceCode} is ready` : "Your project is ready",
+    message: "Your GrowXLabs project workspace is ready.",
+    actionLabel: "View Project",
+  },
+  kickoff_scheduled: {
+    label: "Kickoff Scheduled",
+    title: (referenceCode) => referenceCode ? `Kickoff ${referenceCode} is scheduled` : "Your project kickoff is scheduled",
+    message: "Your GrowXLabs project kickoff has been scheduled.",
+    actionLabel: "View Project",
   },
   project_update: {
     label: "Project Update",
@@ -139,7 +187,13 @@ export function buildPortalNotification(input: PortalNotificationInput): PortalN
   const targetUrl = safeTargetUrl(portalData.targetUrl) || (
     type === "proposal_available" && referenceCode
       ? `/client/proposals/${encodeURIComponent(referenceCode)}`
-      : null
+      : type === "invoice_available" && referenceCode
+        ? `/client/invoices?invoiceNumber=${encodeURIComponent(referenceCode)}`
+        : type === "onboarding_available" || type === "onboarding_information_requested"
+          ? "/client/onboarding"
+          : type === "project_ready" || type === "onboarding_approved" || type === "kickoff_scheduled"
+            ? "/client/project"
+            : null
   );
   const readAt = input.readAt || null;
 
