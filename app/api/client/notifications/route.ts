@@ -1,5 +1,5 @@
 import { buildPortalNotification } from "@/lib/communications/portal-notifications";
-import { communicationError, requireCommunicationClient, supabaseAdmin } from "@/lib/communications/service";
+import { communicationError, createPortalNotification, requireCommunicationClient, supabaseAdmin } from "@/lib/communications/service";
 
 type CommunicationMessage = {
   id: string;
@@ -10,6 +10,8 @@ type CommunicationMessage = {
   created_at: string;
 };
 
+type ClientInvoice = { id: string; invoice_number: string; currency: string; balance_due: number; status: string; company_id: string | null };
+
 function isMissingReadTable(error: { code?: string; message?: string } | null | undefined) {
   const message = error?.message || "";
   return error?.code === "PGRST205" || /client_notification_reads/i.test(message) && /(schema cache|does not exist|relation)/i.test(message);
@@ -18,14 +20,46 @@ function isMissingReadTable(error: { code?: string; message?: string } | null | 
 export async function GET() {
   try {
     const { clientId, userId } = await requireCommunicationClient();
-    const { data, error } = await supabaseAdmin
+    const [messageResult, invoiceResult] = await Promise.all([
+      supabaseAdmin
       .from("communication_messages")
       .select("id,message_type,variables,related_entity_type,related_entity_id,created_at")
       .eq("client_id", clientId)
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+      .order("created_at", { ascending: false }),
+      supabaseAdmin
+        .from("consulting_advance_invoices")
+        .select("id,invoice_number,currency,balance_due,status,company_id")
+        .eq("client_id", clientId)
+        .in("status", ["sent", "viewed", "partially_paid", "paid", "overdue", "refunded"]),
+    ]);
+    if (messageResult.error) throw new Error(messageResult.error.message);
+    if (invoiceResult.error) throw new Error(invoiceResult.error.message);
 
-    const messages = (data || []) as CommunicationMessage[];
+    let messages = (messageResult.data || []) as CommunicationMessage[];
+    const invoiceMessages = new Set(messages.filter((message) => message.message_type === "invoice_available" && message.related_entity_id).map((message) => message.related_entity_id as string));
+    const missingInvoiceNotifications = (invoiceResult.data || [] as ClientInvoice[]).filter((invoice) => !invoiceMessages.has(invoice.id));
+    if (missingInvoiceNotifications.length) {
+      await Promise.all(missingInvoiceNotifications.map((invoice) => createPortalNotification({
+        messageType: "invoice_available",
+        subject: `Invoice ${invoice.invoice_number} is ready`,
+        body: `<p>Your GrowXLabs consulting invoice <strong>${invoice.invoice_number}</strong> is ready in the Client Suite.</p><p>Amount due: <strong>${invoice.currency} ${Number(invoice.balance_due).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</strong>.</p>`,
+        referenceCode: invoice.invoice_number,
+        targetUrl: `/client/invoices?invoiceNumber=${encodeURIComponent(invoice.invoice_number)}`,
+        actionLabel: "View Invoice",
+        relatedEntityType: "consulting_advance_invoice",
+        relatedEntityId: invoice.id,
+        clientId,
+        companyId: invoice.company_id,
+        variables: { invoiceNumber: invoice.invoice_number },
+      }, userId)));
+      const refreshed = await supabaseAdmin
+        .from("communication_messages")
+        .select("id,message_type,variables,related_entity_type,related_entity_id,created_at")
+        .eq("client_id", clientId)
+        .order("created_at", { ascending: false });
+      if (refreshed.error) throw new Error(refreshed.error.message);
+      messages = (refreshed.data || []) as CommunicationMessage[];
+    }
     const messageIds = messages.map((message) => message.id);
     const proposalIds = messages
       .filter((message) => message.message_type === "proposal_available" && message.related_entity_id)
@@ -51,7 +85,19 @@ export async function GET() {
       createdAt: message.created_at,
       validUntil: message.related_entity_id ? validUntilByProposalId.get(message.related_entity_id) || null : null,
       readAt: readAtByMessageId.get(message.id) || null,
-    }));
+    })).filter((notification, index, all) => {
+      const source = messages[index];
+      const key = source.related_entity_id
+        ? `${notification.type}:${source.related_entity_type || ""}:${source.related_entity_id}`
+        : `${notification.type}:${notification.referenceCode || source.id}`;
+      return all.findIndex((candidate, candidateIndex) => {
+        const candidateSource = messages[candidateIndex];
+        const candidateKey = candidateSource.related_entity_id
+          ? `${candidate.type}:${candidateSource.related_entity_type || ""}:${candidateSource.related_entity_id}`
+          : `${candidate.type}:${candidate.referenceCode || candidateSource.id}`;
+        return candidateKey === key;
+      }) === index;
+    });
 
     return Response.json({ notifications });
   } catch (error) {

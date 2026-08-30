@@ -4,7 +4,7 @@ import "server-only";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { createOnboarding, mapOnboarding, recordOnboardingActivity } from "@/lib/onboarding/server";
-import { enqueueCommunication } from "@/lib/communications/service";
+import { createPortalNotification, enqueueCommunication } from "@/lib/communications/service";
 import { recordAuditEvent } from "@/lib/activity/events";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { ConsultingHttpError } from "@/lib/consulting/workflow";
@@ -129,9 +129,18 @@ async function clientIdentity(clientId: string) {
 
 export async function notifyClient(input: { clientId: string; senderId: string; messageType: string; subject: string; body: string; referenceCode?: string | null; targetUrl: string; actionLabel: string; relatedEntityType: string; relatedEntityId: string; companyId?: string | null; projectId?: string | null; variables?: JsonRecord }) {
   const identity = await clientIdentity(input.clientId);
-  if (!identity.user?.email) return null;
-  const portalNotification = { type: input.messageType, title: input.subject, message: input.body.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(), referenceCode: input.referenceCode || null, targetUrl: input.targetUrl, actionLabel: input.actionLabel };
-  return enqueueCommunication({ channel: "email", messageType: input.messageType, subject: input.subject, body: input.body, email: identity.user.email, displayName: identity.user.name, relatedEntityType: input.relatedEntityType, relatedEntityId: input.relatedEntityId, clientId: input.clientId, companyId: input.companyId ?? identity.profile.company_id, projectId: input.projectId, variables: { ...input.variables, portalNotification } }, input.senderId);
+  const portalMessage = await createPortalNotification({ ...input, companyId: input.companyId ?? identity.profile.company_id, variables: input.variables }, input.senderId);
+  if (!identity.user?.email) return portalMessage;
+  const existingEmail = await supabaseAdmin.from("communication_messages").select("id").eq("channel", "email").eq("message_type", input.messageType).eq("related_entity_type", input.relatedEntityType).eq("related_entity_id", input.relatedEntityId).eq("client_id", input.clientId).order("created_at", { ascending: false }).limit(1);
+  if (existingEmail.error) throw new Error(existingEmail.error.message);
+  if (!existingEmail.data?.length) {
+    try {
+      await enqueueCommunication({ channel: "email", messageType: input.messageType, subject: input.subject, body: input.body, email: identity.user.email, displayName: identity.user.name, relatedEntityType: input.relatedEntityType, relatedEntityId: input.relatedEntityId, clientId: input.clientId, companyId: input.companyId ?? identity.profile.company_id, projectId: input.projectId, variables: { ...input.variables, portalNotification: { type: input.messageType, title: input.subject, message: input.body.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(), referenceCode: input.referenceCode || null, targetUrl: input.targetUrl, actionLabel: input.actionLabel } } }, input.senderId);
+    } catch (error) {
+      console.error("Client email notification could not be queued; in-app notification was retained.", error);
+    }
+  }
+  return portalMessage;
 }
 
 export async function createAdvanceInvoice(agreementId: string, userId: string, milestoneIndex = 0, triggerConfirmed = false) {
@@ -188,7 +197,9 @@ export async function issueConsultingInvoice(invoiceId: string, userId: string) 
   if (!result.data) throw new ConsultingHttpError(404, "Invoice not found.");
   if (["cancelled", "void", "paid"].includes(result.data.status)) throw new ConsultingHttpError(409, "This invoice cannot be issued in its current state.");
   const now = new Date().toISOString();
-  const updated = await supabaseAdmin.from("consulting_advance_invoices").update({ status: "sent", issued_at: result.data.issued_at || now, sent_at: now, updated_at: now }).eq("id", invoiceId).select("*").single();
+  const updated = result.data.status === "sent"
+    ? { data: result.data, error: null }
+    : await supabaseAdmin.from("consulting_advance_invoices").update({ status: "sent", issued_at: result.data.issued_at || now, sent_at: now, updated_at: now }).eq("id", invoiceId).select("*").single();
   if (updated.error) throw new Error(updated.error.message);
   const communication = await notifyClient({ clientId: result.data.client_id, senderId: userId, messageType: "invoice_available", subject: `Invoice ${result.data.invoice_number} is ready`, body: `<p>Your GrowXLabs consulting invoice <strong>${result.data.invoice_number}</strong> is ready in the Client Suite.</p><p>Amount due: <strong>${result.data.currency} ${Number(result.data.balance_due).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</strong>.</p>`, referenceCode: result.data.invoice_number, targetUrl: `/client/invoices?invoiceNumber=${encodeURIComponent(result.data.invoice_number)}`, actionLabel: "View Invoice", relatedEntityType: "consulting_advance_invoice", relatedEntityId: result.data.id, companyId: result.data.company_id, variables: { invoiceNumber: result.data.invoice_number } });
   await log("invoice", invoiceId, userId, "invoice_issued", { invoiceNumber: result.data.invoice_number, communicationMessageId: communication?.id || null });

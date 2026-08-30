@@ -1097,6 +1097,208 @@ function RecruitAIArtworkCard({ href }: { href: string }) {
   );
 }
 
+type RecruitAICapability = "resume" | "assessment" | "interview" | "decision";
+
+function RecruitAICapabilityPanel({
+  capability,
+  title,
+  body,
+}: {
+  capability: RecruitAICapability;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="rounded-[9px] border border-white/[0.09] bg-[#202020]/[0.92] p-3 text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)] backdrop-blur-sm transition-colors duration-300 hover:border-[#B58AC9]/[0.40] hover:bg-[#28232A]/[0.94]">
+      <p className="text-[9px] font-semibold uppercase tracking-[0.11em] text-white/[0.52]">{title}</p>
+      <p className="mt-1.5 text-[11px] leading-[1.3] text-white/[0.72]">{body}</p>
+
+      {capability === "resume" ? (
+        <div aria-hidden="true" className="mt-2.5 flex items-end gap-2">
+          <div className="h-6 w-4 rounded-[2px] border border-white/[0.20] bg-white/[0.10] p-1">
+            <div className="h-0.5 w-full bg-white/[0.62]" />
+            <div className="mt-1 h-0.5 w-3/4 bg-white/[0.30]" />
+            <div className="mt-1 h-0.5 w-full bg-white/[0.30]" />
+          </div>
+          <span className="text-[9px] font-medium uppercase tracking-[0.09em] text-[#D8BCE5]/[0.78]">Structured</span>
+        </div>
+      ) : null}
+
+      {capability === "assessment" ? (
+        <div aria-hidden="true" className="mt-2.5 space-y-1.5">
+          <div className="flex items-center gap-1.5 text-[9px] text-white/[0.60]"><span className="h-1.5 w-1.5 rounded-full bg-[#B58AC9]/[0.80]" /> Role evaluation</div>
+          <div className="h-0.5 rounded-full bg-white/[0.10]"><div className="h-full w-[78%] rounded-full bg-[#B58AC9]/[0.62]" /></div>
+          <p className="text-[9px] uppercase tracking-[0.09em] text-white/[0.40]">Complete</p>
+        </div>
+      ) : null}
+
+      {capability === "interview" ? (
+        <div aria-hidden="true" className="mt-2.5 flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#D8BCE5]/[0.78]" />
+          <span className="text-[9px] uppercase tracking-[0.08em] text-white/[0.48]">Feedback received</span>
+        </div>
+      ) : null}
+
+      {capability === "decision" ? (
+        <div aria-hidden="true" className="mt-2.5 rounded-[5px] border border-[#B58AC9]/[0.24] bg-[#B58AC9]/[0.07] px-1.5 py-1 text-[9px] uppercase tracking-[0.07em] text-[#E8D8EF]/[0.74]">
+          Ready for review
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function RecruitAIWorkflowWindow() {
+  const stages = [
+    ["Applied", "24"],
+    ["Screening", "12"],
+    ["Assessment", "8"],
+    ["Interview", "4"],
+    ["Decision", "2"],
+  ] as const;
+  const progression = [
+    "Resume received",
+    "Profile structured",
+    "Assessment complete",
+    "Interview reviewed",
+    "Ready for decision",
+  ] as const;
+
+  return (
+    <div className="relative flex min-h-[414px] flex-col overflow-hidden rounded-[10px] border border-black/[0.14] bg-[#F7F5F0] text-[#222222] shadow-[0_18px_34px_rgba(0,0,0,0.20)] lg:absolute lg:bottom-[8%] lg:left-[15%] lg:right-[14%] lg:top-[14%] lg:min-h-0">
+      <div className="flex h-8 shrink-0 items-center justify-between border-b border-black/[0.08] bg-[#EEECE7] px-3 text-[9px] text-black/[0.52]">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1" aria-hidden="true">
+            <span className="h-1.5 w-1.5 rounded-full bg-black/[0.20]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-black/[0.14]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-black/[0.10]" />
+          </div>
+          <span className="font-semibold tracking-[-0.01em]">RecruitAI</span>
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="lg:pl-[40px]">
+            <p className="text-[8px] font-semibold uppercase tracking-[0.14em] text-black/[0.42]">Hiring workflow</p>
+            <h4 className="mt-1 text-[18px] font-semibold leading-none tracking-[-0.035em] text-[#171717] sm:text-[20px]">Senior Full-Stack Engineer</h4>
+          </div>
+          <span className="rounded-full border border-[#687D66]/[0.34] bg-[#687D66]/[0.08] px-2 py-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#536750]">Open role</span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-5 gap-2">
+          {stages.map(([stage, count]) => (
+            <div key={stage} className="min-w-0 rounded-[5px] border border-black/[0.08] bg-white/[0.60] px-1.5 py-2">
+              <p className="truncate text-[7px] font-semibold uppercase tracking-[0.04em] text-black/[0.42]">{stage}</p>
+              <p className="mt-1 text-[16px] font-semibold leading-none tracking-[-0.04em] text-[#222222]">{count}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 grid flex-1 grid-cols-1 gap-3 sm:grid-cols-[1.08fr_0.92fr]">
+          <div className="rounded-[7px] border border-black/[0.08] bg-white/[0.58] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[8px] font-semibold uppercase tracking-[0.12em] text-black/[0.42]">Candidate progression</p>
+              <span className="text-[8px] uppercase tracking-[0.08em] text-black/[0.34]">Demo</span>
+            </div>
+            <p className="mt-2 text-[14px] font-semibold tracking-[-0.025em] text-[#252525]">Priya Sharma</p>
+            <ol className="mt-3 space-y-2">
+              {progression.map((step, index) => (
+                <li key={step} className="flex items-center gap-2 text-[10px] text-black/[0.62]">
+                  <span className={`relative flex h-3 w-3 shrink-0 items-center justify-center rounded-full border ${index === progression.length - 1 ? "border-[#B58AC9] bg-[#B58AC9]/[0.16]" : "border-[#7C8778]/[0.40] bg-[#7C8778]/[0.12]"}`}>
+                    {index === progression.length - 1 ? <span className="h-1 w-1 rounded-full bg-[#8B6599]" /> : null}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="rounded-[7px] border border-black/[0.08] bg-white/[0.58] p-3">
+            <p className="text-[8px] font-semibold uppercase tracking-[0.12em] text-black/[0.42]">Decision state</p>
+            <p className="mt-2 text-[14px] font-semibold tracking-[-0.025em] text-[#252525]">Evidence complete</p>
+            <div className="mt-3 space-y-2 text-[10px] text-black/[0.60]">
+              <div className="flex items-center justify-between gap-2"><span>Resume</span><span className="font-medium text-[#65785F]">Structured</span></div>
+              <div className="flex items-center justify-between gap-2"><span>Assessment</span><span className="font-medium text-[#65785F]">Complete</span></div>
+              <div className="flex items-center justify-between gap-2"><span>Interview</span><span className="font-medium text-[#65785F]">Reviewed</span></div>
+            </div>
+            <div className="mt-4 border-t border-black/[0.08] pt-3 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#795D86]">Recruiter review pending</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RecruitAIIntelligenceCard() {
+  return (
+    <div className="group relative h-[720px] w-full overflow-hidden rounded-[14px] border border-white/[0.10] bg-[#241E30] text-[#F5F3EF] transition-transform duration-[350ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] lg:h-[540px]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 22% 18%, rgba(206,184,218,0.42) 0%, rgba(157,128,178,0.20) 28%, transparent 58%), radial-gradient(ellipse at 82% 24%, rgba(142,116,169,0.38) 0%, rgba(105,82,137,0.18) 30%, transparent 58%), radial-gradient(ellipse at 64% 84%, rgba(139,103,139,0.30) 0%, rgba(95,70,112,0.14) 34%, transparent 62%), radial-gradient(ellipse at 50% 48%, rgba(205,194,207,0.16) 0%, transparent 48%), linear-gradient(135deg, #292136 0%, #40304F 38%, #2D2439 70%, #1B1921 100%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-[10%] -top-[22%] h-[88%] w-[68%] blur-[34px]"
+        style={{ background: "radial-gradient(ellipse at center, rgba(214,197,225,0.24) 0%, rgba(181,154,199,0.10) 42%, transparent 72%)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-[12%] -top-[8%] h-[72%] w-[62%] blur-[38px]"
+        style={{ background: "radial-gradient(ellipse at center, rgba(151,124,176,0.24) 0%, rgba(115,91,143,0.10) 44%, transparent 74%)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-[34%] left-[18%] h-[82%] w-[76%] blur-[42px]"
+        style={{ background: "radial-gradient(ellipse at center, rgba(151,114,148,0.20) 0%, rgba(98,75,116,0.09) 46%, transparent 74%)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-soft-light"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.58'/%3E%3C/svg%3E\")",
+          backgroundSize: "160px 160px",
+        }}
+      />
+
+      <div className="relative h-full px-4 py-5 sm:px-6 sm:py-6 lg:px-0 lg:py-0">
+        <p className="absolute left-4 top-5 z-[5] text-[9px] font-semibold uppercase tracking-[0.13em] text-white/[0.52] sm:left-6 sm:top-6 lg:left-7 lg:top-6">
+          RECRUITAI WORKFLOW
+        </p>
+
+        <RecruitAIWorkflowWindow />
+
+        <div className="mt-3 grid grid-cols-2 gap-2 lg:hidden">
+          <RecruitAICapabilityPanel capability="resume" title="Resume intelligence" body="Resume parsed into structured candidate evidence" />
+          <RecruitAICapabilityPanel capability="assessment" title="Assessment" body="Role-specific evaluation completed with evidence" />
+          <RecruitAICapabilityPanel capability="interview" title="Interview" body="Scorecard and interviewer feedback collected" />
+          <RecruitAICapabilityPanel capability="decision" title="Decision" body="Complete evidence ready for recruiter review" />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 z-[4] hidden lg:block">
+          <div className="pointer-events-auto absolute left-[4px] top-[116px] w-[160px]">
+            <RecruitAICapabilityPanel capability="resume" title="Resume intelligence" body="Resume parsed into structured candidate evidence" />
+          </div>
+          <div className="pointer-events-auto absolute right-[4px] top-[92px] w-[160px]">
+            <RecruitAICapabilityPanel capability="assessment" title="Assessment" body="Role-specific evaluation completed with evidence" />
+          </div>
+          <div className="pointer-events-auto absolute bottom-[72px] left-[6px] w-[160px]">
+            <RecruitAICapabilityPanel capability="interview" title="Interview" body="Scorecard and interviewer feedback collected" />
+          </div>
+          <div className="pointer-events-auto absolute bottom-[52px] right-[6px] w-[160px]">
+            <RecruitAICapabilityPanel capability="decision" title="Decision" body="Complete evidence ready for recruiter review" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ProductCardVariant = "resume" | "pipper" | "universal" | "crawl";
 
 function ProductVisualBackground({ variant }: { variant: ProductCardVariant }) {
@@ -1293,7 +1495,15 @@ export default function ProductsPage() {
           <div className="space-y-16 sm:space-y-20 md:space-y-24">
             {PRODUCTS.map((product) => {
               if (product.name === "RecruitAI™") {
-                return <RecruitAIArtworkCard key={product.name} href={product.href} />;
+                return (
+                  <div
+                    key={product.name}
+                    className="grid w-full max-w-[1268px] grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start xl:gap-7"
+                  >
+                    <RecruitAIArtworkCard href={product.href} />
+                    <RecruitAIIntelligenceCard />
+                  </div>
+                );
               }
 
               if (product.name === "ResumeForgeAI™") {
