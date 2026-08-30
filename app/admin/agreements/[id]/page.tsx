@@ -16,12 +16,15 @@ type AgreementData = {
   changeRequests: Array<{ id: string; requested_by_name: string; requested_change: string; reason: string; scope_impact: string; timeline_impact: string; commercial_impact: string; growxlabs_approval: Record<string, unknown>; client_approval: Record<string, unknown>; status: string; requested_at: string; resolved_at: string | null }>;
 };
 
+type GrowxSignature = { fullLegalName: string; designation: string; company: string; email: string; signature: string; consentToElectronicExecution: boolean };
+
 export default function AdminAgreementDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<AgreementData | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [growxSignature, setGrowxSignature] = useState<GrowxSignature>({ fullLegalName: "", designation: "", company: "GrowxLabs", email: "", signature: "", consentToElectronicExecution: false });
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -31,6 +34,8 @@ export default function AdminAgreementDetailPage() {
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Unable to load agreement.");
       setData(body);
+      const existing = body.snapshot?.signatories?.find((signatory: { party: string }) => signatory.party === "growxlabs");
+      if (existing) setGrowxSignature((current) => ({ ...current, fullLegalName: current.fullLegalName || existing.fullLegalName || "", designation: current.designation || existing.designation || "", company: current.company || existing.company || "GrowxLabs", email: current.email || existing.email || "" }));
     } catch (cause) { setMessage(cause instanceof Error ? cause.message : "Unable to load agreement."); }
     finally { setLoading(false); }
   }, [id]);
@@ -66,6 +71,18 @@ export default function AdminAgreementDetailPage() {
     finally { setBusy(false); }
   }
 
+  async function signAsGrowxLabs() {
+    setBusy(true); setMessage("");
+    try {
+      const response = await fetch(`/api/admin/agreements/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "sign", party: "growxlabs", signature: growxSignature }) });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "Unable to record GrowxLabs signature.");
+      setData(body);
+      setMessage("GrowxLabs signature recorded. The agreement is now fully executed.");
+    } catch (cause) { setMessage(cause instanceof Error ? cause.message : "Unable to record GrowxLabs signature."); }
+    finally { setBusy(false); }
+  }
+
   if (loading) return <p className="p-6 text-sm text-slate-500">Loading Master Service Agreement…</p>;
   if (!data) return <p className="p-6 text-sm text-red-700">{message || "Agreement not found."}</p>;
   const agreement = data.agreement;
@@ -79,6 +96,7 @@ export default function AdminAgreementDetailPage() {
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><Link href="/admin/agreements" className="text-xs font-semibold uppercase tracking-wider text-blue-700 hover:underline">← Master Service Agreements</Link><h1 className="mt-2 text-3xl font-semibold text-slate-950">{agreement.agreementNumber}</h1><p className="mt-2 text-sm text-slate-500">Version {agreement.version} · {label(agreement.status)} · Client: {agreement.companyName || agreement.clientName || "Not specified"}</p></div><div className="flex flex-wrap gap-2"><a href={`/api/admin/agreements/${id}/pdf`} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">PDF preview</a>{canSubmit && <button type="button" disabled={busy} onClick={() => void action("submit_review")} className="rounded-lg bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">Submit for internal review</button>}{canResolve && <button type="button" disabled={busy} onClick={() => void action("resolve_changes")} className="rounded-lg bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">Resolve changes & return to draft</button>}{canReview && <><button type="button" disabled={busy} onClick={() => void action("request_changes")} className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 disabled:opacity-50">Request changes</button><button type="button" disabled={busy} onClick={() => void action("approve")} className="rounded-lg bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">Approve internally</button></>}{canReady && <button type="button" disabled={busy} onClick={() => void action("mark_ready")} className="rounded-lg bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">Mark ready for client</button>}{canSend && <button type="button" disabled={busy} onClick={() => void action("send")} className="rounded-lg bg-[#0075de] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">Send agreement</button>}</div></header>
     {message && <p role="status" className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">{message}</p>}
     {canEditLegalReview && data.snapshot.legalReviewFields.some((field) => field.status === "unresolved") && <LegalReviewEditor key={`${agreement.version}-${agreement.status}`} snapshot={data.snapshot} busy={busy} onSave={saveLegalReview} />}
+    {["sent", "viewed", "signing"].includes(agreement.status) && !data.snapshot.execution && <GrowxSignatureEditor value={growxSignature} busy={busy} onChange={setGrowxSignature} onSubmit={signAsGrowxLabs} />}
     <section className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 md:grid-cols-4"><Meta label="Proposal" value={agreement.proposalNumber} /><Meta label="Scope of Work" value={agreement.scopeNumber} /><Meta label="Issue date" value={agreement.issuedAt ? new Date(agreement.issuedAt).toLocaleDateString("en-IN") : "Not specified"} /><Meta label="PDF status" value={label(agreement.pdfStatus)} /></section>
     <MasterServiceAgreementDocument snapshot={data.snapshot} showInternal />
     {agreement.status === "changes_required" && <ReviewRequests reviews={data.reviews} changeRequests={data.changeRequests} />}
@@ -88,6 +106,10 @@ export default function AdminAgreementDetailPage() {
 
 function Meta({ label, value }: { label: string; value: string | null }) { return <div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p><p className="mt-1 text-sm text-slate-900">{value || "—"}</p></div>; }
 function Review({ title, items, empty }: { title: string; items: string[]; empty: string }) { return <section className="rounded-xl border border-slate-200 bg-white p-5"><h2 className="font-semibold text-slate-950">{title}</h2>{items.length ? <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-700">{items.map((item, index) => <li key={index} className="border-l-2 border-slate-200 pl-3">{item}</li>)}</ul> : <p className="mt-3 text-sm text-slate-500">{empty}</p>}</section>; }
+function GrowxSignatureEditor({ value, busy, onChange, onSubmit }: { value: GrowxSignature; busy: boolean; onChange: (value: GrowxSignature) => void; onSubmit: () => Promise<void> }) {
+  const update = (key: keyof GrowxSignature, next: string | boolean) => onChange({ ...value, [key]: next });
+  return <section className="rounded-xl border border-blue-300 bg-blue-50 p-5 shadow-sm"><p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">GrowxLabs execution</p><h2 className="mt-1 text-lg font-semibold text-slate-950">Sign this agreement as GrowxLabs</h2><p className="mt-1 text-sm text-slate-700">The client signature is recorded. Complete the GrowxLabs authorised signatory record to execute the agreement.</p><div className="mt-5 grid gap-4 md:grid-cols-2"><label className="text-sm font-semibold text-slate-800">Full legal name<input value={value.fullLegalName} onChange={(event) => update("fullLegalName", event.target.value)} className="mt-2 w-full rounded border border-blue-200 bg-white p-3 font-normal" /></label><label className="text-sm font-semibold text-slate-800">Designation<input value={value.designation} onChange={(event) => update("designation", event.target.value)} className="mt-2 w-full rounded border border-blue-200 bg-white p-3 font-normal" /></label><label className="text-sm font-semibold text-slate-800">Company<input value={value.company} onChange={(event) => update("company", event.target.value)} className="mt-2 w-full rounded border border-blue-200 bg-white p-3 font-normal" /></label><label className="text-sm font-semibold text-slate-800">Email<input type="email" value={value.email} onChange={(event) => update("email", event.target.value)} className="mt-2 w-full rounded border border-blue-200 bg-white p-3 font-normal" /></label><label className="text-sm font-semibold text-slate-800 md:col-span-2">Signature<input value={value.signature} onChange={(event) => update("signature", event.target.value)} placeholder="Type the authorised signatory name" className="mt-2 w-full rounded border border-blue-200 bg-white p-3 font-normal" /></label></div><label className="mt-5 flex gap-3 text-sm text-slate-800"><input type="checkbox" checked={value.consentToElectronicExecution} onChange={(event) => update("consentToElectronicExecution", event.target.checked)} />I consent to electronic execution of this Service Agreement.</label><button type="button" disabled={busy || !value.fullLegalName || !value.designation || !value.company || !value.email || !value.signature || !value.consentToElectronicExecution} onClick={() => void onSubmit()} className="mt-5 rounded-lg bg-[#0075de] px-5 py-3 text-sm font-semibold text-white hover:bg-[#005bab] disabled:opacity-50">{busy ? "Recording signature…" : "Sign as GrowxLabs"}</button></section>;
+}
 function LegalReviewEditor({ snapshot, busy, onSave }: { snapshot: MsaSnapshot; busy: boolean; onSave: (values: Record<string, string>) => Promise<void> }) {
   const [values, setValues] = useState<Record<string, string>>(() => Object.fromEntries(snapshot.legalReviewFields.map((field) => [field.key, field.value || ""])));
   const unresolved = snapshot.legalReviewFields.filter((field) => field.status === "unresolved");
