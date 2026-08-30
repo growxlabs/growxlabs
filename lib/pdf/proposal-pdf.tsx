@@ -542,7 +542,7 @@ function PaymentContent({
             {percentage}% - {displayMoney(amount, currency)}
           </Text>
         </View>
-        {trigger ? <Text style={styles.paymentTrigger}>Payment trigger: {trigger}</Text> : null}
+        {trigger ? <Text style={styles.paymentTrigger}>Payment due when: {trigger}</Text> : null}
         {description ? <Text style={styles.paymentTrigger}>{description}</Text> : null}
       </View>
     );

@@ -2,6 +2,8 @@ import React from "react";
 import { Document, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import type { MsaSection, MsaSnapshot } from "@/lib/commercial/msa";
 
+export type AgreementPdfAudience = "internal" | "client";
+
 const styles = StyleSheet.create({
   page: { paddingTop: 58, paddingBottom: 62, paddingHorizontal: 54, fontFamily: "Helvetica", fontSize: 9.5, color: "#172033" },
   header: { borderBottomWidth: 2, borderBottomColor: "#172033", paddingBottom: 18 },
@@ -60,17 +62,18 @@ function Metadata({ label, value }: { label: string; value: unknown }) {
   return <View style={styles.metadataItem}><Text style={styles.metadataLabel}>{label}</Text><Text style={styles.metadataValue}>{display(value) || "Not specified"}</Text></View>;
 }
 
-function Section({ value }: { value: MsaSection }) {
+function Section({ value, audience }: { value: MsaSection; audience: AgreementPdfAudience }) {
   return <View style={styles.section} minPresenceAhead={92}>
     <View style={styles.sectionHeading} minPresenceAhead={70} wrap={false}><Text style={styles.sectionNumber}>{String(value.number).padStart(2, "0")}</Text><Text style={styles.sectionTitle}>{value.title}</Text></View>
     {value.body.map((paragraph, index) => <Text key={`body-${index}`} style={styles.paragraph} orphans={2} widows={2}>{paragraph}</Text>)}
     {value.items?.map((item, index) => <View key={`item-${index}`} style={styles.bullet} minPresenceAhead={28}><Text style={styles.bulletMark}>•</Text><Text style={styles.bulletText} orphans={2} widows={2}>{item}</Text></View>)}
-    {value.fields?.length ? <View style={styles.fieldList} minPresenceAhead={34}>{value.fields.map((field, index) => <View key={`field-${index}`} style={styles.field} wrap={false}><Text style={styles.fieldLabel}>{field.label}</Text><Text style={field.value ? styles.fieldValue : [styles.fieldValue, styles.unresolved]}>{field.value || "Internal review required"}</Text></View>)}</View> : null}
-    {value.key === "signatories" ? <View style={styles.signature}><Text style={styles.signatureLabel}>Execution record</Text><Text style={styles.paragraph}>Signatures, consent, timestamps, and audit metadata are captured separately by the application.</Text></View> : null}
+    {value.fields?.length ? <View style={styles.fieldList} minPresenceAhead={34}>{value.fields.map((field, index) => <View key={`field-${index}`} style={styles.field} wrap={false}><Text style={styles.fieldLabel}>{field.label}</Text><Text style={field.value ? styles.fieldValue : [styles.fieldValue, styles.unresolved]}>{field.value || (audience === "client" ? "To be confirmed" : "Internal review required")}</Text></View>)}</View> : null}
+    {value.key === "signatories" ? <View style={styles.signature}><Text style={styles.signatureLabel}>{audience === "client" ? "Electronic signatures" : "Execution record"}</Text><Text style={styles.paragraph}>{audience === "client" ? "Each party's authorised signatory details, signature, consent, and signing date are recorded with this agreement." : "Signatures, consent, timestamps, and audit metadata are captured separately by the application."}</Text></View> : null}
   </View>;
 }
 
-function ReviewFields({ fields }: { fields: MsaSnapshot["legalReviewFields"] }) {
+function ReviewFields({ fields, audience }: { fields: MsaSnapshot["legalReviewFields"]; audience: AgreementPdfAudience }) {
+  if (audience === "client") return null;
   const unresolved = fields.filter((field) => field.status === "unresolved");
   if (!unresolved.length) return null;
   return <View style={styles.reviewBanner} minPresenceAhead={80}>
@@ -80,27 +83,29 @@ function ReviewFields({ fields }: { fields: MsaSnapshot["legalReviewFields"] }) 
   </View>;
 }
 
-export async function renderMasterServiceAgreementPdf(snapshot: MsaSnapshot): Promise<Buffer> {
-  const document = <Document title={`${snapshot.document.agreementNumber} Version ${snapshot.document.version}`} author="GrowxLabs" subject="Master Service Agreement">
+export async function renderMasterServiceAgreementPdf(snapshot: MsaSnapshot, audience: AgreementPdfAudience = "internal"): Promise<Buffer> {
+  const clientFacing = audience === "client";
+  const clientStatus = snapshot.document.status === "signing" ? "Awaiting final signature" : snapshot.document.status === "signed" ? "Signed by both parties" : snapshot.document.status === "sent" || snapshot.document.status === "viewed" ? "Ready for review" : snapshot.document.status.replaceAll("_", " ");
+  const document = <Document title={`${snapshot.document.agreementNumber} Version ${snapshot.document.version}`} author="GrowxLabs" subject={clientFacing ? "Service Agreement" : "Master Service Agreement"}>
     <Page size="A4" style={styles.page} wrap>
       <View style={styles.header} wrap={false}>
         <View style={styles.brandRow}><Text style={styles.brand}>GrowX<Text style={styles.brandBlue}>Labs.tech</Text></Text>{snapshot.document.confidential ? <Text style={styles.confidential}>CONFIDENTIAL</Text> : null}</View>
-        <Text style={styles.eyebrow}>Commercial and Legal Document</Text>
+        <Text style={styles.eyebrow}>{clientFacing ? "Service Agreement" : "Commercial and Legal Document"}</Text>
         <Text style={styles.title}>{snapshot.document.title}</Text>
-        <Text style={styles.subtitle}>Prepared for internal review from an accepted commercial proposal and approved Scope of Work.</Text>
+        <Text style={styles.subtitle}>{clientFacing ? "This agreement records the services, responsibilities, fees, and terms agreed between the parties." : "Prepared for internal review from an accepted commercial proposal and approved Scope of Work."}</Text>
         <View style={styles.metadata}>
           <Metadata label="Agreement number" value={snapshot.document.agreementNumber} />
           <Metadata label="Version" value={`Version ${snapshot.document.version}`} />
           <Metadata label="Client" value={(snapshot.parties.client as Record<string, unknown>).legalName} />
           <Metadata label="Proposal" value={`${snapshot.sourceReferences.proposalNumber} · Version ${snapshot.sourceReferences.proposalVersion}`} />
-          <Metadata label="Scope" value={snapshot.sourceReferences.scopeNumber} />
+          <Metadata label={clientFacing ? "Service scope" : "Scope"} value={snapshot.sourceReferences.scopeNumber} />
           <Metadata label="Issue date" value={date(snapshot.document.issuedAt)} />
           <Metadata label="Effective date" value={date(snapshot.document.effectiveAt)} />
-          <Metadata label="Status" value={snapshot.document.status.replaceAll("_", " ")} />
+          <Metadata label="Status" value={clientFacing ? clientStatus : snapshot.document.status.replaceAll("_", " ")} />
         </View>
       </View>
-      <ReviewFields fields={snapshot.legalReviewFields} />
-      {snapshot.sections.map((value) => <Section key={value.key} value={value} />)}
+      <ReviewFields fields={snapshot.legalReviewFields} audience={audience} />
+      {snapshot.sections.map((value) => <Section key={value.key} value={value} audience={audience} />)}
       <View fixed style={styles.footer}><Text>{snapshot.document.agreementNumber} · Version {snapshot.document.version} · Confidential</Text><Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} /></View>
     </Page>
   </Document>;

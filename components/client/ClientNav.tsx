@@ -30,7 +30,7 @@ export function ClientNav() {
            <div className="w-6 h-6 bg-[#f6f5f4] border border-[#e6e6e6] rounded-md flex items-center justify-center">
               <ShieldCheck className="text-[#0075de]" size={14} />
            </div>
-           <span className="text-sm font-bold tracking-tight text-neutral-900 hidden sm:block">Client Suite</span>
+           <span className="text-sm font-bold tracking-tight text-neutral-900 hidden sm:block">Client Portal</span>
         </div>
 
         <div className="flex items-center gap-1">
