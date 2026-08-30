@@ -365,7 +365,7 @@ export async function getConsultingInvoiceDocument(reference: string, clientId?:
   const invoice = invoiceResult.data as JsonRecord;
   const [agreementResult, proposalResult, scopeResult, profileResult, paymentsResult, receiptsResult] = await Promise.all([
     supabaseAdmin.from("master_service_agreements").select("id,agreement_number,content,effective_at").eq("id", invoice.agreement_id).maybeSingle(),
-    supabaseAdmin.from("commercial_proposals").select("id,proposal_number,currency").eq("id", invoice.proposal_id).maybeSingle(),
+    supabaseAdmin.from("commercial_proposals").select("id,proposal_number").eq("id", invoice.proposal_id).maybeSingle(),
     supabaseAdmin.from("scopes_of_work").select("id,scope_number,content").eq("id", invoice.scope_id).maybeSingle(),
     supabaseAdmin.from("client_profiles").select("id,user_id,company_id").eq("id", invoice.client_id).maybeSingle(),
     supabaseAdmin.from("consulting_payments").select("id,payment_number,amount,currency,method,transaction_reference,status,submitted_at,verified_at").eq("invoice_id", invoice.id).order("submitted_at", { ascending: false }),
