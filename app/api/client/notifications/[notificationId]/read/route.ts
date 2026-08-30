@@ -1,5 +1,10 @@
 import { communicationError, requireCommunicationClient, supabaseAdmin } from "@/lib/communications/service";
 
+function isMissingReadTable(error: { code?: string; message?: string } | null | undefined) {
+  const message = error?.message || "";
+  return error?.code === "PGRST205" || /client_notification_reads/i.test(message) && /(schema cache|does not exist|relation)/i.test(message);
+}
+
 export async function POST(_request: Request, { params }: { params: Promise<{ notificationId: string }> }) {
   try {
     const { userId, clientId } = await requireCommunicationClient();
@@ -21,8 +26,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ no
       read_at: readAt,
       updated_at: readAt,
     }, { onConflict: "message_id,user_id" });
-    if (error) throw new Error(error.message);
-    return Response.json({ status: "read", readAt });
+    if (error && !isMissingReadTable(error)) throw new Error(error.message);
+    return Response.json({ status: "read", readAt, persisted: !error });
   } catch (error) {
     return communicationError(error);
   }

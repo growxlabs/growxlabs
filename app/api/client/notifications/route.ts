@@ -10,6 +10,11 @@ type CommunicationMessage = {
   created_at: string;
 };
 
+function isMissingReadTable(error: { code?: string; message?: string } | null | undefined) {
+  const message = error?.message || "";
+  return error?.code === "PGRST205" || /client_notification_reads/i.test(message) && /(schema cache|does not exist|relation)/i.test(message);
+}
+
 export async function GET() {
   try {
     const { clientId, userId } = await requireCommunicationClient();
@@ -26,18 +31,18 @@ export async function GET() {
       .filter((message) => message.message_type === "proposal_available" && message.related_entity_id)
       .map((message) => message.related_entity_id as string);
 
-    const [readResult, proposalResult] = await Promise.all([
-      messageIds.length
-        ? supabaseAdmin.from("client_notification_reads").select("message_id,read_at").eq("client_id", clientId).eq("user_id", userId).in("message_id", messageIds)
-        : Promise.resolve({ data: [], error: null }),
-      proposalIds.length
-        ? supabaseAdmin.from("commercial_proposals").select("id,valid_until").eq("client_id", clientId).in("id", proposalIds)
-        : Promise.resolve({ data: [], error: null }),
-    ]);
-    if (readResult.error) throw new Error(readResult.error.message);
+    let readRows: Array<{ message_id: string; read_at: string }> = [];
+    if (messageIds.length) {
+      const readResult = await supabaseAdmin.from("client_notification_reads").select("message_id,read_at").eq("client_id", clientId).eq("user_id", userId).in("message_id", messageIds);
+      if (readResult.error && !isMissingReadTable(readResult.error)) throw new Error(readResult.error.message);
+      if (!readResult.error) readRows = readResult.data || [];
+    }
+    const proposalResult = proposalIds.length
+      ? await supabaseAdmin.from("commercial_proposals").select("id,valid_until").eq("client_id", clientId).in("id", proposalIds)
+      : { data: [], error: null };
     if (proposalResult.error) throw new Error(proposalResult.error.message);
 
-    const readAtByMessageId = new Map((readResult.data || []).map((item) => [item.message_id, item.read_at]));
+    const readAtByMessageId = new Map(readRows.map((item) => [item.message_id, item.read_at]));
     const validUntilByProposalId = new Map((proposalResult.data || []).map((item) => [item.id, item.valid_until]));
     const notifications = messages.map((message) => buildPortalNotification({
       id: message.id,
