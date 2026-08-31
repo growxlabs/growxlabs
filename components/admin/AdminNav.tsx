@@ -202,6 +202,7 @@ const NAV_GROUPS: NavGroup[] = [
         icon: FileText,
       },
       { name: "Agreements", href: "/admin/agreements", icon: FileSignature },
+      { name: "Contractor Agreements", href: "/admin/contractor-agreements", icon: FileSignature },
       { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
       {
         name: "Invoices & Payments",
