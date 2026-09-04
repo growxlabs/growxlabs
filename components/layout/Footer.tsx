@@ -23,22 +23,15 @@ export function Footer() {
     ],
   };
 
-  // Design tokens based on page context (Marketing / Blog)
-  const footerBg = isBlog 
-    ? "bg-transparent border-neutral-900" 
-    : "bg-black border-white/10";
-
+  // Standard site footer tokens everywhere
+  const footerBg = "bg-black border-white/10";
   const logoColor1 = "text-white";
   const logoColor2 = "text-white";
-
-  const textColor = isBlog ? "text-neutral-300" : "text-neutral-400";
+  const textColor = "text-neutral-400";
   const headingColor = "text-white";
-  const accentColor = isBlog ? "text-neutral-300" : "text-neutral-400";
+  const accentColor = "text-neutral-400";
   const linkHoverColor = "hover:text-white";
-
-  const socialLinkClass = isBlog 
-    ? "text-neutral-400 hover:text-white" 
-    : "text-neutral-400 hover:text-white";
+  const socialLinkClass = "text-neutral-400 hover:text-white";
 
   return (
     <footer className={`w-full border-t pt-10 pb-10 px-6 md:px-12 xl:px-20 2xl:px-32 transition-colors duration-500 ${footerBg}`}>
@@ -147,7 +140,7 @@ export function Footer() {
 
         </div>
 
-        <div className={`border-t pt-8 flex items-center justify-center ${isBlog ? "border-neutral-900" : "border-white/10"}`}>
+        <div className="border-t pt-8 flex items-center justify-center border-white/10">
           <p className={`text-[13px] text-center ${textColor}`}>
             Copyright 2026 GrowxLabs. All rights reserved.
           </p>

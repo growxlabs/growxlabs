@@ -195,70 +195,6 @@ function NewsletterMidrollBox() {
   );
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Authentic Substack Author Card (Clean, Human, Zero Jargon)
-   ───────────────────────────────────────────────────────────── */
-function NewsletterAuthorBio() {
-  const [subscribed, setSubscribed] = useState(false);
-
-  return (
-    <div className="newsletter-author-bio" id="newsletter-comments-anchor">
-      <div className="newsletter-author-bio-avatar">GX</div>
-      <div className="newsletter-author-bio-text">
-        <div className="newsletter-author-bio-title">
-          <h4>Sai Varshith Pujala</h4>
-          <span className="newsletter-author-bio-handle">@growxlabs</span>
-        </div>
-        <p className="newsletter-author-bio-desc">
-          Building Growxlabs.tech. Writing about AI models, developer systems, and software engineering.
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={() => setSubscribed((prev) => !prev)}
-        className={`newsletter-author-subscribe-btn ${subscribed ? "is-subscribed" : ""}`}
-      >
-        {subscribed ? "Subscribed ✓" : "Subscribe"}
-      </button>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Related Newsletter Stories (Clean Minimal Cards)
-   ───────────────────────────────────────────────────────────── */
-function NewsletterRelatedStories({ posts }: { posts?: EditorialRelatedPost[] }) {
-  if (!posts || posts.length === 0) return null;
-
-  return (
-    <div className="newsletter-related-section" aria-label="More from GrowxLabs">
-      <div className="newsletter-related-heading">
-        <span className="newsletter-masthead-tag">MORE EDITIONS</span>
-        <h3>Read next in the Dispatch</h3>
-      </div>
-      <div className="newsletter-related-grid">
-        {posts.slice(0, 3).map((post) => (
-          <a key={post.slug} href={`/blog/${post.slug}`} className="newsletter-related-item">
-            <div className="newsletter-related-image-wrap">
-              <Image
-                src={post.image}
-                alt={post.alt || post.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 240px"
-                className="object-cover"
-              />
-            </div>
-            <div className="newsletter-related-content">
-              <span className="newsletter-related-category">{post.category}</span>
-              <h4>{post.title}</h4>
-              <time>{post.date}</time>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────────────────────
    MAIN EDITORIAL ARTICLE RENDERER (Applies to ALL 19 Blog Posts)
@@ -317,10 +253,8 @@ export function EditorialArticleRenderer({ article, children }: EditorialArticle
         </div>
 
         {/* 7. Bottom Engagement Action Bar */}
-        <div className="newsletter-footer">
+        <div className="newsletter-bottom-bar">
           <NewsletterActionBar article={article} />
-          <NewsletterAuthorBio />
-          <NewsletterRelatedStories posts={article.relatedPosts} />
         </div>
       </article>
     </div>
