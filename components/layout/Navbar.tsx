@@ -102,36 +102,36 @@ export function Navbar() {
     <>
       <nav
         className={cn(
-          "fixed top-0 w-full z-50 transition-all duration-500 py-5",
+          "fixed top-0 w-full z-50 transition-all duration-500 py-3.5 sm:py-5",
           navBg
         )}
       >
-        <div className="w-full px-6 md:px-10">
-          <div className="flex justify-between items-center relative h-10">
+        <div className="w-full px-4 sm:px-6 md:px-10">
+          <div className="flex justify-between items-center relative h-9 sm:h-10">
             {/* Left Hamburger Button (Standard on Desktop & Mobile) */}
-            <div className="flex items-center w-1/4 md:w-1/4 lg:w-1/4">
+            <div className="flex items-center z-10">
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
                 className={cn(
-                  "transition-colors p-1 cursor-pointer bg-transparent border-0",
+                  "transition-colors p-1.5 -ml-1.5 cursor-pointer bg-transparent border-0 rounded-md",
                   isLightThemePage ? "text-[#1A1A1A] hover:text-[#111111]" : "text-zinc-400 hover:text-white"
                 )}
                 aria-label="Open menu"
               >
-                <GrowxMenu size={24} />
+                <GrowxMenu size={22} className="sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            {/* Desktop Center: Centered Serif Logo (Flex centered on mobile, absolute centered on desktop) */}
-            <div className="flex justify-center items-center flex-1 md:absolute md:left-1/2 md:top-1/2 md:-translate-y-1/2 md:-translate-x-1/2">
+            {/* Centered Serif Logo (True absolute mathematical center on all devices) */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto flex items-center justify-center">
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/");
                 const isExternal = resolvedHref.startsWith("http") && isMounted;
                 if (isExternal) {
                   return (
                     <a href={resolvedHref} className="flex items-center group notranslate" translate="no" aria-label="GrowxLabs home">
-                      <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300">
+                      <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
                         <span className={logoColor1}>GrowxLabs</span>
                         <span className={logoColor2}>.tech</span>
                       </div>
@@ -140,7 +140,7 @@ export function Navbar() {
                 }
                 return (
                   <Link href="/" className="flex items-center group notranslate" translate="no" aria-label="GrowxLabs home">
-                    <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300">
+                    <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
                       <span className={logoColor1}>GrowxLabs</span>
                       <span className={logoColor2}>.tech</span>
                     </div>
@@ -150,7 +150,7 @@ export function Navbar() {
             </div>
 
             {/* Right: Bordered Contact Button with Liquid Water Fill Effect */}
-            <div className="flex items-center justify-end w-1/4 md:w-1/4 lg:w-1/4 gap-3">
+            <div className="flex items-center justify-end z-10">
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/contact");
                 return (

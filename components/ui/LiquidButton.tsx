@@ -32,33 +32,33 @@ export function LiquidButton({
   rel,
 }: LiquidButtonProps) {
   const sizeClasses = {
-    sm: "h-8 min-w-[80px] px-4 text-xs",
-    default: "h-9 sm:h-10 min-w-[96px] sm:min-w-[108px] px-5 sm:px-6 text-xs sm:text-sm",
-    lg: "h-11 sm:h-12 min-w-[120px] px-6 sm:px-8 text-sm sm:text-base",
+    sm: "h-7 sm:h-8 px-3 sm:px-4 text-[11px] sm:text-xs",
+    default: "h-8 sm:h-9 md:h-10 px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm",
+    lg: "h-10 sm:h-11 md:h-12 min-w-0 sm:min-w-[120px] px-5 sm:px-7 md:px-8 text-xs sm:text-sm md:text-base",
   }[size];
 
   const variantStyles = {
     cyan: {
       border: "border border-[#C0F0FB] text-[#C0F0FB]",
       wave: "bg-[#C0F0FB]",
-      hoverText: "group-hover:text-black",
+      hoverText: "group-hover:text-black group-active:text-black",
     },
     dark: {
       border: "border border-[#111111]/25 text-[#111111]",
       wave: "bg-[#111111]",
-      hoverText: "group-hover:text-[#F7F4EE]",
+      hoverText: "group-hover:text-[#F7F4EE] group-active:text-[#F7F4EE]",
     },
     white: {
       border: "border border-white/30 text-white",
       wave: "bg-white",
-      hoverText: "group-hover:text-black",
+      hoverText: "group-hover:text-black group-active:text-black",
     },
   }[variant];
 
   const innerContent = (
     <span
       className={cn(
-        "group relative inline-flex items-center justify-center font-bold rounded-md overflow-hidden transition-all duration-300 shadow-sm cursor-pointer select-none",
+        "group relative inline-flex items-center justify-center font-bold rounded-md overflow-hidden transition-all duration-300 shadow-sm cursor-pointer select-none active:scale-[0.98]",
         sizeClasses,
         variantStyles.border,
         className
@@ -67,14 +67,14 @@ export function LiquidButton({
       {/* Liquid / Water Wave Fill Layer */}
       <span
         className={cn(
-          "absolute -bottom-[20%] -left-[15%] -right-[15%] h-[140%] translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 rounded-t-[100%] pointer-events-none",
+          "absolute -bottom-[20%] -left-[15%] -right-[15%] h-[140%] translate-y-[120%] group-hover:translate-y-0 group-active:translate-y-0 transition-transform duration-500 rounded-t-[100%] pointer-events-none",
           variantStyles.wave
         )}
         style={{ transitionTimingFunction: "cubic-bezier(0.33, 1, 0.68, 1)" }}
       />
       <span
         className={cn(
-          "relative z-10 inline-flex items-center justify-center gap-2 transition-colors duration-300 font-bold",
+          "relative z-10 inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-colors duration-300 font-bold",
           variantStyles.hoverText
         )}
       >
