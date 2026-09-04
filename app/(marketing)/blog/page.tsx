@@ -19,16 +19,25 @@ export async function generateMetadata() {
 export default async function BlogIndexPage() {
   // Blog posts database
   const featuredPost = {
-    slug: "cursor-origin-github-ai-code-hosting",
-    title: "Cursor Launches Origin: Why Cursor Is Moving Into GitHub’s Territory",
-    excerpt: "Cursor launched Origin on August 17, 2026, bringing repository hosting, pull requests, GitHub sync and AI agents closer together. Here’s why the move matters for the future of software development.",
-    category: "Developer Infrastructure • AI Agents • Code Hosting",
-    date: "August 17, 2026",
-    readTime: "11 min read",
-    image: "/images/blog-cursor-origin-landscape.png"
+    slug: "gpt-6-astra",
+    title: "GPT-6 Astra: Inside OpenAI’s Leap to Autonomous Computer Use",
+    excerpt: "OpenAI has released GPT-6 Astra, its latest frontier model featuring autonomous computer use, OSWorld records, and the first Critical rating under its Preparedness Framework.",
+    category: "Frontier AI • Computer Use • OpenAI",
+    date: "September 4, 2026",
+    readTime: "7 min read",
+    image: "/images/blog-gpt6-astra-openai-hero.png"
   };
 
   const regularPosts = [
+    {
+      slug: "cursor-origin-github-ai-code-hosting",
+      title: "Cursor Launches Origin: Why Cursor Is Moving Into GitHub’s Territory",
+      excerpt: "Cursor launched Origin on August 17, 2026, bringing repository hosting, pull requests, GitHub sync and AI agents closer together. Here’s why the move matters for the future of software development.",
+      category: "Developer Infrastructure • AI Agents • Code Hosting",
+      date: "August 17, 2026",
+      readTime: "11 min read",
+      image: "/images/blog-cursor-origin-landscape.png"
+    },
     {
       slug: "stripe-openrouter-ai-infrastructure-acquisition",
       title: "Stripe Is Buying OpenRouter: Why a Payments Company Wants to Own Part of the AI Infrastructure Layer",

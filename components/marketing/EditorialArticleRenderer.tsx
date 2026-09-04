@@ -15,21 +15,24 @@ function getArticleUrl(slug: string) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Substack-Style Interactive Action Bar (Like, Comment, Restack, Share)
+   GrowxLabs Dispatch Interactive Action Bar (Like, Comment, Dispatch, Share)
    ───────────────────────────────────────────────────────────── */
 function NewsletterActionBar({
   article,
   initialLikes = 142,
-  commentCount = 28,
+  initialDispatches = 39,
+  commentCount = 18,
 }: {
   article: EditorialArticleData;
   initialLikes?: number;
+  initialDispatches?: number;
   commentCount?: number;
 }) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
   const [copied, setCopied] = useState(false);
-  const [restacked, setRestacked] = useState(false);
+  const [dispatched, setDispatched] = useState(false);
+  const [dispatches, setDispatches] = useState(initialDispatches);
 
   const handleLike = () => {
     if (liked) {
@@ -54,8 +57,14 @@ function NewsletterActionBar({
     }
   };
 
-  const handleRestack = () => {
-    setRestacked((prev) => !prev);
+  const handleDispatch = () => {
+    if (dispatched) {
+      setDispatched(false);
+      setDispatches((prev) => prev - 1);
+    } else {
+      setDispatched(true);
+      setDispatches((prev) => prev + 1);
+    }
   };
 
   const scrollToComments = () => {
@@ -71,11 +80,11 @@ function NewsletterActionBar({
         <button
           type="button"
           onClick={handleLike}
-          className={`newsletter-action-btn ${liked ? "is-liked" : ""}`}
-          aria-label={liked ? "Unlike article" : "Like article"}
+          className={`newsletter-action-btn ${liked ? "is-liked text-red-600" : ""}`}
+          aria-label={liked ? "Unlike edition" : "Like edition"}
         >
           <Heart
-            className={`w-4 h-4 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-neutral-600"}`}
+            className={`w-4 h-4 transition-colors ${liked ? "fill-red-600 text-red-600" : "text-neutral-600"}`}
           />
           <span className="newsletter-action-count">{likes}</span>
         </button>
@@ -84,7 +93,7 @@ function NewsletterActionBar({
           type="button"
           onClick={scrollToComments}
           className="newsletter-action-btn"
-          aria-label="View comments"
+          aria-label="View discussion"
         >
           <MessageSquare className="w-4 h-4 text-neutral-600" />
           <span className="newsletter-action-count">{commentCount}</span>
@@ -92,18 +101,18 @@ function NewsletterActionBar({
 
         <button
           type="button"
-          onClick={handleRestack}
-          className={`newsletter-action-btn ${restacked ? "is-restacked text-emerald-700" : ""}`}
-          aria-label="Restack article"
-          title="Restack"
+          onClick={handleDispatch}
+          className={`newsletter-action-btn ${dispatched ? "is-dispatched text-emerald-800 font-bold" : ""}`}
+          aria-label="Dispatch edition"
+          title="Dispatch"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="m17 2 4 4-4 4" />
-            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-            <path d="m7 22-4-4 4-4" />
-            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+            <path d="M22 2 11 13" />
+            <path d="m22 2-7 20-4-9-9-4 20-7z" />
           </svg>
-          <span className="newsletter-action-count hidden sm:inline">Restack</span>
+          <span className="newsletter-action-count">
+            {dispatched ? "Dispatched ✓" : `Dispatch (${dispatches})`}
+          </span>
         </button>
       </div>
 
@@ -112,7 +121,7 @@ function NewsletterActionBar({
           type="button"
           onClick={handleShare}
           className="newsletter-action-btn"
-          aria-label="Share article"
+          aria-label="Share edition"
         >
           {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-neutral-600" />}
           <span className="newsletter-action-count">{copied ? "Copied!" : "Share"}</span>
@@ -123,7 +132,7 @@ function NewsletterActionBar({
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Substack Byline (Avatar, Author Name, Meta, [Subscribe] Pill)
+   GrowxLabs Newsletter Byline (Avatar, Author Name, Meta, [Subscribe] Pill)
    ───────────────────────────────────────────────────────────── */
 function NewsletterByline({ article }: { article: EditorialArticleData }) {
   const [subscribed, setSubscribed] = useState(false);
@@ -157,56 +166,70 @@ function NewsletterByline({ article }: { article: EditorialArticleData }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Mid-Article Newsletter Callout Box (Clean Substack Style)
+   GrowxLabs Dispatch Subscription Gate ("Read Full Story")
    ───────────────────────────────────────────────────────────── */
-function NewsletterMidrollBox() {
+function NewsletterSubscriptionGate({
+  onUnlock,
+}: {
+  onUnlock: () => void;
+}) {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    onUnlock();
+  };
 
   return (
-    <div className="newsletter-midroll-card" aria-label="Subscribe to GrowxLabs Dispatch">
-      <span className="newsletter-midroll-kicker">GROWX LABS DISPATCH</span>
-      <h3>Enjoying this edition?</h3>
-      <p>
-        Get the next technical deep dive delivered directly to your inbox. No spam, just high-signal engineering.
-      </p>
+    <div className="newsletter-gate-backdrop">
+      <div className="newsletter-gate-card">
+        <span className="newsletter-gate-kicker">GROWXLABS DISPATCH</span>
+        <h3 className="newsletter-gate-title">Read the full edition</h3>
+        <p className="newsletter-gate-desc">
+          Subscribe for free to unlock the complete technical analysis, code architecture, and engineering takeaways.
+        </p>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!email.trim()) return;
-          setSubmitted(true);
-        }}
-        className="newsletter-midroll-form"
-      >
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email..."
-          aria-label="Your email"
-        />
-        <button type="submit" disabled={submitted}>
-          {submitted ? "Subscribed ✓" : "Subscribe"}
+        <form onSubmit={handleSubmit} className="newsletter-gate-form">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your work email..."
+            className="newsletter-gate-input"
+            aria-label="Email address"
+          />
+          <button type="submit" className="newsletter-gate-submit-btn">
+            Subscribe to Continue
+          </button>
+        </form>
+
+        <button
+          type="button"
+          onClick={onUnlock}
+          className="newsletter-gate-unlock-link"
+        >
+          Already a subscriber? Read full edition →
         </button>
-      </form>
+      </div>
     </div>
   );
 }
-
 
 /* ─────────────────────────────────────────────────────────────
    MAIN EDITORIAL ARTICLE RENDERER (Applies to ALL 19 Blog Posts)
    ───────────────────────────────────────────────────────────── */
 export function EditorialArticleRenderer({ article, children }: EditorialArticleRendererProps) {
+  const [unlocked, setUnlocked] = useState(false);
+
   return (
     <div className="editorial-route-shell" data-theme="light">
       <article className="newsletter-article-container">
         {/* 1. Publication Masthead */}
         <header className="newsletter-masthead">
           <div className="newsletter-masthead-top">
-            <span className="newsletter-masthead-tag">GROWX LABS NEWSLETTER</span>
+            <span className="newsletter-masthead-tag">GROWX LABS DISPATCH</span>
             <span className="newsletter-masthead-issue">{article.category || "TECHNOLOGY"}</span>
           </div>
 
@@ -216,14 +239,11 @@ export function EditorialArticleRenderer({ article, children }: EditorialArticle
             <p className="newsletter-deck">{article.deck}</p>
           )}
 
-          {/* 2. Substack Byline with [Subscribe] pill */}
+          {/* 2. Byline with [Subscribe] pill */}
           <NewsletterByline article={article} />
-
-          {/* 3. Top Substack Action Bar (Like, Comment, Restack, Share) */}
-          <NewsletterActionBar article={article} />
         </header>
 
-        {/* 4. Full-Width Featured Image */}
+        {/* 3. Featured Image (First image-related section) */}
         {article.heroImage && (
           <figure className="newsletter-hero-figure">
             <div className="newsletter-hero-image-wrap">
@@ -244,16 +264,24 @@ export function EditorialArticleRenderer({ article, children }: EditorialArticle
           </figure>
         )}
 
-        {/* 5. Pure Story Prose (Single-column, zero metric boxes) */}
-        <div className="newsletter-story-body">
-          <div className="editorial-legacy-content">{children}</div>
-
-          {/* 6. Mid-Post Newsletter Callout */}
-          <NewsletterMidrollBox />
+        {/* 4. Top Action Bar: Directly below the hero image */}
+        <div className="newsletter-hero-action-bar">
+          <NewsletterActionBar article={article} />
         </div>
 
-        {/* 7. Bottom Engagement Action Bar */}
-        <div className="newsletter-bottom-bar">
+        {/* 5. Pure Story Prose with Subscription Gate */}
+        <div className="newsletter-story-body">
+          <div className={`newsletter-content-viewport ${!unlocked ? "is-gated" : "is-unlocked"}`}>
+            <div className="editorial-legacy-content">{children}</div>
+
+            {!unlocked && (
+              <NewsletterSubscriptionGate onUnlock={() => setUnlocked(true)} />
+            )}
+          </div>
+        </div>
+
+        {/* 6. Bottom Action Bar */}
+        <div className="newsletter-bottom-bar" id="newsletter-comments-anchor">
           <NewsletterActionBar article={article} />
         </div>
       </article>

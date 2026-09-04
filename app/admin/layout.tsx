@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       const allowedPaths = (session?.user as any)?.allowed_paths || [];
       let isAllowed = false;
       
-      if (pathname.startsWith("/admin/pm") || pathname.startsWith("/admin/finance")) {
+      if (pathname.startsWith("/admin/pm") || pathname.startsWith("/admin/finance") || pathname.startsWith("/admin/dispatch")) {
         isAllowed = true;
       } else {
         for (const p of allowedPaths) {
@@ -141,10 +141,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (authorized === null) {
     return (
-      <div className="notion-theme min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className={cn(
+        !isCommandCenterWorkspace && "notion-theme",
+        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : "bg-[var(--background)]",
+        "min-h-screen flex items-center justify-center"
+      )}>
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin h-8 w-8 text-primary/40" />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)]">Authorizing Suite</p>
+          <Loader2 className={cn("h-8 w-8 animate-spin", isCommandCenterWorkspace ? "text-[#d97756]" : "text-[#0075de]")} />
+          <p className={cn("text-xs font-mono uppercase tracking-widest", isCommandCenterWorkspace ? "text-[#9c9990]" : "text-[var(--text-muted)]")}>
+            Authenticating workspace access...
+          </p>
         </div>
       </div>
     );
@@ -196,6 +202,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       "/admin/invoices": { label: "Invoices", desc: "Manage client billing and invoice logs", color: "from-sky-500 to-blue-600" },
       "/admin/agreements": { label: "Agreements", desc: "Manage legal agreements and e-signs", color: "from-emerald-500 to-green-600" },
       "/admin/proposals": { label: "Proposals", desc: "Draft and review business proposals", color: "from-indigo-500 to-violet-600" },
+      "/admin/dispatch": { label: "Newsletter Dispatch", desc: "Manage tech briefing subscribers and broadcast blog editions", color: "from-blue-600 to-indigo-700" },
     };
 
     return (
@@ -279,7 +286,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="notion-theme min-h-screen w-full max-w-full overflow-x-hidden bg-[var(--background)] text-[var(--text-primary)] flex relative print:bg-white print:text-black print:block print:overflow-visible">
+    <div className={cn(
+      !isCommandCenterWorkspace && "notion-theme",
+      isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : "bg-[var(--background)] text-[var(--text-primary)]",
+      "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
+    )}>
       {/* PERSISTENT SIDEBAR */}
       {!isCommandCenter && <div className="print:hidden">
         <AdminNav
@@ -292,7 +303,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       
       {/* SCROLLABLE MAIN CONTENT AREA */}
       <main className={cn(
-        "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out bg-[var(--background)] z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
+        "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
+        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : "bg-[var(--background)]",
         // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
         isCommandCenter
           ? "md:ml-0 md:w-full"

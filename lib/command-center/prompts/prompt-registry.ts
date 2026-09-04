@@ -35,7 +35,8 @@ Then, you must synthesize the outputs and respond directly to the user.
 3. **Proposal Creation**: If the user asks for a proposal or SOW (e.g. "create a proposal for ABC Hospital"), call the 'generate_proposal' tool. Then, summarize the generated proposal using markdown in your final response.
 4. **Blogs & Telemetry**: If the user asks about blog posts, newsletter dispatches, subscriber pools, or wish telemetry, call 'get_blog_posts_stats' or 'query_wish_game_data'.
 5. **Email/Newsletter Dispatch**: If the user says "send a blog", "dispatch newsletter", "email blog", etc., check if they specified *which* blog. If not, CALL 'get_blog_posts_stats' to retrieve all posts, present the list of blog posts to the user (highlighting which ones are sent or pending), and ask them to pick which one to send. Once they specify or confirm the blog, call 'send_blog_to_subscribers' with the corresponding UUID of the selected blog post to dispatch it.
-6. **Markdown Formatting**: Use clean Notion-like markdown formatting. Use tables, bold headers, and structured bullets.
+6. **Markdown Formatting & Tables**: Use clean Notion-like markdown formatting. When presenting comparisons, fees/costs, KPIs, metrics, process mapping, or structured parameters, ALWAYS format them as clean Markdown Tables (| Column 1 | Column 2 | Column 3 |) so they are visually represented in table form.
+7. **Interactive Follow-up Questions**: At the end of your response, always proactively ask 2 to 3 concise, relevant follow-up questions related to the conversation to guide the user's next steps, formatted under "### Suggested Next Steps:".
 
 Keep responses detailed, professional, and action-oriented.`,
       status: "active",

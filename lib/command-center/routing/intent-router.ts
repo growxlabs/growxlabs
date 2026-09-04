@@ -96,10 +96,19 @@ export function routeCommandIntent(input: {
     };
   }
 
-  // 5. GENERAL KNOWLEDGE QUESTIONS (e.g. "what is OAuth", "explain JWT")
+  // 5. GENERAL KNOWLEDGE & CONVERSATIONAL QUESTIONS (e.g. "what is OAuth", "do you know AI-NATIVE")
   // These should run the LLM models, but must not execute any operational database tools.
   const isKnowledgeQuery =
-    (normalized.startsWith("what is") || normalized.startsWith("explain") || normalized.startsWith("how does")) &&
+    (normalized.startsWith("what is") ||
+      normalized.startsWith("explain") ||
+      normalized.startsWith("how does") ||
+      normalized.startsWith("how do") ||
+      normalized.startsWith("how we") ||
+      normalized.startsWith("do you") ||
+      normalized.startsWith("can you") ||
+      normalized.startsWith("tell me") ||
+      normalized.startsWith("why is") ||
+      normalized.startsWith("why does")) &&
     !normalized.includes("lead") &&
     !normalized.includes("proposal") &&
     !normalized.includes("invoice") &&
@@ -115,7 +124,7 @@ export function routeCommandIntent(input: {
       allowedTools: [],
       requiresModel: true,
       requiresTools: false,
-      reason: "General knowledge question. Model allowed but tools restricted."
+      reason: "General knowledge or conversational query. Model allowed; tools disabled."
     };
   }
 
@@ -205,13 +214,13 @@ export function routeCommandIntent(input: {
     };
   }
 
-  // 10. AMBIGUOUS / FALLBACK ROUTING
-  // Default to allowing essential safe tools so we don't break capability searches
+  // 10. AMBIGUOUS / GENERAL ROUTING
+  // Default to general chat without forcing database tools
   return {
     intent: "ambiguous",
-    allowedTools: ["query_leads", "get_company_stats", "get_blog_posts_stats", "search_web"],
+    allowedTools: [],
     requiresModel: true,
-    requiresTools: true,
-    reason: "Ambiguous query. Restricting to safe search and analytics lookup tools."
+    requiresTools: false,
+    reason: "General or ambiguous query. No automated database tools forced."
   };
 }

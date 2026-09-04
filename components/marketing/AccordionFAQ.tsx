@@ -49,20 +49,27 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
         return (
           <div
             key={index}
-            className="border-b border-white/10 transition-all duration-300"
+            className={cn(
+              "border-b transition-all duration-300",
+              isBlog ? "border-neutral-200" : "border-white/10"
+            )}
           >
             <button
               onClick={() => toggle(index)}
-              className="w-full flex items-center justify-between py-6 sm:py-7 text-left group cursor-pointer"
+              className="w-full flex items-center justify-between py-5 sm:py-6 text-left group cursor-pointer"
             >
-              <div className="flex gap-6 sm:gap-8 items-start pr-4">
-                <span className="font-mono text-xs sm:text-[13px] text-white/40 pt-1 shrink-0 w-8">
+              <div className="flex gap-4 sm:gap-6 items-start pr-4">
+                <span className={cn(
+                  "font-mono text-xs sm:text-[13px] pt-1 shrink-0 w-8",
+                  isBlog ? "text-neutral-400" : "text-white/40"
+                )}>
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <h4 className={cn(
-                  "text-white text-[17px] sm:text-[19px] md:text-[20px] font-sans font-medium tracking-tight leading-snug transition-colors",
-                  isOpen ? activeText : "text-white/90",
-                  hoverText
+                  "text-[17px] sm:text-[19px] font-sans font-medium tracking-tight leading-snug transition-colors",
+                  isBlog
+                    ? (isOpen ? "text-neutral-950 font-semibold" : "text-neutral-800 group-hover:text-black")
+                    : (isOpen ? activeText : "text-white/90 group-hover:text-white")
                 )}>
                   {faq.question}
                 </h4>
@@ -76,8 +83,10 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className={cn(
-                  "w-5 h-5 text-white/40 group-hover:text-white shrink-0 transition-transform duration-300",
-                  isOpen ? "rotate-45 text-white" : ""
+                  "w-5 h-5 shrink-0 transition-transform duration-300",
+                  isBlog
+                    ? (isOpen ? "rotate-45 text-black" : "text-neutral-400 group-hover:text-black")
+                    : (isOpen ? "rotate-45 text-white" : "text-white/40 group-hover:text-white")
                 )}
                 aria-hidden="true"
               >
@@ -88,12 +97,15 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
 
             <div
               className={cn(
-                "overflow-hidden transition-all duration-500 ease-in-out",
-                isOpen ? "max-h-[300px] opacity-100 pb-7" : "max-h-0 opacity-0"
+                "overflow-hidden transition-all duration-300 ease-in-out",
+                isOpen ? "max-h-[500px] opacity-100 pb-6" : "max-h-0 opacity-0"
               )}
             >
-              <div className="pl-14 sm:pl-16 pr-4">
-                <p className="text-white/70 font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-3xl">
+              <div className="pl-12 sm:pl-14 pr-4">
+                <p className={cn(
+                  "font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-3xl",
+                  isBlog ? "text-neutral-700" : "text-white/70"
+                )}>
                   {faq.answer}
                 </p>
               </div>

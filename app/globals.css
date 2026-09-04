@@ -1604,3 +1604,57 @@ html {
   .audit-block, .audit-document table tr { break-inside: avoid; page-break-inside: avoid; }
   .audit-document header, .audit-document footer { break-inside: avoid; page-break-inside: avoid; }
 }
+
+/* ═══════════════════════════════════════════════════ */
+/* CLAUDE.AI COMMAND CENTER ISOLATION                  */
+/* ═══════════════════════════════════════════════════ */
+.gxl-command-center,
+.notion-theme .gxl-command-center {
+  background-color: #1f1e1d !important;
+  color: #edebe6 !important;
+  color-scheme: dark !important;
+}
+
+.gxl-command-center button,
+.notion-theme .gxl-command-center button,
+.notion-theme .gxl-command-center button[class*="border-white/"] {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.notion-theme .gxl-command-center button[class*="border-white/"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.notion-theme .gxl-command-center [class*="card"],
+.notion-theme .gxl-command-center .glass-card,
+.notion-theme .gxl-command-center .growx-card {
+  background-color: transparent !important;
+  border-color: #35332f !important;
+  box-shadow: none !important;
+}
+
+.notion-theme .gxl-command-center .bg-\[\#1f1e1d\],
+.gxl-command-center .bg-\[\#1f1e1d\] {
+  background-color: #1f1e1d !important;
+}
+
+.notion-theme .gxl-command-center .bg-\[\#1a1917\],
+.gxl-command-center .bg-\[\#1a1917\] {
+  background-color: #1a1917 !important;
+}
+
+.notion-theme .gxl-command-center .bg-\[\#2b2926\],
+.gxl-command-center .bg-\[\#2b2926\] {
+  background-color: #2b2926 !important;
+}
+
+.notion-theme .gxl-command-center .bg-\[\#242320\],
+.gxl-command-center .bg-\[\#242320\] {
+  background-color: #242320 !important;
+}
+
+.notion-theme .gxl-command-center .bg-\[\#2e2d2a\],
+.gxl-command-center .bg-\[\#2e2d2a\] {
+  background-color: #2e2d2a !important;
+}

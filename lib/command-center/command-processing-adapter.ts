@@ -45,11 +45,12 @@ Keep simple requests simple.
 3. **Proposal Creation**: If the user asks for a proposal or SOW (e.g. "create a proposal for ABC Hospital"), call the 'generate_proposal' tool. Then, summarize the generated proposal using markdown in your final response.
 4. **Blogs & Telemetry**: If the user asks about blog posts, newsletter dispatches, subscriber pools, or wish telemetry, call 'get_blog_posts_stats' or 'query_wish_game_data'.
 5. **Email/Newsletter Dispatch**: If the user says "send a blog", "dispatch newsletter", "email blog", etc., check if they specified *which* blog. If not, CALL 'get_blog_posts_stats' to retrieve all posts, present the list of blog posts to the user (highlighting which ones are sent or pending), and ask them to pick which one to send. Once they specify or confirm the blog, call 'send_blog_to_subscribers' with the corresponding UUID of the selected blog post to dispatch it.
-6. **Markdown Formatting**: Use clean Notion-like markdown formatting. Use tables, bold headers, and structured bullets.
+6. **Markdown Formatting & Tables**: Use clean Notion-like markdown formatting. When presenting comparisons, fees/costs, KPIs, metrics, process mapping, or structured parameters, ALWAYS format them as clean Markdown Tables (| Column 1 | Column 2 | Column 3 |) so they are visually represented in table form.
+7. **Interactive Follow-up Questions**: At the end of your response, always proactively ask 2 to 3 concise, relevant follow-up questions related to the conversation to guide the user's next steps, formatted under "### Suggested Next Steps:".
 
 Match response depth to the request.
 Simple input receives a simple response.
-Operational requests receive structured operational responses.`;
+Operational requests receive structured operational responses with visual tables and follow-up questions.`;
 
 async function streamAndPersistResponse(params: {
   text: string;
@@ -302,7 +303,7 @@ export class LegacyCommandProcessor {
         }
         openRouterMessages.push({ role: "user", content: message });
 
-        const modelChoice = "anthropic/claude-3.5-sonnet";
+        const modelChoice = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
         let loopCount = 0;
         const maxLoops = 15;
         let finalResponseGenerated = false;
@@ -311,7 +312,8 @@ export class LegacyCommandProcessor {
           const response = await openrouter.chat.completions.create({
             model: modelChoice,
             messages: openRouterMessages,
-            tools: intentDecision.requiresTools ? OpenRouterProvider.getTools(intentDecision.allowedTools) as any : undefined,
+            max_tokens: 2048,
+            tools: intentDecision.requiresTools && intentDecision.allowedTools.length > 0 ? OpenRouterProvider.getTools(intentDecision.allowedTools) as any : undefined,
             tool_choice: intentDecision.requiresTools && intentDecision.allowedTools.length > 0 ? "auto" : "none"
           });
 
@@ -408,9 +410,12 @@ export class LegacyCommandProcessor {
     const lowerMsg = message.toLowerCase();
     let responseMarkdown = "";
 
-    // Execute real tools to fetch dynamic database data if allowed
+    // Execute real tools to fetch dynamic database data ONLY if explicitly requested in query
     let companyStats: any = {};
-    if (intentDecision.allowedTools.includes("get_company_stats")) {
+    if (
+      intentDecision.allowedTools.includes("get_company_stats") &&
+      (lowerMsg.includes("stat") || lowerMsg.includes("metric") || lowerMsg.includes("telemetry") || lowerMsg.includes("overview") || lowerMsg.includes("brief") || lowerMsg.includes("report"))
+    ) {
       const statsId = "get_company_stats-" + Date.now();
       executedToolCalls.push({ id: statsId, name: "get_company_stats", args: {}, status: "calling" });
       writer.sendEvent("tool_call", { name: "get_company_stats", args: {} });
@@ -428,7 +433,10 @@ export class LegacyCommandProcessor {
     }
 
     let leadsData: any = [];
-    if (intentDecision.allowedTools.includes("query_leads")) {
+    if (
+      intentDecision.allowedTools.includes("query_leads") &&
+      (lowerMsg.includes("lead") || lowerMsg.includes("customer") || lowerMsg.includes("pipeline") || lowerMsg.includes("crm") || lowerMsg.includes("prospect"))
+    ) {
       const leadsId = "query_leads-" + Date.now();
       executedToolCalls.push({ id: leadsId, name: "query_leads", args: { query: message }, status: "calling" });
       writer.sendEvent("tool_call", { name: "query_leads", args: { query: message } });
@@ -446,7 +454,10 @@ export class LegacyCommandProcessor {
     }
 
     let blogStats: any = {};
-    if (intentDecision.allowedTools.includes("get_blog_posts_stats")) {
+    if (
+      intentDecision.allowedTools.includes("get_blog_posts_stats") &&
+      (lowerMsg.includes("blog") || lowerMsg.includes("article") || lowerMsg.includes("newsletter") || lowerMsg.includes("post"))
+    ) {
       const blogId = "get_blog_posts_stats-" + Date.now();
       executedToolCalls.push({ id: blogId, name: "get_blog_posts_stats", args: {}, status: "calling" });
       writer.sendEvent("tool_call", { name: "get_blog_posts_stats", args: {} });
@@ -499,19 +510,67 @@ ${leadsList.slice(0, 8).map((l: any) => `| **${l.name || l.business_name || l.co
 ### 🎯 3. Operational Priorities
 - Advance qualified candidates through recruitment pipeline stages.
 - Maintain regular dispatch schedule for content newsletter pool.
-- Monitor real-time telemetry across recruitment and sales dashboards.`;
+- Monitor real-time telemetry across recruitment and sales dashboards.
 
-    } else if (intentDecision.allowedTools.includes("query_leads")) {
+### Suggested Next Steps:
+1. Would you like me to run an in-depth audit on sales or recruitment metrics?
+2. Should we generate an operational briefing report for your stakeholders?
+3. Do you want to review open requisitions and department allocations?`;
+
+    } else if (
+      intentDecision.allowedTools.includes("query_leads") &&
+      (lowerMsg.includes("lead") || lowerMsg.includes("pipeline") || lowerMsg.includes("customer") || lowerMsg.includes("crm") || lowerMsg.includes("prospect") || lowerMsg.includes("client"))
+    ) {
       responseMarkdown = `### 🏢 Database Lead Results for "${message}"
 
 #### 📋 Pipeline Records (${leadsList.length} Found)
+
 ${leadsList.length ? `| Business / Name | City / Location | Email / Phone | Status |
 | --- | --- | --- | --- |
 ${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.city || "Vijayawada"} | ${l.email || l.phone || "On File"} | ${l.status || "new"} |`).join("\n")}` : `* No matching leads found for "${message}". Total leads in database: ${totalLeads}.`}
 
 #### 📈 Lead Pipeline Summary
 - **Total Ingested Leads**: **${totalLeads}**
-- **Active Requisitions**: **${activeReqs}**`;
+- **Active Requisitions**: **${activeReqs}**
+
+### Suggested Next Steps:
+1. Would you like to export these leads as a CSV or Excel report?
+2. Should we filter by qualified status or specific city?
+3. Do you want to draft an outreach proposal for one of these accounts?`;
+
+    } else if (lowerMsg.includes("ai") || lowerMsg.includes("native") || lowerMsg.includes("workflow") || lowerMsg.includes("agent") || lowerMsg.includes("system") || lowerMsg.includes("architecture")) {
+      responseMarkdown = `## 🧠 AI-Native Architecture & Workflows
+
+Yes. Being **AI-Native** means structuring your operational workflows where artificial intelligence and digital agents serve as the primary execution engine, rather than just an afterthought or superficial copilot.
+
+### 📐 1. Core Principles of AI-Native Workflows
+
+| Dimension | Legacy Tool-Centric Workflow | AI-Native Operating Model |
+| --- | --- | --- |
+| **Execution** | Humans manually enter data across fragmented apps | Autonomous agents execute tasks via authenticated APIs |
+| **Context** | Siloed relational databases and spreadsheets | Dynamic unified memory, live graph context, and vector telemetry |
+| **Governance** | Rigid bureaucratic approvals | Granular policy guardrails with human-in-the-loop oversight |
+| **Interface** | Complex menus and manual dashboards | Unified conversational Command Center with dynamic visual tools |
+
+---
+
+### 🚀 2. Strategic Implementation Steps
+
+1. **Deconstruct Business Logic into Specialized Agent Roles**:
+   - Assign discrete responsibilities (Sales, CFO, Research, Content, Engineering).
+   - Equip each agent with scoped tool definitions and permissions.
+
+2. **Automate Continuous Execution & Observability**:
+   - Provide real-time streaming timelines and verifiable tool trace telemetry.
+   - Maintain full audit trails for compliance and data integrity.
+
+3. **Bridge Agent Capabilities to Real Enterprise Systems**:
+   - Connect agents to databases, web crawlers, email dispatchers, and CRMs.
+
+### Suggested Next Steps:
+1. Would you like me to architect an AI-native blueprint for a specific workflow (e.g. Sales, HR, or Engineering)?
+2. Should we review your current tool calling and agent governance setup?
+3. Do you want to examine agent routing architectures and latency benchmarks?`;
 
     } else {
       responseMarkdown = `## 🤖 GXL Command Center Executive Response
@@ -521,20 +580,23 @@ ${leadsList.map((l: any) => `| **${l.business_name || l.name || "Lead"}** | ${l.
 
 ---
 
-### 📊 Live Database Operational Summary
+I am the GXL Central Orchestrator. I coordinate specialized digital agents (Sales, CFO, Research, Engineering, Content) and real software tools across your business operations.
 
-| Domain | Live Metrics | Status | Operational Portal |
-| --- | --- | --- | --- |
-| **Sales & Leads** | ${totalLeads} Ingested Leads | Active | /admin/sales/leads |
-| **Recruitment & Hiring** | ${activeReqs} Open Roles | Operational | /admin/recruitment/operations |
-| **People Operations** | ${activeDepts} Departments | Configured | /admin/people/departments |
-| **Editorial Content** | ${publishedBlogs} Articles | Live | /admin/content |
+### 💼 Operational Domains Available
+
+| Agent Persona | Primary Capabilities | Typical Deliverables |
+| --- | --- | --- |
+| **Sales Agent** | Lead discovery, CRM qualification, account queries | Qualified prospect lists, pipeline statistics |
+| **CFO Agent** | Financial audits, receivables, margin analysis | Billing breakdowns, revenue analytics |
+| **Research Agent** | Real-time web search, market intelligence | Competitive benchmarks, industry analysis |
+| **Engineering Agent** | Code review, system architecture, performance | Technical specifications, delivery timelines |
 
 ---
 
-### 💡 Strategic Actions
-- Manage active leads and requisitions directly through administrative portals.
-- View detailed telemetry across sales, recruitment, and media channels.`;
+### Suggested Next Steps:
+1. Would you like me to summarize today's lead pipeline or qualified opportunities?
+2. Should we compare frontier AI model benchmarks for operational use?
+3. Do you want to conduct web research or draft an executive proposal?`;
     }
 
     const words = responseMarkdown.split(" ");
