@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { Loader2, ShieldAlert, ArrowLeft, LogOut, ExternalLink, ChevronRight } from "lucide-react";
+import { Loader2, ShieldAlert, ArrowLeft, LogOut, ExternalLink, ChevronRight } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { AdminOperationsDock } from "@/components/admin/AdminOperationsDock";
@@ -57,8 +57,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } else if (role === "ADMIN" || role === "CO_ADMIN") {
       setAuthorized(true);
     } else if (role === "crm_agent") {
-      // Strict security override: CRM agents are never allowed to access team management or command-center
-      if (pathname.startsWith("/admin/team") || pathname.startsWith("/admin/command-center")) {
+      // Strict security override: CRM agents are never allowed to access command-center
+      if (pathname.startsWith("/admin/command-center")) {
         setAuthorized(false);
         router.replace("/admin/crm");
         return;
@@ -298,7 +298,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ? "md:ml-0 md:w-full"
           : isCollapsed
           ? "md:ml-20 md:w-[calc(100vw-5rem)] lg:flex-none"
-          : "md:ml-[272px] md:w-[calc(100vw-272px)] lg:flex-none",
+          : "md:ml-[260px] md:w-[calc(100vw-260px)] lg:flex-none",
         // Mobile: no margin, add top padding for the mobile top bar
         isCommandCenter ? "ml-0 pt-0" : "ml-0 pt-14 md:pt-0"
       )}>

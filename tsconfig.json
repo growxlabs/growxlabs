@@ -20,7 +20,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "lucide-react": ["./components/icons/index.ts"]
     }
   },
   "include": [

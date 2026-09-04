@@ -60,6 +60,35 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  // 1b. Subdomain routing for portal.growxlabs.tech & client.growxlabs.tech
+  const isPortalSubdomain = hostname.startsWith("portal.growxlabs.tech") || 
+                            hostname.startsWith("client.growxlabs.tech") ||
+                            hostname.startsWith("portal.localhost") ||
+                            hostname.startsWith("client.localhost");
+  if (isPortalSubdomain) {
+    if (
+      !pathname.startsWith("/client") &&
+      !pathname.startsWith("/api") &&
+      !pathname.startsWith("/_next") &&
+      !pathname.startsWith("/login") &&
+      !pathname.startsWith("/auth")
+    ) {
+      const cleanPath = pathname === "/" ? "/client/dashboard" : `/client${pathname}`;
+      const rewriteUrl = new URL(cleanPath + search, request.url);
+      return secureResponse(NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } }), requestId);
+    }
+  }
+
+  // 1c. Return 404 on /login, /register, and /signup for root marketing domain (exact 360labs.dev behavior)
+  // Only rendered if on portal/client subdomain or arriving with an authorized workspace callback
+  if (pathname === "/login" || pathname === "/register" || pathname === "/signup") {
+    const hasCallback = request.nextUrl.searchParams.has("callbackUrl");
+    if (!isPortalSubdomain && !hasCallback) {
+      const notFoundUrl = new URL("/_not-found", request.url);
+      return secureResponse(NextResponse.rewrite(notFoundUrl, { status: 404, request: { headers: requestHeaders } }), requestId);
+    }
+  }
+
   // 2. Intercept legacy i18n locale paths (e.g. /en-IN/blog/slug, /en/services, /en-IN)
   const segments = pathname.split("/");
   const firstSegment = segments[1];

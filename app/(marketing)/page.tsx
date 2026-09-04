@@ -12,10 +12,8 @@ import { SectionX } from "@/components/marketing/SectionX";
 import { ValuePropositions } from "@/components/marketing/ValuePropositions";
 import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
-import { Feature1 } from "@/components/ui/feature-1";
-import { locales } from "@/navigation";
 import Script from "next/script";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@/components/icons";
 
 export async function generateMetadata() {
   return {
@@ -94,7 +92,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <Script
         id="faq-schema"
         type="application/ld+json"
@@ -113,53 +111,43 @@ export default function Home() {
 
 
 
-      {/* ═══ EXPLORE NAVIGATIONS ═══ */}
-      <section className="w-full py-24 px-6 md:px-10 xl:px-16 2xl:px-24 bg-background">
+      {/* ═══ PRACTICE AREAS & DIVISIONS ═══ */}
+      <section className="w-full py-24 px-6 md:px-10 xl:px-16 2xl:px-24 bg-black border-t border-white/10">
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
           <AnimatedSection className="text-center mb-16">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.15em] text-primary mb-3 block">OUR WORK</span>
-            <h2 className="text-[clamp(28px,4vw,42px)] font-sans font-black text-foreground tracking-tight">Explore Our Projects</h2>
+            <h2 className="text-[clamp(32px,4vw,48px)] font-sans font-bold text-white tracking-tight">
+              Client Solutions & Proprietary Labs
+            </h2>
           </AnimatedSection>
           
-          <AnimatedStagger className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <AnimatedStagger className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl xl:max-w-7xl mx-auto">
             {/* PORTFOLIO CARD */}
             <AnimatedItem>
               <Link href="/portfolio" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#111111] text-white border border-white/5 rounded-2xl p-8 md:p-10 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#C0F0FB]/35 hover:bg-[radial-gradient(circle_at_top_right,rgba(192,240,251,0.06),transparent_60%)] min-h-[460px]">
-                  {/* Top line with title and circular arrow */}
-                  <div className="flex justify-between items-start z-10">
-                    <h3 className="text-[clamp(28px,3vw,38px)] font-sans font-black tracking-tight leading-[1.05] max-w-[280px]">
-                      Explore Our Portfolio
-                    </h3>
-                    <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                <div className="relative h-full flex flex-col justify-between bg-[#0c0c0e] text-white border border-white/10 rounded-[24px] p-10 md:p-12 lg:p-14 overflow-hidden shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-white/20 hover:bg-[#101014] min-h-[460px] md:min-h-[500px]">
+                  {/* Top Bar: Eyebrow + Title + Arrow */}
+                  <div className="flex justify-between items-start z-10 gap-6">
+                    <div>
+                      <span className="font-mono text-xs tracking-[0.2em] text-white/45 uppercase block mb-3">
+                        [ 01 / CLIENT ENGAGEMENTS ]
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl md:text-[32px] lg:text-[36px] font-sans font-bold tracking-tight leading-tight text-white">
+                        Production Software & AI Systems
+                      </h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
                       <ArrowUpRight className="h-5 w-5" />
                     </div>
                   </div>
 
-                  {/* Central geometric SVG animation - GPU safe opacity transition */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] group-hover:opacity-[0.16] transition-opacity duration-700">
-                    <svg viewBox="0 0 100 100" className="w-72 h-72 text-white group-hover:text-[#C0F0FB] group-hover:scale-[1.03] transition-all duration-700" fill="none" stroke="currentColor" strokeWidth="0.5">
-                      <path d="M50 10 L90 50 L50 90 L10 50 Z" />
-                      <path d="M50 20 L80 50 L50 80 L20 50 Z" />
-                      <path d="M50 30 L70 50 L50 70 L30 50 Z" />
-                      <path d="M50 40 L60 50 L50 60 L40 50 Z" />
-                      <line x1="50" y1="10" x2="50" y2="90" />
-                      <line x1="10" y1="50" x2="90" y2="50" />
-                      <line x1="20" y1="50" x2="50" y2="20" />
-                      <line x1="80" y1="50" x2="50" y2="20" />
-                      <line x1="20" y1="50" x2="50" y2="80" />
-                      <line x1="80" y1="50" x2="50" y2="80" />
-                    </svg>
-                  </div>
-
-                  {/* Bottom description & status indicators */}
-                  <div className="z-10 mt-auto pt-16">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4 font-mono text-[10px] tracking-[0.18em] text-white/40 uppercase">
-                      <span>[ EXPLORE ]</span>
-                      <span>[ CLIENT WORK ]</span>
+                  {/* Bottom Bar: Meta & Description */}
+                  <div className="z-10 mt-auto pt-20">
+                    <div className="flex justify-between items-center pb-3 mb-4 font-mono text-xs tracking-[0.18em] text-white/40 uppercase border-b border-white/10">
+                      <span>[ CASE STUDIES ]</span>
+                      <span className="text-white/60 group-hover:text-white transition-colors">VIEW WORK →</span>
                     </div>
-                    <p className="text-white/70 text-[15px] leading-relaxed max-w-md font-sans">
-                      Discover custom software, autonomous AI agents, and secure integrations engineered for global brands.
+                    <p className="text-white/70 text-base md:text-[17px] leading-relaxed font-sans max-w-xl">
+                      Custom software architectures, autonomous AI workflows, and secure integrations engineered with senior-developer velocity.
                     </p>
                   </div>
                 </div>
@@ -169,40 +157,30 @@ export default function Home() {
             {/* LABS CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#111111] text-white border border-white/5 rounded-2xl p-8 md:p-10 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#6366F1]/35 hover:bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.06),transparent_60%)] min-h-[460px]">
-                  {/* Top line with title and circular arrow */}
-                  <div className="flex justify-between items-start z-10">
-                    <h3 className="text-[clamp(28px,3vw,38px)] font-sans font-black tracking-tight leading-[1.05] max-w-[280px]">
-                      Explore Our Labs
-                    </h3>
-                    <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center transition-all duration-300 group-hover:bg-[#6366F1] group-hover:text-white group-hover:border-[#6366F1] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                <div className="relative h-full flex flex-col justify-between bg-[#0c0c0e] text-white border border-white/10 rounded-[24px] p-10 md:p-12 lg:p-14 overflow-hidden shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-white/20 hover:bg-[#101014] min-h-[460px] md:min-h-[500px]">
+                  {/* Top Bar: Eyebrow + Title + Arrow */}
+                  <div className="flex justify-between items-start z-10 gap-6">
+                    <div>
+                      <span className="font-mono text-xs tracking-[0.2em] text-white/45 uppercase block mb-3">
+                        [ 02 / RESEARCH & VENTURES ]
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl md:text-[32px] lg:text-[36px] font-sans font-bold tracking-tight leading-tight text-white">
+                        Proprietary AI Labs & Products
+                      </h3>
+                    </div>
+                    <div className="w-12 h-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
                       <ArrowUpRight className="h-5 w-5" />
                     </div>
                   </div>
 
-                  {/* Central geometric SVG animation - GPU safe opacity transition */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] group-hover:opacity-[0.16] transition-opacity duration-700">
-                    <svg viewBox="0 0 100 100" className="w-72 h-72 text-white group-hover:text-[#6366F1] group-hover:scale-[1.03] transition-all duration-700" fill="none" stroke="currentColor" strokeWidth="0.5">
-                      <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" />
-                      <line x1="50" y1="50" x2="50" y2="10" />
-                      <line x1="50" y1="50" x2="85" y2="30" />
-                      <line x1="50" y1="50" x2="85" y2="70" />
-                      <line x1="50" y1="50" x2="50" y2="90" />
-                      <line x1="50" y1="50" x2="15" y2="70" />
-                      <line x1="50" y1="50" x2="15" y2="30" />
-                      <polygon points="50,25 72,37 72,63 50,75 28,63 28,37" />
-                      <circle cx="50" cy="50" r="1.5" fill="currentColor" />
-                    </svg>
-                  </div>
-
-                  {/* Bottom description & status indicators */}
-                  <div className="z-10 mt-auto pt-16">
-                    <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4 font-mono text-[10px] tracking-[0.18em] text-white/40 uppercase">
-                      <span>[ EXPLORE ]</span>
-                      <span>[ OWN PRODUCTS ]</span>
+                  {/* Bottom Bar: Meta & Description */}
+                  <div className="z-10 mt-auto pt-20">
+                    <div className="flex justify-between items-center pb-3 mb-4 font-mono text-xs tracking-[0.18em] text-white/40 uppercase border-b border-white/10">
+                      <span>[ STUDIO LABS ]</span>
+                      <span className="text-white/60 group-hover:text-white transition-colors">EXPLORE LAB →</span>
                     </div>
-                    <p className="text-white/70 text-[15px] leading-relaxed max-w-md font-sans">
-                      Test and use proprietary AI SaaS platforms, experimental research tools, and open-source models crafted by our studio.
+                    <p className="text-white/70 text-base md:text-[17px] leading-relaxed font-sans max-w-xl">
+                      Test and use proprietary AI SaaS platforms, experimental research tools, and open-source models incubated by our studio.
                     </p>
                   </div>
                 </div>
@@ -211,29 +189,44 @@ export default function Home() {
           </AnimatedStagger>
         </div>
       </section>
-      <AnimatedSection>
-        <Feature1 />
-      </AnimatedSection>
 
-      {/* ═══ FAQ — Accordion ═══ */}
-      <section className="w-full py-24 px-6 md:px-10 xl:px-16 2xl:px-24">
+      {/* ═══ FAQ — Accordion (360labs.dev Swiss-editorial layout) ═══ */}
+      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-black border-t border-white/10">
         <div className="max-w-[1400px] mx-auto">
-          <AnimatedSection className="text-center mb-16">
-            <h2 className="text-[clamp(28px,4vw,36px)] font-bold text-foreground mb-4 tracking-tight">Common Questions</h2>
-            <p className="text-muted-foreground text-[16px]">Everything you need to know about working with us.</p>
-          </AnimatedSection>
+          {/* Eyebrow Bar: { FAQ } — { GROWXLABS } — SUPPORT */}
+          <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-white/40 uppercase mb-12 sm:mb-16 select-none">
+            <span>{`{ FAQ }`}</span>
+            <span className="text-white/60 font-semibold">{`{ GROWXLABS }`}</span>
+            <span>SUPPORT</span>
+          </div>
+
+          {/* Asymmetric Header: Giant 3-Line Heading + Subtext on Right */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-12 sm:pb-16 border-b border-white/10 mb-2">
+            <div className="lg:col-span-7 xl:col-span-8">
+              <h2 className="font-sans font-bold tracking-tight text-white leading-[0.96] text-[clamp(44px,6.5vw,84px)]">
+                Frequently<br />
+                Asked<br />
+                Questions
+              </h2>
+            </div>
+            <div className="lg:col-span-5 xl:col-span-4 lg:pb-3">
+              <p className="font-sans text-[15px] sm:text-[17px] text-white/60 leading-relaxed max-w-md">
+                Got questions? We have got answers. If you do not find what you are looking for, feel free to reach out.
+              </p>
+            </div>
+          </div>
 
           <AnimatedSection delay={0.15}>
             <AccordionFAQ items={faqData} />
           </AnimatedSection>
 
-          <AnimatedSection delay={0.2} className="text-center mt-12">
+          <AnimatedSection delay={0.2} className="text-center mt-14 sm:mt-16">
             <Link 
               href="/faq" 
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-border bg-background hover:bg-card text-foreground text-[12px] font-bold tracking-[0.15em] uppercase transition-all shadow-sm active:scale-95 group font-mono"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white text-[12px] font-bold tracking-[0.15em] uppercase transition-all shadow-sm active:scale-95 group font-mono"
             >
               <span>View All FAQs</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
           </AnimatedSection>
         </div>

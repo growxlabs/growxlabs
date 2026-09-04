@@ -1,165 +1,57 @@
 "use client";
 
-import { useState } from "react";
-import { Link } from "@/navigation";
-import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { BookingScheduler } from "@/components/marketing/BookingScheduler";
+import React from "react";
 
 interface Feature1Props {
-  title?: string;
-  description?: string;
-  imageSrc?: string;
-  imageAlt?: string;
-  buttonPrimary?: {
-    label: string;
-    href: string;
-  };
-  buttonSecondary?: {
-    label: string;
-    href: string;
-  };
+  buttonLabel?: string;
+  subtitle?: string;
+  whatsappNumber?: string;
+  whatsappMessage?: string;
 }
 
 export const Feature1 = ({
-  title = "Ready to build what’s next?",
-  description = "Let's make it happen.",
-  imageSrc = "/images/landscape.jpg",
-  imageAlt = "GrowXLabs Landscape Illustration",
-  buttonPrimary = {
-    label: "Book a Strategy Call",
-    href: "/contact",
-  },
-  buttonSecondary = {
-    label: "Explore Our Work",
-    href: "/portfolio",
-  },
+  buttonLabel = "Talk to us",
+  whatsappNumber = "918790907144",
+  whatsappMessage = "Hi, I'd like to discuss a project with GrowX Labs.",
 }: Feature1Props) => {
-  const [showCalendly, setShowCalendly] = useState(false);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-
-  const handleClose = () => {
-    setShowCalendly(false);
-    setIframeLoaded(false);
-  };
-
-  const renderButton = (
-    button: { label: string; href: string },
-    variant: "default" | "outline"
-  ) => {
-    const isExternal =
-      button.href.startsWith("http://") || button.href.startsWith("https://");
-
-    // Intercept Strategy Call buttons to show inline Calendly
-    const isBookCall =
-      button.label.toLowerCase().includes("strategy") ||
-      button.label.toLowerCase().includes("call") ||
-      button.label.toLowerCase().includes("book");
-
-    if (isBookCall) {
-      return (
-        <Button
-          variant={variant}
-          onClick={(e) => {
-            e.preventDefault();
-            setShowCalendly(true);
-          }}
-        >
-          {button.label}
-        </Button>
-      );
-    }
-
-    if (isExternal) {
-      return (
-        <Button variant={variant} asChild>
-          <a href={button.href} target="_blank" rel="noopener noreferrer">
-            {button.label}
-          </a>
-        </Button>
-      );
-    }
-
-    return (
-      <Button variant={variant} asChild>
-        <Link href={button.href as any}>
-          {button.label}
-        </Link>
-      </Button>
-    );
-  };
+  const encodedMessage = encodeURIComponent(whatsappMessage);
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
   return (
-    <section className="py-24 border-t border-b border-white/5 bg-background overflow-hidden">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left z-10">
-            <h2 className="my-6 mt-0 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl leading-tight">
-              {title}
-            </h2>
-            <p className="mb-8 max-w-xl text-zinc-400 text-base md:text-lg leading-relaxed">
-              {description}
-            </p>
-            <div className="flex w-full flex-col justify-center gap-4 sm:flex-row lg:justify-start">
-              {buttonPrimary && renderButton(buttonPrimary, "default")}
-              {buttonSecondary && renderButton(buttonSecondary, "outline")}
-            </div>
-          </div>
-          <div
-            className="relative group w-full aspect-[4/3] sm:aspect-video lg:aspect-auto lg:h-[420px] border border-white/[0.08] bg-[#0c0c0e]/80 backdrop-blur-xl rounded-[24px] flex items-center justify-center overflow-hidden shadow-2xl transition-all duration-700 hover:border-[#C0F0FB]/35"
-          >
-            {/* Subtle premium accent glows in background */}
-            <div
-              className={cn(
-                "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-[#C0F0FB]/5 blur-[70px] pointer-events-none transition-all duration-1000 ease-in-out",
-                showCalendly ? "opacity-100 scale-150 bg-[#C0F0FB]/10" : "opacity-75 scale-100"
-              )}
-            />
-            <div
-              className={cn(
-                "absolute top-1/2 left-[70%] -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[#355CFF]/5 blur-[50px] pointer-events-none transition-all duration-1000 ease-in-out",
-                showCalendly ? "opacity-100 scale-150 bg-[#355CFF]/10" : "opacity-75 scale-100"
-              )}
-            />
+    <section className="w-full py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-black overflow-hidden">
+      <div className="max-w-6xl xl:max-w-7xl mx-auto relative">
+        {/* Large Horizontal Hero Card with Blog Electric Ice Blue Surface */}
+        <div className="relative w-full rounded-[28px] md:rounded-[32px] overflow-hidden bg-[#bdefff] min-h-[340px] sm:min-h-[380px] md:min-h-[400px] flex items-center justify-center shadow-[0_24px_64px_-16px_rgba(0,0,0,0.85)] group cursor-default">
+          {/* Subtle Precision Dot Matrix */}
+          <div 
+            className="absolute inset-0 opacity-[0.15] pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(rgba(0, 0, 0, 0.4) 1px, transparent 1px)`,
+              backgroundSize: "24px 24px",
+              maskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 80%)"
+            }}
+          />
 
-            {/* Original Artwork Image Wrapper */}
-            <div
-              className={cn(
-                "absolute inset-0 w-full h-full transition-all duration-700 ease-in-out z-10",
-                showCalendly ? "opacity-0 scale-95 pointer-events-none" : "opacity-100 scale-100"
-              )}
+          {/* Clean Centered Content: 1-Line Headline + Perfect CTA */}
+          <div className="relative z-20 p-8 sm:p-12 md:p-16 max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
+            {/* Pure 1-Line Bold Headline */}
+            <h1 className="text-[clamp(24px,3.2vw,44px)] font-bold tracking-tight text-neutral-950 leading-tight font-sans">
+              Building the autonomous infrastructure for AI
+            </h1>
+
+            {/* Premium Understated Primary CTA */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex items-center justify-center gap-2.5 h-[52px] sm:h-[54px] px-8 rounded-[14px] bg-black hover:bg-neutral-900 text-white text-[15px] font-medium transition-all duration-200 shadow-[0_4px_14px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 border border-black/10 cursor-pointer font-sans group/btn select-none"
             >
-              <img
-                src={imageSrc}
-                alt={imageAlt}
-                className="w-full h-full object-cover transition-transform duration-750 group-hover:scale-105 select-none"
-              />
-            </div>
-
-            {/* Calendly Scheduler Widget Wrapper */}
-            <div
-              className={cn(
-                "absolute inset-0 w-full h-full flex flex-col transition-all duration-700 ease-in-out bg-[#0c0c0e]/95 backdrop-blur-xl",
-                showCalendly ? "opacity-100 scale-100 z-20" : "opacity-0 scale-95 pointer-events-none z-0"
-              )}
-            >
-              {/* Close/Back button */}
-              <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 z-30 bg-white/5 hover:bg-white/10 active:scale-95 backdrop-blur-md border border-white/[0.08] hover:border-white/20 rounded-full p-2 flex items-center justify-center text-white/70 hover:text-white cursor-pointer transition-all duration-300 shadow-lg"
-                title="Return to Artwork"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              {/* Custom Booking Scheduler */}
-              {showCalendly && (
-                <div className="w-full h-full relative z-20">
-                  <BookingScheduler onClose={handleClose} />
-                </div>
-              )}
-            </div>
+              <span>{buttonLabel}</span>
+              <span className="text-[#2dd4bf] font-medium text-base leading-none group-hover/btn:translate-x-1 transition-transform duration-200">
+                →
+              </span>
+            </a>
           </div>
         </div>
       </div>

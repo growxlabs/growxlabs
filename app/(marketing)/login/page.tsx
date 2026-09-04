@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
@@ -19,144 +18,153 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // Redirect is handled by NextAuth redirect callback based on user role
       const requestedCallback = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("callbackUrl") : null;
       const callbackUrl = requestedCallback && requestedCallback.startsWith("/") ? requestedCallback : "/admin";
       const result = await signIn("credentials", {
         email,
         password,
         redirect: true,
-        callbackUrl
+        callbackUrl,
       });
 
       if (result?.error) {
-        throw new Error("Invalid email or password. Please try again.");
+        throw new Error("Invalid email or password. Please check your credentials and try again.");
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Authentication failed. Please check your credentials.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#020202] text-white">
-      {/* Back Button */}
-      <div className="absolute top-6 left-6 z-20">
-        <Link href="/">
-          <button className="text-neutral-400 hover:text-white flex items-center gap-2 text-sm font-semibold transition-colors bg-transparent border-0 cursor-pointer">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back Home</span>
-          </button>
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between selection:bg-white selection:text-black">
+      {/* Top Header Bar */}
+      <header className="w-full max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
+        <Link 
+          href="/"
+          className="text-lg font-semibold tracking-tight text-white hover:text-neutral-300 transition-colors flex items-center gap-1.5"
+        >
+          <span className="font-serif">GrowX</span>
+          <span className="font-sans font-normal text-neutral-400">Labs</span>
         </Link>
-      </div>
 
-      {/* LEFT SIDE: Login Form (Dark Theme) */}
-      <div className="flex flex-col justify-center items-center p-8 lg:p-16 relative z-10 w-full max-w-xl mx-auto">
-        <div className="w-full space-y-8">
-          {/* Logo */}
-          <div className="flex justify-center lg:justify-start notranslate" translate="no">
-            <Link href="/" className="flex items-center text-3xl font-serif text-white tracking-normal">
-              GrowX<span className="text-[#C0F0FB] font-sans font-black">Labs</span>.tech
-            </Link>
-          </div>
+        <Link
+          href="/"
+          className="text-xs text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 font-medium"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+            <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>Back to website</span>
+        </Link>
+      </header>
 
-          <div className="space-y-2 text-center lg:text-left">
-            <h1 className="text-2xl font-black tracking-tight text-white">
-              Access your account
+      {/* Main Corporate Card */}
+      <main className="w-full max-w-md mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
+        <div className="bg-[#09090b] border border-white/10 rounded-xl p-8 sm:p-10 shadow-2xl space-y-8">
+          
+          {/* Header */}
+          <div className="space-y-2 text-left">
+            <h1 className="text-2xl font-medium tracking-tight text-white">
+              Sign in to your account
             </h1>
-            <p className="text-neutral-400 text-xs font-mono tracking-widest uppercase">
-              Secure Authentication Portal
+            <p className="text-sm text-neutral-400 leading-normal">
+              Enter your credentials to access your workspace.
             </p>
           </div>
 
+          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 ml-1">
-                Email Address
+            <div className="space-y-1.5">
+              <label 
+                htmlFor="email" 
+                className="block text-xs font-medium text-neutral-300"
+              >
+                Email address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required 
-                  placeholder="name@company.com" 
-                  className="w-full h-13 rounded-lg bg-black border border-neutral-800 pl-11 pr-4 text-white text-sm focus:border-[#C0F0FB] focus:ring-1 focus:ring-[#C0F0FB]/20 focus:outline-none transition-all placeholder:text-neutral-600"
-                  disabled={loading}
-                />
-              </div>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="name@company.com"
+                className="w-full h-11 rounded-lg bg-black border border-white/15 px-3.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all"
+                disabled={loading}
+              />
             </div>
-            
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 ml-1">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
-                <input 
-                  type="password" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                  placeholder="••••••••" 
-                  className="w-full h-13 rounded-lg bg-black border border-neutral-800 pl-11 pr-4 text-white text-sm focus:border-[#C0F0FB] focus:ring-1 focus:ring-[#C0F0FB]/20 focus:outline-none transition-all placeholder:text-neutral-600"
-                  disabled={loading}
-                />
+
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label 
+                  htmlFor="password" 
+                  className="block text-xs font-medium text-neutral-300"
+                >
+                  Password
+                </label>
               </div>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••••••"
+                className="w-full h-11 rounded-lg bg-black border border-white/15 px-3.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all"
+                disabled={loading}
+              />
             </div>
 
             {error && (
-              <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-4 flex items-start text-[12px] text-red-400 font-medium leading-tight">
-                <AlertCircle className="h-4.5 w-4.5 mr-2 shrink-0 mt-0.5" /> 
+              <div className="rounded-lg border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-300 flex items-start gap-2">
+                <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0-10.5a.75.75 0 01.75.75v4a.75.75 0 01-1.5 0v-4A.75.75 0 018 4.5zm0 7.5a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
                 <span>{error}</span>
               </div>
             )}
 
-            <button 
-              type="submit" 
-              className="w-full h-13 rounded-lg font-black text-xs uppercase tracking-widest bg-[#C0F0FB] text-black hover:bg-[#a3e4f2] transition-all duration-300 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center cursor-pointer border-0"
+            <button
+              type="submit"
               disabled={loading}
+              className="w-full h-11 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center cursor-pointer border-0 shadow-sm font-sans"
             >
               {loading ? (
-                <span className="flex items-center">
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  AUTHENTICATING...
+                <span className="inline-flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-black" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Signing in...
                 </span>
               ) : (
-                "SIGN IN"
+                "Sign in"
               )}
             </button>
           </form>
 
-          <div className="text-center lg:text-left text-xs font-semibold tracking-wide text-neutral-400">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#C0F0FB] hover:text-[#C0F0FB]/90 transition-colors underline">
-              Create one here
-            </Link>
+          {/* Quiet Support Info */}
+          <div className="pt-4 border-t border-white/10 text-center">
+            <p className="text-xs text-neutral-500">
+              Need access? Contact{" "}
+              <a 
+                href="mailto:support@growxlabs.tech" 
+                className="text-neutral-400 hover:text-white underline underline-offset-2 transition-colors"
+              >
+                support@growxlabs.tech
+              </a>
+            </p>
           </div>
 
         </div>
-      </div>
+      </main>
 
-      {/* RIGHT SIDE: Branding Handshake Image */}
-      <div className="hidden lg:block relative overflow-hidden border-l border-neutral-900 h-full min-h-screen">
-        <img 
-          src="/images/handshake.jpg" 
-          alt="GrowX Labs Partnership" 
-          className="absolute inset-0 w-full h-full object-cover opacity-85"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/30 to-transparent pointer-events-none" />
-        
-        <div className="absolute inset-x-0 bottom-0 p-12 xl:p-16 z-10 space-y-4 text-left">
-          <h2 className="text-[36px] font-black text-white leading-tight font-serif tracking-tight">
-            Go Agent-native With <span className="italic font-serif font-normal text-[#C0F0FB]">GrowXLabs</span>
-          </h2>
-          <p className="text-sm text-neutral-300 max-w-sm leading-relaxed font-sans font-normal">
-            Partner with us to build advanced AI-native software, secure integrations, and production-grade workflow capabilities.
-          </p>
-        </div>
-      </div>
+      {/* Corporate Footer */}
+      <footer className="w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-neutral-600">
+        <p>© {new Date().getFullYear()} GrowXLabs. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

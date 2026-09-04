@@ -26,19 +26,19 @@ export function Footer() {
   // Design tokens based on page context (Marketing / Blog)
   const footerBg = isBlog 
     ? "bg-transparent border-neutral-900" 
-    : "bg-background border-border";
+    : "bg-black border-white/10";
 
   const logoColor1 = "text-white";
-  const logoColor2 = isBlog ? "text-white" : "text-[#C0F0FB]";
+  const logoColor2 = "text-white";
 
-  const textColor = isBlog ? "text-neutral-300" : "text-[#8C8D91]";
+  const textColor = isBlog ? "text-neutral-300" : "text-neutral-400";
   const headingColor = "text-white";
-  const accentColor = isBlog ? "text-neutral-300" : "text-[#C0F0FB]";
+  const accentColor = isBlog ? "text-neutral-300" : "text-neutral-400";
   const linkHoverColor = "hover:text-white";
 
   const socialLinkClass = isBlog 
     ? "text-neutral-400 hover:text-white" 
-    : "text-[#8C8D91] hover:text-[#C0F0FB]";
+    : "text-neutral-400 hover:text-white";
 
   return (
     <footer className={`w-full border-t pt-10 pb-10 px-6 md:px-12 xl:px-20 2xl:px-32 transition-colors duration-500 ${footerBg}`}>
@@ -54,13 +54,13 @@ export function Footer() {
               </div>
             </Link>
 
-            <span className="hidden md:inline text-border/30">|</span>
+            <span className="hidden md:inline text-white/15">|</span>
 
-            <a href="mailto:sai@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-foreground transition-colors ${textColor}`}>
+            <a href="mailto:sai@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-white transition-colors ${textColor}`}>
               <GrowxContact size={14} className={accentColor} aria-hidden="true" /> sai@growxlabs.tech
             </a>
 
-            <span className="hidden md:inline text-border/30">|</span>
+            <span className="hidden md:inline text-white/15">|</span>
 
             {/* Horizontal Social Icons */}
             <div className="flex items-center gap-4">
@@ -147,7 +147,7 @@ export function Footer() {
 
         </div>
 
-        <div className={`border-t pt-8 flex items-center justify-center ${isBlog ? "border-neutral-900" : "border-[#2B2D31]"}`}>
+        <div className={`border-t pt-8 flex items-center justify-center ${isBlog ? "border-neutral-900" : "border-white/10"}`}>
           <p className={`text-[13px] text-center ${textColor}`}>
             Copyright 2026 GrowxLabs. All rights reserved.
           </p>

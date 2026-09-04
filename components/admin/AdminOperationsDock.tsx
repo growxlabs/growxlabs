@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ChevronUp, ExternalLink, ShieldCheck, X } from "lucide-react";
+import { AlertTriangle, ChevronUp, ExternalLink, ShieldCheck, X } from "@/components/icons";
 type Tab = "activity" | "audit" | "errors";
 type Row = Record<string, string | number | null | undefined>;
 async function load<T>(url: string, key: string) { const response = await fetch(url, { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error || "Operations data unavailable."); return body[key] as T[]; }

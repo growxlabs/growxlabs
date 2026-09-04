@@ -28,7 +28,7 @@ export function HeroSection() {
     <>
       {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
       <section
-        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between bg-background"
+        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between bg-black"
         aria-labelledby="hero-studio-heading-desktop"
       >
         {/* Empty flex spacer at top to push content down */}
@@ -78,7 +78,7 @@ export function HeroSection() {
 
       {/* ═══ SWISS-EDITORIAL MOBILE HERO (Visible only on mobile) ═══ */}
       <section
-        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-background"
+        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-black"
         aria-labelledby="hero-studio-heading-mobile"
       >
         <div className="relative w-full flex flex-row items-center justify-between">

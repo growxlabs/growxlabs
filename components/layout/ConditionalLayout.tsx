@@ -49,13 +49,14 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.remove("posts-page");
     };
   }, [isBlog]);
-  
   const normalizedPath = pathname?.toLowerCase() || "";
-  const isAuthPage = normalizedPath.includes("/login") || 
-                     normalizedPath.includes("/register") || 
-                     normalizedPath.includes("/signup");
-  
   const isCareersSubdomain = typeof window !== "undefined" && window.location.hostname.startsWith("careers.");
+  const isPortalSubdomain = typeof window !== "undefined" && (window.location.hostname.startsWith("portal.") || window.location.hostname.startsWith("client."));
+  const hasCallback = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("callbackUrl");
+  const isAuthPage = (normalizedPath.includes("/login") || 
+                      normalizedPath.includes("/register") || 
+                      normalizedPath.includes("/signup")) && 
+                      (isPortalSubdomain || hasCallback);
   const isCareersPage = normalizedPath.includes("/careers") || isCareersSubdomain;
   const isCoursesPage = normalizedPath.includes("/courses");
   const isWishGame = normalizedPath.includes("/wish-game");
@@ -71,7 +72,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     return <div className="flex min-h-dvh flex-col bg-white text-slate-900"><ActivationHeader/><main className="flex-1">{children}</main><ActivationFooter/></div>;
   }
 
-  if (isEmployeeWorkspace || isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment) {
+  if (isEmployeeWorkspace || isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment || isPortalSubdomain) {
     return <>{children}</>;
   }
 

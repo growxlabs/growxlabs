@@ -4,7 +4,7 @@ import { AnimatedSection } from "@/components/marketing/AnimatedSection";
 
 export function SectionG() {
   return (
-    <section className="w-full relative px-6 md:px-10 xl:px-16 2xl:px-24 min-h-dvh border-b border-border bg-background flex flex-col justify-center pt-20 sm:pt-28 pb-8 flex-none">
+    <section className="w-full relative px-6 md:px-10 xl:px-16 2xl:px-24 min-h-dvh border-b border-white/10 bg-black flex flex-col justify-center pt-20 sm:pt-28 pb-8 flex-none">
       <AnimatedSection className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto w-full relative flex items-center justify-center min-h-[300px]">
         {/* Left Vertical Indicators */}
         <div className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 font-mono text-xs text-muted-foreground select-none">

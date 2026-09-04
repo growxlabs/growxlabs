@@ -1,15 +1,18 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   webpack(config) {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
+      "lucide-react": path.resolve(__dirname, "./components/icons/index.ts"),
       "@zoom/download-manager": "./lib/recruitment/zoom-download-manager-shim.ts",
     };
     return config;
   },
   turbopack: {
     resolveAlias: {
+      "lucide-react": "./components/icons/index.ts",
       "@zoom/download-manager": "./lib/recruitment/zoom-download-manager-shim.ts",
     },
   },

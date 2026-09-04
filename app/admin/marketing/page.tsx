@@ -323,16 +323,16 @@ export default function MarketingHubPage() {
                         <span className="text-[10px] font-black uppercase text-emerald-400 flex items-center"><ArrowUpRight size={12} className="mr-0.5" /> 18.4%</span>
                       </div>
                       <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Website Visitors</p>
-                      <h3 className="text-3xl font-black text-white">{metrics.websiteVisitors.toLocaleString()}</h3>
+                      <h3 className="text-3xl font-black text-white">{(metrics.websiteVisitors ?? 0).toLocaleString()}</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-purple-500/30 transition-all p-6">
                       <div className="flex items-center justify-between mb-4">
                         <span className="p-2 bg-purple-500/10 rounded-xl border border-purple-500/20 text-purple-400"><Users size={18} /></span>
-                        <span className="text-[10px] font-black uppercase text-purple-400">{metrics.mqlCount} MQLs</span>
+                        <span className="text-[10px] font-black uppercase text-purple-400">{metrics.mqlCount ?? 0} MQLs</span>
                       </div>
                       <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">New Leads</p>
-                      <h3 className="text-3xl font-black text-white">{metrics.newLeads.toLocaleString()}</h3>
+                      <h3 className="text-3xl font-black text-white">{(metrics.newLeads ?? 0).toLocaleString()}</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-emerald-500/30 transition-all p-6">
@@ -341,16 +341,16 @@ export default function MarketingHubPage() {
                         <span className="text-[10px] font-black uppercase text-emerald-400">Target 4.0%</span>
                       </div>
                       <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Funnel Conversion Rate</p>
-                      <h3 className="text-3xl font-black text-white">{metrics.conversionRate}%</h3>
+                      <h3 className="text-3xl font-black text-white">{metrics.conversionRate ?? 0}%</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-amber-500/30 transition-all p-6">
                       <div className="flex items-center justify-between mb-4">
                         <span className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400"><DollarSign size={18} /></span>
-                        <span className="text-[10px] font-black uppercase text-amber-400">ROI: {metrics.campaignROI}x</span>
+                        <span className="text-[10px] font-black uppercase text-amber-400">ROI: {metrics.campaignROI ?? 0}x</span>
                       </div>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Ad Spend (CAC: ${metrics.cac})</p>
-                      <h3 className="text-3xl font-black text-white">${metrics.adSpend.toLocaleString()}</h3>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Ad Spend (CAC: ${metrics.cac ?? 0})</p>
+                      <h3 className="text-3xl font-black text-white">${(metrics.adSpend ?? 0).toLocaleString()}</h3>
                     </Card>
                   </div>
 
@@ -362,7 +362,7 @@ export default function MarketingHubPage() {
                         <div>
                           <div className="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider text-neutral-400">
                             <span>1. Website Visitors</span>
-                            <span className="text-white font-black">{metrics.funnelData.visitors.toLocaleString()}</span>
+                            <span className="text-white font-black">{(metrics.funnelData?.visitors ?? 0).toLocaleString()}</span>
                           </div>
                           <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-blue-500" style={{ width: "100%" }} />
@@ -372,7 +372,7 @@ export default function MarketingHubPage() {
                         <div>
                           <div className="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider text-neutral-400">
                             <span>2. New Inbound Leads</span>
-                            <span className="text-purple-400 font-black">{metrics.funnelData.leads.toLocaleString()}</span>
+                            <span className="text-purple-400 font-black">{(metrics.funnelData?.leads ?? 0).toLocaleString()}</span>
                           </div>
                           <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-purple-500" style={{ width: "22%" }} />
@@ -382,7 +382,7 @@ export default function MarketingHubPage() {
                         <div>
                           <div className="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider text-neutral-400">
                             <span>3. Marketing Qualified Leads (MQL)</span>
-                            <span className="text-emerald-400 font-black">{metrics.funnelData.mql.toLocaleString()}</span>
+                            <span className="text-emerald-400 font-black">{(metrics.funnelData?.mql ?? 0).toLocaleString()}</span>
                           </div>
                           <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-emerald-500" style={{ width: "9.5%" }} />
@@ -392,7 +392,7 @@ export default function MarketingHubPage() {
                         <div>
                           <div className="flex justify-between text-xs mb-1.5 font-bold uppercase tracking-wider text-neutral-400">
                             <span>4. Sales Qualified Leads (SQL)</span>
-                            <span className="text-amber-400 font-black">{metrics.funnelData.sql.toLocaleString()}</span>
+                            <span className="text-amber-400 font-black">{(metrics.funnelData?.sql ?? 0).toLocaleString()}</span>
                           </div>
                           <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-amber-500" style={{ width: "3.8%" }} />

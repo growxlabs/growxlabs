@@ -39,15 +39,6 @@ export function GlobalBackground() {
 
   // Dark Marketing pages background
   return (
-    <div className="fixed inset-0 -z-50 pointer-events-none bg-background overflow-hidden">
-      <div 
-        className="absolute inset-0 opacity-40" 
-        style={{
-          backgroundImage: `
-            radial-gradient(ellipse 70% 45% at 50% -10%, rgba(192, 240, 251, 0.07) 0%, transparent 60%)
-          `,
-        }}
-      />
-    </div>
+    <div className="fixed inset-0 -z-50 pointer-events-none bg-black overflow-hidden" />
   );
 }

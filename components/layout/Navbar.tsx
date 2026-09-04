@@ -157,19 +157,19 @@ export function Navbar() {
                 const isExternal = resolvedHref.startsWith("http") && isMounted;
                 const contactButtonContent = (
                   <span className={cn(
-                    "group relative inline-flex items-center justify-center font-bold px-4 sm:px-5 py-2 text-xs sm:text-sm rounded-md overflow-hidden transition-colors duration-300 shadow-sm cursor-pointer",
-                    isLightThemePage ? "border border-[#111111]/20 text-[#111111]" : "border border-[#C0F0FB] text-[#C0F0FB]"
+                    "group relative inline-flex items-center justify-center font-bold h-9 sm:h-10 min-w-[96px] sm:min-w-[108px] px-5 sm:px-6 text-xs sm:text-sm rounded-md overflow-hidden transition-all duration-300 shadow-sm cursor-pointer select-none",
+                    isLightThemePage ? "border border-[#111111]/25 text-[#111111]" : "border border-[#C0F0FB] text-[#C0F0FB]"
                   )}>
-                    {/* Liquid / Water Fill Layer */}
+                    {/* Liquid / Water Wave Fill Layer */}
                     <span 
                       className={cn(
-                        "absolute inset-0 w-full h-full translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-t-[50%] pointer-events-none",
+                        "absolute -bottom-[20%] -left-[15%] -right-[15%] h-[140%] translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 rounded-t-[100%] pointer-events-none",
                         isLightThemePage ? "bg-[#111111]" : "bg-[#C0F0FB]"
                       )}
-                      style={{ transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)" }}
+                      style={{ transitionTimingFunction: "cubic-bezier(0.33, 1, 0.68, 1)" }}
                     />
                     <span className={cn(
-                      "relative z-10 transition-colors duration-300",
+                      "relative z-10 transition-colors duration-300 font-bold",
                       isLightThemePage ? "group-hover:text-[#F7F4EE]" : "group-hover:text-black"
                     )}>
                       Contact

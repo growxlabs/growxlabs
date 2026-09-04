@@ -1,6 +1,7 @@
 export * from "./types";
 export * from "./GrowxIcon";
 export * from "./migration";
+export * from "./lucide-compat";
 
 // All GrowxLabs Icons (129 Components)
 export * from "./icons/GrowxActivity";

@@ -1,89 +1,48 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, usePathname } from "@/navigation-client";
 import { cn } from "@/lib/utils";
 import { NavigationFlyout } from "@/components/admin/NavigationFlyout";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import {
-  BarChart3,
-  Users,
-  Target,
-  Inbox,
-  Terminal,
-  FileText,
-  Zap,
-  ShieldCheck,
-  Rocket,
-  BookOpen,
-  ClipboardList,
-  PenTool,
-  TicketPercent,
-  ListOrdered,
-  Database,
-  UserCog,
-  Settings,
-  Menu,
-  X,
-  KeyRound,
-  Eye,
-  EyeOff,
-  Loader2,
-  CheckCircle,
-  Sun,
-  Moon,
-  Monitor,
-  Building2,
-  DollarSign,
-  Briefcase,
-  Clock,
-  Bug,
-  Wallet,
-  Brain,
-  UserPlus,
-  CalendarCheck,
-  CalendarOff,
-  Receipt,
-  Sparkles,
-  Megaphone,
-  LifeBuoy,
-  Cpu,
-  LogOut,
-  ChevronDown,
-  ChevronRight,
-  GraduationCap,
-  Award,
-  Mail,
-  Presentation,
-  UserCheck,
-  Video,
-  Layers3,
-  FileSignature,
-  ClipboardCheck,
-  Activity,
-  FileSearch,
-  AlertCircle,
-  Upload,
-} from "lucide-react";
-
-const InstagramNavIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
-);
+  GrowXLogo,
+  IconOverview,
+  IconTerminal,
+  IconCRM,
+  IconConsulting,
+  IconProjects,
+  IconFinance,
+  IconPeople,
+  IconMarketing,
+  IconSupport,
+  IconAI,
+  IconAcademy,
+  IconSettings,
+  IconActivity,
+  IconFile,
+  IconChevronRight,
+  IconChevronDown,
+  IconChevronLeft,
+  IconClose,
+  IconSun,
+  IconMoon,
+  IconMonitor,
+  IconKey,
+  IconLogOut,
+  IconMenu,
+  IconUser,
+  IconSparkle,
+  IconCheckCircle,
+  IconShield,
+  IconTarget,
+  IconZap,
+  IconLayers,
+  IconEye,
+  IconEyeOff,
+  IconSpinner,
+} from "@/components/admin/GrowXIcons";
 
 export interface NavGroup {
   id: string;
@@ -100,355 +59,180 @@ const NAV_GROUPS: NavGroup[] = [
   {
     id: "overview",
     title: "Overview",
-    icon: BarChart3,
+    icon: IconOverview,
     items: [
-      { name: "Dashboard", href: "/admin", icon: BarChart3 },
-      { name: "Command Center", href: "/admin/command-center", icon: Terminal },
+      { name: "Dashboard", href: "/admin", icon: IconOverview },
+      { name: "Command Center", href: "/admin/command-center", icon: IconTerminal },
     ],
   },
   {
     id: "crm",
     title: "Customer & Sales",
-    icon: Database,
+    icon: IconCRM,
     items: [
-      { name: "CRM Hub", href: "/admin/crm", icon: Database },
-      { name: "Sales Team", href: "/admin/crm/team", icon: Users },
-      { name: "Companies", href: "/admin/companies", icon: Building2 },
-      { name: "Contacts", href: "/admin/contacts", icon: Users },
-      { name: "Deals Pipeline", href: "/admin/deals", icon: DollarSign },
-      { name: "Leads", href: "/admin/leads", icon: Target },
-      { name: "Lead Imports", href: "/admin/leads/imports", icon: Upload },
-      { name: "Lead Research", href: "/admin/leads/scrape", icon: Zap },
-      { name: "Lead Enrichment", href: "/admin/apollo", icon: Rocket },
-      { name: "Products", href: "/admin/products", icon: FileText },
-      { name: "Quotations", href: "/admin/quotations", icon: FileText },
-      { name: "Invoices", href: "/admin/invoices", icon: ClipboardList },
-      { name: "Proposals", href: "/admin/proposals", icon: FileText },
-      { name: "Agreements", href: "/admin/agreements", icon: ShieldCheck },
-      { name: "Client Accounts", href: "/admin/clients", icon: Users },
-      {
-        name: "Client Assessments",
-        href: "/admin/assessments",
-        icon: ClipboardCheck,
-      },
-      {
-        name: "Business & Technical Audits",
-        href: "/admin/audits",
-        icon: FileText,
-      },
-      {
-        name: "AI Solution Reports",
-        href: "/admin/ai-solution-reports",
-        icon: Sparkles,
-      },
-      {
-        name: "Solution Architectures",
-        href: "/admin/solution-architectures",
-        icon: Layers3,
-      },
-      { name: "Scopes of Work", href: "/admin/scopes", icon: ClipboardList },
-      {
-        name: "Commercial Proposals",
-        href: "/admin/proposals",
-        icon: FileText,
-      },
-      {
-        name: "Proposal Approvals",
-        href: "/admin/proposal-approvals",
-        icon: ClipboardCheck,
-      },
-      {
-        name: "Master Service Agreements",
-        href: "/admin/agreements",
-        icon: FileSignature,
-      },
-      { name: "Outreach", href: "/admin/outreach", icon: Inbox },
-      { name: "GrowX Email", href: "/admin/growx-email", icon: Mail },
-      { name: "Communications", href: "/admin/communications", icon: Inbox },
-      {
-        name: "Presentation Builder",
-        href: "/admin/pitch-deck",
-        icon: Presentation,
-      },
-      { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
-      { name: "Workflows", href: "/admin/workflows", icon: Zap },
+      { name: "CRM Hub", href: "/admin/crm", icon: IconCRM },
+      { name: "Sales Team", href: "/admin/crm/team", icon: IconPeople },
+      { name: "Companies", href: "/admin/companies", icon: IconFile },
+      { name: "Contacts", href: "/admin/contacts", icon: IconPeople },
+      { name: "Deals Pipeline", href: "/admin/deals", icon: IconTarget },
+      { name: "Leads", href: "/admin/leads", icon: IconTarget },
+      { name: "Lead Imports", href: "/admin/leads/imports", icon: IconFile },
+      { name: "Lead Research", href: "/admin/leads/scrape", icon: IconZap },
+      { name: "Lead Enrichment", href: "/admin/apollo", icon: IconZap },
+      { name: "Products", href: "/admin/products", icon: IconFile },
+      { name: "Quotations", href: "/admin/quotations", icon: IconFile },
+      { name: "Invoices", href: "/admin/invoices", icon: IconFinance },
+      { name: "Proposals", href: "/admin/proposals", icon: IconFile },
+      { name: "Agreements", href: "/admin/agreements", icon: IconConsulting },
+      { name: "Client Accounts", href: "/admin/clients", icon: IconPeople },
+      { name: "Client Assessments", href: "/admin/assessments", icon: IconFile },
+      { name: "Business & Technical Audits", href: "/admin/audits", icon: IconFile },
+      { name: "AI Solution Reports", href: "/admin/ai-solution-reports", icon: IconSparkle },
+      { name: "Solution Architectures", href: "/admin/solution-architectures", icon: IconLayers },
+      { name: "Scopes of Work", href: "/admin/scopes", icon: IconFile },
+      { name: "Proposal Approvals", href: "/admin/proposal-approvals", icon: IconCheckCircle },
+      { name: "Outreach", href: "/admin/outreach", icon: IconMarketing },
+      { name: "GrowX Email", href: "/admin/growx-email", icon: IconFile },
+      { name: "Communications", href: "/admin/communications", icon: IconFile },
+      { name: "Presentation Builder", href: "/admin/pitch-deck", icon: IconFile },
+      { name: "Client Onboarding", href: "/admin/onboarding", icon: IconZap },
+      { name: "Workflows", href: "/admin/workflows", icon: IconZap },
     ],
   },
   {
     id: "consulting",
     title: "Consulting Workflow",
-    icon: FileSignature,
+    icon: IconConsulting,
     items: [
-      { name: "Assessments", href: "/admin/assessments", icon: ClipboardCheck },
-      {
-        name: "Business & Technical Audits",
-        href: "/admin/audits",
-        icon: FileSearch,
-      },
-      {
-        name: "Discovery Meetings",
-        href: "/admin/discovery-meetings",
-        icon: CalendarCheck,
-      },
-      {
-        name: "Solution Architecture",
-        href: "/admin/solution-architectures",
-        icon: Layers3,
-      },
-      { name: "Scopes of Work", href: "/admin/scopes", icon: ClipboardList },
-      {
-        name: "Commercial Proposals",
-        href: "/admin/proposals",
-        icon: FileText,
-      },
-      { name: "Agreements", href: "/admin/agreements", icon: FileSignature },
-      { name: "Contractor Agreements", href: "/admin/contractor-agreements", icon: FileSignature },
-      { name: "Client Onboarding", href: "/admin/onboarding", icon: Rocket },
-      {
-        name: "Invoices & Payments",
-        href: "/admin/consulting-finance",
-        icon: Receipt,
-      },
-      { name: "Project Workspaces", href: "/admin/projects", icon: Briefcase },
-      { name: "Communications", href: "/admin/communications", icon: Mail },
+      { name: "Assessments", href: "/admin/assessments", icon: IconFile },
+      { name: "Business & Technical Audits", href: "/admin/audits", icon: IconFile },
+      { name: "Discovery Meetings", href: "/admin/discovery-meetings", icon: IconActivity },
+      { name: "Solution Architecture", href: "/admin/solution-architectures", icon: IconLayers },
+      { name: "Scopes of Work", href: "/admin/scopes", icon: IconFile },
+      { name: "Commercial Proposals", href: "/admin/proposals", icon: IconFile },
+      { name: "Agreements", href: "/admin/agreements", icon: IconConsulting },
+      { name: "Contractor Agreements", href: "/admin/contractor-agreements", icon: IconConsulting },
+      { name: "Client Onboarding", href: "/admin/onboarding", icon: IconZap },
+      { name: "Invoices & Payments", href: "/admin/consulting-finance", icon: IconFinance },
+      { name: "Project Workspaces", href: "/admin/projects", icon: IconProjects },
+      { name: "Communications", href: "/admin/communications", icon: IconFile },
     ],
   },
   {
     id: "pm",
     title: "Projects & Delivery",
-    icon: Briefcase,
+    icon: IconProjects,
     items: [
-      { name: "Projects", href: "/admin/pm/projects", icon: Briefcase },
-      { name: "Project Workspaces", href: "/admin/projects", icon: Layers3 },
-      {
-        name: "Change Requests",
-        href: "/admin/change-requests",
-        icon: ClipboardList,
-      },
-      { name: "Sprints", href: "/admin/pm/sprints", icon: Zap },
-      { name: "Workload", href: "/admin/pm/workload", icon: Users },
-      { name: "Timesheets", href: "/admin/pm/timesheets", icon: Clock },
-      { name: "Bugs", href: "/admin/pm/bugs", icon: Bug },
-      {
-        name: "Project Assistant",
-        href: "/admin/pm/ai-copilot",
-        icon: Sparkles,
-      },
+      { name: "Projects", href: "/admin/pm/projects", icon: IconProjects },
+      { name: "Project Workspaces", href: "/admin/projects", icon: IconLayers },
+      { name: "Change Requests", href: "/admin/change-requests", icon: IconFile },
+      { name: "Sprints", href: "/admin/pm/sprints", icon: IconZap },
+      { name: "Workload", href: "/admin/pm/workload", icon: IconPeople },
+      { name: "Timesheets", href: "/admin/pm/timesheets", icon: IconActivity },
+      { name: "Bugs", href: "/admin/pm/bugs", icon: IconActivity },
+      { name: "Project Assistant", href: "/admin/pm/ai-copilot", icon: IconSparkle },
     ],
   },
   {
     id: "finance",
     title: "Finance & Accounts",
-    icon: Wallet,
+    icon: IconFinance,
     items: [
-      {
-        name: "Financial Overview",
-        href: "/admin/finance/dashboard",
-        icon: BarChart3,
-      },
-      {
-        name: "Sales Invoices",
-        href: "/admin/finance/invoices",
-        icon: ClipboardList,
-      },
-      { name: "Expenses", href: "/admin/finance/expenses", icon: Wallet },
-      {
-        name: "Ledger Accounts",
-        href: "/admin/finance/accounts",
-        icon: Database,
-      },
-      { name: "Reports", href: "/admin/finance/reports", icon: FileText },
-      { name: "AI Helper", href: "/admin/finance/ai-helper", icon: Brain },
-      {
-        name: "Consulting Activation",
-        href: "/admin/consulting-finance",
-        icon: Receipt,
-      },
+      { name: "Financial Overview", href: "/admin/finance/dashboard", icon: IconFinance },
+      { name: "Sales Invoices", href: "/admin/finance/invoices", icon: IconFile },
+      { name: "Expenses", href: "/admin/finance/expenses", icon: IconFinance },
+      { name: "Ledger Accounts", href: "/admin/finance/accounts", icon: IconFile },
+      { name: "Reports", href: "/admin/finance/reports", icon: IconFile },
+      { name: "AI Helper", href: "/admin/finance/ai-helper", icon: IconSparkle },
+      { name: "Consulting Activation", href: "/admin/consulting-finance", icon: IconFinance },
     ],
   },
   {
     id: "hrms",
     title: "People Operations",
-    icon: Users,
+    icon: IconPeople,
     items: [
-      { name: "People Core (New)", href: "/admin/people", icon: ShieldCheck },
-      {
-        name: "Departments (New)",
-        href: "/admin/people/departments",
-        icon: Building2,
-      },
-      {
-        name: "Designations (New)",
-        href: "/admin/people/designations",
-        icon: Layers3,
-      },
-      { name: "My Team (New)", href: "/admin/people/team", icon: Users },
-      {
-        name: "People Access (New)",
-        href: "/admin/people/access",
-        icon: KeyRound,
-      },
-      {
-        name: "Recruiter Workspace (New)",
-        href: "/admin/recruitment",
-        icon: UserPlus,
-      },
-      {
-        name: "Hiring Operations (New)",
-        href: "/admin/recruitment/operations",
-        icon: ClipboardList,
-      },
-      {
-        name: "Hiring Manager (New)",
-        href: "/admin/recruitment/manager",
-        icon: Briefcase,
-      },
-      {
-        name: "Offer Management (New)",
-        href: "/admin/offers",
-        icon: FileSignature,
-      },
-      {
-        name: "HR Onboarding (New)",
-        href: "/admin/hr-onboarding",
-        icon: ClipboardCheck,
-      },
-      {
-        name: "Manager Onboarding (New)",
-        href: "/admin/hr-onboarding/manager",
-        icon: UserCheck,
-      },
-      {
-        name: "People Overview",
-        href: "/admin/hrms/dashboard",
-        icon: BarChart3,
-      },
-      { name: "Employees", href: "/admin/hrms/employees", icon: Users },
-      { name: "Recruitment", href: "/admin/hrms/recruitment", icon: UserPlus },
-      {
-        name: "Interviews & Access",
-        href: "/admin/hrms/recruitment/interviews",
-        icon: KeyRound,
-      },
-      {
-        name: "Career Portal Applications",
-        href: "/admin/career-portal",
-        icon: ClipboardList,
-      },
-      {
-        name: "Attendance",
-        href: "/admin/hrms/attendance",
-        icon: CalendarCheck,
-      },
-      { name: "Leaves", href: "/admin/hrms/leaves", icon: CalendarOff },
-      { name: "Payroll", href: "/admin/hrms/payroll", icon: Receipt },
-      {
-        name: "Recruiting Assistant",
-        href: "/admin/hrms/ai-recruiter",
-        icon: Sparkles,
-      },
-      {
-        name: "Email Status",
-        href: "/admin/hrms/recruitment/emails",
-        icon: Mail,
-      },
-      {
-        name: "Email Templates",
-        href: "/admin/hrms/recruitment/email-templates",
-        icon: FileText,
-      },
-      {
-        name: "Email Settings",
-        href: "/admin/hrms/recruitment/email-settings",
-        icon: Settings,
-      },
-      {
-        name: "Sales Team Onboarding",
-        href: "/admin/employee-onboarding",
-        icon: UserCheck,
-      },
+      { name: "People Core", href: "/admin/people", icon: IconShield },
+      { name: "Departments", href: "/admin/people/departments", icon: IconFile },
+      { name: "Designations", href: "/admin/people/designations", icon: IconLayers },
+      { name: "My Team", href: "/admin/people/team", icon: IconPeople },
+      { name: "People Access", href: "/admin/people/access", icon: IconKey },
+      { name: "Recruiter Workspace", href: "/admin/recruitment", icon: IconPeople },
+      { name: "Hiring Operations", href: "/admin/recruitment/operations", icon: IconFile },
+      { name: "Hiring Manager", href: "/admin/recruitment/manager", icon: IconProjects },
+      { name: "Offer Management", href: "/admin/offers", icon: IconConsulting },
+      { name: "HR Onboarding", href: "/admin/hr-onboarding", icon: IconCheckCircle },
+      { name: "Manager Onboarding", href: "/admin/hr-onboarding/manager", icon: IconPeople },
+      { name: "People Overview", href: "/admin/hrms/dashboard", icon: IconOverview },
+      { name: "Employees", href: "/admin/hrms/employees", icon: IconPeople },
+      { name: "Recruitment", href: "/admin/hrms/recruitment", icon: IconPeople },
+      { name: "Interviews & Access", href: "/admin/hrms/recruitment/interviews", icon: IconKey },
+      { name: "Career Portal Applications", href: "/admin/career-portal", icon: IconFile },
+      { name: "Attendance", href: "/admin/hrms/attendance", icon: IconActivity },
+      { name: "Leaves", href: "/admin/hrms/leaves", icon: IconActivity },
+      { name: "Payroll", href: "/admin/hrms/payroll", icon: IconFinance },
+      { name: "Recruiting Assistant", href: "/admin/hrms/ai-recruiter", icon: IconSparkle },
+      { name: "Email Status", href: "/admin/hrms/recruitment/emails", icon: IconFile },
+      { name: "Email Templates", href: "/admin/hrms/recruitment/email-templates", icon: IconFile },
+      { name: "Email Settings", href: "/admin/hrms/recruitment/email-settings", icon: IconSettings },
+      { name: "Sales Team Onboarding", href: "/admin/employee-onboarding", icon: IconPeople },
     ],
   },
   {
     id: "marketing",
     title: "Growth & Marketing",
-    icon: Megaphone,
+    icon: IconMarketing,
     items: [
-      { name: "Marketing Hub", href: "/admin/marketing", icon: Megaphone },
-      {
-        name: "Carousel Creator",
-        href: "/admin/instagram-carousel",
-        icon: InstagramNavIcon,
-      },
-      {
-        name: "Editorial Carousel",
-        href: "/admin/editorial-carousel",
-        icon: FileText,
-      },
-      { name: "Reels Creator", href: "/admin/reels-creator", icon: Video },
+      { name: "Marketing Hub", href: "/admin/marketing", icon: IconMarketing },
+      { name: "Carousel Creator", href: "/admin/instagram-carousel", icon: IconFile },
+      { name: "Editorial Carousel", href: "/admin/editorial-carousel", icon: IconFile },
+      { name: "Reels Creator", href: "/admin/reels-creator", icon: IconFile },
     ],
   },
   {
     id: "support",
     title: "Customer Support",
-    icon: LifeBuoy,
-    items: [{ name: "Support Hub", href: "/admin/support", icon: LifeBuoy }],
+    icon: IconSupport,
+    items: [{ name: "Support Hub", href: "/admin/support", icon: IconSupport }],
   },
   {
     id: "ai",
     title: "Intelligent Tools",
-    icon: Cpu,
+    icon: IconAI,
     items: [
-      { name: "Intelligent Workspace", href: "/admin/ai-platform", icon: Cpu },
+      { name: "Intelligent Workspace", href: "/admin/ai-platform", icon: IconAI },
     ],
   },
   {
     id: "academy",
     title: "Learning & Commerce",
-    icon: BookOpen,
+    icon: IconAcademy,
     items: [
-      { name: "Courses", href: "/admin/academy/courses", icon: BookOpen },
-      {
-        name: "Assessments",
-        href: "/admin/academy/assessments",
-        icon: PenTool,
-      },
-      { name: "Students", href: "/admin/academy/users", icon: GraduationCap },
-      {
-        name: "Certificates",
-        href: "/admin/academy/certificates",
-        icon: Award,
-      },
-      {
-        name: "Coupons",
-        href: "/admin/monetization/coupons",
-        icon: TicketPercent,
-      },
-      { name: "Orders", href: "/admin/monetization/orders", icon: ListOrdered },
+      { name: "Courses", href: "/admin/academy/courses", icon: IconAcademy },
+      { name: "Assessments", href: "/admin/academy/assessments", icon: IconFile },
+      { name: "Students", href: "/admin/academy/users", icon: IconPeople },
+      { name: "Certificates", href: "/admin/academy/certificates", icon: IconFile },
+      { name: "Coupons", href: "/admin/monetization/coupons", icon: IconFinance },
+      { name: "Orders", href: "/admin/monetization/orders", icon: IconFile },
     ],
   },
   {
     id: "admin",
     title: "Administration",
-    icon: Settings,
+    icon: IconSettings,
     items: [
-      { name: "Settings & Security", href: "/admin/settings", icon: Settings },
-      { name: "Team & Access", href: "/admin/team", icon: UserCog },
-      { name: "Reports & Analytics", href: "/admin/reports", icon: BarChart3 },
+      { name: "Settings & Security", href: "/admin/settings", icon: IconSettings },
+      { name: "Reports & Analytics", href: "/admin/reports", icon: IconOverview },
     ],
   },
   {
     id: "operations",
     title: "Operations & Audit",
-    icon: Activity,
+    icon: IconActivity,
     items: [
-      { name: "Activity", href: "/admin/activity", icon: Activity },
-      { name: "Audit Logs", href: "/admin/audit-logs", icon: FileSearch },
-      {
-        name: "System Errors",
-        href: "/admin/system/errors",
-        icon: AlertCircle,
-      },
+      { name: "Activity", href: "/admin/activity", icon: IconActivity },
+      { name: "Audit Logs", href: "/admin/audit-logs", icon: IconFile },
+      { name: "System Errors", href: "/admin/system/errors", icon: IconActivity },
     ],
   },
 ];
@@ -474,31 +258,33 @@ export function AdminNav({
   const { theme, setTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
   const [desktopFlyout, setDesktopFlyout] = useState<{
     groupId: string;
     top: number;
     trigger: HTMLElement | null;
   } | null>(null);
 
-  // Track open accordion sections on mobile
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    overview: true,
-    crm: false,
-    pm: false,
-    finance: false,
-    hrms: false,
-    marketing: false,
-    support: false,
-    ai: false,
-    academy: false,
-    admin: false,
-    operations: false,
-    consulting: false,
-  });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close profile menu on outside click
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    };
+    if (showProfileMenu) {
+      document.addEventListener("mousedown", handleOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showProfileMenu]);
 
   useEffect(() => {
     const activeGroup = NAV_GROUPS.find((group) =>
@@ -631,10 +417,10 @@ export function AdminNav({
       setDesktopFlyout(null);
     } else {
       const rect = target.getBoundingClientRect();
-      const maxTop = Math.max(12, window.innerHeight - 520);
+      const maxTop = Math.max(16, window.innerHeight - 480);
       setDesktopFlyout({
         groupId,
-        top: Math.max(12, Math.min(rect.top - 8, maxTop)),
+        top: Math.max(16, Math.min(rect.top - 6, maxTop)),
         trigger: target,
       });
     }
@@ -660,7 +446,7 @@ export function AdminNav({
 
     return (
       <Link
-        key={item.href}
+        key={`${item.href}-${item.name}`}
         href={item.href}
         title={isCollapsed && !isMobile ? item.name : ""}
         aria-current={isActive ? "page" : undefined}
@@ -669,26 +455,24 @@ export function AdminNav({
           if (isMobileOpen) onMobileToggle();
         }}
         className={cn(
-          "flex items-center h-9 px-3 rounded-xl transition-all duration-150 group relative border border-transparent text-[12px] font-medium select-none",
+          "flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer",
           isActive
-            ? "bg-[#0075de]/10 text-[#0075de] dark:text-blue-400 font-bold border-[#0075de]/10 shadow-xs"
-            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-neutral-900/50",
+            ? "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold"
+            : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-neutral-900/60",
           isCollapsed && !isMobile && "lg:justify-center lg:px-0",
           isFlyout &&
-            "h-8.5 rounded-xl px-3 !text-[var(--text-secondary)] hover:!text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-neutral-900/80",
-          isFlyout &&
-            isActive &&
-            "!text-[#0075de] bg-[#0075de]/8 border-[#0075de]/10",
+            "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-neutral-800/80",
+          isFlyout && isActive && "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/20 dark:text-blue-400"
         )}
       >
         <Icon
+          size={14}
           className={cn(
-            "h-3.5 w-3.5 shrink-0 transition-colors",
+            "shrink-0 transition-colors",
             isActive
               ? "text-[#0075de] dark:text-blue-400"
-              : "text-[var(--text-muted)] group-hover:text-[var(--text-primary)]",
+              : "text-slate-400 dark:text-neutral-500 group-hover:text-slate-700 dark:group-hover:text-neutral-300",
             (!isCollapsed || isMobile) && "mr-2.5",
-            isFlyout && "!text-current",
           )}
         />
 
@@ -701,11 +485,11 @@ export function AdminNav({
           {item.name}
         </span>
 
-        {isActive && (
+        {isActive && !isFlyout && (
           <div
             className={cn(
-              "absolute bg-[#0075de] rounded-r-md left-0 top-1/2 -translate-y-1/2 w-[3px] h-3.5",
-              isCollapsed && !isMobile ? "lg:h-4 lg:w-[3px]" : "",
+              "absolute bg-[#0075de] dark:bg-blue-400 rounded-r-md left-0 top-1/2 -translate-y-1/2 w-[2.5px] h-3.5",
+              isCollapsed && !isMobile ? "lg:h-4" : "",
             )}
           />
         )}
@@ -713,52 +497,70 @@ export function AdminNav({
     );
   };
 
+  const userName = session?.user?.name || "Admin User";
+  const userRole = role === "crm_agent" ? "CRM Agent" : role || "Administrator";
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   const renderNavContent = (isMobile = false) => (
-    <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-neutral-950 text-[var(--text-primary)] border-r border-slate-100 dark:border-neutral-900">
+    <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-neutral-950 text-slate-800 dark:text-neutral-200 border-r border-slate-200/80 dark:border-neutral-900">
       {/* Sidebar Header */}
       <div
         className={cn(
-          "h-16 flex items-center px-4.5 shrink-0 justify-between border-b border-slate-100 dark:border-neutral-900/60 bg-transparent",
+          "h-14 flex items-center px-3.5 shrink-0 justify-between bg-transparent",
           isCollapsed && !isMobile ? "lg:px-0 lg:justify-center" : "",
         )}
       >
-        <div className="flex items-center gap-3">
-          <div className="h-8.5 w-8.5 bg-[#0075de]/10 border border-[#0075de]/15 rounded-xl flex items-center justify-center shrink-0 shadow-xs dark:bg-blue-500/10 dark:border-blue-500/15">
-            <ShieldCheck className="text-[#0075de] dark:text-blue-400 h-4.5 w-4.5" />
-          </div>
+        <div className="flex items-center gap-2.5">
+          <GrowXLogo size={26} className="shrink-0" />
           <div
             className={cn(
               "flex flex-col overflow-hidden whitespace-nowrap",
               isCollapsed && !isMobile ? "lg:hidden" : "",
             )}
           >
-            <span className="text-sm font-black tracking-tight text-[var(--text-primary)] leading-none font-sans">
-              GrowX
-              <span className="text-[#0075de] dark:text-blue-400">Labs</span>
+            <span className="text-[13.5px] font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+              GrowX<span className="text-[#0075de]">Labs</span>
             </span>
-            <span className="text-[7.5px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest mt-1">
-              Enterprise Admin OS
+            <span className="text-[9px] font-medium text-slate-400 dark:text-neutral-500 tracking-wide flex items-center gap-1.5 mt-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
+              Workspace
             </span>
           </div>
         </div>
+
+        {/* Desktop Header Collapse Button */}
+        {!isMobile && !isCollapsed && (
+          <button
+            onClick={onToggle}
+            className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center justify-center transition-all cursor-pointer"
+            title="Collapse sidebar"
+            aria-label="Collapse sidebar"
+          >
+            <IconChevronLeft size={13} />
+          </button>
+        )}
 
         {/* Mobile close button */}
         {isMobile && (
           <button
             onClick={onMobileToggle}
-            className="h-8 w-8 rounded-xl bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-            aria-label="Close sidebar"
+            className="h-8 w-8 rounded-xl bg-slate-100/80 dark:bg-neutral-900 border border-slate-200/60 dark:border-neutral-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer"
+            aria-label="Close menu"
           >
-            <X size={15} />
+            <IconClose size={14} />
           </button>
         )}
       </div>
 
       {/* Nav List */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar py-4 px-3 space-y-2">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar py-3 px-2.5 space-y-1">
         {NAV_GROUPS.map((group) => {
           const visibleItems = visibleItemsForGroup(group);
-
           if (visibleItems.length === 0) return null;
 
           const isOpen = openSections[group.id] ?? true;
@@ -784,19 +586,19 @@ export function AdminNav({
                 aria-expanded={isMobile ? isOpen : isFlyoutOpen}
                 aria-controls={`admin-nav-${group.id}`}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-xl font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-slate-50 dark:hover:bg-neutral-900/50 transition-all cursor-pointer select-none border border-transparent",
+                  "w-full flex items-center justify-between rounded-xl font-medium text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-neutral-900/60 transition-all cursor-pointer select-none",
                   isMobile
-                    ? "h-9 px-2.5 text-[11px]"
-                    : "h-10 px-3.5 text-[12px]",
+                    ? "h-9 px-2.5 text-[11.5px]"
+                    : "h-9 px-3 text-[12px]",
                   hasActiveItem &&
                     !isMobile &&
-                    "bg-slate-50 text-slate-900 dark:bg-neutral-900/40 dark:text-white border-slate-100 dark:border-neutral-900",
+                    "bg-slate-100/80 text-slate-900 dark:bg-neutral-900/80 dark:text-white font-semibold",
                   isFlyoutOpen &&
                     !isMobile &&
-                    "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/10 dark:text-blue-400 border-[#0075de]/15 shadow-xs",
+                    "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold shadow-xs",
                   isCollapsed &&
                     !isMobile &&
-                    "lg:justify-center lg:px-0 lg:h-10 lg:w-10 lg:mx-auto",
+                    "lg:justify-center lg:px-0 lg:h-9 lg:w-9 lg:mx-auto",
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -809,7 +611,7 @@ export function AdminNav({
                   </span>
                 </div>
                 {isMobile ? (
-                  <ChevronDown
+                  <IconChevronDown
                     size={11}
                     className={cn(
                       "transition-transform duration-200",
@@ -817,12 +619,12 @@ export function AdminNav({
                     )}
                   />
                 ) : (
-                  <ChevronRight
+                  <IconChevronRight
                     size={11}
                     className={cn(
-                      "transition-transform duration-200",
+                      "transition-transform duration-200 text-slate-400 dark:text-neutral-500",
                       isCollapsed && "lg:hidden",
-                      isFlyoutOpen && "rotate-90",
+                      isFlyoutOpen && "rotate-90 text-[#0075de] dark:text-blue-400",
                     )}
                   />
                 )}
@@ -832,7 +634,7 @@ export function AdminNav({
               {isMobile && isOpen && (
                 <div
                   id={`admin-nav-${group.id}`}
-                  className="space-y-0.5 pl-1.5 pt-0.5"
+                  className="space-y-0.5 pl-2 pt-0.5"
                 >
                   {visibleItems.map((item) => renderLink(item, isMobile))}
                 </div>
@@ -842,47 +644,74 @@ export function AdminNav({
         })}
       </div>
 
-      {/* Footer Area */}
+      {/* Executive Footer: User Profile & Quick Actions */}
       <div
+        ref={profileMenuRef}
         className={cn(
-          "py-4 border-t border-slate-100 dark:border-neutral-900/60 bg-white dark:bg-neutral-950 space-y-2 shrink-0 px-3",
-          isCollapsed && !isMobile ? "lg:px-2" : "",
+          "relative mt-auto p-2 pb-2.5 shrink-0 bg-transparent",
+          isCollapsed && !isMobile ? "lg:p-1.5 lg:pb-2.5" : "",
         )}
       >
-        {/* Theme Switcher */}
+        {/* Profile Card Trigger */}
         <div
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
           className={cn(
-            "flex items-center bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-900 rounded-xl p-0.5 transition-all w-full h-8",
-            isCollapsed && !isMobile ? "justify-center mx-auto w-8" : "",
+            "flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-white dark:hover:bg-neutral-900 border border-transparent hover:border-slate-200/80 dark:hover:border-neutral-800 transition-all cursor-pointer select-none",
+            isCollapsed && !isMobile ? "justify-center" : "",
+            showProfileMenu && "bg-white dark:bg-neutral-900 border-slate-200/80 dark:border-neutral-800 shadow-xs"
           )}
+          title={isCollapsed && !isMobile ? userName : ""}
         >
-          {!mounted ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <Loader2 className="h-3 w-3 animate-spin text-[var(--text-muted)]" />
+          {/* Avatar Initials with Status Ring */}
+          <div className="relative shrink-0">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#0075de] to-blue-400 text-white flex items-center justify-center font-bold text-[11px] shadow-xs">
+              {userInitials || "GX"}
             </div>
-          ) : isCollapsed && !isMobile ? (
-            <button
-              type="button"
-              onClick={() => {
-                const nextTheme =
-                  theme === "light"
-                    ? "dark"
-                    : theme === "dark"
-                      ? "system"
-                      : "light";
-                setTheme(nextTheme);
-                updateThemeClass(nextTheme);
-              }}
-              className="flex items-center justify-center w-7 h-7 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg transition-all cursor-pointer"
-              title={`Theme: ${theme}`}
-              aria-label={`Theme: ${theme}. Change theme`}
-            >
-              {theme === "light" && <Sun size={13} />}
-              {theme === "dark" && <Moon size={13} />}
-              {theme === "system" && <Monitor size={13} />}
-            </button>
-          ) : (
-            <div className="flex w-full h-full gap-0.5">
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-neutral-950" />
+          </div>
+
+          {/* User Info */}
+          <div
+            className={cn(
+              "min-w-0 flex-1 flex flex-col",
+              isCollapsed && !isMobile ? "lg:hidden" : "",
+            )}
+          >
+            <span className="text-[12px] font-bold text-slate-900 dark:text-white truncate leading-tight">
+              {userName}
+            </span>
+            <span className="text-[10px] text-slate-400 dark:text-neutral-500 font-medium truncate">
+              {userRole}
+            </span>
+          </div>
+
+          {/* Settings Trigger Chevron */}
+          <div
+            className={cn(
+              "text-slate-400 dark:text-neutral-500 shrink-0",
+              isCollapsed && !isMobile ? "lg:hidden" : "",
+            )}
+          >
+            <IconChevronDown
+              size={12}
+              className={cn(
+                "transition-transform duration-200",
+                showProfileMenu ? "rotate-180" : ""
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Dropup Profile Menu */}
+        {showProfileMenu && (
+          <div
+            className={cn(
+              "absolute bottom-[calc(100%+8px)] z-[150] rounded-2xl border border-slate-200/90 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl p-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-150 space-y-2",
+              isCollapsed && !isMobile ? "left-2 w-56" : "left-2 right-2"
+            )}
+          >
+            {/* Theme Toggle Pill */}
+            <div className="p-1 bg-slate-100 dark:bg-neutral-950 rounded-xl flex items-center gap-0.5">
               {(["light", "dark", "system"] as const).map((t) => {
                 const isActive = (theme || "system") === t;
                 return (
@@ -894,77 +723,50 @@ export function AdminNav({
                       updateThemeClass(t);
                     }}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-1 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer h-full px-1",
+                      "flex-1 flex items-center justify-center gap-1.5 py-1 rounded-lg text-[10px] font-semibold capitalize transition-all cursor-pointer",
                       isActive
-                        ? "bg-white text-[#0075de] dark:bg-neutral-800 dark:text-[#bdefff] border border-slate-200/80 dark:border-neutral-700 shadow-xs font-black"
-                        : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white",
+                        ? "bg-white text-slate-900 dark:bg-neutral-800 dark:text-white shadow-xs font-bold"
+                        : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white"
                     )}
                   >
-                    {t === "light" && <Sun size={10} />}
-                    {t === "dark" && <Moon size={10} />}
-                    {t === "system" && <Monitor size={10} />}
+                    {t === "light" && <IconSun size={11} />}
+                    {t === "dark" && <IconMoon size={11} />}
+                    {t === "system" && <IconMonitor size={11} />}
                     <span>{t}</span>
                   </button>
                 );
               })}
             </div>
-          )}
-        </div>
 
-        {/* Change Password */}
-        <button
-          onClick={() => {
-            setPwError("");
-            setPwSuccess(false);
-            setCurrentPw("");
-            setNewPw("");
-            setConfirmPw("");
-            setShowPwModal(true);
-          }}
-          className={cn(
-            "w-full flex items-center h-8.5 px-3 rounded-xl text-slate-500 dark:text-[var(--text-secondary)] hover:text-[#0075de] hover:bg-[#0075de]/5 dark:hover:text-blue-400 dark:hover:bg-blue-400/5 transition-all text-left group text-xs",
-            isCollapsed && !isMobile && "lg:justify-center lg:px-0",
-          )}
-        >
-          <KeyRound
-            className={cn(
-              "h-3.5 w-3.5 shrink-0 transition-colors group-hover:text-[#0075de] dark:group-hover:text-blue-400",
-              (!isCollapsed || isMobile) && "mr-2.5",
-            )}
-          />
-          <span
-            className={cn(
-              "font-semibold text-[11px]",
-              isCollapsed && !isMobile ? "lg:hidden" : "",
-            )}
-          >
-            Change Password
-          </span>
-        </button>
+            <div className="h-[1px] bg-slate-100 dark:bg-neutral-800 my-1" />
 
-        {/* Sign Out */}
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className={cn(
-            "w-full flex items-center h-8.5 px-3 rounded-xl text-slate-500 dark:text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-500/5 transition-all text-left group text-xs",
-            isCollapsed && !isMobile && "lg:justify-center lg:px-0",
-          )}
-        >
-          <LogOut
-            className={cn(
-              "h-3.5 w-3.5 shrink-0 transition-colors group-hover:text-red-500",
-              (!isCollapsed || isMobile) && "mr-2.5",
-            )}
-          />
-          <span
-            className={cn(
-              "font-semibold text-[11px]",
-              isCollapsed && !isMobile ? "lg:hidden" : "",
-            )}
-          >
-            Sign Out
-          </span>
-        </button>
+            {/* Change Password Button */}
+            <button
+              onClick={() => {
+                setShowProfileMenu(false);
+                setPwError("");
+                setPwSuccess(false);
+                setCurrentPw("");
+                setNewPw("");
+                setConfirmPw("");
+                setShowPwModal(true);
+              }}
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[#0075de] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-neutral-800/80 transition-all text-left text-[11.5px] font-medium cursor-pointer"
+            >
+              <IconKey size={13} className="text-slate-400 dark:text-neutral-500" />
+              <span>Change Password</span>
+            </button>
+
+            {/* Sign Out Button */}
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all text-left text-[11.5px] font-medium cursor-pointer"
+            >
+              <IconLogOut size={13} className="text-slate-400 dark:text-neutral-500" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -972,35 +774,32 @@ export function AdminNav({
   return (
     <>
       {/* ═══ MOBILE TOP NAVBAR ═══ */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-[100] h-14 bg-white dark:bg-neutral-950 border-b border-slate-100 dark:border-neutral-900 flex items-center justify-between px-4">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-[100] h-14 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-neutral-900 flex items-center justify-between px-4">
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 bg-[#0075de]/10 border border-[#0075de]/15 rounded-xl flex items-center justify-center shrink-0">
-            <ShieldCheck className="text-[#0075de] dark:text-blue-400 h-4 w-4" />
-          </div>
+          <GrowXLogo size={24} className="shrink-0" />
           <div className="flex flex-col">
-            <span className="text-sm font-bold tracking-tight text-[#0F172A] dark:text-white leading-none">
-              GrowX
-              <span className="text-[#0075de] dark:text-blue-400">Labs</span>
+            <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white leading-none">
+              GrowX<span className="text-[#0075de]">Labs</span>
             </span>
-            <span className="text-[8px] font-bold text-[#64748B] dark:text-neutral-500 uppercase tracking-[0.15em] mt-0.5">
-              Admin Platform
+            <span className="text-[8.5px] font-semibold text-slate-400 dark:text-neutral-500 uppercase tracking-widest mt-0.5">
+              Workspace
             </span>
           </div>
         </div>
 
         <button
           onClick={onMobileToggle}
-          className="h-9 w-9 rounded-xl bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 flex items-center justify-center text-[#0F172A] dark:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 transition-all cursor-pointer"
-          aria-label="Toggle Navigation Menu"
+          className="h-8.5 w-8.5 rounded-xl bg-slate-100/80 dark:bg-neutral-900 border border-slate-200/80 dark:border-neutral-800 flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:bg-slate-200/60 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+          aria-label="Toggle navigation menu"
         >
-          {isMobileOpen ? <X size={16} /> : <Menu size={16} />}
+          {isMobileOpen ? <IconClose size={15} /> : <IconMenu size={15} />}
         </button>
       </header>
 
       {/* ═══ MOBILE DRAWER BACKDROP ═══ */}
       {isMobileOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-[200] transition-opacity duration-300 animate-in fade-in"
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-xs z-[200] transition-opacity duration-300 animate-in fade-in"
           onClick={onMobileToggle}
         />
       )}
@@ -1008,7 +807,7 @@ export function AdminNav({
       {/* ═══ MOBILE DRAWER SIDEBAR ═══ */}
       <aside
         className={cn(
-          "md:hidden fixed left-0 top-0 h-full w-[280px] z-[210] transition-transform duration-300 ease-in-out shadow-2xl",
+          "md:hidden fixed left-0 top-0 h-full w-[270px] z-[210] transition-transform duration-300 ease-in-out shadow-2xl",
           isMobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -1019,28 +818,29 @@ export function AdminNav({
       <aside
         id="admin-sidebar-container"
         className={cn(
-          "hidden md:flex h-screen bg-white dark:bg-neutral-950 flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-slate-100 dark:border-neutral-900",
-          isCollapsed ? "w-20" : "w-[272px]",
+          "hidden md:flex h-screen bg-white dark:bg-neutral-950 flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-slate-200/80 dark:border-neutral-900",
+          isCollapsed ? "w-20" : "w-[260px]",
         )}
       >
         {renderNavContent(false)}
 
-        {/* Desktop Collapse Toggle Button (Prominent Floating Badge) */}
-        <button
-          onClick={onToggle}
-          className="absolute top-4.5 -right-3.5 h-7 w-7 rounded-full bg-white dark:bg-neutral-900 text-[#0F172A] dark:text-white flex items-center justify-center border border-slate-200 dark:border-neutral-800 z-[120] shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        >
-          <ChevronRight
-            className={cn(
-              "h-3.5 w-3.5 text-[#0075de] dark:text-blue-400 transition-transform duration-300",
-              isCollapsed ? "" : "rotate-180",
-            )}
-          />
-        </button>
+        {/* Border Expand Button: Only shown when sidebar is collapsed */}
+        {isCollapsed && (
+          <button
+            onClick={onToggle}
+            className="absolute top-4.5 -right-3 h-6 w-6 rounded-full bg-white dark:bg-neutral-900 text-slate-400 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-white flex items-center justify-center border border-slate-200 dark:border-neutral-800 z-[120] shadow-xs hover:shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Expand sidebar"
+            aria-label="Expand sidebar"
+          >
+            <IconChevronRight
+              size={11}
+              className="text-slate-400 dark:text-neutral-400"
+            />
+          </button>
+        )}
       </aside>
 
-      {/* Portal flyout is rendered outside the Admin shell by NavigationFlyout. */}
+      {/* Portal flyout is rendered outside the Admin shell by NavigationFlyout */}
       {desktopFlyout &&
         (() => {
           const group = NAV_GROUPS.find(
@@ -1057,9 +857,9 @@ export function AdminNav({
               title={group.title}
               groupId={group.id}
               icon={group.icon}
-              left={isCollapsed ? 92 : 284}
+              left={isCollapsed ? 88 : 268}
               top={desktopFlyout.top}
-              sidebarWidth={isCollapsed ? 80 : 272}
+              sidebarWidth={isCollapsed ? 80 : 260}
               items={visibleItems}
               renderLink={renderLink}
               onClose={closeDesktopFlyout}
@@ -1069,21 +869,21 @@ export function AdminNav({
 
       {/* ═══ CHANGE PASSWORD MODAL ═══ */}
       {showPwModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-[300] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-950 border border-slate-100 dark:border-neutral-900 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[300] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => setShowPwModal(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-[var(--text-primary)] transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-neutral-200 transition-colors cursor-pointer"
             >
-              <X size={16} />
+              <IconClose size={15} />
             </button>
 
-            <div className="flex items-center gap-3 border-b border-slate-100 dark:border-neutral-900/60 pb-4">
+            <div className="flex items-center gap-3 border-b border-slate-100 dark:border-neutral-900 pb-4">
               <div className="p-2 bg-[#0075de]/10 text-[#0075de] dark:text-blue-400 rounded-xl">
-                <KeyRound size={18} />
+                <IconKey size={18} />
               </div>
               <div>
-                <h3 className="font-bold text-[var(--text-primary)] text-base">
+                <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   Change Password
                 </h3>
                 <p className="text-xs text-slate-400 dark:text-neutral-500">
@@ -1094,21 +894,21 @@ export function AdminNav({
 
             {pwSuccess ? (
               <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center space-y-2">
-                <CheckCircle className="h-8 w-8 text-emerald-450 mx-auto animate-bounce" />
-                <p className="text-sm font-bold text-emerald-450">
+                <IconCheckCircle size={28} className="text-emerald-500 mx-auto" />
+                <p className="text-sm font-bold text-emerald-500">
                   Password Updated Successfully!
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
                 {pwError && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 text-xs font-bold rounded-xl">
+                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 text-xs font-semibold rounded-xl">
                     {pwError}
                   </div>
                 )}
 
                 <div>
-                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block">
+                  <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block tracking-wider">
                     Current Password
                   </label>
                   <div className="relative">
@@ -1117,20 +917,20 @@ export function AdminNav({
                       value={currentPw}
                       onChange={(e) => setCurrentPw(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-xl text-sm text-[var(--text-primary)] focus:outline-none pr-10"
+                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPw(!showCurrentPw)}
-                      className="absolute right-3 top-2 text-neutral-400 hover:text-[var(--text-primary)]"
+                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 dark:hover:text-neutral-200 cursor-pointer"
                     >
-                      {showCurrentPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {showCurrentPw ? <IconEyeOff size={15} /> : <IconEye size={15} />}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block">
+                  <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block tracking-wider">
                     New Password
                   </label>
                   <div className="relative">
@@ -1139,20 +939,20 @@ export function AdminNav({
                       value={newPw}
                       onChange={(e) => setNewPw(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-xl text-sm text-[var(--text-primary)] focus:outline-none pr-10"
+                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPw(!showNewPw)}
-                      className="absolute right-3 top-2 text-neutral-400 hover:text-[var(--text-primary)]"
+                      className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 dark:hover:text-neutral-200 cursor-pointer"
                     >
-                      {showNewPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {showNewPw ? <IconEyeOff size={15} /> : <IconEye size={15} />}
                     </button>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block">
+                  <label className="text-[10px] font-bold uppercase text-slate-400 dark:text-neutral-500 mb-1.5 block tracking-wider">
                     Confirm New Password
                   </label>
                   <input
@@ -1160,7 +960,7 @@ export function AdminNav({
                     value={confirmPw}
                     onChange={(e) => setConfirmPw(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-xl text-sm text-[var(--text-primary)] focus:outline-none"
+                    className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40"
                   />
                 </div>
 
@@ -1168,7 +968,7 @@ export function AdminNav({
                   <button
                     type="button"
                     onClick={() => setShowPwModal(false)}
-                    className="flex-1 h-9 border border-slate-100 dark:border-neutral-800 rounded-xl text-xs font-bold text-slate-400 dark:text-neutral-500 hover:bg-slate-50 dark:hover:bg-neutral-900 hover:text-[var(--text-primary)] transition-all"
+                    className="flex-1 h-9 border border-slate-200 dark:border-neutral-800 rounded-xl text-xs font-semibold text-slate-500 dark:text-neutral-400 hover:bg-slate-50 dark:hover:bg-neutral-900 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1176,10 +976,10 @@ export function AdminNav({
                     type="button"
                     onClick={handleChangePassword}
                     disabled={pwLoading}
-                    className="flex-1 h-9 bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center"
+                    className="flex-1 h-9 bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold rounded-xl transition-all flex items-center justify-center cursor-pointer"
                   >
                     {pwLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <IconSpinner size={16} className="text-white" />
                     ) : (
                       "Update Password"
                     )}

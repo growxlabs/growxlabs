@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { RefreshCw, UserCheck } from "lucide-react";
+import { RefreshCw, UserCheck } from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 
 interface PageHeaderProps {
