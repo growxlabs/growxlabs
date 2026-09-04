@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-import { useTheme } from "next-themes";
 import { ActivationHeader } from "@/components/activation/ActivationHeader";
 import { ActivationFooter } from "@/components/activation/ActivationFooter";
 import { isEmployeeWorkspaceRoute } from "@/lib/routes/application-shell";
@@ -16,25 +15,10 @@ const Footer = dynamic(() => import("@/components/layout/Footer").then(mod => mo
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { setTheme } = useTheme();
   
   // Detect if we are in a dashboard or demo
   const isDashboard = pathname?.includes("/admin") || pathname?.includes("/client");
   const isDemo = pathname?.includes("/demos");
-
-  // Apply dark theme for admin/dashboard, light for marketing
-  useEffect(() => {
-    if (pathname?.startsWith("/admin") || pathname?.startsWith("/client")) {
-      // Allow dashboard pages to manage their own theme switcher state
-      return;
-    }
-
-    if (isDashboard || isDemo) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  }, [isDashboard, isDemo, setTheme, pathname]);
 
   const isBlog = pathname?.includes("/blog");
 

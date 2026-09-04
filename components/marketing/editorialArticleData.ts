@@ -17,6 +17,7 @@ export interface EditorialArticleData {
   category: string;
   tags: string[];
   author: string;
+  authorRole?: string;
   publishedAt: string;
   updatedAt?: string;
   readTime: string;
@@ -25,6 +26,8 @@ export interface EditorialArticleData {
   heroAlt: string;
   access: EditorialAccess;
   subscriptionGateAfter?: string;
+  takeaways?: string[];
+  metrics?: { label: string; value: string }[];
   relatedPosts: EditorialRelatedPost[];
 }
 
@@ -65,7 +68,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 27, 2026",
     readTime: "5 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-ai-coding-landscape-v2.png",
     heroAlt: "A developer and coding agent collaborating across a structured software repository",
     access: "public",
@@ -110,7 +113,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "June 1, 2026",
     readTime: "7 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-chatbots-agents-landscape.png",
     heroAlt: "A conversation interface becoming an agent workflow",
     access: "public",
@@ -125,7 +128,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "June 30, 2026",
     readTime: "8 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-chatgpt-gpt56-landscape.png",
     heroAlt: "An editorial study of the ChatGPT GPT-5.6 preview model family",
     access: "public",
@@ -140,7 +143,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 31, 2026",
     readTime: "7 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-claude-fable-5-mythos-5.png",
     heroAlt: "An editorial study of Anthropic’s Claude Fable 5 and Mythos 5 models",
     access: "public",
@@ -155,7 +158,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "June 2, 2026",
     readTime: "6 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-claude-fable-banned-landscape.png",
     heroAlt: "A secure research facility and restricted AI model artifact",
     access: "public",
@@ -170,7 +173,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 29, 2026",
     readTime: "8 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-claude-opus-landscape.png",
     heroAlt: "A research instrument, coding workspace, and server room representing Claude Opus 4.8",
     access: "public",
@@ -183,6 +186,7 @@ const articles: Record<string, EditorialArticleData> = {
     category: "Developer Tools",
     tags: ["Cursor", "GitHub", "AI coding"],
     author: "GrowxLabs",
+    authorRole: "AI Systems & Engineering Lab",
     publishedAt: "August 17, 2026",
     updatedAt: "August 21, 2026",
     readTime: "8 min read",
@@ -190,6 +194,18 @@ const articles: Record<string, EditorialArticleData> = {
     heroImage: "/images/blog-cursor-origin-landscape.png",
     heroAlt: "Cursor Origin connecting an AI editor with repositories and GitHub workflows",
     access: "public",
+    takeaways: [
+      "Cursor launched Origin on August 17, 2026, expanding from an AI code editor into native repository hosting, automated pull requests, and checks.",
+      "Continuous two-way GitHub sync enables teams to use Cursor Origin without abandoning their existing GitHub infrastructure or team repositories.",
+      "Co-locating the code repository directly alongside cloud AI agents removes network latency and file-context bottlenecks in multi-file coding workflows.",
+      "Preserves the human-in-the-loop engineering workflow through structured pull request reviews, automated CI checks, and inline comments."
+    ],
+    metrics: [
+      { label: "Launch Date", value: "Aug 17, 2026" },
+      { label: "Sync Engine", value: "Two-Way GitHub" },
+      { label: "Core Architecture", value: "Agent-Adjacent Git" },
+      { label: "Access Tier", value: "Cursor Paid Beta" }
+    ],
     relatedPosts: sharedRelated,
   },
   "elon-musks-path-to-becoming-the-worlds-first-trillionaire": {
@@ -231,7 +247,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 27, 2026",
     readTime: "6 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-google-io-2026.png",
     heroAlt: "Google I/O 2026 and the next generation of Gemini development tools",
     access: "public",
@@ -261,7 +277,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 27, 2026",
     readTime: "9 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-kimi-k3-woodcut.png",
     heroAlt: "A technical editorial study of Moonshot AI’s Kimi K3 model",
     access: "public",
@@ -276,7 +292,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 27, 2026",
     readTime: "8 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/nvidia-vision-agentic-to-useful-ai.png",
     heroAlt: "NVIDIA’s vision for useful AI and physical systems",
     access: "public",
@@ -291,7 +307,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "May 27, 2026",
     readTime: "8 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-openai-huggingface-incident.png",
     heroAlt: "An editorial study of AI model security and an exposed software infrastructure",
     access: "public",
@@ -321,7 +337,7 @@ const articles: Record<string, EditorialArticleData> = {
     author: "GrowxLabs",
     publishedAt: "August 19, 2026",
     readTime: "8 min read",
-    theme: "dark",
+    theme: "light",
     heroImage: "/images/blog-stripe-openrouter-acquisition.png",
     heroAlt: "Payments and AI model routing represented as one infrastructure layer",
     access: "public",

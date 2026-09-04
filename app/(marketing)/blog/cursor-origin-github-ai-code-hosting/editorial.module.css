@@ -46,21 +46,11 @@
 }
 
 .article :global([class*="text-neutral-700"]) {
-  color: rgba(17, 17, 17, 0.52) !important;
-}
-
-.article :global([class*="bg-neutral-950"]),
-.article :global([class*="bg-\[#141414\]"]) {
-  background: #123b38 !important;
+  color: rgba(17, 17, 17, 0.65) !important;
 }
 
 .article :global([class*="text-emerald-400"]) {
-  color: #0d6b50 !important;
-}
-
-.article :global([class*="bg-white"]) {
-  background: var(--editorial-ink) !important;
-  color: var(--editorial-paper) !important;
+  color: var(--editorial-accent, #0A5C36) !important;
 }
 
 .progress {
@@ -222,7 +212,9 @@
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: #0c3836;
+  background: var(--editorial-paper, #FBF9F5);
+  border: 1px solid var(--editorial-rule);
+  border-radius: 8px;
 }
 
 .heroImage {
@@ -317,10 +309,10 @@
 .body :global(p) {
   max-width: 760px;
   margin: 0 0 1.65rem;
-  color: var(--editorial-muted);
+  color: var(--editorial-ink-secondary, #2C2A29);
   font-size: clamp(1.06rem, 1.3vw, 1.18rem);
-  line-height: 1.75;
-  letter-spacing: -0.005em;
+  line-height: 1.8;
+  letter-spacing: -0.003em;
 }
 
 .body :global(p:last-child) {
@@ -336,7 +328,7 @@
   max-width: 750px;
   margin: 0.5rem 0 2rem;
   padding-left: 1.25rem;
-  color: var(--editorial-muted);
+  color: var(--editorial-ink-secondary, #2C2A29);
   font-size: clamp(1.06rem, 1.3vw, 1.18rem);
   line-height: 1.75;
 }
@@ -389,17 +381,22 @@
   margin: 2.6rem 0 0;
   padding: 1.35rem 1.5rem;
   overflow-x: auto;
-  background: #123b38;
-  color: #e9e3d5;
-  font: 500 0.73rem/1.8 var(--font-mono), ui-monospace, monospace;
+  background: var(--editorial-paper-subtle, #F4EFE6);
+  border: 1px solid var(--editorial-rule, rgba(17, 17, 17, 0.12));
+  border-radius: 8px;
+  color: var(--editorial-ink, #141414);
+  font: 500 0.8rem/1.8 var(--font-mono), ui-monospace, monospace;
 }
 
 .codeMuted {
-  color: rgba(233, 227, 213, 0.55);
+  color: var(--editorial-muted, #5C5955);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
 }
 
 .codeAccent {
-  color: #f5d58a;
+  color: var(--editorial-accent, #0A5C36);
+  font-weight: 600;
 }
 
 .architectureFigure {
@@ -411,7 +408,9 @@
   position: relative;
   aspect-ratio: 16 / 8.5;
   overflow: hidden;
-  background: #0c3836;
+  background: var(--editorial-paper, #FBF9F5);
+  border: 1px solid var(--editorial-rule, rgba(17, 17, 17, 0.12));
+  border-radius: 8px;
 }
 
 .architectureImage {
@@ -632,9 +631,4 @@
 
 :global(html:has(.cursorOriginEditorial)) {
   color-scheme: light;
-}
-
-:global(body:has(.cursorOriginEditorial) footer) {
-  background: #111111 !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
 }

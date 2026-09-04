@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { Check, Copy, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
-import type { EditorialAccess, EditorialArticleData, EditorialRelatedPost } from "./editorialArticleData";
-import { EditorialImageFrame } from "./EditorialImageFrame";
+import { Check, Heart, MessageSquare, Share2 } from "@/components/icons";
+import type { EditorialArticleData, EditorialRelatedPost } from "./editorialArticleData";
 
 interface EditorialArticleRendererProps {
   article: EditorialArticleData;
@@ -15,183 +14,325 @@ function getArticleUrl(slug: string) {
   return `https://growxlabs.tech/blog/${slug}`;
 }
 
-function EditorialArticleUtilityBar({ article }: { article: EditorialArticleData }) {
+/* ─────────────────────────────────────────────────────────────
+   Substack-Style Interactive Action Bar (Like, Comment, Restack, Share)
+   ───────────────────────────────────────────────────────────── */
+function NewsletterActionBar({
+  article,
+  initialLikes = 142,
+  commentCount = 28,
+}: {
+  article: EditorialArticleData;
+  initialLikes?: number;
+  commentCount?: number;
+}) {
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(initialLikes);
   const [copied, setCopied] = useState(false);
-  const url = getArticleUrl(article.slug);
-  const prompt = `Read and discuss this GrowxLabs article: “${article.title}” ${url}`;
-  const chatGptUrl = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
-  const claudeUrl = `https://claude.ai/new?q=${encodeURIComponent(prompt)}`;
+  const [restacked, setRestacked] = useState(false);
 
-  const copyLink = async () => {
+  const handleLike = () => {
+    if (liked) {
+      setLiked(false);
+      setLikes((prev) => prev - 1);
+    } else {
+      setLiked(true);
+      setLikes((prev) => prev + 1);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = getArticleUrl(article.slug);
     try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 2000);
+      }
     } catch {
       setCopied(false);
     }
   };
 
+  const handleRestack = () => {
+    setRestacked((prev) => !prev);
+  };
+
+  const scrollToComments = () => {
+    const el = document.getElementById("newsletter-comments-anchor");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="editorial-utility-bar" aria-label="Article utilities">
-      <div className="editorial-utility-group">
-        <span className="editorial-utility-label">Share</span>
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(url)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="editorial-utility-link"
+    <div className="newsletter-action-bar" aria-label="Article actions">
+      <div className="newsletter-action-group">
+        <button
+          type="button"
+          onClick={handleLike}
+          className={`newsletter-action-btn ${liked ? "is-liked" : ""}`}
+          aria-label={liked ? "Unlike article" : "Like article"}
         >
-          X <ArrowUpRight aria-hidden="true" />
-        </a>
-        <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="editorial-utility-link"
+          <Heart
+            className={`w-4 h-4 transition-colors ${liked ? "fill-red-500 text-red-500" : "text-neutral-600"}`}
+          />
+          <span className="newsletter-action-count">{likes}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={scrollToComments}
+          className="newsletter-action-btn"
+          aria-label="View comments"
         >
-          LinkedIn <ArrowUpRight aria-hidden="true" />
-        </a>
-        <button type="button" onClick={copyLink} className="editorial-utility-link">
-          {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-          {copied ? "Copied" : "Copy link"}
+          <MessageSquare className="w-4 h-4 text-neutral-600" />
+          <span className="newsletter-action-count">{commentCount}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleRestack}
+          className={`newsletter-action-btn ${restacked ? "is-restacked text-emerald-700" : ""}`}
+          aria-label="Restack article"
+          title="Restack"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="m17 2 4 4-4 4" />
+            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+            <path d="m7 22-4-4 4-4" />
+            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+          </svg>
+          <span className="newsletter-action-count hidden sm:inline">Restack</span>
         </button>
       </div>
 
-      <div className="editorial-utility-group editorial-ai-links">
-        <span className="editorial-utility-label">Read with AI</span>
-        <a href={chatGptUrl} target="_blank" rel="noopener noreferrer" className="editorial-utility-link">
-          ChatGPT <ArrowUpRight aria-hidden="true" />
-        </a>
-        <a href={claudeUrl} target="_blank" rel="noopener noreferrer" className="editorial-utility-link">
-          Claude <ArrowUpRight aria-hidden="true" />
-        </a>
+      <div className="newsletter-action-group">
+        <button
+          type="button"
+          onClick={handleShare}
+          className="newsletter-action-btn"
+          aria-label="Share article"
+        >
+          {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-neutral-600" />}
+          <span className="newsletter-action-count">{copied ? "Copied!" : "Share"}</span>
+        </button>
       </div>
     </div>
   );
 }
 
-function EditorialSubscriptionGate({ position }: { position?: string }) {
+/* ─────────────────────────────────────────────────────────────
+   Substack Byline (Avatar, Author Name, Meta, [Subscribe] Pill)
+   ───────────────────────────────────────────────────────────── */
+function NewsletterByline({ article }: { article: EditorialArticleData }) {
+  const [subscribed, setSubscribed] = useState(false);
+
   return (
-    <section className="editorial-subscription-gate" aria-label="Subscriber article">
-      <p className="editorial-kicker">Continue reading GrowxLabs Insights</p>
-      <h2>Unlock the full analysis.</h2>
-      <p>Subscribe for the remaining research, engineering perspective, and useful context.</p>
-      {position && <span className="editorial-gate-position">Gate configured after: {position}</span>}
-      <div className="editorial-gate-actions">
-        <a href="/signup">Subscribe</a>
-        <a href="/login">Sign in</a>
+    <div className="newsletter-byline">
+      <div className="newsletter-byline-author">
+        <div className="newsletter-byline-avatar">GX</div>
+        <div className="newsletter-byline-details">
+          <div className="newsletter-byline-name-row">
+            <span className="newsletter-byline-name">Sai Varshith Pujala</span>
+            <span className="newsletter-byline-handle">· GrowxLabs</span>
+          </div>
+          <div className="newsletter-byline-meta">
+            <time dateTime={article.publishedAt}>{article.publishedAt}</time>
+            <span className="newsletter-meta-dot">·</span>
+            <span>{article.readTime}</span>
+          </div>
+        </div>
       </div>
-    </section>
+
+      <button
+        type="button"
+        onClick={() => setSubscribed((prev) => !prev)}
+        className={`newsletter-subscribe-pill ${subscribed ? "is-subscribed" : ""}`}
+      >
+        {subscribed ? "Subscribed ✓" : "Subscribe"}
+      </button>
+    </div>
   );
 }
 
-function EditorialNewsletter() {
+/* ─────────────────────────────────────────────────────────────
+   Mid-Article Newsletter Callout Box (Clean Substack Style)
+   ───────────────────────────────────────────────────────────── */
+function NewsletterMidrollBox() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   return (
-    <section className="editorial-newsletter" aria-label="GrowxLabs Insights newsletter">
-      <div>
-        <p className="editorial-kicker">GrowxLabs Insights</p>
-        <h2>Research, engineering, and technology worth reading.</h2>
-      </div>
+    <div className="newsletter-midroll-card" aria-label="Subscribe to GrowxLabs Dispatch">
+      <span className="newsletter-midroll-kicker">GROWX LABS DISPATCH</span>
+      <h3>Enjoying this edition?</h3>
+      <p>
+        Get the next technical deep dive delivered directly to your inbox. No spam, just high-signal engineering.
+      </p>
+
       <form
-        onSubmit={(event) => {
-          event.preventDefault();
+        onSubmit={(e) => {
+          e.preventDefault();
           if (!email.trim()) return;
           setSubmitted(true);
         }}
-        className="editorial-newsletter-form"
+        className="newsletter-midroll-form"
       >
-        <label className="sr-only" htmlFor="editorial-newsletter-email">Email address</label>
         <input
-          id="editorial-newsletter-email"
           type="email"
           required
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email address"
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email..."
+          aria-label="Your email"
         />
-        <button type="submit">{submitted ? "Subscribed" : "Subscribe"}</button>
+        <button type="submit" disabled={submitted}>
+          {submitted ? "Subscribed ✓" : "Subscribe"}
+        </button>
       </form>
-    </section>
+    </div>
   );
 }
 
-function EditorialRelatedStories({ posts }: { posts: EditorialRelatedPost[] }) {
+/* ─────────────────────────────────────────────────────────────
+   Authentic Substack Author Card (Clean, Human, Zero Jargon)
+   ───────────────────────────────────────────────────────────── */
+function NewsletterAuthorBio() {
+  const [subscribed, setSubscribed] = useState(false);
+
   return (
-    <section className="editorial-related" aria-labelledby="editorial-related-title">
-      <div className="editorial-section-heading">
-        <p className="editorial-kicker">Continue reading</p>
-        <h2 id="editorial-related-title">Related stories</h2>
+    <div className="newsletter-author-bio" id="newsletter-comments-anchor">
+      <div className="newsletter-author-bio-avatar">GX</div>
+      <div className="newsletter-author-bio-text">
+        <div className="newsletter-author-bio-title">
+          <h4>Sai Varshith Pujala</h4>
+          <span className="newsletter-author-bio-handle">@growxlabs</span>
+        </div>
+        <p className="newsletter-author-bio-desc">
+          Building Growxlabs.tech. Writing about AI models, developer systems, and software engineering.
+        </p>
       </div>
-      <div className="editorial-related-grid">
-        {posts.map((post) => (
-          <a key={post.slug} href={`/blog/${post.slug}`} className="editorial-related-card">
-            <EditorialImageFrame>
-              <Image src={post.image} alt={post.alt} fill sizes="(max-width: 767px) 100vw, 33vw" className="editorial-hero-media" />
-            </EditorialImageFrame>
-            <div className="editorial-related-meta">
-              <span>{post.category}</span>
+      <button
+        type="button"
+        onClick={() => setSubscribed((prev) => !prev)}
+        className={`newsletter-author-subscribe-btn ${subscribed ? "is-subscribed" : ""}`}
+      >
+        {subscribed ? "Subscribed ✓" : "Subscribe"}
+      </button>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Related Newsletter Stories (Clean Minimal Cards)
+   ───────────────────────────────────────────────────────────── */
+function NewsletterRelatedStories({ posts }: { posts?: EditorialRelatedPost[] }) {
+  if (!posts || posts.length === 0) return null;
+
+  return (
+    <div className="newsletter-related-section" aria-label="More from GrowxLabs">
+      <div className="newsletter-related-heading">
+        <span className="newsletter-masthead-tag">MORE EDITIONS</span>
+        <h3>Read next in the Dispatch</h3>
+      </div>
+      <div className="newsletter-related-grid">
+        {posts.slice(0, 3).map((post) => (
+          <a key={post.slug} href={`/blog/${post.slug}`} className="newsletter-related-item">
+            <div className="newsletter-related-image-wrap">
+              <Image
+                src={post.image}
+                alt={post.alt || post.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 240px"
+                className="object-cover"
+              />
+            </div>
+            <div className="newsletter-related-content">
+              <span className="newsletter-related-category">{post.category}</span>
+              <h4>{post.title}</h4>
               <time>{post.date}</time>
             </div>
-            <h3>{post.title}</h3>
           </a>
         ))}
-      </div>
-    </section>
-  );
-}
-
-export function EditorialArticleRenderer({ article, children }: EditorialArticleRendererProps) {
-  const access: EditorialAccess = article.access;
-
-  return (
-    <div
-      className="editorial-route-shell"
-      data-theme={article.theme}
-      data-access={access}
-      data-subscription-gate-after={article.subscriptionGateAfter || undefined}
-    >
-      <div className="editorial-article-system">
-        <figure className="editorial-hero-artwork">
-          <EditorialImageFrame>
-            <Image
-              src={article.heroImage}
-              alt={article.heroAlt}
-              fill
-              priority
-              sizes="(max-width: 767px) 100vw, (max-width: 1320px) 94vw, 1320px"
-              className="editorial-hero-media"
-            />
-          </EditorialImageFrame>
-        </figure>
-
-        <header className="editorial-article-header">
-          <p className="editorial-category">{article.category}</p>
-          <h1>{article.title}</h1>
-          <p className="editorial-deck">{article.deck}</p>
-          <div className="editorial-metadata" aria-label="Article metadata">
-            <time>{article.publishedAt}</time>
-            {article.updatedAt && <time>Updated {article.updatedAt}</time>}
-            <span>{article.readTime}</span>
-            <span>By {article.author}</span>
-          </div>
-        </header>
-
-        <EditorialArticleUtilityBar article={article} />
-
-        <div className="editorial-article-body">
-          <div className="editorial-legacy-content">{children}</div>
-          {access === "subscriber" && <EditorialSubscriptionGate position={article.subscriptionGateAfter} />}
-        </div>
-
-        <EditorialRelatedStories posts={article.relatedPosts} />
-        <EditorialNewsletter />
       </div>
     </div>
   );
 }
 
-export { EditorialArticleUtilityBar, EditorialSubscriptionGate };
+/* ─────────────────────────────────────────────────────────────
+   MAIN EDITORIAL ARTICLE RENDERER (Applies to ALL 19 Blog Posts)
+   ───────────────────────────────────────────────────────────── */
+export function EditorialArticleRenderer({ article, children }: EditorialArticleRendererProps) {
+  return (
+    <div className="editorial-route-shell" data-theme="light">
+      <article className="newsletter-article-container">
+        {/* 1. Publication Masthead */}
+        <header className="newsletter-masthead">
+          <div className="newsletter-masthead-top">
+            <span className="newsletter-masthead-tag">GROWX LABS NEWSLETTER</span>
+            <span className="newsletter-masthead-issue">{article.category || "TECHNOLOGY"}</span>
+          </div>
+
+          <h1 className="newsletter-title">{article.title}</h1>
+
+          {article.deck && (
+            <p className="newsletter-deck">{article.deck}</p>
+          )}
+
+          {/* 2. Substack Byline with [Subscribe] pill */}
+          <NewsletterByline article={article} />
+
+          {/* 3. Top Substack Action Bar (Like, Comment, Restack, Share) */}
+          <NewsletterActionBar article={article} />
+        </header>
+
+        {/* 4. Full-Width Featured Image */}
+        {article.heroImage && (
+          <figure className="newsletter-hero-figure">
+            <div className="newsletter-hero-image-wrap">
+              <Image
+                src={article.heroImage}
+                alt={article.heroAlt || article.title}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 740px"
+                className="object-cover"
+              />
+            </div>
+            {article.heroAlt && (
+              <figcaption className="newsletter-hero-caption">
+                {article.heroAlt}
+              </figcaption>
+            )}
+          </figure>
+        )}
+
+        {/* 5. Pure Story Prose (Single-column, zero metric boxes) */}
+        <div className="newsletter-story-body">
+          <div className="editorial-legacy-content">{children}</div>
+
+          {/* 6. Mid-Post Newsletter Callout */}
+          <NewsletterMidrollBox />
+        </div>
+
+        {/* 7. Bottom Engagement Action Bar */}
+        <div className="newsletter-footer">
+          <NewsletterActionBar article={article} />
+          <NewsletterAuthorBio />
+          <NewsletterRelatedStories posts={article.relatedPosts} />
+        </div>
+      </article>
+    </div>
+  );
+}
+
+// Backwards compatibility exports
+export function EditorialArticleUtilityBar() {
+  return null;
+}
+
+export function EditorialSubscriptionGate() {
+  return null;
+}
+
