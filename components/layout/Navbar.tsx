@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
-import { GrowxMenu } from "@/components/icons";
+import { GrowxMenu, X } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
+import { Button, LiquidButton } from "@/components/ui/Button";
 import { usePathname } from "@/navigation-client";
 import { Link } from "@/navigation-client";
 import { useSession, signOut } from "next-auth/react";
@@ -20,7 +19,7 @@ export function Navbar() {
   const isLoggedIn = status === "authenticated";
   const userRole = (session?.user as any)?.role;
   const dashboardPath = (userRole === "ADMIN" || userRole === "CO_ADMIN" || userRole === "crm_agent")
-    ? "/admin/team"
+    ? "/admin"
     : "/client/dashboard";
 
   const pathname = usePathname();
@@ -154,40 +153,14 @@ export function Navbar() {
             <div className="flex items-center justify-end w-1/4 md:w-1/4 lg:w-1/4 gap-3">
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/contact");
-                const isExternal = resolvedHref.startsWith("http") && isMounted;
-                const contactButtonContent = (
-                  <span className={cn(
-                    "group relative inline-flex items-center justify-center font-bold h-9 sm:h-10 min-w-[96px] sm:min-w-[108px] px-5 sm:px-6 text-xs sm:text-sm rounded-md overflow-hidden transition-all duration-300 shadow-sm cursor-pointer select-none",
-                    isLightThemePage ? "border border-[#111111]/25 text-[#111111]" : "border border-[#C0F0FB] text-[#C0F0FB]"
-                  )}>
-                    {/* Liquid / Water Wave Fill Layer */}
-                    <span 
-                      className={cn(
-                        "absolute -bottom-[20%] -left-[15%] -right-[15%] h-[140%] translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 rounded-t-[100%] pointer-events-none",
-                        isLightThemePage ? "bg-[#111111]" : "bg-[#C0F0FB]"
-                      )}
-                      style={{ transitionTimingFunction: "cubic-bezier(0.33, 1, 0.68, 1)" }}
-                    />
-                    <span className={cn(
-                      "relative z-10 transition-colors duration-300 font-bold",
-                      isLightThemePage ? "group-hover:text-[#F7F4EE]" : "group-hover:text-black"
-                    )}>
-                      Contact
-                    </span>
-                  </span>
-                );
-
-                if (isExternal) {
-                  return (
-                    <a href={resolvedHref}>
-                      {contactButtonContent}
-                    </a>
-                  );
-                }
                 return (
-                  <Link href="/contact">
-                    {contactButtonContent}
-                  </Link>
+                  <LiquidButton
+                    href={resolvedHref}
+                    variant={isLightThemePage ? "dark" : "cyan"}
+                    size="default"
+                  >
+                    Contact
+                  </LiquidButton>
                 );
               })()}
             </div>
