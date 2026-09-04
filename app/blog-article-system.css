@@ -738,6 +738,13 @@
   margin-bottom: 1.65rem !important;
 }
 
+.editorial-legacy-content section + section,
+.editorial-legacy-content [class*="section"] + [class*="section"] {
+  margin-top: 2.25rem !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
 .editorial-legacy-content h2,
 .editorial-legacy-content [class*="sectionTitle"] {
   font-family: var(--font-serif), Georgia, serif !important;
@@ -746,10 +753,10 @@
   line-height: 1.25 !important;
   letter-spacing: -0.025em !important;
   color: var(--editorial-ink) !important;
-  margin-top: 3.25rem !important;
-  margin-bottom: 1.15rem !important;
-  padding-top: 1.5rem !important;
-  border-top: 1px solid var(--editorial-soft-rule) !important;
+  margin-top: 2.25rem !important;
+  margin-bottom: 0.85rem !important;
+  padding-top: 0 !important;
+  border-top: none !important;
 }
 
 .editorial-legacy-content h3 {
@@ -758,21 +765,22 @@
   font-weight: 600 !important;
   line-height: 1.35 !important;
   color: var(--editorial-ink) !important;
-  margin-top: 2.25rem !important;
-  margin-bottom: 0.85rem !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
 }
 
 .editorial-legacy-content blockquote,
 .editorial-legacy-content [class*="pullQuote"] {
-  margin: 2.5rem 0 !important;
-  padding: 1.25rem 1.5rem 1.25rem 1.75rem !important;
+  margin: 1.75rem 0 !important;
+  padding: 0.35rem 0 0.35rem 1.25rem !important;
   border-left: 3px solid var(--editorial-ink) !important;
-  background: var(--editorial-paper-subtle) !important;
-  border-radius: 0 8px 8px 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   font-family: var(--font-serif), Georgia, serif !important;
   font-style: italic !important;
   font-size: 1.25rem !important;
-  line-height: 1.6 !important;
+  line-height: 1.55 !important;
   color: var(--editorial-ink) !important;
 }
 
