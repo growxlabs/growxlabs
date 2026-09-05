@@ -34,6 +34,7 @@ export interface Slide {
   category: ElementStyle & { text: string };
   headline: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
   featuredImage: ImageElementStyle;
+  secondaryImage: ImageElementStyle;
   body: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
   bullets: BulletElementStyle;
   quote: QuoteElementStyle;
@@ -52,7 +53,7 @@ export interface Slide {
   };
 }
 
-export type ElementKey = "category" | "headline" | "featuredImage" | "body" | "bullets" | "quote" | "cta" | "logo" | "divider" | "author";
+export type ElementKey = "category" | "headline" | "featuredImage" | "secondaryImage" | "body" | "bullets" | "quote" | "cta" | "logo" | "divider" | "author";
 
 export type InspectorView = "document" | "layers" | "layer";
 

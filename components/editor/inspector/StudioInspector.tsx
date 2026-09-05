@@ -232,7 +232,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   const currentElement = selectedElement ? activeSlide[selectedElement] : null;
   const isTextType =
     selectedElement && ["headline", "category", "body", "quote", "cta", "author"].includes(selectedElement);
-  const isImageType = selectedElement === "featuredImage";
+  const isImageType = selectedElement === "featuredImage" || selectedElement === "secondaryImage";
 
   // 1:1 Paper Alignment Handlers
   const handleAlign = (type: "left" | "hcenter" | "right" | "top" | "vcenter" | "bottom") => {

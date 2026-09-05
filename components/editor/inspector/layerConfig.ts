@@ -25,6 +25,14 @@ export const LAYER_CONFIGS: Record<ElementKey | "footer", LayerConfig> = {
     type: "image",
     sections: ["image", "cropFit", "position", "appearance", "border", "effects"]
   },
+  secondaryImage: {
+    key: "secondaryImage",
+    label: "Secondary Media",
+    group: "media",
+    icon: "image",
+    type: "image",
+    sections: ["image", "cropFit", "position", "appearance", "border", "effects"]
+  },
   body: {
     key: "body",
     label: "Body Text",

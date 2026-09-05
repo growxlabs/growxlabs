@@ -48,6 +48,7 @@ const LAYER_ORDER: ElementKey[] = [
   "headline",
   "category",
   "featuredImage",
+  "secondaryImage",
   "body",
   "bullets",
   "quote",
@@ -388,7 +389,7 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                                     <span className="text-[11px] font-sans font-medium text-neutral-400 w-3.5 text-center shrink-0">
                                       Aa
                                     </span>
-                                  ) : key === "featuredImage" ? (
+                                  ) : key === "featuredImage" || key === "secondaryImage" ? (
                                     <ImageIcon
                                       size={12}
                                       className="text-neutral-400 shrink-0"
@@ -412,6 +413,8 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                                       ? "Title"
                                       : key === "featuredImage"
                                         ? "Image"
+                                        : key === "secondaryImage"
+                                          ? "Image 2"
                                         : key === "body"
                                           ? "Text"
                                           : key === "category"

@@ -276,6 +276,32 @@ const DEFAULT_SLIDE = (index: number): Slide => ({
     fontWeight: "normal",
     zIndex: 5,
   },
+  secondaryImage: {
+    mediaUrl: "",
+    objectFit: "contain",
+    brightness: 100,
+    contrast: 100,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    shadowEnabled: true,
+    x: SAFE_LEFT,
+    y: 705,
+    width: SAFE_WIDTH,
+    height: 435,
+    visible: false,
+    locked: false,
+    opacity: 1,
+    rotation: 0,
+    align: "center",
+    fontFamily: "inherit",
+    fontSize: 14,
+    lineHeight: 1.2,
+    letterSpacing: 0,
+    color: "#000000",
+    fontWeight: "normal",
+    zIndex: 6,
+  },
   body: {
     text: `Kimi K3 is a 2.8 trillion parameter Mixture-of-Experts model, the largest open-weight AI system ever released. It runs a 1M token context, handles text and images, and lands close to the Western frontier.`,
     x: SAFE_LEFT,
@@ -652,6 +678,41 @@ const TEMPLATE_PRESETS = [
       body: { ...slide.body, visible: false },
       bullets: { ...slide.bullets, visible: false },
       quote: { ...slide.quote, visible: true },
+      cta: { ...slide.cta, visible: false },
+    }),
+  },
+  {
+    id: "dual-image",
+    name: "Dual Image Showcase",
+    category: "Visual",
+    setup: (slide: Slide): Slide => ({
+      ...slide,
+      category: { ...slide.category, text: "VISUAL SHOWCASE", visible: true },
+      headline: {
+        ...slide.headline,
+        text: "Architecture Overview & Live Implementation",
+        visible: true,
+        y: 110,
+        height: 120,
+      },
+      featuredImage: {
+        ...slide.featuredImage,
+        visible: true,
+        y: 245,
+        height: 435,
+        borderRadius: 18,
+      },
+      secondaryImage: {
+        ...(slide.secondaryImage || slide.featuredImage),
+        visible: true,
+        y: 705,
+        height: 435,
+        borderRadius: 18,
+        mediaUrl: (slide.secondaryImage && slide.secondaryImage.mediaUrl) ? slide.secondaryImage.mediaUrl : "",
+      },
+      body: { ...slide.body, visible: false },
+      bullets: { ...slide.bullets, visible: false },
+      quote: { ...slide.quote, visible: false },
       cta: { ...slide.cta, visible: false },
     }),
   },
@@ -2791,6 +2852,41 @@ export function EditorialCarouselClient() {
           </div>
         )}
 
+        {/* Secondary Image */}
+        {slide.secondaryImage?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.secondaryImage.x}px`,
+              top: `${slide.secondaryImage.y}px`,
+              width: `${slide.secondaryImage.width}px`,
+              height: `${slide.secondaryImage.height}px`,
+              borderRadius: `${slide.secondaryImage.borderRadius}px`,
+              border:
+                slide.secondaryImage.borderWidth > 0
+                  ? `${slide.secondaryImage.borderWidth}px solid ${slide.secondaryImage.borderColor}`
+                  : "none",
+              overflow: "hidden",
+            }}
+          >
+            {slide.secondaryImage.mediaUrl ? (
+              <img
+                src={slide.secondaryImage.mediaUrl}
+                alt=""
+                className="w-full h-full"
+                style={{
+                  objectFit: slide.secondaryImage.objectFit,
+                  filter: `brightness(${slide.secondaryImage.brightness}%) contrast(${slide.secondaryImage.contrast}%)`,
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-neutral-400 text-xs font-semibold uppercase">
+                Image 2 Placeholder
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Body */}
         {slide.body?.visible && (
           <div
@@ -3623,6 +3719,65 @@ export function EditorialCarouselClient() {
                         style={{ fontSize: "9px" }}
                       >
                         Upload custom photo in Right Panel
+                      </span>
+                    </div>
+                  )}
+                </div>,
+              )}
+
+              {/* Secondary Image */}
+              {renderCanvasElement(
+                "secondaryImage",
+                <div
+                  className="w-full h-full overflow-hidden animate-fade"
+                  style={{
+                    background:
+                      activeSlide.secondaryImage?.color || "transparent",
+                    borderRadius: `${activeSlide.secondaryImage?.borderRadius || 18}px`,
+                    border:
+                      (activeSlide.secondaryImage?.borderWidth || 0) > 0
+                        ? `${activeSlide.secondaryImage?.borderWidth}px solid ${activeSlide.secondaryImage?.borderColor}`
+                        : "none",
+                  }}
+                >
+                  {activeSlide.secondaryImage?.mediaUrl ? (
+                    isVideo(activeSlide.secondaryImage.mediaUrl) ? (
+                      <video
+                        src={activeSlide.secondaryImage.mediaUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full"
+                        style={{
+                          objectFit: activeSlide.secondaryImage.objectFit,
+                          filter: `brightness(${activeSlide.secondaryImage.brightness}%) contrast(${activeSlide.secondaryImage.contrast}%)`,
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={activeSlide.secondaryImage.mediaUrl}
+                        alt="Secondary Image Layout"
+                        className="w-full h-full"
+                        style={{
+                          objectFit: activeSlide.secondaryImage.objectFit,
+                          filter: `brightness(${activeSlide.secondaryImage.brightness}%) contrast(${activeSlide.secondaryImage.contrast}%)`,
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 text-neutral-400 bg-neutral-50/50 border border-neutral-100 rounded-2xl">
+                      <span
+                        className="font-extrabold uppercase tracking-wider text-[11px] mb-1"
+                        style={{ fontSize: "12px" }}
+                      >
+                        Image 2 Placeholder
+                      </span>
+                      <span
+                        className="text-[9px] opacity-60"
+                        style={{ fontSize: "9px" }}
+                      >
+                        Upload photo in Right Panel
                       </span>
                     </div>
                   )}
