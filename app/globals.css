@@ -630,7 +630,7 @@ html.dark .notion-theme,
 
 /* Notion-style utility buttons */
 .notion-theme .button-utility,
-.notion-theme button[class*="border-white/"] {
+.notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *) {
   background-color: #ffffff !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border) !important;
@@ -638,7 +638,7 @@ html.dark .notion-theme,
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 .notion-theme .button-utility:hover,
-.notion-theme button[class*="border-white/"]:hover {
+.notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *):hover {
   background-color: #f6f5f4 !important;
 }
 
@@ -1658,3 +1658,34 @@ html {
 .gxl-command-center .bg-\[\#2e2d2a\] {
   background-color: #2e2d2a !important;
 }
+
+/* ═══════════════════════════════════════════════════ */
+/* EDITORIAL STUDIO DARK THEME ISOLATION               */
+/* ═══════════════════════════════════════════════════ */
+.gxl-studio-editor,
+.notion-theme .gxl-studio-editor {
+  color-scheme: dark !important;
+  background-color: #0e0f12 !important;
+  color: #f3f4f6 !important;
+}
+
+.gxl-studio-editor :where(button, input, select, aside, header, div),
+.notion-theme .gxl-studio-editor :where(button, input, select, aside, header, div) {
+  box-sizing: border-box;
+}
+
+.notion-theme .gxl-studio-editor button[class*="border-white/"],
+.notion-theme .gxl-studio-editor .button-utility {
+  background-color: transparent;
+  color: inherit;
+  border-radius: inherit;
+  box-shadow: none;
+}
+
+.notion-theme .gxl-studio-editor [class*="card"],
+.notion-theme .gxl-studio-editor .glass-card,
+.notion-theme .gxl-studio-editor .growx-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+

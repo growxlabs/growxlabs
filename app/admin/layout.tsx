@@ -287,8 +287,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className={cn(
-      !isCommandCenterWorkspace && "notion-theme",
-      isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : "bg-[var(--background)] text-[var(--text-primary)]",
+      !isCommandCenterWorkspace && !isEditorialStudio && "notion-theme",
+      isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
       "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
     )}>
       {/* PERSISTENT SIDEBAR */}
@@ -304,7 +304,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* SCROLLABLE MAIN CONTENT AREA */}
       <main className={cn(
         "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
-        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : "bg-[var(--background)]",
+        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : isEditorialStudio ? "bg-[#0e0f12]" : "bg-[var(--background)]",
         // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
         isCommandCenter
           ? "md:ml-0 md:w-full"
@@ -324,7 +324,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {children}
          </div>
       </main>
-      {!isCommandCenterWorkspace && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
+      {!isCommandCenterWorkspace && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
     </div>
   );
 }

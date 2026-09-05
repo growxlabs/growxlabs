@@ -48,7 +48,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
-import { InspectorPanel } from "../editor/inspector/InspectorPanel";
+import { StudioInspector, CANVAS_FORMAT_PRESETS, CanvasPreset } from "../editor/inspector/StudioInspector";
+import { StudioLeftPanel } from "../editor/canvas/StudioLeftPanel";
 import { calculateSnap, SnapGuide } from "../editor/canvas/SmartSnapEngine";
 import { FigmaTransformGizmo, TransformHandle } from "../editor/canvas/FigmaTransformGizmo";
 import { InlineCanvasTextEditor } from "../editor/canvas/InlineCanvasTextEditor";
@@ -671,7 +672,9 @@ export function EditorialCarouselClient() {
 
   const [pan, setPan] = useState({ x: 120, y: 80 });
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select");
-  const [showLeftPanel, setShowLeftPanel] = useState(true);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [showRightSidebar, setShowRightSidebar] = useState(true);
+  const [activeFormat, setActiveFormat] = useState<CanvasPreset>(CANVAS_FORMAT_PRESETS[0]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
@@ -759,8 +762,8 @@ export function EditorialCarouselClient() {
     if (!viewportRef.current) return;
     const rect = viewportRef.current.getBoundingClientRect();
     const defaultZoom = 0.48;
-    const artboardWidth = 1080 * defaultZoom;
-    const artboardHeight = 1350 * defaultZoom;
+    const artboardWidth = activeFormat.width * defaultZoom;
+    const artboardHeight = activeFormat.height * defaultZoom;
 
     setPan({
       x: Math.max(20, (rect.width - artboardWidth) / 2),
@@ -776,15 +779,35 @@ export function EditorialCarouselClient() {
     const margin = 40;
     const availableWidth = rect.width - margin * 2;
     const availableHeight = rect.height - margin * 2;
-    const zoomW = availableWidth / 1080;
-    const zoomH = availableHeight / 1350;
+    const zoomW = availableWidth / activeFormat.width;
+    const zoomH = availableHeight / activeFormat.height;
     const newZoom = Math.min(zoomW, zoomH, 1.2);
     const clampedZoom = Math.max(0.15, newZoom);
     setZoomScale(clampedZoom);
     setPan({
-      x: (rect.width - 1080 * clampedZoom) / 2,
-      y: (rect.height - 1350 * clampedZoom) / 2,
+      x: (rect.width - activeFormat.width * clampedZoom) / 2,
+      y: (rect.height - activeFormat.height * clampedZoom) / 2,
     });
+  };
+
+  // Format switcher handler
+  const handleFormatChange = (preset: CanvasPreset) => {
+    setActiveFormat(preset);
+    toast.success(`Switched format: ${preset.name} (${preset.width} × ${preset.height})`);
+    if (viewportRef.current) {
+      const rect = viewportRef.current.getBoundingClientRect();
+      const margin = 40;
+      const availableWidth = rect.width - margin * 2;
+      const availableHeight = rect.height - margin * 2;
+      const zoomW = availableWidth / preset.width;
+      const zoomH = availableHeight / preset.height;
+      const newZoom = Math.max(0.15, Math.min(zoomW, zoomH, 1.0));
+      setZoomScale(newZoom);
+      setPan({
+        x: Math.max(20, (rect.width - preset.width * newZoom) / 2),
+        y: Math.max(20, (rect.height - preset.height * newZoom) / 2),
+      });
+    }
   };
 
   // Viewport wheel zooming & scroll-panning
@@ -1423,7 +1446,7 @@ export function EditorialCarouselClient() {
       const snap = calculateSnap(
         { x: rawX, y: rawY, width: elem.width, height: elem.height },
         otherElements,
-        { canvasWidth: CANVAS_WIDTH, canvasHeight: CANVAS_HEIGHT }
+        { canvasWidth: activeFormat.width, canvasHeight: activeFormat.height }
       );
       setActiveGuides(snap.guides);
       updateSlideElement(selectedElement, { x: snap.x, y: snap.y });
@@ -1931,9 +1954,9 @@ export function EditorialCarouselClient() {
 
     return `
       <svg 
-        viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}" 
-        width="${CANVAS_WIDTH}" 
-        height="${CANVAS_HEIGHT}" 
+        viewBox="0 0 ${activeFormat.width} ${activeFormat.height}" 
+        width="${activeFormat.width}" 
+        height="${activeFormat.height}" 
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -1942,10 +1965,10 @@ export function EditorialCarouselClient() {
             ${fontsMarkup}
           </style>
         </defs>
-        <foreignObject x="0" y="0" width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}">
+        <foreignObject x="0" y="0" width="${activeFormat.width}" height="${activeFormat.height}">
           <div xmlns="http://www.w3.org/1999/xhtml" style="
-            width: ${CANVAS_WIDTH}px;
-            height: ${CANVAS_HEIGHT}px;
+            width: ${activeFormat.width}px;
+            height: ${activeFormat.height}px;
             background: ${slide.backgroundColor || "#ffffff"};
             position: relative;
             box-sizing: border-box;
@@ -2140,17 +2163,17 @@ export function EditorialCarouselClient() {
         img.crossOrigin = "anonymous";
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          canvas.width = CANVAS_WIDTH;
-          canvas.height = CANVAS_HEIGHT;
+          canvas.width = activeFormat.width;
+          canvas.height = activeFormat.height;
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             if (type === "jpeg") {
               ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+              ctx.fillRect(0, 0, activeFormat.width, activeFormat.height);
             }
-            ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.drawImage(img, 0, 0, activeFormat.width, activeFormat.height);
             const dataUrl = canvas.toDataURL(`image/${type}`, 0.95);
             resolve(dataUrl);
           } else {
@@ -2161,8 +2184,8 @@ export function EditorialCarouselClient() {
           console.error("Raster image decode error event:", e);
           reject(new Error("Image decoding failed"));
         };
-        img.width = CANVAS_WIDTH;
-        img.height = CANVAS_HEIGHT;
+        img.width = activeFormat.width;
+        img.height = activeFormat.height;
         img.src = encodedSvg;
       } catch (err) {
         console.error("Base64 string convert error:", err);
@@ -2276,26 +2299,26 @@ export function EditorialCarouselClient() {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({
-        orientation: "portrait",
+        orientation: activeFormat.width > activeFormat.height ? "landscape" : "portrait",
         unit: "px",
-        format: [CANVAS_WIDTH, CANVAS_HEIGHT],
+        format: [activeFormat.width, activeFormat.height],
       });
 
       for (let i = 0; i < slides.length; i++) {
-        if (i > 0) doc.addPage([CANVAS_WIDTH, CANVAS_HEIGHT], "portrait");
+        if (i > 0) doc.addPage([activeFormat.width, activeFormat.height], activeFormat.width > activeFormat.height ? "landscape" : "portrait");
         const { slide, videoFrameUrl } = await prepareSlideForExport(
           slides[i],
           i,
         );
         const svgStr = buildSvgString(slide, i, false, videoFrameUrl); // Bypass CORS security policies
         const dataUrl = await convertSvgToRaster(svgStr, "png");
-        doc.addImage(dataUrl, "PNG", 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        doc.addImage(dataUrl, "PNG", 0, 0, activeFormat.width, activeFormat.height);
       }
 
       doc.save(
         `${projectName.toLowerCase().replace(/\s+/g, "-")}-carousel.pdf`,
       );
-      toast.success("Exported the full carousel at 1080 × 1350 per page.", {
+      toast.success(`Exported the deck at ${activeFormat.width} × ${activeFormat.height} per page.`, {
         id: downloadToast,
       });
     } catch (e) {
@@ -2310,8 +2333,8 @@ export function EditorialCarouselClient() {
     );
     try {
       const canvas = document.createElement("canvas");
-      canvas.width = CANVAS_WIDTH;
-      canvas.height = CANVAS_HEIGHT;
+      canvas.width = activeFormat.width;
+      canvas.height = activeFormat.height;
       const ctx = canvas.getContext("2d");
       if (!ctx) {
         throw new Error("Could not initialize canvas recording context");
@@ -2434,10 +2457,10 @@ export function EditorialCarouselClient() {
               setTimeout(resSeek, 400);
             });
 
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.clearRect(0, 0, activeFormat.width, activeFormat.height);
 
             // Draw background slide elements
-            ctx.drawImage(bgImg, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.drawImage(bgImg, 0, 0, activeFormat.width, activeFormat.height);
 
             // Draw video frame with clipping and filters
             ctx.save();
@@ -2507,8 +2530,8 @@ export function EditorialCarouselClient() {
           // Render static frame for 3.5 seconds (53 frames at 15 FPS)
           const staticFrames = 53;
           for (let frameIndex = 0; frameIndex < staticFrames; frameIndex++) {
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ctx.clearRect(0, 0, activeFormat.width, activeFormat.height);
+            ctx.drawImage(img, 0, 0, activeFormat.width, activeFormat.height);
             await new Promise((r) => setTimeout(r, 16));
           }
         }
@@ -2617,19 +2640,33 @@ export function EditorialCarouselClient() {
 
   return (
     <div
-      className={`w-full h-full min-h-0 flex flex-col bg-[#e9eaec] text-neutral-900 font-sans overflow-hidden transition-colors duration-200 ${darkMode ? "dark bg-[#18181b] text-white" : ""}`}
+      className="gxl-studio-editor w-full h-full min-h-0 flex flex-col bg-[#0e0f12] text-neutral-100 font-sans overflow-hidden select-none"
     >
       {/* ==========================================
-          TOP BAR (Figma/Canva inspired)
+          TOP BAR (Compact Studio Header)
           ========================================== */}
-      <header className="h-[64px] border-b border-[rgba(255,255,255,0.06)] bg-[#111214] px-4 flex items-center justify-between shrink-0 z-50 text-white shadow-md select-none">
-        {/* Left Section: Document title & status */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#1687f8] flex items-center justify-center font-bold text-sm shadow-md shadow-[#1687f8]/15">
+      <header className="h-[44px] border-b border-white/[0.08] bg-[#121316] px-3 flex items-center justify-between shrink-0 z-50 text-white select-none">
+        {/* Left Section: Document title, templates & format switcher */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
+              showLeftSidebar
+                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
+                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
+            }`}
+            title={showLeftSidebar ? "Collapse Left Panel" : "Expand Left Panel"}
+          >
+            <LayersIcon size={13} />
+          </button>
+
+          <div className="h-7 w-7 rounded-md bg-[#1687f8] flex items-center justify-center font-black text-[11px] text-white shadow-sm shadow-[#1687f8]/25">
             GX
           </div>
-          <div className="flex flex-col text-left">
-            <div className="flex items-center gap-2">
+
+          <div className="flex flex-col text-left mr-1">
+            <div className="flex items-center gap-1.5">
               {isEditingProjectName ? (
                 <input
                   type="text"
@@ -2640,32 +2677,29 @@ export function EditorialCarouselClient() {
                     e.key === "Enter" && setIsEditingProjectName(false)
                   }
                   autoFocus
-                  className="bg-transparent border-b border-[#1687f8] text-xs font-bold focus:outline-none w-48 text-white"
+                  className="bg-transparent border-b border-[#1687f8] text-xs font-bold focus:outline-none w-40 text-white"
                 />
               ) : (
                 <h1
                   onDoubleClick={() => setIsEditingProjectName(true)}
-                  className="text-xs font-bold text-white hover:bg-white/5 px-2 py-0.5 rounded cursor-pointer transition-all truncate max-w-[200px]"
+                  className="text-xs font-bold text-white hover:bg-white/5 px-1.5 py-0.5 rounded cursor-pointer transition-all truncate max-w-[160px]"
                   title="Double click to edit project name"
                 >
                   {projectName}
                 </h1>
               )}
-            </div>
-            <div className="flex items-center gap-1.5 px-2">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-[10px] text-neutral-400 font-semibold">
-                Saved just now
-              </span>
             </div>
           </div>
-          <div className="ml-3 flex rounded-lg border border-white/10 bg-black/30 p-0.5">
+
+          {/* Template pills (Daily News / Product Launch) */}
+          <div className="flex rounded-md border border-white/10 bg-[#18191d] p-0.5">
             <button
               type="button"
               onClick={() => switchDocumentKind("editorial")}
-              className={`rounded-md px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.08em] transition-all ${
+              className={`rounded px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider transition-all ${
                 documentKind === "editorial"
-                  ? "bg-white text-black"
+                  ? "bg-white text-black shadow-sm"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -2674,94 +2708,113 @@ export function EditorialCarouselClient() {
             <button
               type="button"
               onClick={() => switchDocumentKind("product")}
-              className={`rounded-md px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.08em] transition-all ${
+              className={`rounded px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider transition-all ${
                 documentKind === "product"
-                  ? "bg-[#bdefff] text-black"
+                  ? "bg-[#bdefff] text-black shadow-sm"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
               Product Launch
             </button>
           </div>
+
+          {/* Post Format Switcher (Reduced Pill Size) */}
+          <div className="flex rounded-md border border-white/10 bg-[#18191d] p-0.5 gap-0.5">
+            {CANVAS_FORMAT_PRESETS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleFormatChange(p)}
+                className={`h-6 rounded px-2 text-[10px] font-bold tracking-tight transition-all flex items-center gap-1 ${
+                  activeFormat.id === p.id
+                    ? "bg-[#1687f8] text-white shadow-sm"
+                    : "text-neutral-400 hover:text-white hover:bg-white/5"
+                }`}
+                title={`${p.name} (${p.width} × ${p.height}) • ${p.badge}`}
+              >
+                {p.id === "mobile" && <Smartphone size={10} />}
+                {p.id === "carousel" && <LayoutGrid size={10} />}
+                <span>{p.aspectRatio}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Center Section: Navigation & Document tools */}
+        {/* Center Section: Tools, History, Zoom */}
         <div className="flex items-center gap-1">
-          {/* Tool Toggles */}
-          <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-800">
+          <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10">
             <button
               onClick={() => setActiveTool("select")}
-              className={`p-1.5 rounded-md transition-all ${
+              className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
                 activeTool === "select"
-                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50"
+                  ? "bg-[#22242c] text-[#1687f8] shadow-sm"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Pointer Selector (V)"
             >
-              <MousePointer size={13} />
+              <MousePointer size={12} />
             </button>
             <button
               onClick={() => setActiveTool("hand")}
-              className={`p-1.5 rounded-md transition-all ${
+              className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
                 activeTool === "hand"
-                  ? "bg-zinc-800 text-[#1687f8] shadow-sm border border-neutral-700/50"
+                  ? "bg-[#22242c] text-[#1687f8] shadow-sm"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Hand Tool / Pan (H)"
             >
-              <Hand size={13} />
+              <Hand size={12} />
             </button>
           </div>
 
-          <div className="h-4 w-px bg-neutral-800 mx-1.5" />
+          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
           {/* History */}
           <button
             onClick={handleUndo}
             disabled={historyIndex <= 0}
-            className="p-1.5 hover:bg-neutral-800 rounded-md transition-all disabled:opacity-20 disabled:hover:bg-transparent text-neutral-400 hover:text-white"
+            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white transition-all"
             title="Undo (Ctrl+Z)"
           >
-            <Undo size={13} />
+            <Undo size={12} />
           </button>
           <button
             onClick={handleRedo}
             disabled={historyIndex >= history.length - 1}
-            className="p-1.5 hover:bg-neutral-800 rounded-md transition-all disabled:opacity-20 disabled:hover:bg-transparent text-neutral-400 hover:text-white"
+            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white transition-all"
             title="Redo (Ctrl+Shift+Z)"
           >
-            <Redo size={13} />
+            <Redo size={12} />
           </button>
 
-          <div className="h-4 w-px bg-neutral-800 mx-1.5" />
+          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
           {/* Zoom & Viewport */}
           <button
             onClick={() => setZoomScale((prev) => Math.max(0.15, prev - 0.05))}
-            className="p-1.5 hover:bg-neutral-800 rounded-md text-neutral-400 hover:text-white transition-all"
-            title="Zoom Out (Ctrl+-)"
+            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-all"
+            title="Zoom Out"
           >
-            <Minimize2 size={13} />
+            <Minimize2 size={12} />
           </button>
 
-          {/* Zoom options Dropdown */}
           <div className="relative group">
-            <button className="px-2 py-1 hover:bg-neutral-800 rounded text-xs font-mono font-bold text-neutral-300 flex items-center gap-1 transition-all">
-              {Math.round(zoomScale * 100)}% <ChevronDown size={10} />
+            <button className="h-7 px-2 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[11px] font-mono font-bold text-neutral-300 flex items-center gap-1 transition-all">
+              {Math.round(zoomScale * 100)}% <ChevronDown size={9} />
             </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl py-1 hidden group-hover:block hover:block z-50 w-24 text-left">
-              {[0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map((p) => (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-[#18191d] border border-white/10 rounded-lg shadow-xl py-1 hidden group-hover:block hover:block z-50 w-24 text-left">
+              {[0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0].map((p) => (
                 <button
                   key={p}
                   onClick={() => setZoomScale(p)}
-                  className="w-full px-3 py-1.5 hover:bg-zinc-800 text-[11px] font-mono text-neutral-300 text-left block"
+                  className="w-full px-2.5 py-1 hover:bg-[#22242c] text-[11px] font-mono text-neutral-300 text-left block"
                 >
                   {Math.round(p * 100)}%
                 </button>
               ))}
               <button
                 onClick={handleFitToScreen}
-                className="w-full px-3 py-1.5 hover:bg-zinc-800 text-[11px] font-medium text-neutral-300 text-left border-t border-zinc-800 block"
+                className="w-full px-2.5 py-1 hover:bg-[#22242c] text-[10px] font-semibold text-neutral-300 text-left border-t border-white/10 block"
               >
                 Fit view
               </button>
@@ -2770,81 +2823,98 @@ export function EditorialCarouselClient() {
 
           <button
             onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
-            className="p-1.5 hover:bg-neutral-800 rounded-md text-neutral-400 hover:text-white transition-all"
-            title="Zoom In (Ctrl+=)"
+            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-all"
+            title="Zoom In"
           >
-            <Maximize2 size={13} />
+            <Maximize2 size={12} />
           </button>
+
           <button
             onClick={handleFitToScreen}
-            className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded-md transition-all"
+            className="h-7 px-2 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[10px] font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-all"
             title="Fit artboard inside view"
           >
             Fit View
           </button>
 
-          <div className="h-4 w-px bg-neutral-800 mx-1.5" />
+          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
           {/* Grid overlays */}
           <button
             onClick={() => setShowSafeArea(!showSafeArea)}
-            className={`p-1.5 rounded-md transition-all ${
+            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
               showSafeArea
-                ? "bg-neutral-800 text-[#1687f8]"
-                : "text-neutral-400 hover:text-white"
+                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
+                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
             }`}
             title="Toggle Safe Margins Grid"
           >
-            <Smartphone size={13} />
+            <Smartphone size={12} />
           </button>
           <button
             onClick={() => setShowGrid(!showGrid)}
-            className={`p-1.5 rounded-md transition-all ${
+            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
               showGrid
-                ? "bg-neutral-800 text-[#1687f8]"
-                : "text-neutral-400 hover:text-white"
+                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
+                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
             }`}
             title="Toggle Pixel Grid Dots"
           >
-            <Grid size={13} />
+            <Grid size={12} />
           </button>
         </div>
 
-        {/* Right Section: Actions & Exports */}
-        <div className="flex items-center gap-2">
+        {/* Right Section: Exports & Inspector Toggle */}
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
               toast.success("Project URL copied to clipboard!");
             }}
-            className="h-[34px] px-3.5 border border-neutral-800 hover:border-neutral-600 rounded-lg text-xs font-semibold text-neutral-200 transition-all flex items-center gap-1.5"
+            className="h-7 px-2.5 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[11px] font-medium text-neutral-300 hover:text-white transition-all flex items-center gap-1"
             title="Copy project share URL"
           >
-            <Share2 size={12} /> Share
+            <Share2 size={11} /> Share
           </button>
 
           <button
             onClick={() => handleDownloadSlideRaster(activeIndex, "png")}
-            className="h-[34px] px-3.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-white rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+            className="h-7 px-3 rounded-md bg-[#1e2026] hover:bg-[#262830] border border-white/10 text-[11px] font-semibold text-white transition-all flex items-center gap-1 cursor-pointer"
             title="Download current slide as PNG image"
           >
-            <Download size={12} /> Download PNG
+            <Download size={11} /> PNG
           </button>
 
           <button
             onClick={handleDownloadPdf}
-            className="h-[34px] px-3.5 border border-neutral-800 hover:border-neutral-600 rounded-lg text-xs font-semibold text-neutral-200 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="h-7 px-3 rounded-md bg-[#1e2026] hover:bg-[#262830] border border-white/10 text-[11px] font-semibold text-neutral-200 hover:text-white transition-all flex items-center gap-1 cursor-pointer"
             title="Download full deck PDF document"
           >
-            <FileText size={12} /> Export PDF
+            <FileText size={11} /> PDF
           </button>
 
           <button
             onClick={handleDownloadMp4}
-            className="h-[34px] px-4 bg-[#1687f8] hover:bg-[#0b87e3] text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 border-none cursor-pointer"
+            className="h-7 px-3.5 rounded-md bg-[#1687f8] hover:bg-[#1374d6] text-[11px] font-bold text-white shadow-sm shadow-[#1687f8]/25 transition-all flex items-center gap-1 cursor-pointer border-none"
             title="Render and export as high-quality video"
           >
-            <Play size={12} /> Export Video
+            <Play size={11} /> Video
+          </button>
+
+          <div className="h-4 w-px bg-white/10 mx-0.5" />
+
+          <button
+            type="button"
+            onClick={() => setShowRightSidebar(!showRightSidebar)}
+            className={`h-7 px-2.5 rounded-md border transition-all flex items-center gap-1.5 ${
+              showRightSidebar
+                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8] shadow-sm"
+                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
+            }`}
+            title={showRightSidebar ? "Collapse Inspector Panel" : "Expand Inspector Panel"}
+          >
+            <Sliders size={12} />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Inspector</span>
           </button>
         </div>
       </header>
@@ -2855,298 +2925,57 @@ export function EditorialCarouselClient() {
       <div
         className="flex-1 min-h-0 w-full grid select-none"
         style={{
-          gridTemplateColumns: `${showLeftPanel ? "72px 292px" : "72px 0px"} minmax(0, 1fr) 340px`,
+          gridTemplateColumns: `${showLeftSidebar ? "270px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "320px" : "0px"}`,
           transition: "all 200ms ease",
         }}
       >
         {/* ==========================================
-            LEFT ICON RAIL (72px)
+            STUDIO LEFT PANEL (270px)
             ========================================== */}
-        <div className="w-[72px] h-full border-r border-[rgba(255,255,255,0.06)] bg-[#111214] flex flex-col items-center py-4 justify-between shrink-0 z-20">
-          <div className="flex flex-col items-center gap-4 w-full">
-            {/* Slide list toggle button */}
-            <button
-              onClick={() => {
-                setShowLeftPanel(!showLeftPanel);
-                setLeftTab("slides");
-              }}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "slides"
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
-              }`}
-              title="Slide Deck (F3)"
-            >
-              <LayersIcon size={16} />
-            </button>
-            <button
-              onClick={() => {
-                setShowLeftPanel(true);
-                setLeftTab("templates");
-              }}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "templates"
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
-              }`}
-              title="Presets Gallery"
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              onClick={() => {
-                setShowLeftPanel(true);
-                setLeftTab("brand");
-              }}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                showLeftPanel && leftTab === "brand"
-                  ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
-              }`}
-              title="Brand Kit Settings"
-            >
-              <Palette size={16} />
-            </button>
-          </div>
-
-          <div className="flex flex-col items-center gap-4 w-full">
-            <button
-              onClick={() => setShowShortcutsModal(true)}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
-              title="Keyboard Shortcuts"
-            >
-              <Info size={16} />
-            </button>
-            <button
-              onClick={() => setTheme(darkMode ? "light" : "dark")}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
-              title="Toggle theme mode"
-            >
-              {darkMode ? "☀️" : "🌙"}
-            </button>
-          </div>
-        </div>
-
-        {/* ==========================================
-            LEFT COLLAPSIBLE SIDEBAR PANEL (292px)
-            ========================================== */}
-        <aside
-          className={`w-[292px] h-full border-r border-[rgba(255,255,255,0.06)] bg-[#111214] flex flex-col overflow-hidden shrink-0 z-10 transition-all duration-200 ${
-            showLeftPanel
-              ? "opacity-100 visible"
-              : "opacity-0 invisible w-0 pointer-events-none"
-          }`}
-        >
-          <div className="p-4 border-b border-[rgba(255,255,255,0.06)] shrink-0">
-            {/* Segmented Tab Control */}
-            <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-800">
-              {[
-                { id: "slides", label: "Slides" },
-                { id: "templates", label: "Presets" },
-                { id: "brand", label: "Brand" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setLeftTab(tab.id as any)}
-                  className={`flex-1 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-center transition-all ${
-                    leftTab === tab.id
-                      ? "bg-zinc-800 text-white shadow-sm border border-neutral-700/50"
-                      : "text-neutral-400 hover:text-white"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4 min-h-0">
-            {/* Slides List view */}
-            {leftTab === "slides" && (
-              <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
-                  Slide Deck
-                </span>
-
-                <div className="flex flex-col gap-3">
-                  {slides.map((slide, sIdx) => (
-                    <div
-                      key={slide.id}
-                      onClick={() => {
-                        setActiveIndex(sIdx);
-                        setSelectedElement(null);
-                        setIsFooterSelected(false);
-                      }}
-                      draggable={true}
-                      onDragStart={(e) => handleDragStart(e, sIdx)}
-                      onDragOver={(e) => handleDragOver(e, sIdx)}
-                      onDragEnd={handleDragEnd}
-                      onContextMenu={(e) => handleContextMenu(e, sIdx)}
-                      className={`relative p-3 rounded-xl cursor-pointer border transition-all group flex flex-col ${
-                        activeIndex === sIdx
-                          ? "bg-neutral-800/40 border-[#1687f8] shadow-lg ring-1 ring-[#1687f8]/30 text-white"
-                          : "bg-white/5 border-[rgba(255,255,255,0.06)] hover:bg-white/10 hover:border-neutral-700 text-neutral-300"
-                      }`}
-                    >
-                      {/* Mini visual slide mockup preview */}
-                      <div className="w-full h-16 bg-neutral-950/60 border border-neutral-900 rounded-lg relative overflow-hidden flex flex-col justify-between p-1.5 mb-2 select-none group-hover:border-neutral-800 transition-colors">
-                        <div className="flex justify-between items-center">
-                          <div className="w-5 h-1 bg-[#1687f8] rounded-[1px]" />
-                          <div className="w-3 h-1 bg-neutral-800 rounded-[1px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="w-12 h-1 bg-neutral-700 rounded-[1px]" />
-                          <div className="w-8 h-1 bg-neutral-700 rounded-[1px]" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div className="w-10 h-[1px] bg-neutral-850" />
-                          <div className="w-1.5 h-1.5 rounded-full bg-neutral-750" />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-mono font-bold bg-neutral-900 px-1.5 py-0.5 rounded text-neutral-400">
-                          {sIdx + 1}
-                        </span>
-                        <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              duplicateSlide(sIdx);
-                            }}
-                            className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white"
-                            title="Duplicate Slide"
-                          >
-                            <Copy size={10} />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteSlide(sIdx);
-                            }}
-                            className="p-1 hover:bg-red-950/30 hover:text-red-400 rounded text-neutral-400"
-                            title="Delete Slide"
-                          >
-                            <Trash2 size={10} />
-                          </button>
-                        </div>
-                      </div>
-
-                      <p className="text-[11px] font-bold truncate mt-1.5 text-left text-neutral-200">
-                        {slide.headline.text
-                          ? stripHtmlTags(slide.headline.text)
-                          : "Empty slide content"}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setShowTemplateModal(true)}
-                  className="w-full h-11 py-2 rounded-xl border border-dashed border-neutral-800 hover:border-[#1687f8]/50 text-neutral-400 hover:text-white flex items-center justify-center gap-1.5 text-xs font-bold transition-all bg-white/5 hover:bg-white/10"
-                >
-                  <Plus size={13} /> Add Slide Template
-                </button>
-              </div>
-            )}
-
-            {/* Preset templates list cards */}
-            {leftTab === "templates" && (
-              <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
-                  Templates
-                </span>
-                <div className="flex flex-col gap-3">
-                  {TEMPLATE_PRESETS.map((preset) => (
-                    <div
-                      key={preset.id}
-                      onClick={() => applyPreset(preset.id)}
-                      className="group border border-[rgba(255,255,255,0.06)] rounded-xl p-3 bg-white/5 hover:bg-white/10 hover:border-[#1687f8]/50 transition-all cursor-pointer"
-                    >
-                      <div className="h-16 bg-neutral-950 border border-neutral-900 rounded-lg mb-2 flex items-center justify-center text-[9px] text-neutral-500 font-bold uppercase">
-                        {preset.category} layout preview
-                      </div>
-                      <div className="flex items-center justify-between text-left">
-                        <div>
-                          <h4 className="text-xs font-bold text-neutral-200 truncate w-32">
-                            {preset.name}
-                          </h4>
-                          <span className="text-[9px] text-neutral-500 font-semibold uppercase">
-                            {preset.category}
-                          </span>
-                        </div>
-                        <span className="text-[10px] font-bold text-neutral-400 opacity-0 group-hover:opacity-100 transition-all">
-                          Apply
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Brand settings kit */}
-            {leftTab === "brand" && (
-              <div className="space-y-4 text-left">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block pb-1 border-b border-[rgba(255,255,255,0.06)]">
-                  Brand Settings
-                </span>
-
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                      Brand Name
-                    </span>
-                    <input
-                      type="text"
-                      value={activeSlide.footer.brandName}
-                      onChange={(e) =>
-                        updateSlideFooter({ brandName: e.target.value })
-                      }
-                      className="w-full h-9 px-3 bg-neutral-900 border border-neutral-800 rounded-lg text-xs text-neutral-200 focus:outline-none focus:border-[#1687f8]"
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center py-1">
-                    <span className="text-xs font-bold text-neutral-300">
-                      Show Divider
-                    </span>
-                    <input
-                      type="checkbox"
-                      checked={activeSlide.footer.dividerEnabled}
-                      onChange={(e) =>
-                        updateSlideFooter({ dividerEnabled: e.target.checked })
-                      }
-                      className="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-[#1687f8] focus:ring-0"
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center py-1">
-                    <span className="text-xs font-bold text-neutral-300">
-                      Show Page Numbers
-                    </span>
-                    <input
-                      type="checkbox"
-                      checked={activeSlide.footer.pageNumberEnabled}
-                      onChange={(e) =>
-                        updateSlideFooter({
-                          pageNumberEnabled: e.target.checked,
-                        })
-                      }
-                      className="h-4 w-4 rounded border-neutral-700 bg-neutral-900 text-[#1687f8] focus:ring-0"
-                    />
-                  </div>
-
-                  {renderColorPicker(
-                    "Footer Text Color",
-                    activeSlide.footer.color,
-                    (val) => updateSlideFooter({ color: val }),
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </aside>
+        {showLeftSidebar && (
+          <StudioLeftPanel
+            slides={slides}
+            activeIndex={activeIndex}
+            activeSlide={activeSlide}
+            selectedElement={selectedElement}
+            isFooterSelected={isFooterSelected}
+            activeFormat={activeFormat}
+            onSelectSlide={(idx) => {
+              setActiveIndex(idx);
+              setSelectedElement(null);
+              setIsFooterSelected(false);
+            }}
+            onAddSlide={addSlide}
+            onDuplicateSlide={duplicateSlide}
+            onDeleteSlide={deleteSlide}
+            onSelectElement={(key) => {
+              setSelectedElement(key);
+              setIsFooterSelected(false);
+            }}
+            onSelectFooter={(sel) => {
+              setIsFooterSelected(sel);
+              if (sel) setSelectedElement(null);
+            }}
+            onToggleVisibility={(key) => {
+              if (activeSlide[key]) {
+                updateSlideElement(key, { visible: !activeSlide[key].visible });
+              }
+            }}
+            onToggleLock={(key) => {
+              if (activeSlide[key]) {
+                updateSlideElement(key, { locked: !activeSlide[key].locked });
+              }
+            }}
+            onApplyPreset={applyPreset}
+            onFormatChange={handleFormatChange}
+            presets={TEMPLATE_PRESETS.map((p) => ({
+              id: p.id,
+              name: p.name,
+              desc: p.category,
+            }))}
+            onCollapse={() => setShowLeftSidebar(false)}
+          />
+        )}
 
         {/* ------------------------------------------
             CENTER VIEWPORT: FLOATING CANVAS
@@ -3163,13 +2992,13 @@ export function EditorialCarouselClient() {
           onMouseDown={handleViewportMouseDown}
         >
           {/* Floating Canvas Toolbar */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#18181b]/95 px-2.5 py-1.5 border border-white/10 rounded-[13px] shadow-[0_10px_30px_rgba(0,0,0,0.35)] z-30 backdrop-blur-[18px]">
-            <div className="flex bg-neutral-900/60 p-0.5 rounded-lg border border-neutral-800">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#141518]/95 px-2 py-1 border border-white/10 rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.4)] z-30 backdrop-blur-md">
+            <div className="flex bg-[#1a1b20] p-0.5 rounded border border-white/10">
               <button
                 onClick={() => setEditorMode("fixed")}
-                className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${
+                className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
                   editorMode === "fixed"
-                    ? "bg-zinc-800 text-white shadow-sm"
+                    ? "bg-[#252730] text-white shadow-sm"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -3177,9 +3006,9 @@ export function EditorialCarouselClient() {
               </button>
               <button
                 onClick={() => setEditorMode("free")}
-                className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${
+                className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
                   editorMode === "free"
-                    ? "bg-zinc-800 text-white shadow-sm"
+                    ? "bg-[#252730] text-white shadow-sm"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -3187,56 +3016,56 @@ export function EditorialCarouselClient() {
               </button>
             </div>
 
-            <div className="h-4 w-px bg-neutral-800 mx-2" />
+            <div className="h-3.5 w-px bg-white/10 mx-1" />
 
             <button
               onClick={() => setShowSafeArea(!showSafeArea)}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-1 rounded transition-all ${
                 showSafeArea
-                  ? "bg-neutral-800 text-[#1687f8]"
+                  ? "bg-[#0d2238] text-[#38bdf8]"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Safe Area Grid"
             >
-              <Smartphone size={12} />
+              <Smartphone size={11} />
             </button>
             <button
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-1 rounded transition-all ${
                 showGrid
-                  ? "bg-neutral-800 text-[#1687f8]"
+                  ? "bg-[#0d2238] text-[#38bdf8]"
                   : "text-neutral-400 hover:text-white"
               }`}
               title="Toggle Grid overlay"
             >
-              <Grid size={12} />
+              <Grid size={11} />
             </button>
 
-            <div className="h-4 w-px bg-neutral-800 mx-2" />
+            <div className="h-3.5 w-px bg-white/10 mx-1" />
 
             <button
               onClick={() =>
                 setZoomScale((prev) => Math.max(0.15, prev - 0.05))
               }
-              className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-all"
+              className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
             >
-              <Minimize2 size={12} />
+              <Minimize2 size={11} />
             </button>
-            <span className="text-[10px] font-mono font-bold text-neutral-400 w-10 text-center select-none">
+            <span className="text-[10px] font-mono font-bold text-neutral-300 w-9 text-center select-none">
               {Math.round(zoomScale * 100)}%
             </span>
             <button
               onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
-              className="p-1 hover:bg-neutral-800 rounded text-neutral-400 hover:text-white transition-all"
+              className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
             >
-              <Maximize2 size={12} />
+              <Maximize2 size={11} />
             </button>
 
-            <div className="h-4 w-px bg-neutral-800 mx-2" />
+            <div className="h-3.5 w-px bg-white/10 mx-1" />
 
             <button
               onClick={handleFitToScreen}
-              className="px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded-md transition-all"
+              className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#1a1b20] hover:bg-[#252730] border border-white/10 text-neutral-300 hover:text-white rounded transition-all"
             >
               Fit
             </button>
@@ -3248,16 +3077,16 @@ export function EditorialCarouselClient() {
             style={{
               transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`,
               transformOrigin: "0 0",
-              width: `${CANVAS_WIDTH}px`,
-              height: `${CANVAS_HEIGHT}px`,
+              width: `${activeFormat.width}px`,
+              height: `${activeFormat.height}px`,
             }}
           >
             {/* Artboard (Actual slide canvas) */}
             <div
               className="editor-canvas bg-white relative select-none overflow-hidden"
               style={{
-                width: `${CANVAS_WIDTH}px`,
-                height: `${CANVAS_HEIGHT}px`,
+                width: `${activeFormat.width}px`,
+                height: `${activeFormat.height}px`,
                 backgroundColor: activeSlide.backgroundColor || "#ffffff",
                 borderRadius: "18px",
                 boxShadow:
@@ -3567,7 +3396,7 @@ export function EditorialCarouselClient() {
                 style={{
                   bottom: `${SAFE_BOTTOM}px`,
                   left: `${SAFE_LEFT}px`,
-                  width: `${SAFE_WIDTH}px`,
+                  right: `${SAFE_RIGHT}px`,
                   height: `50px`,
                   borderTop: activeSlide.footer.dividerEnabled
                     ? `1.5px solid ${activeSlide.footer.color}20`
@@ -3774,29 +3603,35 @@ export function EditorialCarouselClient() {
         </main>
 
         {/* ------------------------------------------
-            RIGHT PANEL: THE INSPECTOR
+            RIGHT PANEL: STUDIO INSPECTOR (320px)
             ------------------------------------------ */}
-        <InspectorPanel
-          slides={slides}
-          activeIndex={activeIndex}
-          activeSlide={activeSlide}
-          selectedElement={selectedElement}
-          isFooterSelected={isFooterSelected}
-          editorMode={editorMode}
-          darkMode={darkMode}
-          setSelectedElement={setSelectedElement}
-          setIsFooterSelected={setIsFooterSelected}
-          updateSlideElement={updateSlideElement}
-          updateSlideFooter={updateSlideFooter}
-          updateSlideBackground={updateSlideBackground}
-          handleDownloadSlideRaster={handleDownloadSlideRaster}
-          handleDownloadSlideSvg={handleDownloadSlideSvg}
-          handleDownloadAllSlidesSvg={handleDownloadAllSlidesSvg}
-          handleDownloadPdf={handleDownloadPdf}
-          handleDownloadMp4={handleDownloadMp4}
-          handleUndo={handleUndo}
-          handleRedo={handleRedo}
-        />
+        {showRightSidebar && (
+          <StudioInspector
+            activeSlide={activeSlide}
+            selectedElement={selectedElement}
+            isFooterSelected={isFooterSelected}
+            activeFormat={activeFormat}
+            slidesCount={slides.length}
+            activeIndex={activeIndex}
+            onSelectElement={(key) => {
+              setSelectedElement(key);
+              setIsFooterSelected(false);
+            }}
+            onSelectFooter={(sel) => {
+              setIsFooterSelected(sel);
+              if (sel) setSelectedElement(null);
+            }}
+            onUpdateElement={updateSlideElement}
+            onUpdateFooter={updateSlideFooter}
+            onUpdateBackground={updateSlideBackground}
+            onFormatChange={handleFormatChange}
+            onDownloadPng={() => handleDownloadSlideRaster(activeIndex, "png")}
+            onDownloadPdf={handleDownloadPdf}
+            onDownloadMp4={handleDownloadMp4}
+            onDownloadAllSvg={handleDownloadAllSlidesSvg}
+            onClose={() => setShowRightSidebar(false)}
+          />
+        )}
       </div>
     </div>
   );
