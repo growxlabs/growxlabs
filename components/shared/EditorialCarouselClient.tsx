@@ -907,7 +907,7 @@ export function EditorialCarouselClient() {
     const availableHeight = rect.height - topPadding - bottomDockSpace;
 
     if (mode === "desk" && slides.length > 1) {
-      const GAP = 120;
+      const GAP = 100;
       const totalWidth = slides.length * format.width + (slides.length - 1) * GAP;
       const zoomW = availableWidth / totalWidth;
       const zoomH = availableHeight / format.height;
@@ -933,7 +933,7 @@ export function EditorialCarouselClient() {
       const centerX = Math.round((rect.width - fittedWidth) / 2);
       const centerY = Math.round(topPadding + Math.max(0, (availableHeight - fittedHeight) / 2));
 
-      const slideOffset = mode === "desk" ? activeIndex * (format.width + 120) * clampedZoom : 0;
+      const slideOffset = mode === "desk" ? activeIndex * (format.width + 100) * clampedZoom : 0;
       setPan({
         x: centerX - slideOffset,
         y: centerY,
@@ -2731,7 +2731,7 @@ export function EditorialCarouselClient() {
   // ==========================================
 
   // Paper.design Static Slide Content Renderer (for non-active artboards on infinite canvas)
-  const renderStaticSlideContent = (slide: Slide) => {
+  const renderStaticSlideContent = (slide: Slide, slideIdx: number) => {
     return (
       <div className="w-full h-full relative pointer-events-none overflow-hidden select-none">
         {/* Logo */}
@@ -2810,11 +2810,14 @@ export function EditorialCarouselClient() {
               lineHeight: slide.headline.lineHeight,
               letterSpacing: `${slide.headline.letterSpacing}px`,
               textAlign: slide.headline.align,
+              fontFamily: slide.headline.fontFamily,
+              display: "-webkit-box",
+              WebkitLineClamp: slide.headline.maxLines || 4,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
-            className="font-sans tracking-tight leading-tight"
-          >
-            {renderFormattedText(slide.headline.text)}
-          </div>
+            dangerouslySetInnerHTML={{ __html: slide.headline.text }}
+          />
         )}
 
         {/* Featured Image */}
@@ -2827,10 +2830,10 @@ export function EditorialCarouselClient() {
               width: `${slide.featuredImage.width}px`,
               height: `${slide.featuredImage.height}px`,
               borderRadius: `${slide.featuredImage.borderRadius}px`,
-              border:
-                slide.featuredImage.borderWidth > 0
-                  ? `${slide.featuredImage.borderWidth}px solid ${slide.featuredImage.borderColor}`
-                  : "none",
+              border: `${slide.featuredImage.borderWidth}px solid ${slide.featuredImage.borderColor}`,
+              boxShadow: slide.featuredImage.shadowEnabled
+                ? "0 20px 40px -15px rgba(0,0,0,0.3)"
+                : "none",
               overflow: "hidden",
             }}
           >
@@ -2862,10 +2865,10 @@ export function EditorialCarouselClient() {
               width: `${slide.secondaryImage.width}px`,
               height: `${slide.secondaryImage.height}px`,
               borderRadius: `${slide.secondaryImage.borderRadius}px`,
-              border:
-                slide.secondaryImage.borderWidth > 0
-                  ? `${slide.secondaryImage.borderWidth}px solid ${slide.secondaryImage.borderColor}`
-                  : "none",
+              border: `${slide.secondaryImage.borderWidth}px solid ${slide.secondaryImage.borderColor}`,
+              boxShadow: slide.secondaryImage.shadowEnabled
+                ? "0 20px 40px -15px rgba(0,0,0,0.3)"
+                : "none",
               overflow: "hidden",
             }}
           >
@@ -2881,7 +2884,7 @@ export function EditorialCarouselClient() {
               />
             ) : (
               <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-neutral-400 text-xs font-semibold uppercase">
-                Image 2 Placeholder
+                Secondary Image Placeholder
               </div>
             )}
           </div>
@@ -2902,11 +2905,13 @@ export function EditorialCarouselClient() {
               lineHeight: slide.body.lineHeight,
               letterSpacing: `${slide.body.letterSpacing}px`,
               textAlign: slide.body.align,
+              display: "-webkit-box",
+              WebkitLineClamp: slide.body.maxLines || 6,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
-            className="font-sans whitespace-pre-line text-neutral-800"
-          >
-            {renderFormattedText(slide.body.text)}
-          </div>
+            dangerouslySetInnerHTML={{ __html: slide.body.text }}
+          />
         )}
 
         {/* Bullets */}
@@ -2917,17 +2922,29 @@ export function EditorialCarouselClient() {
               left: `${slide.bullets.x}px`,
               top: `${slide.bullets.y}px`,
               width: `${slide.bullets.width}px`,
-              height: `${slide.bullets.height}px`,
-              fontSize: `${slide.bullets.fontSize}px`,
-              fontWeight: slide.bullets.fontWeight,
-              color: slide.bullets.color,
             }}
-            className="font-sans flex flex-col gap-2"
+            className="flex flex-col gap-3"
           >
-            {(slide.bullets.items || []).map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 shrink-0" />
-                <span>{item}</span>
+            {slide.bullets.items.map((b, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <span
+                  style={{
+                    backgroundColor: slide.bullets.bulletColor,
+                    width: `${slide.bullets.bulletSize}px`,
+                    height: `${slide.bullets.bulletSize}px`,
+                    marginTop: "6px",
+                  }}
+                  className="rounded-full shrink-0"
+                />
+                <span
+                  style={{
+                    fontSize: `${slide.bullets.fontSize}px`,
+                    color: slide.bullets.color,
+                  }}
+                  className="font-medium leading-snug"
+                >
+                  {b}
+                </span>
               </div>
             ))}
           </div>
@@ -2941,17 +2958,30 @@ export function EditorialCarouselClient() {
               left: `${slide.quote.x}px`,
               top: `${slide.quote.y}px`,
               width: `${slide.quote.width}px`,
-              height: `${slide.quote.height}px`,
-              backgroundColor: slide.quote.backgroundColor || "#f8fafc",
-              borderRadius: `${slide.quote.borderRadius || 12}px`,
-              border: `1px solid ${slide.quote.borderColor || "#e2e8f0"}`,
-              padding: "16px",
+              borderLeft: `${slide.quote.borderWidth}px solid ${slide.quote.borderColor}`,
+              paddingLeft: "20px",
             }}
-            className="font-sans flex flex-col justify-center"
           >
-            <p className="italic text-neutral-800">{slide.quote.text}</p>
+            <p
+              style={{
+                fontSize: `${slide.quote.fontSize}px`,
+                color: slide.quote.color,
+                fontFamily: slide.quote.fontFamily,
+              }}
+              className="italic font-serif"
+            >
+              "{slide.quote.text}"
+            </p>
             {slide.quote.author && (
-              <span className="text-xs font-semibold text-neutral-500 mt-2">— {slide.quote.author}</span>
+              <p
+                style={{
+                  fontSize: `${slide.quote.authorFontSize}px`,
+                  color: slide.quote.authorColor,
+                }}
+                className="mt-2 font-semibold"
+              >
+                — {slide.quote.author}
+              </p>
             )}
           </div>
         )}
@@ -2965,13 +2995,15 @@ export function EditorialCarouselClient() {
               top: `${slide.cta.y}px`,
               width: `${slide.cta.width}px`,
               height: `${slide.cta.height}px`,
-              backgroundColor: slide.cta.backgroundColor || "#1687f8",
-              color: slide.cta.textColor || "#ffffff",
-              borderRadius: `${slide.cta.borderRadius || 8}px`,
+              backgroundColor: slide.cta.backgroundColor,
+              color: slide.cta.textColor,
+              borderRadius: `${slide.cta.borderRadius}px`,
+              fontSize: `${slide.cta.fontSize}px`,
+              fontWeight: slide.cta.fontWeight,
             }}
-            className="font-sans font-semibold flex items-center justify-center text-sm shadow-sm"
+            className="flex items-center justify-center cursor-pointer shadow-md"
           >
-            {slide.cta.text || "Learn More"}
+            {slide.cta.text}
           </div>
         )}
 
@@ -2982,36 +3014,59 @@ export function EditorialCarouselClient() {
               position: "absolute",
               left: `${slide.author.x}px`,
               top: `${slide.author.y}px`,
-              width: `${slide.author.width}px`,
-              height: `${slide.author.height}px`,
+              gap: "10px",
             }}
-            className="flex items-center gap-3"
+            className="flex items-center"
           >
-            {slide.author.avatarUrl ? (
-              <img src={slide.author.avatarUrl} className="w-9 h-9 rounded-full object-cover" />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-neutral-200" />
-            )}
-            <span className="font-semibold text-sm">{slide.author.name}</span>
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-300">
+              {slide.author.avatarUrl ? (
+                <img src={slide.author.avatarUrl} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-[#0075de]" />
+              )}
+            </div>
+            <span
+              style={{
+                fontSize: `${slide.author.fontSize}px`,
+                fontWeight: slide.author.fontWeight,
+                color: slide.author.color,
+              }}
+            >
+              {slide.author.name}
+            </span>
           </div>
         )}
 
-        {/* Footer */}
+        {/* Dynamic Bottom Footer - Page Number & Brand */}
         {slide.footer && (
           <div
+            className="absolute flex items-center justify-between font-mono select-none pointer-events-none"
             style={{
-              position: "absolute",
-              left: "48px",
-              right: "48px",
-              bottom: "32px",
+              bottom: `${SAFE_BOTTOM}px`,
+              left: `${SAFE_LEFT}px`,
+              right: `${SAFE_RIGHT}px`,
+              height: "50px",
               opacity: slide.footer.opacity ?? 1,
               color: slide.footer.color || "#000000",
+              borderTop: slide.footer.dividerEnabled
+                ? `1px solid ${slide.footer.color || "#000000"}20`
+                : "none",
             }}
-            className="flex items-center justify-between text-xs font-mono"
           >
-            <span>{slide.footer.brandName}</span>
+            <span
+              className="font-extrabold uppercase"
+              style={{ fontSize: "16px" }}
+            >
+              {slide.footer.brandName ? `[${slide.footer.brandName}]` : ""}
+            </span>
             {slide.footer.pageNumberEnabled && (
-              <span>01 / 07</span>
+              <span
+                className="font-bold opacity-60"
+                style={{ fontSize: "16px" }}
+              >
+                {String(slideIdx + 1).padStart(2, "0")} /{" "}
+                {String(slides.length).padStart(2, "0")}
+              </span>
             )}
           </div>
         )}
@@ -3518,8 +3573,11 @@ export function EditorialCarouselClient() {
                     }}
                   >
                     {/* Slide Number above artboard */}
-                    <div className="absolute -top-7 left-0 text-[14px] font-medium text-white/90 select-none pb-1.5 flex items-center gap-1.5">
-                      <span>{slideIdx + 1}</span>
+                    <div className="absolute -top-11 left-0 text-[24px] font-semibold select-none flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-md bg-[#242426]/90 border border-white/10 text-neutral-300 shadow-sm flex items-center gap-2">
+                        <span>Slide {slideIdx + 1}</span>
+                        <span className="text-[18px] text-neutral-500 font-mono">/ {slides.length}</span>
+                      </span>
                     </div>
 
                     {/* Non-Active Static Artboard */}
@@ -3538,7 +3596,7 @@ export function EditorialCarouselClient() {
                       }}
                       title={`Click to edit Slide ${slideIdx + 1}`}
                     >
-                      {renderStaticSlideContent(slide)}
+                      {renderStaticSlideContent(slide, slideIdx)}
                     </div>
                   </div>
                 );
@@ -3557,8 +3615,12 @@ export function EditorialCarouselClient() {
                   }}
                 >
                   {/* Slide Number above artboard */}
-                  <div className="absolute -top-7 left-0 text-[14px] font-medium text-white/90 select-none pb-1.5 flex items-center gap-1.5">
-                    <span>{slideIdx + 1}</span>
+                  <div className="absolute -top-11 left-0 text-[24px] font-semibold select-none flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-md bg-[#1687f8] text-white shadow-md flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
+                      <span>Slide {slideIdx + 1}</span>
+                      <span className="text-[18px] text-white/75 font-mono">/ {slides.length}</span>
+                    </span>
                   </div>
 
                   {/* Active Artboard Frame */}
