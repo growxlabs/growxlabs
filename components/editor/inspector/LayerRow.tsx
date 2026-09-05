@@ -17,7 +17,7 @@ import {
   EyeOff,
   Lock,
   Unlock,
-} from "lucide-react";
+} from "@/components/editor/icons/StudioIcons";
 
 interface LayerRowProps {
   layerKey: string;

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import * as Collapsible from "@radix-ui/react-collapsible";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/editor/icons/StudioIcons";
 
 interface LayerGroupProps {
   label: string;

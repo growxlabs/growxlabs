@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as Select from "@radix-ui/react-select";
-import { Upload, ChevronDown, Check } from "lucide-react";
+import { Upload, ChevronDown, Check } from "@/components/editor/icons/StudioIcons";
 
 interface ImageControlProps {
   mediaUrl: string;

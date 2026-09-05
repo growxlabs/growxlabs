@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { ChevronDown, Search, Type } from "lucide-react";
+import { ChevronDown, Search, Type } from "@/components/editor/icons/StudioIcons";
 
 interface FontPickerProps {
   value: string;

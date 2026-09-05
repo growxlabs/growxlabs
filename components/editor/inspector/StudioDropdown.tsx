@@ -2,7 +2,7 @@
 
 import React from "react";
 import * as Select from "@radix-ui/react-select";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check } from "@/components/editor/icons/StudioIcons";
 
 export interface DropdownOption {
   value: string;

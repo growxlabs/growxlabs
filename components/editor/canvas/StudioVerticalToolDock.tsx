@@ -10,7 +10,7 @@ import {
   Grid,
   Plus,
   LayoutGrid,
-} from "lucide-react";
+} from "@/components/editor/icons/StudioIcons";
 
 interface StudioVerticalToolDockProps {
   activeTool: "select" | "hand";

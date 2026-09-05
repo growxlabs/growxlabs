@@ -18,7 +18,11 @@ import {
   ChevronRight,
   Sparkles,
   ArrowLeft,
-} from "lucide-react";
+  FolderOpen,
+  CloudCheck,
+  CloudUpload,
+  CloudAlert,
+} from "@/components/editor/icons/StudioIcons";
 import type { Slide, ElementKey } from "../inspector/inspectorTypes";
 import { CANVAS_FORMAT_PRESETS, CanvasPreset } from "../inspector/StudioInspector";
 
@@ -42,6 +46,10 @@ interface StudioLeftPanelProps {
   presets: { id: string; name: string; desc: string }[];
   onCollapse?: () => void;
   projectName?: string;
+  cloudSaveStatus?: "saved" | "saving" | "unsaved" | "error";
+  onOpenProjectsDrawer?: () => void;
+  onCreateNewProject?: () => void;
+  onSaveToDatabase?: () => void;
 }
 
 const LAYER_ORDER: ElementKey[] = [
@@ -53,6 +61,9 @@ const LAYER_ORDER: ElementKey[] = [
   "bullets",
   "quote",
   "cta",
+  "author",
+  "logo",
+  "divider",
 ];
 
 export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
@@ -74,49 +85,75 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
   onFormatChange,
   presets,
   onCollapse,
-  projectName = "Welcome to Paper",
+  projectName = "GrowXLabs Editorial Post",
+  cloudSaveStatus = "saved",
+  onOpenProjectsDrawer,
+  onCreateNewProject,
+  onSaveToDatabase,
 }) => {
   const [tab, setTab] = useState<"design" | "theme">("design");
   const [isPageExpanded, setIsPageExpanded] = useState(true);
   const [expandedSlides, setExpandedSlides] = useState<Record<number, boolean>>({
-    [activeIndex]: true,
+    0: true,
   });
 
   const toggleSlideExpand = (idx: number, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedSlides((prev) => ({
       ...prev,
-      [idx]: !(prev[idx] ?? true),
+      [idx]: !prev[idx],
     }));
   };
 
   return (
-    <aside className="w-[240px] min-w-[240px] h-full flex flex-col bg-[#2a2a2a] border-r border-[#353535] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
+    <aside
+      className="w-[240px] bg-[#2a2a2a] border-r border-[#353535] flex flex-col h-full select-none shrink-0 z-20 text-[#ececec]"
+      role="complementary"
+      aria-label="Studio Layers and Assets Panel"
+    >
       {/* 1. Paper.design Header Bar */}
       <div className="h-[42px] px-2.5 border-b border-[#353535] flex items-center justify-between shrink-0 bg-[#2a2a2a] gap-1.5">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          {/* Paper Double-Sheet Document Icon with Menu */}
+          {/* Paper Document Icon with Menu */}
           <div className="relative group/menu">
             <button
               type="button"
               className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
-              title="File Menu • Back to Admin"
+              title="File Menu • Database Projects"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="2" y="4" width="9" height="10" rx="1.5" />
-                <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
-              </svg>
+              <FolderOpen size={14} />
             </button>
-            <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-44 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+            <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-48 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+              {onOpenProjectsDrawer && (
+                <button
+                  type="button"
+                  onClick={onOpenProjectsDrawer}
+                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  <FolderOpen size={12} />
+                  <span>Open Database Projects</span>
+                </button>
+              )}
+              {onCreateNewProject && (
+                <button
+                  type="button"
+                  onClick={onCreateNewProject}
+                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  <Plus size={12} />
+                  <span>New Carousel Project</span>
+                </button>
+              )}
+              {onSaveToDatabase && (
+                <button
+                  type="button"
+                  onClick={onSaveToDatabase}
+                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  <CloudUpload size={12} />
+                  <span>Save to Database (Ctrl+S)</span>
+                </button>
+              )}
               <Link
                 href="/admin"
                 className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
@@ -127,38 +164,81 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
             </div>
           </div>
 
-          {/* Document Title */}
+          {/* Document Title (Clickable to open projects) */}
           <span
-            className="text-[12px] font-medium text-[#ececec] truncate tracking-tight"
-            title={projectName}
+            onClick={onOpenProjectsDrawer}
+            className="text-[12px] font-medium text-[#ececec] truncate tracking-tight cursor-pointer hover:text-white hover:underline transition-colors"
+            title="Click to view all saved projects"
           >
             {projectName}
           </span>
         </div>
 
-        {/* Paper Sidebar Collapse Icon Button */}
-        {onCollapse && (
-          <button
-            type="button"
-            onClick={onCollapse}
-            className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0 cursor-pointer"
-            title="Collapse sidebar"
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {/* Cloud Sync Status Pill */}
+        <div className="flex items-center gap-1 shrink-0">
+          {cloudSaveStatus === "saved" && (
+            <span
+              className="flex items-center gap-1 text-[10px] text-[#34d399] font-mono px-1.5 py-0.5 rounded bg-[#34d399]/10 border border-[#34d399]/20"
+              title="All changes saved to database"
             >
-              <rect x="2" y="3" width="12" height="10" rx="1.5" />
-              <line x1="6" y1="3" x2="6" y2="13" />
-            </svg>
-          </button>
-        )}
+              <CloudCheck size={11} />
+              <span className="hidden sm:inline">Saved</span>
+            </span>
+          )}
+          {cloudSaveStatus === "saving" && (
+            <span
+              className="flex items-center gap-1 text-[10px] text-[#38bdf8] font-mono px-1.5 py-0.5 rounded bg-[#38bdf8]/10 border border-[#38bdf8]/20"
+              title="Saving changes to database..."
+            >
+              <CloudUpload size={11} className="animate-pulse" />
+              <span className="hidden sm:inline">Saving</span>
+            </span>
+          )}
+          {cloudSaveStatus === "unsaved" && (
+            <span
+              className="flex items-center gap-1 text-[10px] text-amber-400 font-mono px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20"
+              title="Unsaved changes pending auto-save"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="hidden sm:inline">Unsaved</span>
+            </span>
+          )}
+          {cloudSaveStatus === "error" && onSaveToDatabase && (
+            <button
+              type="button"
+              onClick={onSaveToDatabase}
+              className="flex items-center gap-1 text-[10px] text-rose-400 font-mono px-1.5 py-0.5 rounded bg-rose-400/10 border border-rose-400/20 cursor-pointer hover:bg-rose-400/20"
+              title="Save failed. Click to retry"
+            >
+              <CloudAlert size={11} />
+              <span>Retry</span>
+            </button>
+          )}
+
+          {/* Paper Sidebar Collapse Icon Button */}
+          {onCollapse && (
+            <button
+              type="button"
+              onClick={onCollapse}
+              className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0 cursor-pointer ml-1"
+              title="Collapse sidebar"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="3" width="12" height="10" rx="1.5" />
+                <line x1="6" y1="3" x2="6" y2="13" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 2. Paper.design Exact Segmented Control: [ Design | Theme ] */}

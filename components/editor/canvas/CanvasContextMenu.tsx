@@ -12,7 +12,7 @@ import {
   EyeOff,
   RotateCcw,
   Sparkles,
-} from "lucide-react";
+} from "@/components/editor/icons/StudioIcons";
 
 export interface CanvasContextMenuProps {
   x: number;

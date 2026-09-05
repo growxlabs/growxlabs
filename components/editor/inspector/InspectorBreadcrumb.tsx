@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/editor/icons/StudioIcons";
 
 interface InspectorBreadcrumbProps {
   layerName: string;

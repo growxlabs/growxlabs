@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { Search } from "@/components/editor/icons/StudioIcons";
 import { LayerGroup } from "./LayerGroup";
 import { LayerRow } from "./LayerRow";
 import type { Slide, ElementKey } from "./inspectorTypes";

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "@/components/editor/icons/StudioIcons";
 import { PropertySectionRoot, PropertySection } from "./PropertySection";
 import { DEFAULT_OPEN_SECTIONS, LAYER_CONFIGS } from "./layerConfig";
 import { PropertyRow } from "./PropertyRow";

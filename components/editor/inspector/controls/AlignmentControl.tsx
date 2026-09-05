@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import { AlignLeft, AlignCenter, AlignRight } from "lucide-react";
+import { AlignLeft, AlignCenter, AlignRight } from "@/components/editor/icons/StudioIcons";
 
 interface AlignmentControlProps {
   value: string;

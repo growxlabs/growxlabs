@@ -28,7 +28,7 @@ import {
   Upload,
   Trash2,
   Loader2,
-} from "lucide-react";
+} from "@/components/editor/icons/StudioIcons";
 import type { Slide, ElementKey } from "./inspectorTypes";
 import { toast } from "sonner";
 import { StudioDropdown } from "./StudioDropdown";

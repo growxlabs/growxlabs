@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronLeft, Eye, EyeOff, Lock, Unlock, MoreHorizontal } from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Lock, Unlock, MoreHorizontal } from "@/components/editor/icons/StudioIcons";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { LayerActionsMenu } from "./LayerActionsMenu";
 import { LAYER_CONFIGS } from "./layerConfig";

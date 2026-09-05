@@ -48,7 +48,10 @@ import {
   Eye as ViewIcon,
   MousePointer,
   Hand,
-} from "lucide-react";
+  CloudCheck,
+  CloudUpload,
+  CloudAlert,
+} from "@/components/editor/icons/StudioIcons";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { StudioInspector, CANVAS_FORMAT_PRESETS, CanvasPreset } from "../editor/inspector/StudioInspector";
@@ -1074,7 +1077,7 @@ export function EditorialCarouselClient() {
 
       if (isCmdOrCtrl && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        toast.success("Design saved successfully!");
+        saveToDatabase(true);
       }
 
       if (isCmdOrCtrl && e.key.toLowerCase() === "d") {
@@ -1117,6 +1120,311 @@ export function EditorialCarouselClient() {
     "editorial",
   );
   const activeSlide = slides[activeIndex] || DEFAULT_SLIDE(0);
+
+  // Supabase Database Persistence state
+  const [currentDocId, setCurrentDocId] = useState<string | null>(null);
+  const [cloudSaveStatus, setCloudSaveStatus] = useState<"saved" | "saving" | "unsaved" | "error">("saved");
+  const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
+  const [savedProjects, setSavedProjects] = useState<any[]>([]);
+  const [showProjectsDrawer, setShowProjectsDrawer] = useState(false);
+  const [isInitialHydrated, setIsInitialHydrated] = useState(false);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingRef = useRef(false);
+
+  // Synchronized state refs for keyboard shortcuts and async callbacks
+  const slidesRef = useRef(slides);
+  slidesRef.current = slides;
+  const activeFormatRef = useRef(activeFormat);
+  activeFormatRef.current = activeFormat;
+  const projectNameRef = useRef(projectName);
+  projectNameRef.current = projectName;
+  const documentKindRef = useRef(documentKind);
+  documentKindRef.current = documentKind;
+  const editorModeRef = useRef(editorMode);
+  editorModeRef.current = editorMode;
+  const currentDocIdRef = useRef(currentDocId);
+  currentDocIdRef.current = currentDocId;
+  const activeIndexRef = useRef(activeIndex);
+  activeIndexRef.current = activeIndex;
+
+  // Supabase API operations
+  const fetchSavedProjects = async () => {
+    try {
+      const res = await fetch("/api/v1/editor/documents");
+      if (res.ok) {
+        const data = await res.json();
+        setSavedProjects(data.documents || data.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch saved projects:", err);
+    }
+  };
+
+  const loadDocumentFromDatabase = async (docId: string) => {
+    try {
+      setCloudSaveStatus("saving");
+      const res = await fetch(`/api/v1/editor/documents/${docId}`);
+      if (!res.ok) throw new Error("Failed to fetch document");
+      const docJson = await res.json();
+      const doc = docJson.data || docJson;
+      const payload = doc.background || doc || {};
+      if (payload.slides && Array.isArray(payload.slides) && payload.slides.length > 0) {
+        setSlides(payload.slides);
+        saveHistory(payload.slides);
+      }
+      if (payload.activeFormat) {
+        setActiveFormat(payload.activeFormat);
+      }
+      if (payload.documentKind) {
+        setDocumentKind(payload.documentKind);
+      }
+      if (payload.editorMode) {
+        setEditorMode(payload.editorMode);
+      }
+      if (doc.name) {
+        setProjectName(doc.name);
+      }
+      setCurrentDocId(doc.id);
+      currentDocIdRef.current = doc.id;
+      setActiveIndex(0);
+      setSelectedElement(null);
+      setIsFooterSelected(false);
+      setCloudSaveStatus("saved");
+      setLastSavedTime(new Date());
+      setShowProjectsDrawer(false);
+      toast.success(`Loaded "${doc.name}" from database`);
+    } catch (err) {
+      console.error("Error loading document:", err);
+      setCloudSaveStatus("error");
+      toast.error("Failed to load project from database");
+    }
+  };
+
+  const saveToDatabase = async (showToast = true) => {
+    if (isSavingRef.current) return;
+    isSavingRef.current = true;
+    setCloudSaveStatus("saving");
+
+    try {
+      const docId = currentDocIdRef.current;
+      const currentSlides = slidesRef.current;
+      const currentFormat = activeFormatRef.current;
+      const currentName = projectNameRef.current;
+      const currentKind = documentKindRef.current;
+      const currentMode = editorModeRef.current;
+
+      const payload = {
+        name: currentName,
+        slides: currentSlides,
+        activeFormat: currentFormat,
+        documentKind: currentKind,
+        editorMode: currentMode,
+        width: currentFormat.width,
+        height: currentFormat.height,
+      };
+
+      if (docId) {
+        const res = await fetch(`/api/v1/editor/documents/${docId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error("Database update failed");
+      } else {
+        const res = await fetch("/api/v1/editor/documents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error("Database create failed");
+        const created = await res.json();
+        setCurrentDocId(created.id);
+        currentDocIdRef.current = created.id;
+      }
+
+      setCloudSaveStatus("saved");
+      setLastSavedTime(new Date());
+      if (showToast) {
+        toast.success("Saved to Supabase database");
+      }
+    } catch (err) {
+      console.error("Save to database error:", err);
+      setCloudSaveStatus("error");
+      if (showToast) {
+        toast.error("Cloud database save failed");
+      }
+    } finally {
+      isSavingRef.current = false;
+    }
+  };
+
+  const handleCreateNewProject = async (kind: "editorial" | "product" = "editorial") => {
+    try {
+      setCloudSaveStatus("saving");
+      const initialSlides = kind === "product" ? PRODUCT_LAUNCH_DECK() : [DEFAULT_SLIDE(0)];
+      const initialName = kind === "product" ? "ResumeForgeAI Product Launch" : "GrowXLabs Editorial Post";
+      const initialMode = kind === "product" ? "free" : "fixed";
+
+      const res = await fetch("/api/v1/editor/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: initialName,
+          slides: initialSlides,
+          activeFormat,
+          documentKind: kind,
+          editorMode: initialMode,
+          width: activeFormat.width,
+          height: activeFormat.height,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create new project in database");
+      const created = await res.json();
+
+      setCurrentDocId(created.id);
+      currentDocIdRef.current = created.id;
+      setProjectName(initialName);
+      setDocumentKind(kind);
+      setEditorMode(initialMode);
+      setSlides(initialSlides);
+      setActiveIndex(0);
+      setSelectedElement(null);
+      setIsFooterSelected(false);
+      saveHistory(initialSlides);
+      setCloudSaveStatus("saved");
+      setLastSavedTime(new Date());
+      setShowProjectsDrawer(false);
+      fetchSavedProjects();
+      toast.success("New project created in database!");
+    } catch (err) {
+      console.error("Create project error:", err);
+      setCloudSaveStatus("error");
+      toast.error("Failed to create project");
+    }
+  };
+
+  const handleDeleteProject = async (docId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this project from database?")) return;
+    try {
+      const res = await fetch(`/api/v1/editor/documents/${docId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete project");
+      toast.success("Project deleted from database");
+      fetchSavedProjects();
+      if (currentDocId === docId) {
+        handleCreateNewProject(documentKind);
+      }
+    } catch (err) {
+      console.error("Delete project error:", err);
+      toast.error("Failed to delete project");
+    }
+  };
+
+  // Initial Hydration from Supabase Database
+  useEffect(() => {
+    let isMounted = true;
+    async function initDatabase() {
+      try {
+        setCloudSaveStatus("saving");
+        const res = await fetch("/api/v1/editor/documents");
+        if (res.ok) {
+          const data = await res.json();
+          const docs = data.documents || data.data || [];
+          setSavedProjects(docs);
+
+          if (docs.length > 0) {
+            const latest = docs[0];
+            const docRes = await fetch(`/api/v1/editor/documents/${latest.id}`);
+            if (docRes.ok && isMounted) {
+              const docJson = await docRes.json();
+              const fullDoc = docJson.data || docJson;
+              const payload = fullDoc.background || fullDoc || {};
+              if (payload.slides && Array.isArray(payload.slides) && payload.slides.length > 0) {
+                setSlides(payload.slides);
+                saveHistory(payload.slides);
+              }
+              if (payload.activeFormat) {
+                setActiveFormat(payload.activeFormat);
+              }
+              if (payload.documentKind) {
+                setDocumentKind(payload.documentKind);
+              }
+              if (payload.editorMode) {
+                setEditorMode(payload.editorMode);
+              }
+              if (fullDoc.name) {
+                setProjectName(fullDoc.name);
+              }
+              setCurrentDocId(fullDoc.id);
+              currentDocIdRef.current = fullDoc.id;
+              setCloudSaveStatus("saved");
+              setLastSavedTime(new Date());
+              setIsInitialHydrated(true);
+              return;
+            }
+          }
+        }
+
+        if (isMounted) {
+          const initialSlides = [DEFAULT_SLIDE(0)];
+          const postRes = await fetch("/api/v1/editor/documents", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: "GrowXLabs Editorial Post",
+              slides: initialSlides,
+              activeFormat: CANVAS_FORMAT_PRESETS[0],
+              documentKind: "editorial",
+              editorMode: "fixed",
+              width: 1080,
+              height: 1350,
+            }),
+          });
+          if (postRes.ok) {
+            const created = await postRes.json();
+            setCurrentDocId(created.id);
+            currentDocIdRef.current = created.id;
+            setCloudSaveStatus("saved");
+            setLastSavedTime(new Date());
+          }
+        }
+      } catch (err) {
+        console.error("Database initialization error:", err);
+        setCloudSaveStatus("error");
+      } finally {
+        if (isMounted) {
+          setIsInitialHydrated(true);
+        }
+      }
+    }
+
+    initDatabase();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Debounced auto-save to Supabase (1.5s after any change)
+  useEffect(() => {
+    if (!isInitialHydrated) return;
+    setCloudSaveStatus("unsaved");
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveToDatabase(false);
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [slides, activeFormat, projectName, documentKind, editorMode, isInitialHydrated]);
 
   const switchDocumentKind = (kind: "editorial" | "product") => {
     if (kind === documentKind) return;
@@ -3163,6 +3471,13 @@ export function EditorialCarouselClient() {
                 isFooterSelected={isFooterSelected}
                 activeFormat={activeFormat}
                 projectName={projectName}
+                cloudSaveStatus={cloudSaveStatus}
+                onOpenProjectsDrawer={() => {
+                  fetchSavedProjects();
+                  setShowProjectsDrawer(true);
+                }}
+                onCreateNewProject={() => handleCreateNewProject(documentKind)}
+                onSaveToDatabase={() => saveToDatabase(true)}
                 onSelectSlide={(idx) => {
                   setActiveIndex(idx);
                   setSelectedElement(null);
@@ -3223,6 +3538,13 @@ export function EditorialCarouselClient() {
             isFooterSelected={isFooterSelected}
             activeFormat={activeFormat}
             projectName={projectName}
+            cloudSaveStatus={cloudSaveStatus}
+            onOpenProjectsDrawer={() => {
+              fetchSavedProjects();
+              setShowProjectsDrawer(true);
+            }}
+            onCreateNewProject={() => handleCreateNewProject(documentKind)}
+            onSaveToDatabase={() => saveToDatabase(true)}
             onSelectSlide={(idx) => {
               setActiveIndex(idx);
               setSelectedElement(null);
@@ -3296,14 +3618,45 @@ export function EditorialCarouselClient() {
                     <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
                   </svg>
                 </button>
-                <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-44 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
-                  <Link
-                    href="/admin"
-                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
-                  >
-                    <ArrowLeft size={12} />
-                    <span>Return to Admin</span>
-                  </Link>
+                <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-48 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+                  <div className="py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        fetchSavedProjects();
+                        setShowProjectsDrawer(true);
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
+                    >
+                      <FolderOpen size={12} />
+                      <span>Saved Projects...</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCreateNewProject(documentKind)}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
+                    >
+                      <Plus size={12} />
+                      <span>New Project</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => saveToDatabase(true)}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
+                    >
+                      <CloudCheck size={12} />
+                      <span>Save to Database</span>
+                    </button>
+                  </div>
+                  <div className="py-1">
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
+                    >
+                      <ArrowLeft size={12} />
+                      <span>Return to Admin</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
 
@@ -3313,6 +3666,47 @@ export function EditorialCarouselClient() {
               >
                 {projectName}
               </span>
+
+              {/* Cloud Database Status indicator */}
+              <button
+                type="button"
+                onClick={() => saveToDatabase(true)}
+                title={
+                  cloudSaveStatus === "saved"
+                    ? "All changes saved to database"
+                    : cloudSaveStatus === "saving"
+                      ? "Saving to database..."
+                      : cloudSaveStatus === "unsaved"
+                        ? "Unsaved changes (auto-saving)"
+                        : "Cloud error: click to retry"
+                }
+                className="flex items-center gap-1 cursor-pointer p-0.5 rounded hover:bg-white/10"
+              >
+                {cloudSaveStatus === "saved" && (
+                  <CloudCheck size={13} className="text-emerald-400" />
+                )}
+                {cloudSaveStatus === "saving" && (
+                  <CloudUpload size={13} className="text-amber-400 animate-pulse" />
+                )}
+                {cloudSaveStatus === "unsaved" && (
+                  <CloudUpload size={13} className="text-neutral-400" />
+                )}
+                {cloudSaveStatus === "error" && (
+                  <CloudAlert size={13} className="text-red-400 animate-bounce" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  fetchSavedProjects();
+                  setShowProjectsDrawer(true);
+                }}
+                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                title="Browse Cloud Projects"
+              >
+                <FolderOpen size={12} />
+              </button>
 
               <button
                 type="button"
@@ -3545,16 +3939,6 @@ export function EditorialCarouselClient() {
               transformOrigin: "0 0",
             }}
           >
-            {/* Project Header above Slide 1 */}
-            <div className="absolute -top-24 left-0 select-none pointer-events-none space-y-0.5 z-10">
-              <h1 className="text-[26px] font-bold text-white tracking-tight leading-tight drop-shadow-sm">
-                {projectName || "welcome to Paper"}
-              </h1>
-              <p className="text-[14px] font-medium text-white/80">
-                this file is yours, go wild
-              </p>
-            </div>
-
             {/* Artboard Sequence (Paper.design Horizontal Desk) */}
             {slides.map((slide, slideIdx) => {
               const isCurrentActive = slideIdx === activeIndex;
@@ -4304,6 +4688,143 @@ export function EditorialCarouselClient() {
             onZoomFit={() => handleFitToScreen()}
           />
         )}
+
+        {/* ==========================================
+            SUPABASE DATABASE PROJECTS DRAWER
+            ========================================== */}
+        {showProjectsDrawer && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div 
+              className="fixed inset-0" 
+              onClick={() => setShowProjectsDrawer(false)} 
+            />
+            <div className="relative z-10 w-full max-w-2xl bg-[#1e1e20] border border-[#333336] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-[#2d2d30] flex items-center justify-between bg-[#19191b]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <CloudCheck size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-[15px] font-semibold text-white tracking-tight">
+                      Supabase Cloud Projects
+                    </h2>
+                    <p className="text-[12px] text-neutral-400">
+                      Fully persisted in PostgreSQL database with auto-sync
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCreateNewProject("editorial")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-[12px] font-medium transition-colors cursor-pointer shadow-sm"
+                  >
+                    <Plus size={14} />
+                    <span>New Project</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowProjectsDrawer(false)}
+                    className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <Minus size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Body / List */}
+              <div className="p-6 overflow-y-auto divide-y divide-[#2a2a2d] space-y-2">
+                {savedProjects.length === 0 ? (
+                  <div className="text-center py-12 text-neutral-400">
+                    <FolderOpen size={36} className="mx-auto mb-3 opacity-40" />
+                    <p className="text-[14px] font-medium text-neutral-300">No saved projects found</p>
+                    <p className="text-[12px] text-neutral-500 mt-1">
+                      Click "New Project" above to create your first cloud database post.
+                    </p>
+                  </div>
+                ) : (
+                  savedProjects.map((proj) => {
+                    const isCurrent = proj.id === currentDocId;
+                    const rawDate = proj.updatedAt || proj.updated_at;
+                    const updatedAt = rawDate 
+                      ? new Date(rawDate).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Recently";
+
+                    return (
+                      <div
+                        key={proj.id}
+                        onClick={() => loadDocumentFromDatabase(proj.id)}
+                        className={`group flex items-center justify-between p-3.5 rounded-xl cursor-pointer transition-all ${
+                          isCurrent
+                            ? "bg-emerald-500/10 border border-emerald-500/30"
+                            : "hover:bg-white/5 border border-transparent"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                              isCurrent
+                                ? "bg-emerald-500 text-white"
+                                : "bg-neutral-800 text-neutral-400 group-hover:text-white group-hover:bg-neutral-700"
+                            } transition-colors`}
+                          >
+                            <LayoutGrid size={18} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-[13px] font-medium text-white truncate max-w-[280px]">
+                                {proj.name || "Untitled Project"}
+                              </h4>
+                              {isCurrent && (
+                                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] text-neutral-400 mt-0.5">
+                              <span>{proj.slidesCount || proj.slide_count || 1} {(proj.slidesCount || proj.slide_count) === 1 ? "slide" : "slides"}</span>
+                              <span>•</span>
+                              <span>{proj.width || 1080} × {proj.height || 1350}</span>
+                              <span>•</span>
+                              <span>Updated {updatedAt}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 opacity-80 group-hover:opacity-100">
+                          <button
+                            type="button"
+                            onClick={(e) => handleDeleteProject(proj.id, e)}
+                            className="p-1.5 rounded-md hover:bg-red-500/20 hover:text-red-400 text-neutral-500 transition-colors cursor-pointer"
+                            title="Delete from database"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-3 border-t border-[#2d2d30] bg-[#161618] flex items-center justify-between text-[11px] text-neutral-400">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>PostgreSQL Cloud Engine Connected</span>
+                </div>
+                <div>{savedProjects.length} total saved documents</div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

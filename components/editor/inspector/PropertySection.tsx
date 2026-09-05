@@ -2,7 +2,7 @@
 
 import React from "react";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/editor/icons/StudioIcons";
 
 interface PropertySectionProps {
   value: string;

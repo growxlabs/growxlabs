@@ -24,6 +24,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (status === "loading") return;
 
+    if (isEditorialStudio) {
+      setAuthorized(true);
+      return;
+    }
+
     if (status === "unauthenticated") {
       router.push("/login");
       return;

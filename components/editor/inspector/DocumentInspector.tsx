@@ -12,7 +12,7 @@ import {
   Layers,
   FileText,
   Video
-} from "lucide-react";
+} from "@/components/editor/icons/StudioIcons";
 import { Slide } from "./inspectorTypes";
 
 interface DocumentInspectorProps {

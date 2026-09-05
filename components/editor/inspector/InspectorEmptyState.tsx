@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Layers } from "lucide-react";
+import { Layers } from "@/components/editor/icons/StudioIcons";
 
 export function InspectorEmptyState() {
   return (

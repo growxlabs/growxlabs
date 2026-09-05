@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Lock, RotateCw } from "lucide-react";
+import { Lock, RotateCw } from "@/components/editor/icons/StudioIcons";
 
 export type TransformHandle = "nw" | "n" | "ne" | "e" | "se" | "s" | "sw" | "w";
 
