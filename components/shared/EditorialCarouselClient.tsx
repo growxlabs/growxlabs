@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Minus,
   Trash2,
   Settings,
   Palette,
@@ -2850,94 +2851,146 @@ export function EditorialCarouselClient() {
             onOpenFormats={() => setShowLeftSidebar(true)}
             isLeftSidebarCollapsed={!showLeftSidebar}
           />
-          {/* Floating Canvas Viewport Dock (Bottom Center) */}
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#141518]/95 px-3 py-1.5 border border-white/10 rounded-full shadow-[0_16px_40px_rgba(0,0,0,0.65)] z-30 backdrop-blur-md">
-            <div className="flex bg-[#18191d] p-0.5 rounded border border-white/10">
+          {/* Paper.design Signature Bottom Center Dock */}
+          <div
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#242426] px-2 py-1 border border-[#383838] rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.45)] z-30 select-none transition-all duration-200"
+            role="toolbar"
+            aria-label="Canvas Viewport Controls"
+          >
+            {/* 1. Mode Segmented Pill: Fixed Grid / Free Design */}
+            <div className="flex bg-[#1a1a1c] p-0.5 rounded-lg border border-[#383838]">
               <button
                 type="button"
                 onClick={() => setEditorMode("fixed")}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
+                className={`px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide transition-all cursor-pointer ${
                   editorMode === "fixed"
-                    ? "bg-[#22252e] text-white shadow-sm border border-white/10"
-                    : "text-neutral-400 hover:text-white"
+                    ? "bg-[#3a3a3c] text-white shadow-sm font-semibold"
+                    : "text-[#8e8e93] hover:text-[#ececec]"
                 }`}
+                title="Fixed Grid layout mode"
               >
                 Fixed Grid
               </button>
               <button
                 type="button"
                 onClick={() => setEditorMode("free")}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
+                className={`px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide transition-all cursor-pointer ${
                   editorMode === "free"
-                    ? "bg-[#22252e] text-[#38bdf8] shadow-sm border border-white/10"
-                    : "text-neutral-400 hover:text-white"
+                    ? "bg-[#3a3a3c] text-[#38bdf8] shadow-sm font-semibold"
+                    : "text-[#8e8e93] hover:text-[#ececec]"
                 }`}
+                title="Freeform Drag & Drop design mode"
               >
                 Free Design
               </button>
             </div>
 
-            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
+            <div className="h-4 w-px bg-[#383838] mx-0.5" />
 
+            {/* 2. Safe Margins Toggle */}
             <button
               type="button"
               onClick={() => setShowSafeArea(!showSafeArea)}
-              className={`p-1 rounded transition-all ${
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
                 showSafeArea
-                  ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/30"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
+                  ? "bg-[#3a3a3c] text-[#38bdf8] shadow-sm"
+                  : "text-[#8e8e93] hover:text-white hover:bg-white/5"
               }`}
-              title="Toggle Safe Margins Grid (S)"
+              title="Toggle Safe Margins (S)"
             >
-              <Smartphone size={12} />
+              <Smartphone size={13} />
+              <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
+                <span>Safe Margins</span>
+                <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">S</kbd>
+              </span>
             </button>
+
+            {/* 3. Pixel Grid Toggle */}
             <button
               type="button"
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-1 rounded transition-all ${
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
                 showGrid
-                  ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/30"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
+                  ? "bg-[#3a3a3c] text-[#38bdf8] shadow-sm"
+                  : "text-[#8e8e93] hover:text-white hover:bg-white/5"
               }`}
-              title="Toggle Pixel Grid Dots (G)"
+              title="Toggle Grid (G)"
             >
-              <Grid size={12} />
+              <Grid size={13} />
+              <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
+                <span>Grid Dots</span>
+                <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">G</kbd>
+              </span>
             </button>
 
-            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
+            <div className="h-4 w-px bg-[#383838] mx-0.5" />
 
-            <button
-              type="button"
-              onClick={() => setZoomScale((prev) => Math.max(0.15, Number((prev - 0.05).toFixed(2))))}
-              className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
-              title="Zoom Out (-)"
-            >
-              <Minimize2 size={11} />
-            </button>
+            {/* 4. Slide Pagination Controls (‹ 1 / N ›) */}
+            {slides.length > 1 && (
+              <>
+                <div className="flex items-center gap-0.5 text-[#8e8e93]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveIndex(Math.max(0, activeIndex - 1))}
+                    disabled={activeIndex === 0}
+                    className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/10 hover:text-white disabled:opacity-20 transition-all cursor-pointer disabled:cursor-not-allowed"
+                    title="Previous Slide (←)"
+                  >
+                    <ChevronLeft size={13} />
+                  </button>
+                  <span className="text-[10px] font-mono font-medium text-[#ececec] px-1 select-none whitespace-nowrap">
+                    {activeIndex + 1} <span className="text-[#8e8e93]">/</span> {slides.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveIndex(Math.min(slides.length - 1, activeIndex + 1))}
+                    disabled={activeIndex === slides.length - 1}
+                    className="w-6 h-6 rounded flex items-center justify-center hover:bg-white/10 hover:text-white disabled:opacity-20 transition-all cursor-pointer disabled:cursor-not-allowed"
+                    title="Next Slide (→)"
+                  >
+                    <ChevronRight size={13} />
+                  </button>
+                </div>
+                <div className="h-4 w-px bg-[#383838] mx-0.5" />
+              </>
+            )}
+
+            {/* 5. Zoom Out, Percentage, Zoom In */}
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => setZoomScale((prev) => Math.max(0.15, Number((prev - 0.05).toFixed(2))))}
+                className="w-6 h-6 rounded flex items-center justify-center text-[#8e8e93] hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                title="Zoom Out (-)"
+              >
+                <Minus size={12} />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFitToScreen()}
+                className="text-[11px] font-mono font-medium text-[#ececec] hover:text-white px-1.5 py-0.5 rounded hover:bg-white/5 transition-all text-center select-none cursor-pointer"
+                title="Click to reset zoom to Fit"
+              >
+                {Math.round(zoomScale * 100)}%
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoomScale((prev) => Math.min(3.0, Number((prev + 0.05).toFixed(2))))}
+                className="w-6 h-6 rounded flex items-center justify-center text-[#8e8e93] hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                title="Zoom In (+)"
+              >
+                <Plus size={12} />
+              </button>
+            </div>
+
+            <div className="h-4 w-px bg-[#383838] mx-0.5" />
+
+            {/* 6. Fit Button */}
             <button
               type="button"
               onClick={() => handleFitToScreen()}
-              className="text-[10px] font-mono font-bold text-neutral-200 px-1.5 py-0.5 rounded hover:bg-white/5 transition-all text-center select-none"
-              title="Click to auto-fit view"
-            >
-              {Math.round(zoomScale * 100)}%
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoomScale((prev) => Math.min(3.0, Number((prev + 0.05).toFixed(2))))}
-              className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
-              title="Zoom In (+)"
-            >
-              <Maximize2 size={11} />
-            </button>
-
-            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
-
-            <button
-              type="button"
-              onClick={() => handleFitToScreen()}
-              className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-neutral-300 hover:text-white rounded transition-all"
-              title="Fit artboard inside view"
+              className="h-[24px] px-2.5 rounded-md bg-[#323234] hover:bg-[#3d3d40] text-[#ececec] text-[10px] font-medium border border-[#48484a]/30 transition-all flex items-center justify-center cursor-pointer shadow-sm active:scale-95"
+              title="Fit artboard inside view (Ctrl+0)"
             >
               Fit
             </button>
