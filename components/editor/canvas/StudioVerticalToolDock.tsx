@@ -23,6 +23,7 @@ interface StudioVerticalToolDockProps {
   onSelectImageElement: () => void;
   onAddSlide: () => void;
   onOpenFormats?: () => void;
+  isLeftSidebarCollapsed?: boolean;
 }
 
 export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
@@ -36,10 +37,13 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
   onSelectImageElement,
   onAddSlide,
   onOpenFormats,
+  isLeftSidebarCollapsed,
 }) => {
   return (
     <div
-      className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center bg-[#1c1d22]/95 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.55)] gap-1 select-none"
+      className={`absolute z-30 flex flex-col items-center bg-[#2a2a2a] border border-[#353535] rounded-xl p-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)] gap-0.5 select-none transition-all duration-200 ${
+        isLeftSidebarCollapsed ? "left-3 top-[52px]" : "left-3 top-3"
+      }`}
       role="toolbar"
       aria-label="Studio Tools"
     >
@@ -47,15 +51,15 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
       <button
         type="button"
         onClick={() => onSelectTool("select")}
-        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer ${
+        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
           activeTool === "select"
-            ? "bg-[#282a36] text-[#38bdf8] shadow-sm border border-white/10"
-            : "text-neutral-400 hover:text-white hover:bg-white/10"
+            ? "bg-[#444444] text-white shadow-sm"
+            : "text-[#9a9a9a] hover:text-white hover:bg-white/5"
         }`}
         title="Pointer (V)"
       >
-        <MousePointer size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <MousePointer size={13} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Select</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">V</kbd>
         </span>
@@ -65,32 +69,32 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
       <button
         type="button"
         onClick={() => onSelectTool("hand")}
-        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer ${
+        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
           activeTool === "hand"
-            ? "bg-[#282a36] text-[#38bdf8] shadow-sm border border-white/10"
-            : "text-neutral-400 hover:text-white hover:bg-white/10"
+            ? "bg-[#444444] text-white shadow-sm"
+            : "text-[#9a9a9a] hover:text-white hover:bg-white/5"
         }`}
         title="Hand / Pan (H)"
       >
-        <Hand size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <Hand size={13} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Hand</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">H</kbd>
         </span>
       </button>
 
-      <div className="w-5 h-px bg-white/10 my-0.5" />
+      <div className="w-4 h-px bg-[#353535] my-0.5" />
 
       {/* 3. Format / Frame (F) */}
       {onOpenFormats && (
         <button
           type="button"
           onClick={onOpenFormats}
-          className="w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer text-neutral-400 hover:text-white hover:bg-white/10"
+          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer text-[#9a9a9a] hover:text-white hover:bg-white/5"
           title="Frame / Format (F)"
         >
-          <LayoutGrid size={15} />
-          <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+          <LayoutGrid size={13} />
+          <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
             <span>Format</span>
             <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">F</kbd>
           </span>
@@ -101,11 +105,11 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
       <button
         type="button"
         onClick={onSelectTextElement}
-        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer text-neutral-400 hover:text-white hover:bg-white/10"
+        className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer text-[#9a9a9a] hover:text-white hover:bg-white/5"
         title="Text Layer (T)"
       >
-        <Type size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <span className="text-[12px] font-sans font-semibold">Aa</span>
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Text</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">T</kbd>
         </span>
@@ -115,31 +119,31 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
       <button
         type="button"
         onClick={onSelectImageElement}
-        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer text-neutral-400 hover:text-white hover:bg-white/10"
+        className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer text-[#9a9a9a] hover:text-white hover:bg-white/5"
         title="Image / Media (I)"
       >
-        <ImageIcon size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <ImageIcon size={13} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Image</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">I</kbd>
         </span>
       </button>
 
-      <div className="w-5 h-px bg-white/10 my-0.5" />
+      <div className="w-4 h-px bg-[#353535] my-0.5" />
 
       {/* 6. Safe Area Grid (S) */}
       <button
         type="button"
         onClick={onToggleSafeArea}
-        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer ${
+        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
           showSafeArea
-            ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/40"
-            : "text-neutral-400 hover:text-white hover:bg-white/10"
+            ? "bg-[#444444] text-white shadow-sm"
+            : "text-[#9a9a9a] hover:text-white hover:bg-white/5"
         }`}
         title="Safe Margin Guides (S)"
       >
-        <Smartphone size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <Smartphone size={13} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Safe Margins</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">S</kbd>
         </span>
@@ -149,32 +153,32 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
       <button
         type="button"
         onClick={onToggleGrid}
-        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer ${
+        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer ${
           showGrid
-            ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/40"
-            : "text-neutral-400 hover:text-white hover:bg-white/10"
+            ? "bg-[#444444] text-white shadow-sm"
+            : "text-[#9a9a9a] hover:text-white hover:bg-white/5"
         }`}
         title="Pixel Grid Dots (G)"
       >
-        <Grid size={15} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
+        <Grid size={13} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
           <span>Grid</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">G</kbd>
         </span>
       </button>
 
-      <div className="w-5 h-px bg-white/10 my-0.5" />
+      <div className="w-4 h-px bg-[#353535] my-0.5" />
 
       {/* 8. Add Slide (+) */}
       <button
         type="button"
         onClick={onAddSlide}
-        className="w-9 h-9 rounded-xl flex items-center justify-center transition-all group relative cursor-pointer bg-[#18191d] hover:bg-[#1687f8] text-neutral-300 hover:text-white border border-white/10 hover:border-transparent"
+        className="w-7 h-7 rounded-lg flex items-center justify-center transition-all group relative cursor-pointer text-[#9a9a9a] hover:text-white hover:bg-white/5"
         title="Add New Slide (+)"
       >
-        <Plus size={16} />
-        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2.5 px-2 py-1 bg-[#121316] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-white/10 z-50 flex items-center gap-1.5">
-          <span>Add Slide</span>
+        <Plus size={14} />
+        <span className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity absolute left-full ml-2 px-2 py-1 bg-[#1c1c1e] text-white text-[10px] font-medium rounded-md whitespace-nowrap shadow-xl border border-[#353535] z-50 flex items-center gap-1.5">
+          <span>Add Artboard</span>
           <kbd className="text-[9px] bg-white/10 px-1 py-0.5 rounded font-mono text-neutral-300">+</kbd>
         </span>
       </button>

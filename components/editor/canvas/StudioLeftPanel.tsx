@@ -11,16 +11,11 @@ import {
   EyeOff,
   Lock,
   Unlock,
-  Type,
   ImageIcon,
   Quote,
   MousePointer,
-  FileText,
-  Smartphone,
-  ChevronLeft,
   ChevronDown,
   ChevronRight,
-  Layers,
   Sparkles,
   ArrowLeft,
 } from "lucide-react";
@@ -49,19 +44,6 @@ interface StudioLeftPanelProps {
   projectName?: string;
 }
 
-const LAYER_ICONS: Record<string, React.ReactNode> = {
-  category: <span className="font-mono text-[9px] font-bold text-neutral-400">TAG</span>,
-  headline: <span className="font-serif font-bold text-[11px] text-[#38bdf8]">Aa</span>,
-  featuredImage: <ImageIcon size={12} className="text-emerald-400" />,
-  body: <Type size={12} className="text-neutral-400" />,
-  bullets: <LayoutGrid size={12} className="text-neutral-400" />,
-  quote: <Quote size={12} className="text-amber-400" />,
-  cta: <MousePointer size={12} className="text-purple-400" />,
-  logo: <ImageIcon size={12} className="text-neutral-400" />,
-  divider: <div className="w-3 h-0.5 bg-neutral-400 rounded" />,
-  author: <FileText size={12} className="text-neutral-400" />,
-};
-
 const LAYER_ORDER: ElementKey[] = [
   "headline",
   "category",
@@ -70,9 +52,6 @@ const LAYER_ORDER: ElementKey[] = [
   "bullets",
   "quote",
   "cta",
-  "author",
-  "logo",
-  "divider",
 ];
 
 export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
@@ -94,9 +73,10 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
   onFormatChange,
   presets,
   onCollapse,
-  projectName = "Editorial Carousel",
+  projectName = "Welcome to Paper",
 }) => {
-  const [tab, setTab] = useState<"slides" | "layers" | "formats" | "presets">("slides");
+  const [tab, setTab] = useState<"design" | "theme">("design");
+  const [isPageExpanded, setIsPageExpanded] = useState(true);
   const [expandedSlides, setExpandedSlides] = useState<Record<number, boolean>>({
     [activeIndex]: true,
   });
@@ -105,431 +85,497 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
     e.stopPropagation();
     setExpandedSlides((prev) => ({
       ...prev,
-      [idx]: !prev[idx],
+      [idx]: !(prev[idx] ?? true),
     }));
   };
 
   return (
-    <aside className="w-[270px] min-w-[270px] h-full flex flex-col bg-[#121316] border-r border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
-      {/* 1. Studio Left Panel Header with Admin Link & Capsule */}
-      <div className="h-[46px] px-2.5 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a] gap-1.5">
-        <div className="flex items-center gap-1.5 min-w-0">
+    <aside className="w-[240px] min-w-[240px] h-full flex flex-col bg-[#2a2a2a] border-r border-[#353535] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
+      {/* 1. Paper.design Header Bar */}
+      <div className="h-[42px] px-2.5 border-b border-[#353535] flex items-center justify-between shrink-0 bg-[#2a2a2a] gap-1.5">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          {/* Back to Admin navigation */}
           <Link
             href="/admin"
-            className="h-7 px-2 rounded-lg bg-[#1e2026] hover:bg-[#282a33] text-neutral-400 hover:text-white border border-white/10 text-[11px] font-medium transition-colors flex items-center gap-1 shrink-0"
+            className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0"
             title="Return to Admin Dashboard"
           >
-            <ArrowLeft size={12} />
-            <span>Admin</span>
+            <ArrowLeft size={13} />
           </Link>
 
-          <div className="flex items-center gap-1.5 bg-[#1b1c22] border border-white/10 rounded-full px-2 py-0.5 max-w-[145px] shadow-sm truncate">
-            <span className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full shrink-0" />
-            <span className="text-[10px] font-semibold text-neutral-200 truncate tracking-tight">
-              {projectName}
-            </span>
-          </div>
+          {/* Paper Double-Sheet Document Icon */}
+          <span className="text-neutral-400 shrink-0 flex items-center justify-center">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="4" width="9" height="10" rx="1.5" />
+              <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
+            </svg>
+          </span>
+
+          {/* Document Title */}
+          <span
+            className="text-[12px] font-medium text-[#ececec] truncate tracking-tight"
+            title={projectName}
+          >
+            {projectName}
+          </span>
         </div>
 
+        {/* Paper Sidebar Collapse Icon Button */}
         {onCollapse && (
           <button
             type="button"
             onClick={onCollapse}
-            className="h-7 w-7 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0"
-            title="Collapse panel"
+            className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0 cursor-pointer"
+            title="Collapse sidebar"
           >
-            <ChevronLeft size={14} />
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="3" width="12" height="10" rx="1.5" />
+              <line x1="6" y1="3" x2="6" y2="13" />
+            </svg>
           </button>
         )}
       </div>
 
-      {/* 2. Paper.design Compact Segmented Control */}
-      <div className="px-2.5 py-2 border-b border-white/[0.06] bg-[#141518]">
-        <div className="flex bg-[#18191e] p-0.5 rounded-lg border border-white/10">
+      {/* 2. Paper.design Exact Segmented Control: [ Design | Theme ] */}
+      <div className="px-2.5 py-2 border-b border-[#353535] bg-[#2a2a2a]">
+        <div className="flex bg-[#1c1c1e] p-0.5 rounded-lg border border-[#38383a]">
           <button
             type="button"
-            onClick={() => setTab("slides")}
-            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
-              tab === "slides"
-                ? "bg-[#252834] text-white shadow-sm border border-white/10"
-                : "text-neutral-400 hover:text-white"
+            onClick={() => setTab("design")}
+            className={`flex-1 h-6 text-[11px] font-medium rounded-md transition-all flex items-center justify-center cursor-pointer ${
+              tab === "design"
+                ? "bg-[#3f3f3f] text-white shadow-sm font-semibold"
+                : "text-[#8e8e93] hover:text-white hover:bg-white/5"
             }`}
           >
-            Slides
+            Design
           </button>
           <button
             type="button"
-            onClick={() => setTab("layers")}
-            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
-              tab === "layers"
-                ? "bg-[#252834] text-white shadow-sm border border-white/10"
-                : "text-neutral-400 hover:text-white"
+            onClick={() => setTab("theme")}
+            className={`flex-1 h-6 text-[11px] font-medium rounded-md transition-all flex items-center justify-center cursor-pointer ${
+              tab === "theme"
+                ? "bg-[#3f3f3f] text-white shadow-sm font-semibold"
+                : "text-[#8e8e93] hover:text-white hover:bg-white/5"
             }`}
           >
-            Layers
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("formats")}
-            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
-              tab === "formats"
-                ? "bg-[#252834] text-white shadow-sm border border-white/10"
-                : "text-neutral-400 hover:text-white"
-            }`}
-          >
-            Size
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("presets")}
-            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
-              tab === "presets"
-                ? "bg-[#252834] text-white shadow-sm border border-white/10"
-                : "text-neutral-400 hover:text-white"
-            }`}
-          >
-            Styles
+            Theme
           </button>
         </div>
       </div>
 
       {/* 3. Main Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-2.5 min-h-0 space-y-2">
+      <div className="flex-1 overflow-y-auto px-2 py-2 min-h-0 space-y-1">
         {/* ========================================================
-            TAB 1: SLIDES LIST (Paper Artboard Cards)
+            TAB 1: DESIGN (Paper Exact Layer & Artboard Tree)
             ======================================================== */}
-        {tab === "slides" && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1 pb-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
-                Pages ({slides.length})
-              </span>
+        {tab === "design" && (
+          <div className="space-y-1">
+            {/* Page 1 Header Row */}
+            <div
+              onClick={() => setIsPageExpanded(!isPageExpanded)}
+              className="flex items-center justify-between px-1.5 py-1 text-neutral-400 hover:text-white cursor-pointer group rounded"
+            >
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  className="p-0.5 text-neutral-400 group-hover:text-white"
+                >
+                  {isPageExpanded ? (
+                    <ChevronDown size={12} />
+                  ) : (
+                    <ChevronRight size={12} />
+                  )}
+                </button>
+                <span className="text-[11px] font-semibold text-[#ececec]">
+                  Page 1
+                </span>
+                <span className="text-[9px] text-[#8e8e93] font-mono">
+                  ({slides.length})
+                </span>
+              </div>
+
               <button
                 type="button"
-                onClick={onAddSlide}
-                className="flex items-center gap-1 text-[10px] font-medium text-[#38bdf8] hover:text-[#7dd3fc] transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddSlide();
+                }}
+                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-opacity"
+                title="Add Artboard"
               >
                 <Plus size={11} />
-                <span>Add Page</span>
               </button>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              {slides.map((slide, sIdx) => {
-                const isActive = activeIndex === sIdx;
-                return (
-                  <div
-                    key={slide.id}
-                    onClick={() => {
-                      onSelectSlide(sIdx);
-                      onSelectElement(null);
-                      onSelectFooter(false);
-                    }}
-                    className={`p-2 rounded-xl border transition-all cursor-pointer group flex flex-col ${
-                      isActive
-                        ? "bg-[#181a24] border-[#1687f8] shadow-[0_0_12px_rgba(22,135,248,0.25)] ring-1 ring-[#1687f8]/50"
-                        : "bg-[#16171c] hover:bg-[#1c1e26] border-white/10"
-                    }`}
-                  >
-                    {/* Visual Artboard Preview Thumbnail */}
-                    <div
-                      className="w-full h-14 rounded-lg relative overflow-hidden flex flex-col justify-between p-2 mb-1.5 border border-white/10 transition-colors shadow-inner"
-                      style={{ backgroundColor: slide.backgroundColor || "#0d0e12" }}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="w-5 h-1 bg-[#1687f8] rounded-full" />
-                        <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded bg-black/40 text-neutral-300 border border-white/10">
-                          0{sIdx + 1}
-                        </span>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="w-16 h-1 bg-neutral-400/40 rounded-full" />
-                        <div className="w-10 h-0.5 bg-neutral-400/25 rounded-full" />
-                      </div>
-                      <div className="flex justify-between items-center text-[7px] text-neutral-400 font-mono">
-                        <span className="truncate max-w-[80px]">{slide.footer.brandName || "GROWX"}</span>
-                        <span>{activeFormat.aspectRatio}</span>
-                      </div>
-                    </div>
+            {/* Artboard Rows under Page 1 */}
+            {isPageExpanded && (
+              <div className="flex flex-col gap-0.5">
+                {slides.map((slide, sIdx) => {
+                  const isCurrentSlide = activeIndex === sIdx;
+                  const isExpanded = expandedSlides[sIdx] ?? true;
 
-                    {/* Headline Title and Row Actions */}
-                    <div className="flex items-center justify-between px-0.5">
-                      <span className="text-[11px] font-medium truncate flex-1 text-neutral-200 group-hover:text-white">
-                        {slide.headline.text ? slide.headline.text.slice(0, 26) : `Slide ${sIdx + 1}`}
-                      </span>
+                  return (
+                    <div key={slide.id} className="flex flex-col">
+                      {/* Artboard Header Row: v [ ] 1 */}
+                      <div
+                        onClick={() => {
+                          onSelectSlide(sIdx);
+                          onSelectElement(null);
+                          onSelectFooter(false);
+                        }}
+                        className={`flex items-center justify-between px-1.5 py-1 rounded cursor-pointer transition-colors group ${
+                          isCurrentSlide && !selectedElement && !isFooterSelected
+                            ? "bg-[#3a3a3c] text-white font-medium"
+                            : "hover:bg-white/5 text-[#d1d1d6]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <button
+                            type="button"
+                            onClick={(e) => toggleSlideExpand(sIdx, e)}
+                            className="p-0.5 hover:bg-white/10 rounded text-neutral-400 hover:text-white shrink-0"
+                          >
+                            {isExpanded ? (
+                              <ChevronDown size={11} />
+                            ) : (
+                              <ChevronRight size={11} />
+                            )}
+                          </button>
 
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-1.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDuplicateSlide(sIdx);
-                          }}
-                          className="p-1 rounded-md hover:bg-white/10 text-neutral-400 hover:text-white"
-                          title="Duplicate slide"
-                        >
-                          <Copy size={11} />
-                        </button>
-                        {slides.length > 1 && (
+                          {/* Paper Frame Icon: [ ] */}
+                          <span className="text-neutral-400 shrink-0">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                            >
+                              <rect
+                                x="2"
+                                y="2"
+                                width="12"
+                                height="12"
+                                rx="1.5"
+                                strokeDasharray="3 2"
+                              />
+                            </svg>
+                          </span>
+
+                          <span className="text-[11px] font-semibold text-neutral-200">
+                            {sIdx + 1}
+                          </span>
+
+                          <span className="text-[10px] text-[#8e8e93] font-normal truncate max-w-[95px] ml-1">
+                            {slide.headline.text
+                              ? slide.headline.text.slice(0, 16)
+                              : `Slide ${sIdx + 1}`}
+                          </span>
+                        </div>
+
+                        {/* Hover Actions: Duplicate, Delete */}
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onDeleteSlide(sIdx);
+                              onDuplicateSlide(sIdx);
                             }}
-                            className="p-1 rounded-md hover:bg-red-500/20 text-neutral-400 hover:text-red-400"
-                            title="Delete slide"
+                            className="p-0.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                            title="Duplicate artboard"
                           >
-                            <Trash2 size={11} />
+                            <Copy size={11} />
                           </button>
-                        )}
+                          {slides.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteSlide(sIdx);
+                              }}
+                              className="p-0.5 rounded hover:bg-red-500/20 text-neutral-400 hover:text-red-400"
+                              title="Delete artboard"
+                            >
+                              <Trash2 size={11} />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
 
+                      {/* Indented Child Layers (Matches Paper hierarchy) */}
+                      {isExpanded && (
+                        <div className="pl-4 pr-0.5 py-0.5 flex flex-col gap-0.5">
+                          {/* 1. Background Layer */}
+                          <div
+                            onClick={() => {
+                              if (!isCurrentSlide) onSelectSlide(sIdx);
+                              onSelectElement(null);
+                              onSelectFooter(false);
+                            }}
+                            className="flex items-center justify-between px-2 py-1 rounded text-[11px] text-neutral-300 hover:bg-white/5 cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="text-neutral-400 shrink-0">
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 16 16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                >
+                                  <rect x="2" y="2" width="12" height="12" rx="1.5" />
+                                </svg>
+                              </span>
+                              <span className="truncate">Background</span>
+                            </div>
+                            <Lock size={10} className="text-neutral-500 shrink-0" />
+                          </div>
+
+                          {/* 2. Slide Layers */}
+                          {LAYER_ORDER.map((key) => {
+                            const elem = slide[key];
+                            if (!elem) return null;
+                            const isSelected =
+                              isCurrentSlide && selectedElement === key;
+
+                            return (
+                              <div
+                                key={key}
+                                onClick={() => {
+                                  if (!isCurrentSlide) onSelectSlide(sIdx);
+                                  onSelectElement(key);
+                                  onSelectFooter(false);
+                                }}
+                                className={`group/layer flex items-center justify-between px-2 py-1 rounded text-[11px] cursor-pointer transition-colors ${
+                                  isSelected
+                                    ? "bg-[#3a3a3c] text-white font-medium"
+                                    : "text-neutral-300 hover:bg-white/5"
+                                } ${!elem.visible ? "opacity-35" : ""}`}
+                              >
+                                <div className="flex items-center gap-2 truncate">
+                                  {/* Paper Layer Icons */}
+                                  {key === "headline" ||
+                                  key === "body" ||
+                                  key === "quote" ||
+                                  key === "category" ? (
+                                    <span className="text-[11px] font-sans font-medium text-neutral-400 w-3.5 text-center shrink-0">
+                                      Aa
+                                    </span>
+                                  ) : key === "featuredImage" ? (
+                                    <ImageIcon
+                                      size={12}
+                                      className="text-neutral-400 shrink-0"
+                                    />
+                                  ) : key === "bullets" ? (
+                                    <LayoutGrid
+                                      size={12}
+                                      className="text-neutral-400 shrink-0"
+                                    />
+                                  ) : key === "cta" ? (
+                                    <MousePointer
+                                      size={12}
+                                      className="text-neutral-400 shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-3 h-3 border border-neutral-400 rounded-sm shrink-0" />
+                                  )}
+
+                                  <span className="truncate">
+                                    {key === "headline"
+                                      ? "Title"
+                                      : key === "featuredImage"
+                                        ? "Image"
+                                        : key === "body"
+                                          ? "Text"
+                                          : key === "category"
+                                            ? "Category"
+                                            : key === "quote"
+                                              ? "Quote"
+                                              : key === "bullets"
+                                                ? "Bullets"
+                                                : key === "cta"
+                                                  ? "Button"
+                                                  : key}
+                                  </span>
+                                </div>
+
+                                {/* Hover Lock & Eye toggles */}
+                                <div className="flex items-center gap-0.5 opacity-0 group-hover/layer:opacity-100 transition-opacity shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!isCurrentSlide) onSelectSlide(sIdx);
+                                      onToggleLock(key);
+                                    }}
+                                    className="p-0.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                                    title={elem.locked ? "Unlock layer" : "Lock layer"}
+                                  >
+                                    {elem.locked ? (
+                                      <Lock size={10} className="text-amber-400" />
+                                    ) : (
+                                      <Unlock size={10} />
+                                    )}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!isCurrentSlide) onSelectSlide(sIdx);
+                                      onToggleVisibility(key);
+                                    }}
+                                    className="p-0.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                                    title={elem.visible ? "Hide layer" : "Show layer"}
+                                  >
+                                    {elem.visible ? (
+                                      <Eye size={10} />
+                                    ) : (
+                                      <EyeOff size={10} />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          {/* 3. Footer Layer */}
+                          <div
+                            onClick={() => {
+                              if (!isCurrentSlide) onSelectSlide(sIdx);
+                              onSelectElement(null);
+                              onSelectFooter(true);
+                            }}
+                            className={`flex items-center justify-between px-2 py-1 rounded text-[11px] cursor-pointer transition-colors ${
+                              isCurrentSlide && isFooterSelected
+                                ? "bg-[#3a3a3c] text-white font-medium"
+                                : "text-neutral-300 hover:bg-white/5"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span className="text-[11px] font-sans text-neutral-400 w-3.5 text-center shrink-0">
+                                —
+                              </span>
+                              <span className="truncate">Footer & Brand</span>
+                            </div>
+                            <Lock size={10} className="text-neutral-500 shrink-0" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Paper + Add Page Button */}
             <button
               type="button"
               onClick={onAddSlide}
-              className="w-full h-8 rounded-xl border border-dashed border-white/15 hover:border-[#1687f8] bg-[#16171c] hover:bg-[#1c1e26] text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-1.5 text-[10px] font-medium mt-1"
+              className="w-full h-7 rounded-md border border-dashed border-[#3d3d3d] hover:border-neutral-400 bg-transparent hover:bg-white/5 text-neutral-400 hover:text-white transition-all flex items-center justify-center gap-1.5 text-[11px] font-medium mt-2 cursor-pointer"
             >
               <Plus size={12} />
-              <span>Add New Page</span>
+              <span>Add Artboard</span>
             </button>
           </div>
         )}
 
         {/* ========================================================
-            TAB 2: PAPER NESTED LAYERS TREE
+            TAB 2: THEME (Presets, Formats, and Styles)
             ======================================================== */}
-        {tab === "layers" && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1 pb-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
-                Layer Hierarchy
+        {tab === "theme" && (
+          <div className="space-y-3 px-1">
+            {/* Aspect Ratio Format Presets */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8e8e93] block">
+                Format Aspect Ratio
               </span>
-              <span className="text-[9px] font-mono text-neutral-500">
-                Slide {activeIndex + 1}
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              {slides.map((slide, sIdx) => {
-                const isCurrentSlide = activeIndex === sIdx;
-                const isExpanded = expandedSlides[sIdx] ?? isCurrentSlide;
-
-                return (
-                  <div key={slide.id} className="flex flex-col">
-                    {/* Slide Group Header */}
-                    <div
-                      onClick={() => {
-                        onSelectSlide(sIdx);
-                        onSelectElement(null);
-                        onSelectFooter(false);
-                      }}
-                      className={`flex items-center justify-between py-1.5 px-2 rounded-lg cursor-pointer transition-all border ${
-                        isCurrentSlide
-                          ? "bg-[#181a24] border-white/15 text-white font-semibold"
-                          : "hover:bg-[#16171c] border-transparent text-neutral-400"
+              <div className="grid grid-cols-2 gap-1.5">
+                {CANVAS_FORMAT_PRESETS.map((preset) => {
+                  const isActive = activeFormat.id === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => onFormatChange(preset)}
+                      className={`p-2 rounded-lg border text-left flex flex-col transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-[#3a3a3c] border-[#555] text-white"
+                          : "bg-[#222224] hover:bg-[#28282b] border-[#353535] text-neutral-300"
                       }`}
                     >
-                      <div className="flex items-center gap-1.5 truncate">
-                        <button
-                          type="button"
-                          onClick={(e) => toggleSlideExpand(sIdx, e)}
-                          className="p-0.5 hover:bg-white/10 rounded text-neutral-400 hover:text-white"
-                        >
-                          {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-                        </button>
-                        <span className="text-[11px] truncate">
-                          Slide {sIdx + 1}
-                        </span>
-                      </div>
-
-                      <span className="text-[9px] font-mono text-neutral-500 bg-[#121316] px-1.5 py-0.5 rounded border border-white/5">
-                        {slide.headline.text ? slide.headline.text.slice(0, 12) + "..." : "Artboard"}
+                      <span className="text-[10px] font-semibold truncate">
+                        {preset.name}
                       </span>
-                    </div>
-
-                    {/* Children Layers (Shown when expanded) */}
-                    {isExpanded && (
-                      <div className="pl-3 pr-0.5 py-0.5 flex flex-col gap-0.5 border-l border-white/[0.08] ml-3 mt-0.5">
-                        {LAYER_ORDER.map((key) => {
-                          const elem = slide[key];
-                          if (!elem) return null;
-                          const isSelected = isCurrentSlide && selectedElement === key;
-
-                          return (
-                            <div
-                              key={key}
-                              onClick={() => {
-                                if (!isCurrentSlide) onSelectSlide(sIdx);
-                                onSelectElement(key);
-                                onSelectFooter(false);
-                              }}
-                              className={`group/layer flex items-center justify-between py-1 px-2 rounded-md cursor-pointer transition-all border ${
-                                isSelected
-                                  ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm"
-                                  : "hover:bg-[#18191e] border-transparent text-neutral-300"
-                              } ${!elem.visible ? "opacity-35" : ""}`}
-                            >
-                              <div className="flex items-center gap-2 truncate">
-                                <div className="w-4 flex items-center justify-center shrink-0">
-                                  {LAYER_ICONS[key]}
-                                </div>
-                                <span className="text-[11px] truncate capitalize font-medium">
-                                  {key === "featuredImage" ? "Image" : key}
-                                </span>
-                              </div>
-
-                              <div className="flex items-center gap-0.5 opacity-0 group-hover/layer:opacity-100 transition-opacity shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!isCurrentSlide) onSelectSlide(sIdx);
-                                    onToggleLock(key);
-                                  }}
-                                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
-                                  title={elem.locked ? "Unlock layer" : "Lock layer"}
-                                >
-                                  {elem.locked ? (
-                                    <Lock size={11} className="text-amber-400" />
-                                  ) : (
-                                    <Unlock size={11} />
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!isCurrentSlide) onSelectSlide(sIdx);
-                                    onToggleVisibility(key);
-                                  }}
-                                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
-                                  title={elem.visible ? "Hide layer" : "Show layer"}
-                                >
-                                  {elem.visible ? <Eye size={11} /> : <EyeOff size={11} />}
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-
-                        {/* Footer & Brand Layer Row */}
-                        <div
-                          onClick={() => {
-                            if (!isCurrentSlide) onSelectSlide(sIdx);
-                            onSelectElement(null);
-                            onSelectFooter(true);
-                          }}
-                          className={`flex items-center justify-between py-1 px-2 rounded-md cursor-pointer transition-all border ${
-                            isCurrentSlide && isFooterSelected
-                              ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm"
-                              : "hover:bg-[#18191e] border-transparent text-neutral-300"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <div className="w-4 flex items-center justify-center shrink-0">
-                              <FileText size={12} className="text-[#38bdf8]" />
-                            </div>
-                            <span className="text-[11px] font-medium truncate">Footer & Brand</span>
-                          </div>
-                          <span className="text-[8px] font-mono text-neutral-500">Lock</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                      <span className="text-[9px] text-[#8e8e93] font-mono mt-0.5">
+                        {preset.aspectRatio}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* ========================================================
-            TAB 3: FORMATS & SIZES
-            ======================================================== */}
-        {tab === "formats" && (
-          <div className="space-y-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block px-1 pb-1">
-              Canvas Aspect Ratio
-            </span>
+            {/* Editorial Layout Templates */}
+            <div className="space-y-1.5 pt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8e8e93] block">
+                Editorial Layout Styles
+              </span>
 
-            <div className="flex flex-col gap-1.5">
-              {CANVAS_FORMAT_PRESETS.map((preset) => {
-                const isActive = activeFormat.id === preset.id;
-                return (
+              <div className="flex flex-col gap-1.5">
+                {presets.map((preset) => (
                   <button
                     key={preset.id}
                     type="button"
-                    onClick={() => onFormatChange(preset)}
-                    className={`w-full p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
-                      isActive
-                        ? "bg-[#0d2238] border-[#1687f8] text-white shadow-[0_0_12px_rgba(22,135,248,0.25)] ring-1 ring-[#1687f8]/50"
-                        : "bg-[#16171c] hover:bg-[#1c1e26] border-white/10 text-neutral-300"
-                    }`}
+                    onClick={() => onApplyPreset(preset.id)}
+                    className="w-full p-2.5 rounded-lg border border-[#353535] bg-[#222224] hover:bg-[#28282b] hover:border-[#555] text-left transition-all group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-[#101114] border border-white/10 flex items-center justify-center shrink-0 text-[#38bdf8]">
-                      <Smartphone size={15} />
-                    </div>
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-semibold truncate">{preset.name}</span>
-                        <span className="text-[10px] font-mono font-bold text-neutral-400 bg-[#101114] px-1.5 py-0.5 rounded border border-white/5 shrink-0 ml-1">
-                          {preset.aspectRatio}
-                        </span>
-                      </div>
-                      <span className="text-[9px] text-neutral-400 truncate mt-0.5">{preset.badge}</span>
-                      <span className="text-[8px] font-mono text-neutral-500">
-                        {preset.width} × {preset.height} px
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-medium text-neutral-200 group-hover:text-white transition-colors">
+                        {preset.name}
                       </span>
+                      <Sparkles
+                        size={11}
+                        className="text-neutral-500 group-hover:text-white"
+                      />
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================
-            TAB 4: PRESETS & THEMES
-            ======================================================== */}
-        {tab === "presets" && (
-          <div className="space-y-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block px-1 pb-1">
-              Editorial Layout Styles
-            </span>
-
-            <div className="flex flex-col gap-1.5">
-              {presets.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => onApplyPreset(preset.id)}
-                  className="w-full p-2.5 rounded-xl border border-white/10 bg-[#16171c] hover:bg-[#1c1e26] hover:border-[#1687f8]/50 text-left transition-all group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-neutral-200 group-hover:text-[#38bdf8] transition-colors">
-                      {preset.name}
+                    <span className="text-[9px] text-[#8e8e93] block mt-0.5">
+                      {preset.desc}
                     </span>
-                    <Sparkles size={11} className="text-neutral-500 group-hover:text-[#38bdf8]" />
-                  </div>
-                  <span className="text-[9px] text-neutral-400 block mt-0.5">
-                    {preset.desc}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* 4. Bottom Status & Hotkey Helper */}
-      <div className="h-[34px] px-3 border-t border-white/[0.08] flex items-center justify-between shrink-0 bg-[#141518] text-[9px] font-mono text-neutral-500">
-        <span>V: Select • H: Hand</span>
-        <span>Auto-saved</span>
+      {/* 4. Paper.design Bottom Footer */}
+      <div className="h-8 px-3 border-t border-[#353535] bg-[#2a2a2a] flex items-center justify-between text-[11px] text-[#8e8e93] shrink-0">
+        <span className="hover:text-white cursor-pointer transition-colors">
+          What's new • Feedback
+        </span>
+        <span className="text-[10px] font-mono text-[#636366]">v2.4</span>
       </div>
     </aside>
   );

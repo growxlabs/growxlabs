@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
+  ArrowLeft,
   Download,
   ChevronLeft,
   ChevronRight,
@@ -2662,12 +2664,12 @@ export function EditorialCarouselClient() {
       <div
         className="flex-1 min-h-0 w-full grid select-none"
         style={{
-          gridTemplateColumns: `${showLeftSidebar ? "270px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "320px" : "0px"}`,
+          gridTemplateColumns: `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "320px" : "0px"}`,
           transition: "all 200ms ease",
         }}
       >
         {/* ==========================================
-            STUDIO LEFT PANEL (270px)
+            STUDIO LEFT PANEL (Paper.design 240px)
             ========================================== */}
         {showLeftSidebar && (
           <StudioLeftPanel
@@ -2729,17 +2731,61 @@ export function EditorialCarouselClient() {
           }}
           onMouseDown={handleViewportMouseDown}
         >
-          {/* Floating Left Panel Re-open Button (when collapsed) */}
+          {/* Paper.design Signature Floating Document Pill (when sidebar is collapsed) */}
           {!showLeftSidebar && (
-            <button
-              type="button"
-              onClick={() => setShowLeftSidebar(true)}
-              className="absolute top-4 left-4 z-40 h-8 px-2.5 rounded-lg bg-[#141518]/90 hover:bg-[#1f2026] text-neutral-300 hover:text-white border border-white/10 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
-              title="Open Left Panel (Slides & Layers)"
-            >
-              <LayersIcon size={13} className="text-[#38bdf8]" />
-              <span>Slides</span>
-            </button>
+            <div className="absolute top-3 left-3 z-40 h-8 bg-[#2a2a2a] border border-[#353535] rounded-lg px-2.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none backdrop-blur-md">
+              <Link
+                href="/admin"
+                className="p-0.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0"
+                title="Return to Admin Dashboard"
+              >
+                <ArrowLeft size={13} />
+              </Link>
+
+              <span className="text-neutral-400 shrink-0 flex items-center justify-center">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="4" width="9" height="10" rx="1.5" />
+                  <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
+                </svg>
+              </span>
+
+              <span
+                className="text-[12px] font-medium text-[#ececec] truncate max-w-[140px] tracking-tight"
+                title={projectName}
+              >
+                {projectName}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setShowLeftSidebar(true)}
+                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors ml-0.5 cursor-pointer"
+                title="Expand sidebar"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="3" width="12" height="10" rx="1.5" />
+                  <line x1="6" y1="3" x2="6" y2="13" />
+                </svg>
+              </button>
+            </div>
           )}
 
           {/* Floating Right Inspector Re-open Button (when collapsed) */}
@@ -2747,7 +2793,7 @@ export function EditorialCarouselClient() {
             <button
               type="button"
               onClick={() => setShowRightSidebar(true)}
-              className="absolute top-4 right-4 z-40 h-8 px-2.5 rounded-lg bg-[#141518]/90 hover:bg-[#1f2026] text-neutral-300 hover:text-white border border-white/10 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
+              className="absolute top-3 right-3 z-40 h-8 px-2.5 rounded-lg bg-[#2a2a2a] hover:bg-[#353535] text-neutral-300 hover:text-white border border-[#353535] shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
               title="Open Inspector Panel"
             >
               <Sliders size={13} className="text-[#38bdf8]" />
@@ -2773,6 +2819,7 @@ export function EditorialCarouselClient() {
             }}
             onAddSlide={addSlide}
             onOpenFormats={() => setShowLeftSidebar(true)}
+            isLeftSidebarCollapsed={!showLeftSidebar}
           />
           {/* Floating Canvas Viewport Dock (Bottom Center) */}
           <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#141518]/95 px-3 py-1.5 border border-white/10 rounded-full shadow-[0_16px_40px_rgba(0,0,0,0.65)] z-30 backdrop-blur-md">
