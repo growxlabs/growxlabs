@@ -670,7 +670,7 @@ export function EditorialCarouselClient() {
 
   // Viewport & Infinite Canvas Control
   const [zoomScale, setZoomScale] = useState(0.48);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const [showSafeArea, setShowSafeArea] = useState(true);
   const [showGuides, setShowGuides] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -2980,10 +2980,6 @@ export function EditorialCarouselClient() {
           className="flex-1 h-full w-full overflow-hidden relative select-none"
           style={{
             backgroundColor: "#999999",
-            backgroundImage: showGrid
-              ? "radial-gradient(circle, rgba(0, 0, 0, 0.14) 1px, transparent 1px)"
-              : "none",
-            backgroundSize: "24px 24px",
           }}
           onMouseDown={handleViewportMouseDown}
         >
