@@ -2600,6 +2600,260 @@ export function EditorialCarouselClient() {
   // VIEW RENDER PARTS
   // ==========================================
 
+  // Paper.design Static Slide Content Renderer (for non-active artboards on infinite canvas)
+  const renderStaticSlideContent = (slide: Slide) => {
+    return (
+      <div className="w-full h-full relative pointer-events-none overflow-hidden select-none">
+        {/* Logo */}
+        {slide.logo?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.logo.x}px`,
+              top: `${slide.logo.y}px`,
+              width: `${slide.logo.width}px`,
+              height: `${slide.logo.height}px`,
+              opacity: slide.logo.opacity,
+            }}
+          >
+            {slide.logo.logoUrl ? (
+              <img src={slide.logo.logoUrl} className="w-full h-full object-contain" />
+            ) : (
+              <div
+                className="w-full h-full rounded-full bg-[#18181b] text-white font-bold flex items-center justify-center text-[10px]"
+                style={{ fontSize: "12px" }}
+              >
+                GX
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Divider */}
+        {slide.divider?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.divider.x}px`,
+              top: `${slide.divider.y}px`,
+              width: `${slide.divider.width}px`,
+              height: `${slide.divider.height}px`,
+              background: slide.divider.color,
+            }}
+          />
+        )}
+
+        {/* Category */}
+        {slide.category?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.category.x}px`,
+              top: `${slide.category.y}px`,
+              width: `${slide.category.width}px`,
+              height: `${slide.category.height}px`,
+              fontSize: `${slide.category.fontSize}px`,
+              fontWeight: slide.category.fontWeight,
+              color: slide.category.color,
+              letterSpacing: `${slide.category.letterSpacing}px`,
+              textAlign: slide.category.align,
+              textTransform: slide.category.uppercase ? "uppercase" : "none",
+            }}
+            className="font-sans tracking-widest truncate"
+          >
+            {slide.category.text}
+          </div>
+        )}
+
+        {/* Headline */}
+        {slide.headline?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.headline.x}px`,
+              top: `${slide.headline.y}px`,
+              width: `${slide.headline.width}px`,
+              height: `${slide.headline.height}px`,
+              fontSize: `${slide.headline.fontSize}px`,
+              fontWeight: slide.headline.fontWeight,
+              color: slide.headline.color,
+              lineHeight: slide.headline.lineHeight,
+              letterSpacing: `${slide.headline.letterSpacing}px`,
+              textAlign: slide.headline.align,
+            }}
+            className="font-sans tracking-tight leading-tight"
+          >
+            {renderFormattedText(slide.headline.text)}
+          </div>
+        )}
+
+        {/* Featured Image */}
+        {slide.featuredImage?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.featuredImage.x}px`,
+              top: `${slide.featuredImage.y}px`,
+              width: `${slide.featuredImage.width}px`,
+              height: `${slide.featuredImage.height}px`,
+              borderRadius: `${slide.featuredImage.borderRadius}px`,
+              border:
+                slide.featuredImage.borderWidth > 0
+                  ? `${slide.featuredImage.borderWidth}px solid ${slide.featuredImage.borderColor}`
+                  : "none",
+              overflow: "hidden",
+            }}
+          >
+            {slide.featuredImage.mediaUrl ? (
+              <img
+                src={slide.featuredImage.mediaUrl}
+                alt=""
+                className="w-full h-full"
+                style={{
+                  objectFit: slide.featuredImage.objectFit,
+                  filter: `brightness(${slide.featuredImage.brightness}%) contrast(${slide.featuredImage.contrast}%)`,
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-neutral-100 flex items-center justify-center text-neutral-400 text-xs font-semibold uppercase">
+                Featured Image Placeholder
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Body */}
+        {slide.body?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.body.x}px`,
+              top: `${slide.body.y}px`,
+              width: `${slide.body.width}px`,
+              height: `${slide.body.height}px`,
+              fontSize: `${slide.body.fontSize}px`,
+              fontWeight: slide.body.fontWeight,
+              color: slide.body.color,
+              lineHeight: slide.body.lineHeight,
+              letterSpacing: `${slide.body.letterSpacing}px`,
+              textAlign: slide.body.align,
+            }}
+            className="font-sans whitespace-pre-line text-neutral-800"
+          >
+            {renderFormattedText(slide.body.text)}
+          </div>
+        )}
+
+        {/* Bullets */}
+        {slide.bullets?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.bullets.x}px`,
+              top: `${slide.bullets.y}px`,
+              width: `${slide.bullets.width}px`,
+              height: `${slide.bullets.height}px`,
+              fontSize: `${slide.bullets.fontSize}px`,
+              fontWeight: slide.bullets.fontWeight,
+              color: slide.bullets.color,
+            }}
+            className="font-sans flex flex-col gap-2"
+          >
+            {(slide.bullets.items || []).map((item, idx) => (
+              <div key={idx} className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-current mt-2 shrink-0" />
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Quote */}
+        {slide.quote?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.quote.x}px`,
+              top: `${slide.quote.y}px`,
+              width: `${slide.quote.width}px`,
+              height: `${slide.quote.height}px`,
+              backgroundColor: slide.quote.backgroundColor || "#f8fafc",
+              borderRadius: `${slide.quote.borderRadius || 12}px`,
+              border: `1px solid ${slide.quote.borderColor || "#e2e8f0"}`,
+              padding: "16px",
+            }}
+            className="font-sans flex flex-col justify-center"
+          >
+            <p className="italic text-neutral-800">{slide.quote.text}</p>
+            {slide.quote.author && (
+              <span className="text-xs font-semibold text-neutral-500 mt-2">— {slide.quote.author}</span>
+            )}
+          </div>
+        )}
+
+        {/* CTA */}
+        {slide.cta?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.cta.x}px`,
+              top: `${slide.cta.y}px`,
+              width: `${slide.cta.width}px`,
+              height: `${slide.cta.height}px`,
+              backgroundColor: slide.cta.backgroundColor || "#1687f8",
+              color: slide.cta.textColor || "#ffffff",
+              borderRadius: `${slide.cta.borderRadius || 8}px`,
+            }}
+            className="font-sans font-semibold flex items-center justify-center text-sm shadow-sm"
+          >
+            {slide.cta.text || "Learn More"}
+          </div>
+        )}
+
+        {/* Author */}
+        {slide.author?.visible && (
+          <div
+            style={{
+              position: "absolute",
+              left: `${slide.author.x}px`,
+              top: `${slide.author.y}px`,
+              width: `${slide.author.width}px`,
+              height: `${slide.author.height}px`,
+            }}
+            className="flex items-center gap-3"
+          >
+            {slide.author.avatarUrl ? (
+              <img src={slide.author.avatarUrl} className="w-9 h-9 rounded-full object-cover" />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-neutral-200" />
+            )}
+            <span className="font-semibold text-sm">{slide.author.name}</span>
+          </div>
+        )}
+
+        {/* Footer */}
+        {slide.footer && (
+          <div
+            style={{
+              position: "absolute",
+              left: "48px",
+              right: "48px",
+              bottom: "32px",
+              opacity: slide.footer.opacity ?? 1,
+              color: slide.footer.color || "#000000",
+            }}
+            className="flex items-center justify-between text-xs font-mono"
+          >
+            <span>{slide.footer.brandName}</span>
+            {slide.footer.pageNumberEnabled && (
+              <span>01 / 07</span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderCanvasElement = (key: ElementKey, children: React.ReactNode) => {
     const elem = activeSlide[key];
     if (!elem.visible) return null;
@@ -2725,10 +2979,11 @@ export function EditorialCarouselClient() {
           ref={viewportRef}
           className="flex-1 h-full w-full overflow-hidden relative select-none"
           style={{
-            backgroundColor: "#161719",
-            backgroundImage:
-              "radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
+            backgroundColor: "#999999",
+            backgroundImage: showGrid
+              ? "radial-gradient(circle, rgba(0, 0, 0, 0.14) 1px, transparent 1px)"
+              : "none",
+            backgroundSize: "24px 24px",
           }}
           onMouseDown={handleViewportMouseDown}
         >
@@ -2996,29 +3251,96 @@ export function EditorialCarouselClient() {
             </button>
           </div>
 
-          {/* World Container containing Artboard */}
+          {/* World Container containing Artboards (Paper.design Multi-Artboard Desk) */}
           <div
             className="absolute"
             style={{
               transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`,
               transformOrigin: "0 0",
-              width: `${activeFormat.width}px`,
-              height: `${activeFormat.height}px`,
             }}
           >
-            {/* Artboard (Actual slide canvas) */}
-            <div
-              className="editor-canvas bg-white relative select-none overflow-hidden"
-              style={{
-                width: `${activeFormat.width}px`,
-                height: `${activeFormat.height}px`,
-                backgroundColor: activeSlide.backgroundColor || "#ffffff",
-                borderRadius: "18px",
-                boxShadow:
-                  "0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 80px rgba(0, 0, 0, 0.38)",
-                boxSizing: "border-box",
-              }}
-            >
+            {/* Project Header above Slide 1 */}
+            <div className="absolute -top-24 left-0 select-none pointer-events-none space-y-0.5 z-10">
+              <h1 className="text-[26px] font-bold text-white tracking-tight leading-tight drop-shadow-sm">
+                {projectName || "welcome to Paper"}
+              </h1>
+              <p className="text-[14px] font-medium text-white/80">
+                this file is yours, go wild
+              </p>
+            </div>
+
+            {/* Artboard Sequence (Paper.design Horizontal Desk) */}
+            {slides.map((slide, slideIdx) => {
+              const isCurrentActive = slideIdx === activeIndex;
+              const slideX = slideIdx * (activeFormat.width + 100);
+
+              if (!isCurrentActive) {
+                return (
+                  <div
+                    key={slide.id || slideIdx}
+                    className="absolute"
+                    style={{
+                      left: `${slideX}px`,
+                      top: 0,
+                      width: `${activeFormat.width}px`,
+                      height: `${activeFormat.height}px`,
+                    }}
+                  >
+                    {/* Slide Number above artboard */}
+                    <div className="absolute -top-7 left-0 text-[14px] font-medium text-white/90 select-none pb-1.5 flex items-center gap-1.5">
+                      <span>{slideIdx + 1}</span>
+                    </div>
+
+                    {/* Non-Active Static Artboard */}
+                    <div
+                      className="editor-canvas bg-white relative select-none overflow-hidden cursor-pointer hover:ring-1 hover:ring-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.15)] opacity-95 hover:opacity-100 transition-all"
+                      style={{
+                        width: `${activeFormat.width}px`,
+                        height: `${activeFormat.height}px`,
+                        backgroundColor: slide.backgroundColor || "#ffffff",
+                        borderRadius: "0px",
+                        boxSizing: "border-box",
+                      }}
+                      onClick={() => {
+                        setActiveIndex(slideIdx);
+                        setSelectedElement(null);
+                      }}
+                      title={`Click to edit Slide ${slideIdx + 1}`}
+                    >
+                      {renderStaticSlideContent(slide)}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Active Interactive Artboard
+              return (
+                <div
+                  key={slide.id || slideIdx}
+                  className="absolute"
+                  style={{
+                    left: `${slideX}px`,
+                    top: 0,
+                    width: `${activeFormat.width}px`,
+                    height: `${activeFormat.height}px`,
+                  }}
+                >
+                  {/* Slide Number above artboard */}
+                  <div className="absolute -top-7 left-0 text-[14px] font-medium text-white/90 select-none pb-1.5 flex items-center gap-1.5">
+                    <span>{slideIdx + 1}</span>
+                  </div>
+
+                  {/* Active Artboard Frame */}
+                  <div
+                    className="editor-canvas bg-white relative select-none overflow-hidden ring-2 ring-[#1687f8] shadow-[0_8px_32px_rgba(0,0,0,0.22)]"
+                    style={{
+                      width: `${activeFormat.width}px`,
+                      height: `${activeFormat.height}px`,
+                      backgroundColor: activeSlide.backgroundColor || "#ffffff",
+                      borderRadius: "0px",
+                      boxSizing: "border-box",
+                    }}
+                  >
               {/* Safe Area guideline overlays */}
               {showSafeArea && (
                 <div
@@ -3449,7 +3771,10 @@ export function EditorialCarouselClient() {
                   onCancel={() => setEditingTextKey(null)}
                 />
               )}
-            </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Canvas Right-Click Context Menu */}

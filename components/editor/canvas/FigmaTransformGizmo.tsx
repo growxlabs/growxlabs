@@ -176,18 +176,21 @@ export const FigmaTransformGizmo: React.FC<FigmaTransformGizmoProps> = ({
         </div>
       )}
 
-      {/* 6. Subtle Layer Label Pill (top-left) */}
-      {label && !isDragging && !isResizing && !isRotating && (
+      {/* 6. Paper.design Signature Selection Dimension Badge (Fit W x H) */}
+      {!locked && !isDragging && !isResizing && !isRotating && (
         <div
-          className="absolute bg-[#1687f8] text-white rounded-t px-1.5 py-0.2 text-[9px] font-bold tracking-wide pointer-events-none select-none uppercase truncate max-w-[140px]"
+          className="absolute bg-[#1687f8] text-white rounded px-2 py-0.5 text-[11px] font-medium shadow-[0_2px_8px_rgba(22,135,248,0.4)] pointer-events-none select-none flex items-center gap-1.5 whitespace-nowrap"
           style={{
-            top: `-${15 * invZoom}px`,
+            bottom: `-${26 * invZoom}px`,
             left: 0,
             transform: `scale(${invZoom})`,
-            transformOrigin: "bottom left",
+            transformOrigin: "top left",
           }}
         >
-          {label}
+          <span className="font-semibold">Fit</span>
+          <span>
+            {Math.round(width)} × {Math.round(height)}
+          </span>
         </div>
       )}
     </div>
