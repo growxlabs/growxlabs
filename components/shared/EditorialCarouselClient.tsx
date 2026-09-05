@@ -2664,7 +2664,7 @@ export function EditorialCarouselClient() {
       <div
         className="flex-1 min-h-0 w-full grid select-none"
         style={{
-          gridTemplateColumns: `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "320px" : "0px"}`,
+          gridTemplateColumns: `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "280px" : "0px"}`,
           transition: "all 200ms ease",
         }}
       >
@@ -2795,17 +2795,39 @@ export function EditorialCarouselClient() {
             </div>
           )}
 
-          {/* Floating Right Inspector Re-open Button (when collapsed) */}
+          {/* Paper.design Signature Floating Inspector Pill (when right sidebar is collapsed) */}
           {!showRightSidebar && (
-            <button
-              type="button"
-              onClick={() => setShowRightSidebar(true)}
-              className="absolute top-3 right-3 z-40 h-8 px-2.5 rounded-lg bg-[#2a2a2a] hover:bg-[#353535] text-neutral-300 hover:text-white border border-[#353535] shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
-              title="Open Inspector Panel"
-            >
-              <Sliders size={13} className="text-[#38bdf8]" />
-              <span>Inspector</span>
-            </button>
+            <div className="absolute top-3.5 right-3.5 z-40 h-[34px] bg-[#242426] border border-[#383838] rounded-lg px-2.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none">
+              <div
+                className="w-5 h-5 rounded-full bg-[#7c3aed] text-white text-[10px] font-bold flex items-center justify-center shrink-0 shadow-sm"
+                title="GrowXLabs Workspace"
+              >
+                S
+              </div>
+              <span className="text-[12px] font-medium text-[#ececec]">
+                {Math.round(zoomScale * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowRightSidebar(true)}
+                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer ml-0.5"
+                title="Expand inspector sidebar"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="12" height="12" rx="2" />
+                  <path d="M11 2v12" />
+                </svg>
+              </button>
+            </div>
           )}
 
           {/* Vertical Floating Tool Palette (Paper.design Signature) */}
@@ -3453,7 +3475,7 @@ export function EditorialCarouselClient() {
         </main>
 
         {/* ------------------------------------------
-            RIGHT PANEL: STUDIO INSPECTOR (320px)
+            RIGHT PANEL: STUDIO INSPECTOR (280px)
             ------------------------------------------ */}
         {showRightSidebar && (
           <StudioInspector
@@ -3494,6 +3516,9 @@ export function EditorialCarouselClient() {
             onDownloadMp4={handleDownloadMp4}
             onDownloadAllSvg={handleDownloadAllSlidesSvg}
             onClose={() => setShowRightSidebar(false)}
+            zoomScale={zoomScale}
+            onSetZoomScale={setZoomScale}
+            onZoomFit={() => handleFitToScreen()}
           />
         )}
       </div>
