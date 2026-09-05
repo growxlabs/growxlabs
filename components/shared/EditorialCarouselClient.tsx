@@ -676,6 +676,75 @@ export function EditorialCarouselClient() {
   const [darkMode, setDarkMode] = useState(false);
 
   const [pan, setPan] = useState({ x: 120, y: 80 });
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  // Responsive mobile screen detection
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobileView(mobile);
+      if (mobile) {
+        setShowLeftSidebar(false);
+        setShowRightSidebar(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Touch gesture state for mobile pinch zoom & swipe pan
+  const touchStateRef = useRef<{
+    startX: number;
+    startY: number;
+    initialPanX: number;
+    initialPanY: number;
+    initialDist?: number;
+    initialZoom?: number;
+  }>({ startX: 0, startY: 0, initialPanX: 0, initialPanY: 0 });
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStateRef.current = {
+        startX: e.touches[0].clientX,
+        startY: e.touches[0].clientY,
+        initialPanX: pan.x,
+        initialPanY: pan.y,
+      };
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchStateRef.current = {
+        startX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+        startY: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        initialPanX: pan.x,
+        initialPanY: pan.y,
+        initialDist: dist,
+        initialZoom: zoomScale,
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && !selectedElement) {
+      const dx = e.touches[0].clientX - touchStateRef.current.startX;
+      const dy = e.touches[0].clientY - touchStateRef.current.startY;
+      setPan({
+        x: touchStateRef.current.initialPanX + dx,
+        y: touchStateRef.current.initialPanY + dy,
+      });
+    } else if (e.touches.length === 2 && touchStateRef.current.initialDist && touchStateRef.current.initialZoom) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleMultiplier = currentDist / touchStateRef.current.initialDist;
+      const newZoom = Math.min(2.5, Math.max(0.15, touchStateRef.current.initialZoom * scaleMultiplier));
+      setZoomScale(newZoom);
+    }
+  };
   const [activeTool, setActiveTool] = useState<"select" | "hand">("select");
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [showRightSidebar, setShowRightSidebar] = useState(true);
@@ -2917,16 +2986,84 @@ export function EditorialCarouselClient() {
           MAIN THREE-COLUMN WORKSPACE (Full Viewport Height)
           ========================================== */}
       <div
-        className="flex-1 min-h-0 w-full grid select-none"
+        className="flex-1 min-h-0 w-full grid select-none relative"
         style={{
-          gridTemplateColumns: `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "280px" : "0px"}`,
+          gridTemplateColumns: isMobileView
+            ? "1fr"
+            : `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "280px" : "0px"}`,
           transition: "all 200ms ease",
         }}
       >
         {/* ==========================================
-            STUDIO LEFT PANEL (Paper.design 240px)
+            STUDIO LEFT PANEL (Paper.design 240px & Mobile Drawer)
             ========================================== */}
-        {showLeftSidebar && (
+        {showLeftSidebar && isMobileView && (
+          <div className="fixed inset-0 z-50 flex">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowLeftSidebar(false)}
+            />
+            <div className="relative z-10 w-[280px] h-full bg-[#1a1a1c] shadow-2xl">
+              <StudioLeftPanel
+                slides={slides}
+                activeIndex={activeIndex}
+                activeSlide={activeSlide}
+                selectedElement={selectedElement}
+                isFooterSelected={isFooterSelected}
+                activeFormat={activeFormat}
+                projectName={projectName}
+                onSelectSlide={(idx) => {
+                  setActiveIndex(idx);
+                  setSelectedElement(null);
+                  setIsFooterSelected(false);
+                  setShowLeftSidebar(false);
+                }}
+                onAddSlide={() => {
+                  addSlide();
+                  setShowLeftSidebar(false);
+                }}
+                onDuplicateSlide={duplicateSlide}
+                onDeleteSlide={deleteSlide}
+                onSelectElement={(key) => {
+                  setSelectedElement(key);
+                  setIsFooterSelected(false);
+                  setShowLeftSidebar(false);
+                }}
+                onSelectFooter={(sel) => {
+                  setIsFooterSelected(sel);
+                  if (sel) setSelectedElement(null);
+                  setShowLeftSidebar(false);
+                }}
+                onToggleVisibility={(key) => {
+                  if (activeSlide[key]) {
+                    updateSlideElement(key, { visible: !activeSlide[key].visible });
+                  }
+                }}
+                onToggleLock={(key) => {
+                  if (activeSlide[key]) {
+                    updateSlideElement(key, { locked: !activeSlide[key].locked });
+                  }
+                }}
+                onApplyPreset={(p) => {
+                  applyPreset(p);
+                  setShowLeftSidebar(false);
+                }}
+                onFormatChange={(fmt) => {
+                  handleFormatChange(fmt);
+                  setShowLeftSidebar(false);
+                }}
+                presets={TEMPLATE_PRESETS.map((p) => ({
+                  id: p.id,
+                  name: p.name,
+                  desc: p.category,
+                }))}
+                onCollapse={() => setShowLeftSidebar(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {showLeftSidebar && !isMobileView && (
           <StudioLeftPanel
             slides={slides}
             activeIndex={activeIndex}
@@ -2977,11 +3114,13 @@ export function EditorialCarouselClient() {
             ------------------------------------------ */}
         <main
           ref={viewportRef}
-          className="flex-1 h-full w-full overflow-hidden relative select-none"
+          className="flex-1 h-full w-full overflow-hidden relative select-none touch-none"
           style={{
             backgroundColor: "#999999",
           }}
           onMouseDown={handleViewportMouseDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
         >
           {/* Paper.design Signature Floating Document Pill (when sidebar is collapsed) */}
           {!showLeftSidebar && (
@@ -3104,7 +3243,7 @@ export function EditorialCarouselClient() {
           />
           {/* Paper.design Signature Bottom Center Dock */}
           <div
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#242426] px-2 py-1 border border-[#383838] rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.45)] z-30 select-none transition-all duration-200"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#242426] px-2 py-1 border border-[#383838] rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.45)] z-30 select-none transition-all duration-200 max-w-[calc(100vw-24px)] overflow-x-auto"
             role="toolbar"
             aria-label="Canvas Viewport Controls"
           >
@@ -3849,9 +3988,62 @@ export function EditorialCarouselClient() {
         </main>
 
         {/* ------------------------------------------
-            RIGHT PANEL: STUDIO INSPECTOR (280px)
+            RIGHT PANEL: STUDIO INSPECTOR (280px & Mobile Drawer)
             ------------------------------------------ */}
-        {showRightSidebar && (
+        {showRightSidebar && isMobileView && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setShowRightSidebar(false)}
+            />
+            <div className="relative z-10 w-[300px] max-w-[85vw] h-full bg-[#2a2a2a] shadow-2xl overflow-y-auto">
+              <StudioInspector
+                activeSlide={activeSlide}
+                selectedElement={selectedElement}
+                isFooterSelected={isFooterSelected}
+                activeFormat={activeFormat}
+                slidesCount={slides.length}
+                activeIndex={activeIndex}
+                projectName={projectName}
+                onUpdateProjectName={setProjectName}
+                documentKind={documentKind}
+                onSwitchDocumentKind={switchDocumentKind}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
+                canUndo={historyIndex > 0}
+                canRedo={historyIndex < history.length - 1}
+                onShare={() => {
+                  if (typeof window !== "undefined") {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Project URL copied to clipboard!");
+                  }
+                }}
+                onSelectElement={(key) => {
+                  setSelectedElement(key);
+                  setIsFooterSelected(false);
+                }}
+                onSelectFooter={(sel) => {
+                  setIsFooterSelected(sel);
+                  if (sel) setSelectedElement(null);
+                }}
+                onUpdateElement={updateSlideElement}
+                onUpdateFooter={updateSlideFooter}
+                onUpdateBackground={updateSlideBackground}
+                onFormatChange={handleFormatChange}
+                onDownloadPng={() => handleDownloadSlideRaster(activeIndex, "png")}
+                onDownloadPdf={handleDownloadPdf}
+                onDownloadMp4={handleDownloadMp4}
+                onDownloadAllSvg={handleDownloadAllSlidesSvg}
+                onClose={() => setShowRightSidebar(false)}
+                zoomScale={zoomScale}
+                onSetZoomScale={setZoomScale}
+                onZoomFit={() => handleFitToScreen()}
+              />
+            </div>
+          </div>
+        )}
+
+        {showRightSidebar && !isMobileView && (
           <StudioInspector
             activeSlide={activeSlide}
             selectedElement={selectedElement}
