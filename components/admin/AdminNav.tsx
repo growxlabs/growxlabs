@@ -78,7 +78,6 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Leads", href: "/admin/leads", icon: IconTarget },
       { name: "Lead Imports", href: "/admin/leads/imports", icon: IconFile },
       { name: "Lead Research", href: "/admin/leads/scrape", icon: IconZap },
-      { name: "Lead Enrichment", href: "/admin/apollo", icon: IconZap },
       { name: "Products", href: "/admin/products", icon: IconFile },
       { name: "Quotations", href: "/admin/quotations", icon: IconFile },
       { name: "Invoices", href: "/admin/invoices", icon: IconFinance },
