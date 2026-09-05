@@ -663,6 +663,7 @@ export function EditorialCarouselClient() {
   );
   const [isFooterSelected, setIsFooterSelected] = useState(false);
   const [editorMode, setEditorMode] = useState<"fixed" | "free">("fixed");
+  const [viewportViewMode, setViewportViewMode] = useState<"desk" | "single">("desk");
 
   // Viewport & Infinite Canvas Control
   const [zoomScale, setZoomScale] = useState(0.48);
@@ -758,27 +759,53 @@ export function EditorialCarouselClient() {
     setDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
-  // Fit canvas to screen function helper
-  const handleFitToScreen = (customFormat?: CanvasPreset) => {
+  // Fit canvas to screen function helper (Multi-Artboard Desk vs Single Slide)
+  const handleFitToScreen = (customFormat?: CanvasPreset, forceMode?: "desk" | "single") => {
     if (!viewportRef.current) return;
     const format = customFormat || activeFormat;
+    const mode = forceMode || viewportViewMode;
     const rect = viewportRef.current.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
 
-    const marginX = 40;
-    const topPadding = 36;
-    const bottomDockSpace = 68; // Reserve space for bottom floating dock
+    const marginX = 48;
+    const topPadding = 56;
+    const bottomDockSpace = 72; // Reserve space for bottom floating dock
     const availableWidth = rect.width - marginX * 2;
     const availableHeight = rect.height - topPadding - bottomDockSpace;
-    const zoomW = availableWidth / format.width;
-    const zoomH = availableHeight / format.height;
-    const newZoom = Math.min(zoomW, zoomH, 1.0);
-    const clampedZoom = Math.max(0.15, Number(newZoom.toFixed(2)));
-    setZoomScale(clampedZoom);
-    setPan({
-      x: Math.round((rect.width - format.width * clampedZoom) / 2),
-      y: Math.round(topPadding + Math.max(0, (availableHeight - format.height * clampedZoom) / 2)),
-    });
+
+    if (mode === "desk" && slides.length > 1) {
+      const GAP = 120;
+      const totalWidth = slides.length * format.width + (slides.length - 1) * GAP;
+      const zoomW = availableWidth / totalWidth;
+      const zoomH = availableHeight / format.height;
+      const newZoom = Math.min(zoomW, zoomH, 0.95);
+      const clampedZoom = Math.max(0.08, Number(newZoom.toFixed(2)));
+      setZoomScale(clampedZoom);
+
+      const fittedWidth = totalWidth * clampedZoom;
+      const fittedHeight = format.height * clampedZoom;
+      setPan({
+        x: Math.round((rect.width - fittedWidth) / 2),
+        y: Math.round(topPadding + Math.max(0, (availableHeight - fittedHeight) / 2)),
+      });
+    } else {
+      const zoomW = availableWidth / format.width;
+      const zoomH = availableHeight / format.height;
+      const newZoom = Math.min(zoomW, zoomH, 1.0);
+      const clampedZoom = Math.max(0.15, Number(newZoom.toFixed(2)));
+      setZoomScale(clampedZoom);
+
+      const fittedWidth = format.width * clampedZoom;
+      const fittedHeight = format.height * clampedZoom;
+      const centerX = Math.round((rect.width - fittedWidth) / 2);
+      const centerY = Math.round(topPadding + Math.max(0, (availableHeight - fittedHeight) / 2));
+
+      const slideOffset = mode === "desk" ? activeIndex * (format.width + 120) * clampedZoom : 0;
+      setPan({
+        x: centerX - slideOffset,
+        y: centerY,
+      });
+    }
   };
 
   // Center and fit canvas on first load
@@ -956,7 +983,6 @@ export function EditorialCarouselClient() {
   const [documentKind, setDocumentKind] = useState<"editorial" | "product">(
     "editorial",
   );
-  const [isEditingProjectName, setIsEditingProjectName] = useState(false);
   const activeSlide = slides[activeIndex] || DEFAULT_SLIDE(0);
 
   const switchDocumentKind = (kind: "editorial" | "product") => {
@@ -2631,214 +2657,7 @@ export function EditorialCarouselClient() {
       className="gxl-studio-editor w-full h-full min-h-0 flex flex-col bg-[#0e0f12] text-neutral-100 font-sans overflow-hidden select-none"
     >
       {/* ==========================================
-          TOP BAR (Compact Studio Header)
-          ========================================== */}
-      <header className="h-[44px] border-b border-white/[0.08] bg-[#121316] px-3 flex items-center justify-between shrink-0 z-50 text-white select-none">
-        {/* Left Section: Document title, templates & format switcher */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setShowLeftSidebar(!showLeftSidebar)}
-            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
-              showLeftSidebar
-                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
-                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
-            }`}
-            title={showLeftSidebar ? "Collapse Left Panel" : "Expand Left Panel"}
-          >
-            <LayersIcon size={13} />
-          </button>
-
-          <div className="h-7 w-7 rounded-md bg-[#1687f8] flex items-center justify-center font-black text-[11px] text-white shadow-sm shadow-[#1687f8]/25">
-            GX
-          </div>
-
-          <div className="flex flex-col text-left mr-1">
-            <div className="flex items-center gap-1.5">
-              {isEditingProjectName ? (
-                <input
-                  type="text"
-                  value={projectName}
-                  onBlur={() => setIsEditingProjectName(false)}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && setIsEditingProjectName(false)
-                  }
-                  autoFocus
-                  className="bg-transparent border-b border-[#1687f8] text-xs font-bold focus:outline-none w-40 text-white"
-                />
-              ) : (
-                <h1
-                  onDoubleClick={() => setIsEditingProjectName(true)}
-                  className="text-xs font-bold text-white hover:bg-white/5 px-1.5 py-0.5 rounded cursor-pointer transition-all truncate max-w-[160px]"
-                  title="Double click to edit project name"
-                >
-                  {projectName}
-                </h1>
-              )}
-              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-            </div>
-          </div>
-
-          {/* Template pills (Daily News / Product Launch) */}
-          <div className="flex rounded-md border border-white/10 bg-[#18191d] p-0.5">
-            <button
-              type="button"
-              onClick={() => switchDocumentKind("editorial")}
-              className={`rounded px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all ${
-                documentKind === "editorial"
-                  ? "bg-[#252834] text-white shadow-sm border border-white/10"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Daily News
-            </button>
-            <button
-              type="button"
-              onClick={() => switchDocumentKind("product")}
-              className={`rounded px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all ${
-                documentKind === "product"
-                  ? "bg-[#252834] text-[#38bdf8] shadow-sm border border-white/10"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Product Launch
-            </button>
-          </div>
-
-          {/* Post Format Switcher (Reduced Pill Size) */}
-          <div className="flex rounded-md border border-white/10 bg-[#18191d] p-0.5 gap-0.5">
-            {CANVAS_FORMAT_PRESETS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => handleFormatChange(p)}
-                className={`h-6 rounded px-2 text-[10px] font-bold tracking-tight transition-all flex items-center gap-1 ${
-                  activeFormat.id === p.id
-                    ? "bg-[#1687f8] text-white shadow-sm"
-                    : "text-neutral-400 hover:text-white hover:bg-white/5"
-                }`}
-                title={`${p.name} (${p.width} × ${p.height}) • ${p.badge}`}
-              >
-                {p.id === "mobile" && <Smartphone size={10} />}
-                {p.id === "carousel" && <LayoutGrid size={10} />}
-                <span>{p.aspectRatio}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Center Section: Primary Tools & History */}
-        <div className="flex items-center gap-1.5">
-          <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10">
-            <button
-              type="button"
-              onClick={() => setActiveTool("select")}
-              className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
-                activeTool === "select"
-                  ? "bg-[#22242c] text-[#1687f8] shadow-sm"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-              title="Pointer Selector (V)"
-            >
-              <MousePointer size={12} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTool("hand")}
-              className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
-                activeTool === "hand"
-                  ? "bg-[#22242c] text-[#1687f8] shadow-sm"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-              title="Hand Tool / Pan (H)"
-            >
-              <Hand size={12} />
-            </button>
-          </div>
-
-          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
-
-          {/* History (Undo / Redo) */}
-          <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10">
-            <button
-              type="button"
-              onClick={handleUndo}
-              disabled={historyIndex <= 0}
-              className="h-6 w-6 rounded flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
-              title="Undo (Ctrl+Z)"
-            >
-              <Undo size={11} />
-            </button>
-            <button
-              type="button"
-              onClick={handleRedo}
-              disabled={historyIndex >= history.length - 1}
-              className="h-6 w-6 rounded flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
-              title="Redo (Ctrl+Shift+Z)"
-            >
-              <Redo size={11} />
-            </button>
-          </div>
-        </div>
-
-        {/* Right Section: Exports & Inspector Toggle */}
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              toast.success("Project URL copied to clipboard!");
-            }}
-            className="h-7 px-2.5 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[11px] font-medium text-neutral-300 hover:text-white transition-all flex items-center gap-1"
-            title="Copy project share URL"
-          >
-            <Share2 size={11} /> Share
-          </button>
-
-          <button
-            onClick={() => handleDownloadSlideRaster(activeIndex, "png")}
-            className="h-7 px-3 rounded-md bg-[#1e2026] hover:bg-[#262830] border border-white/10 text-[11px] font-semibold text-white transition-all flex items-center gap-1 cursor-pointer"
-            title="Download current slide as PNG image"
-          >
-            <Download size={11} /> PNG
-          </button>
-
-          <button
-            onClick={handleDownloadPdf}
-            className="h-7 px-3 rounded-md bg-[#1e2026] hover:bg-[#262830] border border-white/10 text-[11px] font-semibold text-neutral-200 hover:text-white transition-all flex items-center gap-1 cursor-pointer"
-            title="Download full deck PDF document"
-          >
-            <FileText size={11} /> PDF
-          </button>
-
-          <button
-            onClick={handleDownloadMp4}
-            className="h-7 px-3.5 rounded-md bg-[#1687f8] hover:bg-[#1374d6] text-[11px] font-bold text-white shadow-sm shadow-[#1687f8]/25 transition-all flex items-center gap-1 cursor-pointer border-none"
-            title="Render and export as high-quality video"
-          >
-            <Play size={11} /> Video
-          </button>
-
-          <div className="h-4 w-px bg-white/10 mx-0.5" />
-
-          <button
-            type="button"
-            onClick={() => setShowRightSidebar(!showRightSidebar)}
-            className={`h-7 px-2.5 rounded-md border transition-all flex items-center gap-1.5 ${
-              showRightSidebar
-                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8] shadow-sm"
-                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
-            }`}
-            title={showRightSidebar ? "Collapse Inspector Panel" : "Expand Inspector Panel"}
-          >
-            <Sliders size={12} />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Inspector</span>
-          </button>
-        </div>
-      </header>
-
-      {/* ==========================================
-          MAIN THREE-COLUMN WORKSPACE
+          MAIN THREE-COLUMN WORKSPACE (Full Viewport Height)
           ========================================== */}
       <div
         className="flex-1 min-h-0 w-full grid select-none"
@@ -2910,6 +2729,32 @@ export function EditorialCarouselClient() {
           }}
           onMouseDown={handleViewportMouseDown}
         >
+          {/* Floating Left Panel Re-open Button (when collapsed) */}
+          {!showLeftSidebar && (
+            <button
+              type="button"
+              onClick={() => setShowLeftSidebar(true)}
+              className="absolute top-4 left-4 z-40 h-8 px-2.5 rounded-lg bg-[#141518]/90 hover:bg-[#1f2026] text-neutral-300 hover:text-white border border-white/10 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
+              title="Open Left Panel (Slides & Layers)"
+            >
+              <LayersIcon size={13} className="text-[#38bdf8]" />
+              <span>Slides</span>
+            </button>
+          )}
+
+          {/* Floating Right Inspector Re-open Button (when collapsed) */}
+          {!showRightSidebar && (
+            <button
+              type="button"
+              onClick={() => setShowRightSidebar(true)}
+              className="absolute top-4 right-4 z-40 h-8 px-2.5 rounded-lg bg-[#141518]/90 hover:bg-[#1f2026] text-neutral-300 hover:text-white border border-white/10 shadow-lg backdrop-blur-md flex items-center gap-1.5 text-xs font-semibold transition-all cursor-pointer"
+              title="Open Inspector Panel"
+            >
+              <Sliders size={13} className="text-[#38bdf8]" />
+              <span>Inspector</span>
+            </button>
+          )}
+
           {/* Vertical Floating Tool Palette (Paper.design Signature) */}
           <StudioVerticalToolDock
             activeTool={activeTool}
@@ -3564,6 +3409,20 @@ export function EditorialCarouselClient() {
             activeFormat={activeFormat}
             slidesCount={slides.length}
             activeIndex={activeIndex}
+            projectName={projectName}
+            onUpdateProjectName={setProjectName}
+            documentKind={documentKind}
+            onSwitchDocumentKind={switchDocumentKind}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={historyIndex > 0}
+            canRedo={historyIndex < history.length - 1}
+            onShare={() => {
+              if (typeof window !== "undefined") {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Project URL copied to clipboard!");
+              }
+            }}
             onSelectElement={(key) => {
               setSelectedElement(key);
               setIsFooterSelected(false);

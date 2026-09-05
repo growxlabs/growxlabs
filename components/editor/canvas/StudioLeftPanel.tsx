@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Copy,
   Trash2,
@@ -21,6 +22,7 @@ import {
   ChevronRight,
   Layers,
   Sparkles,
+  ArrowLeft,
 } from "lucide-react";
 import type { Slide, ElementKey } from "../inspector/inspectorTypes";
 import { CANVAS_FORMAT_PRESETS, CanvasPreset } from "../inspector/StudioInspector";
@@ -109,16 +111,24 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
 
   return (
     <aside className="w-[270px] min-w-[270px] h-full flex flex-col bg-[#121316] border-r border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
-      {/* 1. Paper.design Document Header Capsule */}
-      <div className="h-[46px] px-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a]">
-        <div className="flex items-center gap-2 bg-[#1b1c22] border border-white/10 rounded-full px-2.5 py-1 max-w-[210px] shadow-sm">
-          <div className="w-3.5 h-3.5 rounded bg-[#1687f8]/20 border border-[#1687f8]/40 flex items-center justify-center shrink-0">
-            <span className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full" />
+      {/* 1. Studio Left Panel Header with Admin Link & Capsule */}
+      <div className="h-[46px] px-2.5 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a] gap-1.5">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Link
+            href="/admin"
+            className="h-7 px-2 rounded-lg bg-[#1e2026] hover:bg-[#282a33] text-neutral-400 hover:text-white border border-white/10 text-[11px] font-medium transition-colors flex items-center gap-1 shrink-0"
+            title="Return to Admin Dashboard"
+          >
+            <ArrowLeft size={12} />
+            <span>Admin</span>
+          </Link>
+
+          <div className="flex items-center gap-1.5 bg-[#1b1c22] border border-white/10 rounded-full px-2 py-0.5 max-w-[145px] shadow-sm truncate">
+            <span className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full shrink-0" />
+            <span className="text-[10px] font-semibold text-neutral-200 truncate tracking-tight">
+              {projectName}
+            </span>
           </div>
-          <span className="text-[11px] font-medium text-neutral-200 truncate tracking-tight">
-            {projectName}
-          </span>
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0 ml-auto" />
         </div>
 
         {onCollapse && (

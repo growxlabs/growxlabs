@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AlignLeft,
   AlignCenter,
@@ -20,6 +20,9 @@ import {
   Link2,
   Sliders,
   Sparkles,
+  Undo,
+  Redo,
+  Share2,
 } from "lucide-react";
 import type { Slide, ElementKey } from "./inspectorTypes";
 
@@ -76,6 +79,16 @@ interface StudioInspectorProps {
   onDownloadMp4: () => void;
   onDownloadAllSvg: () => void;
   onClose?: () => void;
+  // Relocated header controls
+  projectName?: string;
+  onUpdateProjectName?: (name: string) => void;
+  documentKind?: "editorial" | "product";
+  onSwitchDocumentKind?: (kind: "editorial" | "product") => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onShare?: () => void;
 }
 
 export const StudioInspector: React.FC<StudioInspectorProps> = ({
@@ -96,9 +109,24 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   onDownloadMp4,
   onDownloadAllSvg,
   onClose,
+  projectName,
+  onUpdateProjectName,
+  documentKind,
+  onSwitchDocumentKind,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
+  onShare,
 }) => {
   const [fillMode, setFillMode] = useState<"solid" | "gradient" | "image">("solid");
   const [aspectLocked, setAspectLocked] = useState(true);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(projectName || "");
+
+  useEffect(() => {
+    setTempName(projectName || "");
+  }, [projectName]);
 
   const currentElement = selectedElement ? activeSlide[selectedElement] : null;
   const isTextType =
@@ -135,22 +163,82 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
   return (
     <aside className="w-[320px] min-w-[320px] h-full flex flex-col bg-[#121316] border-l border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
-      {/* 1. Paper.design Minimalist Header Bar */}
-      <div className="h-[46px] px-3.5 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a]">
-        <div className="flex items-center gap-2 truncate">
-          <div className="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
-          <span className="font-semibold text-[11px] uppercase tracking-wider text-neutral-200 truncate">
-            {isFooterSelected
-              ? "Footer & Branding"
-              : selectedElement
-                ? `Layer: ${selectedElement}`
-                : `Slide ${activeIndex + 1} Settings`}
-          </span>
+      {/* 1. Paper.design Inspector Top Bar with Project & Actions */}
+      <div className="h-[46px] px-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a]">
+        {/* Document Title Capsule */}
+        <div className="flex items-center gap-2 max-w-[150px] truncate">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] shrink-0 animate-pulse" />
+          {isEditingName ? (
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              onBlur={() => {
+                setIsEditingName(false);
+                if (onUpdateProjectName && tempName.trim()) {
+                  onUpdateProjectName(tempName.trim());
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setIsEditingName(false);
+                  if (onUpdateProjectName && tempName.trim()) {
+                    onUpdateProjectName(tempName.trim());
+                  }
+                }
+              }}
+              autoFocus
+              className="bg-transparent border-b border-[#1687f8] text-[11px] font-semibold text-white focus:outline-none w-full"
+            />
+          ) : (
+            <span
+              onDoubleClick={() => setIsEditingName(true)}
+              className="font-semibold text-[11px] text-neutral-200 truncate tracking-tight hover:text-white cursor-pointer"
+              title="Double click to rename project"
+            >
+              {projectName || "Editorial"}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-1">
+        {/* Action icons: Undo, Redo, Share, Lock, Eye, Close */}
+        <div className="flex items-center gap-0.5">
+          {onUndo && (
+            <button
+              type="button"
+              onClick={onUndo}
+              disabled={!canUndo}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo size={12} />
+            </button>
+          )}
+          {onRedo && (
+            <button
+              type="button"
+              onClick={onRedo}
+              disabled={!canRedo}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white disabled:opacity-20 transition-colors cursor-pointer disabled:cursor-not-allowed"
+              title="Redo (Ctrl+Shift+Z)"
+            >
+              <Redo size={12} />
+            </button>
+          )}
+          {onShare && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+              title="Share Project URL"
+            >
+              <Share2 size={12} />
+            </button>
+          )}
+
           {selectedElement && currentElement && (
             <>
+              <div className="h-3.5 w-px bg-white/10 mx-0.5" />
               <button
                 type="button"
                 onClick={() => onUpdateElement(selectedElement, { locked: !currentElement.locked })}
@@ -159,7 +247,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 }`}
                 title={currentElement.locked ? "Unlock layer" : "Lock layer"}
               >
-                {currentElement.locked ? <Lock size={13} /> : <Unlock size={13} />}
+                {currentElement.locked ? <Lock size={12} /> : <Unlock size={12} />}
               </button>
               <button
                 type="button"
@@ -169,15 +257,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 }`}
                 title="Toggle visibility"
               >
-                {currentElement.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+                {currentElement.visible ? <Eye size={12} /> : <EyeOff size={12} />}
               </button>
             </>
           )}
+
           {onClose && (
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors ml-1"
+              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors ml-0.5 cursor-pointer"
               title="Close panel"
             >
               ✕
@@ -185,6 +274,44 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
           )}
         </div>
       </div>
+
+      {/* 2. Secondary Bar: Template Pills Switcher & Selection Label */}
+      {onSwitchDocumentKind && (
+        <div className="px-3 py-1.5 border-b border-white/[0.06] bg-[#141518] flex items-center justify-between">
+          <div className="flex bg-[#18191e] p-0.5 rounded-lg border border-white/10 flex-1 mr-2">
+            <button
+              type="button"
+              onClick={() => onSwitchDocumentKind("editorial")}
+              className={`flex-1 h-5 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center cursor-pointer ${
+                documentKind === "editorial"
+                  ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Daily News
+            </button>
+            <button
+              type="button"
+              onClick={() => onSwitchDocumentKind("product")}
+              className={`flex-1 h-5 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center cursor-pointer ${
+                documentKind === "product"
+                  ? "bg-[#252834] text-[#38bdf8] shadow-sm border border-white/10"
+                  : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Product
+            </button>
+          </div>
+
+          <span className="text-[9px] font-mono text-neutral-400 font-semibold shrink-0 uppercase bg-[#18191e] px-1.5 py-0.5 rounded border border-white/5">
+            {isFooterSelected
+              ? "Footer"
+              : selectedElement
+                ? selectedElement
+                : `Slide ${activeIndex + 1}`}
+          </span>
+        </div>
+      )}
 
       {/* 2. Main Scrollable Body */}
       <div className="flex-1 overflow-y-auto divide-y divide-white/[0.06] p-3.5 space-y-4">
