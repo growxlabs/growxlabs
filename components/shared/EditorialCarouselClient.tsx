@@ -49,6 +49,10 @@ import {
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { InspectorPanel } from "../editor/inspector/InspectorPanel";
+import { calculateSnap, SnapGuide } from "../editor/canvas/SmartSnapEngine";
+import { FigmaTransformGizmo, TransformHandle } from "../editor/canvas/FigmaTransformGizmo";
+import { InlineCanvasTextEditor } from "../editor/canvas/InlineCanvasTextEditor";
+import { CanvasContextMenu } from "../editor/canvas/CanvasContextMenu";
 
 const isVideo = (url?: string) => {
   if (!url) return false;
@@ -682,6 +686,20 @@ export function EditorialCarouselClient() {
   // Viewport & Canvas refs
   const viewportRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Figma interactive canvas states
+  const [activeGuides, setActiveGuides] = useState<SnapGuide[]>([]);
+  const [editingTextKey, setEditingTextKey] = useState<ElementKey | null>(null);
+  const [canvasContextMenu, setCanvasContextMenu] = useState<{
+    x: number;
+    y: number;
+    key: ElementKey | null;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
+  const [activeResizeHandle, setActiveResizeHandle] = useState<TransformHandle | null>(null);
+
   const dragStartRef = useRef<{
     startX: number;
     startY: number;
@@ -691,8 +709,18 @@ export function EditorialCarouselClient() {
   const resizeStartRef = useRef<{
     startX: number;
     startY: number;
+    elemX: number;
+    elemY: number;
     elemW: number;
     elemH: number;
+    handle: TransformHandle;
+    aspectRatio: number;
+  } | null>(null);
+  const rotateStartRef = useRef<{
+    centerX: number;
+    centerY: number;
+    startAngle: number;
+    initialRotation: number;
   } | null>(null);
 
   // App states for history
@@ -1330,7 +1358,7 @@ export function EditorialCarouselClient() {
   };
 
   // ==========================================
-  // ELEMENT POINTER HANDLERS (DRAG & RESIZE)
+  // ELEMENT POINTER HANDLERS (FIGMA 8-POINT DRAG, RESIZE & ROTATE)
   // ==========================================
 
   const handleElementMouseDown = (e: React.MouseEvent, key: ElementKey) => {
@@ -1338,12 +1366,13 @@ export function EditorialCarouselClient() {
     setSelectedElement(key);
     setIsFooterSelected(false);
 
-    if (editorMode === "fixed") return;
+    if (editorMode === "fixed") setEditorMode("free");
 
     const elem = activeSlide[key];
     if (elem.locked) return;
 
     e.stopPropagation();
+    setIsDragging(true);
 
     dragStartRef.current = {
       startX: e.clientX,
@@ -1362,47 +1391,82 @@ export function EditorialCarouselClient() {
     const dx = (e.clientX - dragStartRef.current.startX) / zoomScale;
     const dy = (e.clientY - dragStartRef.current.startY) / zoomScale;
 
-    let newX = Math.round(dragStartRef.current.elemX + dx);
-    let newY = Math.round(dragStartRef.current.elemY + dy);
+    const rawX = Math.round(dragStartRef.current.elemX + dx);
+    const rawY = Math.round(dragStartRef.current.elemY + dy);
+    const elem = activeSlide[selectedElement];
 
     if (showGuides) {
-      if (Math.abs(newX - SAFE_LEFT) < 10) newX = SAFE_LEFT;
-      if (
-        Math.abs(
-          newX +
-            activeSlide[selectedElement].width -
-            (CANVAS_WIDTH - SAFE_RIGHT),
-        ) < 10
-      ) {
-        newX = CANVAS_WIDTH - SAFE_RIGHT - activeSlide[selectedElement].width;
-      }
-    }
+      const otherElements = (
+        [
+          "category",
+          "headline",
+          "featuredImage",
+          "body",
+          "bullets",
+          "quote",
+          "cta",
+          "logo",
+          "divider",
+          "author",
+        ] as ElementKey[]
+      )
+        .filter((k) => k !== selectedElement && activeSlide[k]?.visible)
+        .map((k) => ({
+          key: k,
+          x: activeSlide[k].x,
+          y: activeSlide[k].y,
+          width: activeSlide[k].width,
+          height: activeSlide[k].height,
+          visible: activeSlide[k].visible,
+        }));
 
-    updateSlideElement(selectedElement, { x: newX, y: newY });
+      const snap = calculateSnap(
+        { x: rawX, y: rawY, width: elem.width, height: elem.height },
+        otherElements,
+        { canvasWidth: CANVAS_WIDTH, canvasHeight: CANVAS_HEIGHT }
+      );
+      setActiveGuides(snap.guides);
+      updateSlideElement(selectedElement, { x: snap.x, y: snap.y });
+    } else {
+      updateSlideElement(selectedElement, { x: rawX, y: rawY });
+    }
   };
 
   const handleElementMouseUp = () => {
+    setIsDragging(false);
+    setActiveGuides([]);
     dragStartRef.current = null;
     document.removeEventListener("mousemove", handleElementMouseMove);
     document.removeEventListener("mouseup", handleElementMouseUp);
   };
 
-  const handleResizeMouseDown = (e: React.MouseEvent, key: ElementKey) => {
+  const handleResizeMouseDown = (
+    e: React.MouseEvent,
+    key: ElementKey,
+    handle: TransformHandle
+  ) => {
     if (e.button !== 0) return;
     e.stopPropagation();
     setSelectedElement(key);
     setIsFooterSelected(false);
 
-    if (editorMode === "fixed") return;
+    if (editorMode === "fixed") setEditorMode("free");
 
     const elem = activeSlide[key];
     if (elem.locked) return;
 
+    setIsResizing(true);
+    setActiveResizeHandle(handle);
+
     resizeStartRef.current = {
       startX: e.clientX,
       startY: e.clientY,
+      elemX: elem.x,
+      elemY: elem.y,
       elemW: elem.width,
       elemH: elem.height,
+      handle,
+      aspectRatio: elem.width / Math.max(1, elem.height),
     };
 
     document.addEventListener("mousemove", handleResizeMouseMove);
@@ -1414,18 +1478,152 @@ export function EditorialCarouselClient() {
 
     const dx = (e.clientX - resizeStartRef.current.startX) / zoomScale;
     const dy = (e.clientY - resizeStartRef.current.startY) / zoomScale;
+    const { elemX, elemY, elemW, elemH, handle, aspectRatio } =
+      resizeStartRef.current;
 
-    const newW = Math.max(50, Math.round(resizeStartRef.current.elemW + dx));
-    const newH = Math.max(20, Math.round(resizeStartRef.current.elemH + dy));
+    let newX = elemX;
+    let newY = elemY;
+    let newW = elemW;
+    let newH = elemH;
 
-    updateSlideElement(selectedElement, { width: newW, height: newH });
+    if (handle.includes("e")) newW = Math.max(40, Math.round(elemW + dx));
+    if (handle.includes("s")) newH = Math.max(20, Math.round(elemH + dy));
+    if (handle.includes("w")) {
+      const potentialW = Math.max(40, Math.round(elemW - dx));
+      newX = elemX + (elemW - potentialW);
+      newW = potentialW;
+    }
+    if (handle.includes("n")) {
+      const potentialH = Math.max(20, Math.round(elemH - dy));
+      newY = elemY + (elemH - potentialH);
+      newH = potentialH;
+    }
+
+    if (
+      e.shiftKey &&
+      (handle === "nw" || handle === "ne" || handle === "se" || handle === "sw")
+    ) {
+      newH = Math.max(20, Math.round(newW / aspectRatio));
+    }
+
+    updateSlideElement(selectedElement, {
+      x: newX,
+      y: newY,
+      width: newW,
+      height: newH,
+    });
   };
 
   const handleResizeMouseUp = () => {
+    setIsResizing(false);
+    setActiveResizeHandle(null);
     resizeStartRef.current = null;
     document.removeEventListener("mousemove", handleResizeMouseMove);
     document.removeEventListener("mouseup", handleResizeMouseUp);
   };
+
+  const handleRotateStart = (e: React.MouseEvent) => {
+    if (e.button !== 0 || !selectedElement) return;
+    e.stopPropagation();
+    const elem = activeSlide[selectedElement];
+    if (elem.locked) return;
+
+    const canvasRect = canvasRef.current?.getBoundingClientRect();
+    if (!canvasRect) return;
+
+    const centerScreenX =
+      canvasRect.left + (elem.x + elem.width / 2) * zoomScale;
+    const centerScreenY =
+      canvasRect.top + (elem.y + elem.height / 2) * zoomScale;
+
+    setIsRotating(true);
+    rotateStartRef.current = {
+      centerX: centerScreenX,
+      centerY: centerScreenY,
+      startAngle:
+        Math.atan2(e.clientY - centerScreenY, e.clientX - centerScreenX) *
+        (180 / Math.PI),
+      initialRotation: elem.rotation || 0,
+    };
+
+    document.addEventListener("mousemove", handleRotateMouseMove);
+    document.addEventListener("mouseup", handleRotateMouseUp);
+  };
+
+  const handleRotateMouseMove = (e: MouseEvent) => {
+    if (!rotateStartRef.current || !selectedElement) return;
+    const { centerX, centerY, startAngle, initialRotation } =
+      rotateStartRef.current;
+    const currentAngle =
+      Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    let deltaAngle = currentAngle - startAngle;
+    let newRotation = (initialRotation + deltaAngle) % 360;
+    if (newRotation < 0) newRotation += 360;
+
+    if (e.shiftKey) {
+      newRotation = Math.round(newRotation / 15) * 15;
+    }
+
+    updateSlideElement(selectedElement, { rotation: Math.round(newRotation) });
+  };
+
+  const handleRotateMouseUp = () => {
+    setIsRotating(false);
+    rotateStartRef.current = null;
+    document.removeEventListener("mousemove", handleRotateMouseMove);
+    document.removeEventListener("mouseup", handleRotateMouseUp);
+  };
+
+  // Keyboard Shortcuts (Nudge, Duplicate, Z-index, Delete)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in an input or textarea
+      const targetTag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (targetTag === "input" || targetTag === "textarea" || editingTextKey) {
+        return;
+      }
+
+      if (!selectedElement) return;
+      const elem = activeSlide[selectedElement];
+      if (!elem) return;
+
+      const delta = e.shiftKey ? 10 : 1;
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        updateSlideElement(selectedElement, { x: elem.x - delta });
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        updateSlideElement(selectedElement, { x: elem.x + delta });
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        updateSlideElement(selectedElement, { y: elem.y - delta });
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        updateSlideElement(selectedElement, { y: elem.y + delta });
+      } else if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        updateSlideElement(selectedElement, { visible: false });
+        toast.info(`Hidden ${selectedElement} layer`);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        duplicateSlide(activeIndex);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "]") {
+        e.preventDefault();
+        const nextZ = e.shiftKey ? 50 : Math.min(50, (elem.zIndex || 1) + 1);
+        updateSlideElement(selectedElement, { zIndex: nextZ });
+        toast.success(`Layer depth: ${nextZ}`);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "[") {
+        e.preventDefault();
+        const nextZ = e.shiftKey ? 1 : Math.max(1, (elem.zIndex || 1) - 1);
+        updateSlideElement(selectedElement, { zIndex: nextZ });
+        toast.success(`Layer depth: ${nextZ}`);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedElement, activeSlide, activeIndex, editingTextKey]);
 
   // ==========================================
   // EXPORT ENGINE
@@ -2367,6 +2565,14 @@ export function EditorialCarouselClient() {
     if (!elem.visible) return null;
 
     const isSelected = selectedElement === key;
+    const isTextElement = [
+      "category",
+      "headline",
+      "body",
+      "quote",
+      "cta",
+      "author",
+    ].includes(key);
 
     const containerStyle: React.CSSProperties = {
       position: "absolute",
@@ -2375,8 +2581,8 @@ export function EditorialCarouselClient() {
       width: `${elem.width}px`,
       height: `${elem.height}px`,
       opacity: elem.opacity,
-      transform: `rotate(${elem.rotation}deg)`,
-      cursor: editorMode === "free" && !elem.locked ? "move" : "default",
+      transform: `rotate(${elem.rotation || 0}deg)`,
+      cursor: elem.locked ? "not-allowed" : "move",
       boxSizing: "border-box",
       userSelect: "none",
       zIndex: elem.zIndex || 1,
@@ -2386,40 +2592,25 @@ export function EditorialCarouselClient() {
       <div
         style={containerStyle}
         onMouseDown={(e) => handleElementMouseDown(e, key)}
-        className={`group relative ${isSelected ? "ring-2 ring-[#1687f8] ring-offset-0" : "hover:outline hover:outline-dashed hover:outline-[#1687f8]/50"}`}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          if (isTextElement && !elem.locked) {
+            setEditingTextKey(key);
+          }
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSelectedElement(key);
+          setCanvasContextMenu({ x: e.clientX, y: e.clientY, key });
+        }}
+        className={`group relative transition-shadow ${
+          isSelected
+            ? "ring-1 ring-[#1687f8] ring-offset-0"
+            : "hover:outline hover:outline-1 hover:outline-[#1687f8]/60 cursor-pointer"
+        }`}
       >
         {children}
-
-        {/* Bounding Resize handle */}
-        {isSelected && editorMode === "free" && !elem.locked && (
-          <div
-            onMouseDown={(e) => handleResizeMouseDown(e, key)}
-            className="absolute bottom-0 right-0 bg-white border border-[#1687f8] rounded-full cursor-se-resize z-50 shadow-md"
-            style={{
-              width: `${10 / zoomScale}px`,
-              height: `${10 / zoomScale}px`,
-              transform: `translate(50%, 50%)`,
-            }}
-          />
-        )}
-
-        {/* Locked status */}
-        {elem.locked && isSelected && (
-          <div
-            className="absolute bg-neutral-900/90 border border-neutral-800 rounded px-1.5 py-0.5 shadow-sm flex items-center gap-1 z-50 text-white"
-            style={{
-              top: `${4 / zoomScale}px`,
-              right: `${4 / zoomScale}px`,
-              transform: `scale(${1 / zoomScale})`,
-              transformOrigin: "top right",
-            }}
-          >
-            <Lock size={10} className="text-neutral-300" />
-            <span className="text-[8px] font-bold text-neutral-300 uppercase tracking-widest">
-              Locked
-            </span>
-          </div>
-        )}
       </div>
     );
   };
@@ -3405,8 +3596,181 @@ export function EditorialCarouselClient() {
                   </span>
                 )}
               </div>
+
+              {/* Smart Magnetic Snapping Guides */}
+              {activeGuides.map((guide) => (
+                <div
+                  key={guide.id}
+                  className="absolute pointer-events-none z-50 transition-opacity duration-75"
+                  style={
+                    guide.type === "vertical"
+                      ? {
+                          left: `${guide.position}px`,
+                          top: 0,
+                          bottom: 0,
+                          width: "1.5px",
+                          backgroundColor: "#ff007a",
+                          boxShadow: "0 0 8px rgba(255, 0, 122, 0.8)",
+                        }
+                      : {
+                          top: `${guide.position}px`,
+                          left: 0,
+                          right: 0,
+                          height: "1.5px",
+                          backgroundColor: "#ff007a",
+                          boxShadow: "0 0 8px rgba(255, 0, 122, 0.8)",
+                        }
+                  }
+                >
+                  {guide.label && (
+                    <span
+                      className="absolute bg-[#ff007a] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md tracking-wider uppercase select-none whitespace-nowrap"
+                      style={
+                        guide.type === "vertical"
+                          ? { top: "14px", left: "4px" }
+                          : { left: "14px", top: "-18px" }
+                      }
+                    >
+                      {guide.label}
+                    </span>
+                  )}
+                </div>
+              ))}
+
+              {/* Figma Transform Gizmo (8-point handles + rotation stem + HUD) */}
+              {selectedElement &&
+                activeSlide[selectedElement] &&
+                activeSlide[selectedElement].visible && (
+                  <FigmaTransformGizmo
+                    x={activeSlide[selectedElement].x}
+                    y={activeSlide[selectedElement].y}
+                    width={activeSlide[selectedElement].width}
+                    height={activeSlide[selectedElement].height}
+                    rotation={activeSlide[selectedElement].rotation || 0}
+                    zoomScale={zoomScale}
+                    locked={activeSlide[selectedElement].locked}
+                    label={selectedElement}
+                    isDragging={isDragging}
+                    isResizing={isResizing}
+                    isRotating={isRotating}
+                    onResizeStart={(e, handle) =>
+                      handleResizeMouseDown(e, selectedElement, handle)
+                    }
+                    onRotateStart={handleRotateStart}
+                  />
+                )}
+
+              {/* In-place Direct Text Editor */}
+              {editingTextKey && activeSlide[editingTextKey] && (
+                <InlineCanvasTextEditor
+                  initialText={
+                    (activeSlide[editingTextKey] as any).text ||
+                    (activeSlide[editingTextKey] as any).name ||
+                    ""
+                  }
+                  x={activeSlide[editingTextKey].x}
+                  y={activeSlide[editingTextKey].y}
+                  width={activeSlide[editingTextKey].width}
+                  height={activeSlide[editingTextKey].height}
+                  rotation={activeSlide[editingTextKey].rotation || 0}
+                  fontFamily={activeSlide[editingTextKey].fontFamily}
+                  fontSize={activeSlide[editingTextKey].fontSize}
+                  fontWeight={activeSlide[editingTextKey].fontWeight}
+                  lineHeight={activeSlide[editingTextKey].lineHeight}
+                  letterSpacing={activeSlide[editingTextKey].letterSpacing}
+                  color={activeSlide[editingTextKey].color}
+                  align={activeSlide[editingTextKey].align}
+                  uppercase={activeSlide[editingTextKey].uppercase}
+                  zoomScale={zoomScale}
+                  onSave={(newText) => {
+                    if (
+                      (activeSlide[editingTextKey] as any).text !== undefined
+                    ) {
+                      updateSlideElement(editingTextKey, { text: newText });
+                    } else {
+                      updateSlideElement(editingTextKey, { name: newText });
+                    }
+                    setEditingTextKey(null);
+                  }}
+                  onCancel={() => setEditingTextKey(null)}
+                />
+              )}
             </div>
           </div>
+
+          {/* Canvas Right-Click Context Menu */}
+          {canvasContextMenu && (
+            <CanvasContextMenu
+              x={canvasContextMenu.x}
+              y={canvasContextMenu.y}
+              selectedKey={canvasContextMenu.key}
+              isLocked={
+                canvasContextMenu.key
+                  ? Boolean(activeSlide[canvasContextMenu.key]?.locked)
+                  : false
+              }
+              onDuplicate={() => duplicateSlide(activeIndex)}
+              onBringForward={() => {
+                if (canvasContextMenu.key) {
+                  const currZ =
+                    activeSlide[canvasContextMenu.key]?.zIndex || 1;
+                  updateSlideElement(canvasContextMenu.key, {
+                    zIndex: Math.min(50, currZ + 1),
+                  });
+                }
+              }}
+              onSendBackward={() => {
+                if (canvasContextMenu.key) {
+                  const currZ =
+                    activeSlide[canvasContextMenu.key]?.zIndex || 1;
+                  updateSlideElement(canvasContextMenu.key, {
+                    zIndex: Math.max(1, currZ - 1),
+                  });
+                }
+              }}
+              onBringToFront={() => {
+                if (canvasContextMenu.key) {
+                  updateSlideElement(canvasContextMenu.key, { zIndex: 50 });
+                }
+              }}
+              onSendToBack={() => {
+                if (canvasContextMenu.key) {
+                  updateSlideElement(canvasContextMenu.key, { zIndex: 1 });
+                }
+              }}
+              onToggleLock={() => {
+                if (canvasContextMenu.key) {
+                  const currLock =
+                    activeSlide[canvasContextMenu.key]?.locked;
+                  updateSlideElement(canvasContextMenu.key, {
+                    locked: !currLock,
+                  });
+                }
+              }}
+              onToggleHide={() => {
+                if (canvasContextMenu.key) {
+                  updateSlideElement(canvasContextMenu.key, {
+                    visible: false,
+                  });
+                }
+              }}
+              onResetPosition={() => {
+                if (canvasContextMenu.key) {
+                  const def = DEFAULT_SLIDE(0)[canvasContextMenu.key];
+                  if (def) {
+                    updateSlideElement(canvasContextMenu.key, {
+                      x: def.x,
+                      y: def.y,
+                      width: def.width,
+                      height: def.height,
+                      rotation: 0,
+                    });
+                  }
+                }
+              }}
+              onClose={() => setCanvasContextMenu(null)}
+            />
+          )}
         </main>
 
         {/* ------------------------------------------
