@@ -97,6 +97,23 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
     0: true,
   });
 
+  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const fileMenuRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (fileMenuRef.current && !fileMenuRef.current.contains(e.target as Node)) {
+        setIsFileMenuOpen(false);
+      }
+    };
+    if (isFileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isFileMenuOpen]);
+
   const toggleSlideExpand = (idx: number, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedSlides((prev) => ({
@@ -113,55 +130,82 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
     >
       {/* 1. Paper.design Header Bar */}
       <div className="h-[42px] px-2.5 border-b border-[#353535] flex items-center justify-between shrink-0 bg-[#2a2a2a] gap-1.5">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          {/* Direct Return to Admin Button */}
+          <Link
+            href="/admin"
+            className="p-1 rounded-md hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer shrink-0"
+            title="Return to Admin Dashboard"
+          >
+            <ArrowLeft size={13} />
+          </Link>
+
           {/* Paper Document Icon with Menu */}
-          <div className="relative group/menu">
+          <div ref={fileMenuRef} className="relative">
             <button
               type="button"
-              className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
-              title="File Menu • Database Projects"
+              onClick={() => setIsFileMenuOpen((prev) => !prev)}
+              className={`p-1 rounded-md hover:bg-white/10 ${isFileMenuOpen ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white"} transition-colors flex items-center justify-center cursor-pointer`}
+              title="File Menu • Database Projects & Actions"
             >
-              <FolderOpen size={14} />
+              <FolderOpen size={13} />
             </button>
-            <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-48 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
-              {onOpenProjectsDrawer && (
-                <button
-                  type="button"
-                  onClick={onOpenProjectsDrawer}
-                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                >
-                  <FolderOpen size={12} />
-                  <span>Open Database Projects</span>
-                </button>
-              )}
-              {onCreateNewProject && (
-                <button
-                  type="button"
-                  onClick={onCreateNewProject}
-                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                >
-                  <Plus size={12} />
-                  <span>New Carousel Project</span>
-                </button>
-              )}
-              {onSaveToDatabase && (
-                <button
-                  type="button"
-                  onClick={onSaveToDatabase}
-                  className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                >
-                  <CloudUpload size={12} />
-                  <span>Save to Database (Ctrl+S)</span>
-                </button>
-              )}
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
-              >
-                <ArrowLeft size={12} />
-                <span>Return to Admin</span>
-              </Link>
-            </div>
+
+            {isFileMenuOpen && (
+              <div className="absolute top-full left-0 mt-1.5 w-52 bg-[#242426] border border-[#383838] rounded-xl shadow-2xl py-1.5 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5 animate-in fade-in duration-100">
+                <div className="py-1">
+                  {onOpenProjectsDrawer && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onOpenProjectsDrawer();
+                        setIsFileMenuOpen(false);
+                      }}
+                      className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <FolderOpen size={12} className="text-neutral-400" />
+                      <span>Open Database Projects</span>
+                    </button>
+                  )}
+                  {onCreateNewProject && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onCreateNewProject();
+                        setIsFileMenuOpen(false);
+                      }}
+                      className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Plus size={12} className="text-neutral-400" />
+                      <span>New Carousel Project</span>
+                    </button>
+                  )}
+                  {onSaveToDatabase && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onSaveToDatabase();
+                        setIsFileMenuOpen(false);
+                      }}
+                      className="w-full text-left flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <CloudUpload size={12} className="text-neutral-400" />
+                      <span>Save to Database (Ctrl+S)</span>
+                    </button>
+                  )}
+                </div>
+                <div className="py-1">
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsFileMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-1.5 text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 transition-colors font-semibold cursor-pointer"
+                  >
+                    <ArrowLeft size={12} />
+                    <span>Return to Admin</span>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Document Title (Clickable to open projects) */}

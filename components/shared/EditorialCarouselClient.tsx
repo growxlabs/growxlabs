@@ -3597,28 +3597,25 @@ export function EditorialCarouselClient() {
         >
           {/* Paper.design Signature Floating Document Pill (when sidebar is collapsed) */}
           {!showLeftSidebar && (
-            <div className="absolute top-3.5 left-3.5 z-40 h-[34px] bg-[#242426] border border-[#383838] rounded-lg px-2.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none">
+            <div className="absolute top-3.5 left-3.5 z-40 h-[34px] bg-[#242426] border border-[#383838] rounded-lg px-2.5 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none">
+              {/* Direct Return to Admin Button */}
+              <Link
+                href="/admin"
+                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer shrink-0"
+                title="Return to Admin Dashboard"
+              >
+                <ArrowLeft size={13} />
+              </Link>
+
               <div className="relative group/menu">
                 <button
                   type="button"
                   className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
-                  title="File Menu • Back to Admin"
+                  title="File Menu • Database Projects & Actions"
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="4" width="9" height="10" rx="1.5" />
-                    <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
-                  </svg>
+                  <FolderOpen size={13} />
                 </button>
-                <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-48 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+                <div className="hidden group-hover/menu:block before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 absolute top-full left-0 mt-1.5 w-52 bg-[#242426] border border-[#383838] rounded-xl shadow-2xl py-1.5 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5 animate-in fade-in duration-100">
                   <div className="py-1">
                     <button
                       type="button"
@@ -3651,7 +3648,7 @@ export function EditorialCarouselClient() {
                   <div className="py-1">
                     <Link
                       href="/admin"
-                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 text-rose-400 hover:bg-rose-500/15 hover:text-rose-300 transition-colors font-semibold cursor-pointer"
                     >
                       <ArrowLeft size={12} />
                       <span>Return to Admin</span>
