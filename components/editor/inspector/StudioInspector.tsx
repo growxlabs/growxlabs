@@ -25,6 +25,9 @@ import {
   Share2,
   Minus,
   Plus,
+  Upload,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import type { Slide, ElementKey } from "./inspectorTypes";
 import { toast } from "sonner";
@@ -52,6 +55,29 @@ const STUDIO_FONTS = [
   { name: "SF Mono", value: "'SF Mono', monospace" },
   { name: "Playfair Display", value: "'Playfair Display', serif" },
   { name: "Neue Haas", value: "'Neue Haas Grotesk', sans-serif" },
+];
+
+const STOCK_IMAGE_PRESETS = [
+  {
+    name: "AI Neural",
+    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Modern Workspace",
+    url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Abstract Fluid",
+    url: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Architecture",
+    url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80",
+  },
+  {
+    name: "Gradient Art",
+    url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80",
+  },
 ];
 
 const COLOR_SWATCHES = [
@@ -140,6 +166,42 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   const [activeConstraintV, setActiveConstraintV] = useState<"top" | "center" | "bottom">("top");
   const [blendMode, setBlendMode] = useState<string>("normal");
   const [outlinePosition, setOutlinePosition] = useState<string>("inside");
+  const imageInputRef = React.useRef<HTMLInputElement>(null);
+  const fillImageInputRef = React.useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isImageDragging, setIsImageDragging] = useState(false);
+
+  const handleImageFile = async (file: File, targetKey: ElementKey | "featuredImage" = "featuredImage") => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file (PNG, JPG, WebP, SVG, GIF)");
+      return;
+    }
+
+    // 1. Instant local preview (0ms latency)
+    const localUrl = URL.createObjectURL(file);
+    onUpdateElement(targetKey, { mediaUrl: localUrl });
+
+    // 2. Asynchronously upload to Supabase storage via /api/upload
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        onUpdateElement(targetKey, { mediaUrl: data.url });
+        toast.success("Image uploaded successfully!");
+      }
+    } catch (err) {
+      console.warn("Upload to CDN failed, keeping local preview:", err);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
   const [activeFlexPos, setActiveFlexPos] = useState<[number, number]>([1, 1]); // [row, col] center default
 
   useEffect(() => {
@@ -1024,62 +1086,89 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 </div>
               </div>
 
-              {/* Color Box Row (Swatch + Hex + Opacity) */}
-              <div className="flex items-center gap-1.5">
-                {/* Native Picker Swatch */}
-                <label
-                  className="w-7 h-7 rounded border border-white/20 cursor-pointer shrink-0 transition-transform hover:scale-105 relative overflow-hidden shadow-sm"
-                  style={{ backgroundColor: currentElement.color || "#FAFAFA" }}
-                  title="Pick custom color"
-                >
+              {/* Color Box Row (Swatch + Hex + Opacity) or Image Fill */}
+              {fillMode === "image" ? (
+                <div className="space-y-2 pt-0.5">
                   <input
-                    type="color"
-                    value={currentElement.color?.startsWith("#") ? currentElement.color : "#ffffff"}
-                    onChange={(e) => onUpdateElement(selectedElement, { color: e.target.value })}
-                    className="sr-only"
+                    type="file"
+                    ref={fillImageInputRef}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageFile(file, selectedElement || "featuredImage");
+                      e.target.value = "";
+                    }}
                   />
-                </label>
-
-                {/* Hex Code Input */}
-                <div className="flex-1 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center gap-1 focus-within:border-[#1687f8]">
-                  <input
-                    type="text"
-                    value={(currentElement.color || "FAFAFA").replace("#", "")}
-                    onChange={(e) => onUpdateElement(selectedElement, { color: `#${e.target.value}` })}
-                    className="w-full bg-transparent font-mono text-[11px] text-[#ececec] uppercase focus:outline-none font-medium"
-                  />
-                </div>
-
-                {/* Opacity % */}
-                <div className="w-16 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-1.5 flex items-center justify-between text-[#ececec]">
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={Math.round((currentElement.opacity ?? 1) * 100)}
-                    onChange={(e) => onUpdateElement(selectedElement, { opacity: Number(e.target.value) / 100 })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] text-[#ececec] focus:outline-none"
-                  />
-                  <span className="text-[10px] text-[#8e8e93] ml-0.5">%</span>
-                </div>
-              </div>
-
-              {/* Quick Palette Chips */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                {COLOR_SWATCHES.map((hex) => (
-                  <button
-                    key={hex}
-                    type="button"
-                    onClick={() => onUpdateElement(selectedElement, { color: hex })}
-                    className="w-5 h-5 rounded-md border border-white/20 hover:scale-110 transition-transform relative cursor-pointer"
-                    style={{ backgroundColor: hex }}
+                  <div
+                    onClick={() => fillImageInputRef.current?.click()}
+                    className="border border-dashed border-[#48484a] hover:border-[#1687f8] bg-[#29292b] hover:bg-[#303033] rounded-lg p-2.5 flex items-center justify-center gap-2 cursor-pointer transition-colors"
                   >
-                    {currentElement.color?.toLowerCase() === hex.toLowerCase() && (
-                      <Check size={9} className={hex === "#ffffff" ? "text-black mx-auto" : "text-white mx-auto"} />
-                    )}
-                  </button>
-                ))}
-              </div>
+                    <Upload size={13} className="text-[#1687f8]" />
+                    <span className="text-[11px] font-medium text-[#ececec]">
+                      Upload Fill Image
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    {/* Native Picker Swatch */}
+                    <label
+                      className="w-7 h-7 rounded border border-white/20 cursor-pointer shrink-0 transition-transform hover:scale-105 relative overflow-hidden shadow-sm"
+                      style={{ backgroundColor: currentElement.color || "#FAFAFA" }}
+                      title="Pick custom color"
+                    >
+                      <input
+                        type="color"
+                        value={currentElement.color?.startsWith("#") ? currentElement.color : "#ffffff"}
+                        onChange={(e) => onUpdateElement(selectedElement, { color: e.target.value })}
+                        className="sr-only"
+                      />
+                    </label>
+
+                    {/* Hex Code Input */}
+                    <div className="flex-1 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center gap-1 focus-within:border-[#1687f8]">
+                      <input
+                        type="text"
+                        value={(currentElement.color || "FAFAFA").replace("#", "")}
+                        onChange={(e) => onUpdateElement(selectedElement, { color: `#${e.target.value}` })}
+                        className="w-full bg-transparent font-mono text-[11px] text-[#ececec] uppercase focus:outline-none font-medium"
+                      />
+                    </div>
+
+                    {/* Opacity % */}
+                    <div className="w-16 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-1.5 flex items-center justify-between text-[#ececec]">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={Math.round((currentElement.opacity ?? 1) * 100)}
+                        onChange={(e) => onUpdateElement(selectedElement, { opacity: Number(e.target.value) / 100 })}
+                        className="w-full bg-transparent text-right font-mono text-[11px] text-[#ececec] focus:outline-none"
+                      />
+                      <span className="text-[10px] text-[#8e8e93] ml-0.5">%</span>
+                    </div>
+                  </div>
+
+                  {/* Quick Palette Chips */}
+                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                    {COLOR_SWATCHES.map((hex) => (
+                      <button
+                        key={hex}
+                        type="button"
+                        onClick={() => onUpdateElement(selectedElement, { color: hex })}
+                        className="w-5 h-5 rounded-md border border-white/20 hover:scale-110 transition-transform relative cursor-pointer"
+                        style={{ backgroundColor: hex }}
+                      >
+                        {currentElement.color?.toLowerCase() === hex.toLowerCase() && (
+                          <Check size={9} className={hex === "#ffffff" ? "text-black mx-auto" : "text-white mx-auto"} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* SECTION 6: OUTLINE (Border) */}
@@ -1250,30 +1339,163 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
             {/* SECTION 8: MEDIA FRAMING (When Image Layer Selected) */}
             {isImageType && (
-              <div className="p-3 space-y-2.5">
-                <span className="text-[11px] font-medium text-[#ececec] block">Media Framing</span>
+              <div className="p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-[#ececec]">Media Framing</span>
+                  <span className="text-[9px] text-[#8e8e93] font-mono">PNG, JPG, WebP</span>
+                </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] text-[#8e8e93]">Media URL</label>
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageFile(file, selectedElement || "featuredImage");
+                    e.target.value = "";
+                  }}
+                />
+
+                {/* Primary Upload Dropzone & Current Preview */}
+                {(currentElement as any).mediaUrl ? (
+                  <div className="p-2.5 bg-[#1f1f21] border border-[#383838] rounded-lg space-y-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-12 h-12 rounded-md border border-white/20 bg-neutral-900 overflow-hidden shrink-0 relative group/thumb">
+                        <img
+                          src={(currentElement as any).mediaUrl}
+                          alt="Layer preview"
+                          className="w-full h-full object-cover"
+                        />
+                        {isUploadingImage && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <Loader2 size={14} className="animate-spin text-white" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <span className="text-[11px] font-medium text-[#ececec] truncate block">
+                          {isUploadingImage ? "Uploading to CDN..." : "Image attached"}
+                        </span>
+                        <span className="text-[9px] text-[#8e8e93] truncate block">
+                          Click replace to pick new file
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => imageInputRef.current?.click()}
+                          disabled={isUploadingImage}
+                          className="h-[24px] px-2 rounded bg-[#373737] hover:bg-[#404040] border border-[#48484a]/40 text-[#ececec] text-[10px] font-medium transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                          title="Upload new image"
+                        >
+                          <Upload size={10} />
+                          <span>Replace</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onUpdateElement(selectedElement, { mediaUrl: "" })}
+                          className="w-[24px] h-[24px] rounded bg-[#373737] hover:bg-red-500/20 text-[#8e8e93] hover:text-red-400 border border-[#48484a]/40 transition-colors flex items-center justify-center cursor-pointer"
+                          title="Clear image"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsImageDragging(true);
+                    }}
+                    onDragLeave={() => setIsImageDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsImageDragging(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleImageFile(file, selectedElement || "featuredImage");
+                    }}
+                    onClick={() => imageInputRef.current?.click()}
+                    className={`border border-dashed rounded-lg p-3.5 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                      isImageDragging
+                        ? "border-[#1687f8] bg-[#1687f8]/10"
+                        : "border-[#48484a] hover:border-[#1687f8] bg-[#29292b] hover:bg-[#303033]"
+                    }`}
+                  >
+                    {isUploadingImage ? (
+                      <div className="flex flex-col items-center gap-1 py-1">
+                        <Loader2 size={18} className="animate-spin text-[#1687f8]" />
+                        <span className="text-[11px] font-medium text-[#ececec]">Uploading image...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-8 h-8 rounded-full bg-[#373737] flex items-center justify-center text-[#1687f8] shadow-sm">
+                          <Upload size={14} />
+                        </div>
+                        <div className="text-center">
+                          <span className="text-[11px] font-semibold text-[#ececec] block">
+                            Upload Image File
+                          </span>
+                          <span className="text-[9px] text-[#8e8e93]">
+                            Click to browse or drag & drop image
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Media URL Input (for external links) */}
+                <div className="space-y-1 pt-0.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] text-[#8e8e93]">Or Image URL</label>
+                    <span className="text-[9px] text-[#8e8e93]">Web link</span>
+                  </div>
                   <input
                     type="text"
                     value={(currentElement as any).mediaUrl || ""}
                     onChange={(e) => onUpdateElement(selectedElement, { mediaUrl: e.target.value })}
-                    placeholder="https://... image or video URL"
+                    placeholder="https://... image URL"
                     className="w-full h-[28px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 text-[11px] font-mono text-[#ececec] focus:outline-none focus:border-[#1687f8]"
                   />
                 </div>
 
-                <div className="space-y-1">
+                {/* Curated Stock Presets */}
+                <div className="space-y-1.5 pt-0.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] text-[#8e8e93]">Stock Presets</label>
+                    <span className="text-[9px] text-[#8e8e93]">1-click apply</span>
+                  </div>
+                  <div className="grid grid-cols-5 gap-1">
+                    {STOCK_IMAGE_PRESETS.map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => onUpdateElement(selectedElement, { mediaUrl: preset.url })}
+                        className="aspect-square rounded-md border border-white/15 overflow-hidden hover:border-[#1687f8] hover:scale-105 transition-all relative group/preset"
+                        title={`Apply ${preset.name}`}
+                      >
+                        <img src={preset.url} alt={preset.name} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Object Fit */}
+                <div className="space-y-1 pt-0.5">
                   <label className="text-[10px] text-[#8e8e93]">Object Fit</label>
                   <StudioDropdown
                     value={(currentElement as any).objectFit || "cover"}
                     onValueChange={(val) => onUpdateElement(selectedElement, { objectFit: val as any })}
                     triggerHeight="h-[28px]"
                     options={[
-                      { value: "cover", label: "Cover" },
-                      { value: "contain", label: "Contain" },
-                      { value: "fill", label: "Fill" },
+                      { value: "cover", label: "Cover (Fill bounds)" },
+                      { value: "contain", label: "Contain (Fit inside)" },
+                      { value: "fill", label: "Stretch (Fill exact)" },
                     ]}
                   />
                 </div>
