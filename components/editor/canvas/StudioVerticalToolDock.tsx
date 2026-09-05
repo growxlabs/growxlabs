@@ -41,9 +41,7 @@ export const StudioVerticalToolDock: React.FC<StudioVerticalToolDockProps> = ({
 }) => {
   return (
     <div
-      className={`absolute z-30 flex flex-col items-center bg-[#2a2a2a] border border-[#353535] rounded-xl p-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)] gap-0.5 select-none transition-all duration-200 ${
-        isLeftSidebarCollapsed ? "left-3 top-[52px]" : "left-3 top-3"
-      }`}
+      className="absolute left-3.5 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center bg-[#242426] border border-[#383838] rounded-2xl p-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)] gap-0.5 select-none transition-all duration-200"
       role="toolbar"
       aria-label="Studio Tools"
     >

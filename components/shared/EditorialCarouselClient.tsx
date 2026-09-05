@@ -2733,33 +2733,40 @@ export function EditorialCarouselClient() {
         >
           {/* Paper.design Signature Floating Document Pill (when sidebar is collapsed) */}
           {!showLeftSidebar && (
-            <div className="absolute top-3 left-3 z-40 h-8 bg-[#2a2a2a] border border-[#353535] rounded-lg px-2.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none backdrop-blur-md">
-              <Link
-                href="/admin"
-                className="p-0.5 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0"
-                title="Return to Admin Dashboard"
-              >
-                <ArrowLeft size={13} />
-              </Link>
-
-              <span className="text-neutral-400 shrink-0 flex items-center justify-center">
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+            <div className="absolute top-3.5 left-3.5 z-40 h-[34px] bg-[#242426] border border-[#383838] rounded-lg px-2.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] text-white select-none">
+              <div className="relative group/menu">
+                <button
+                  type="button"
+                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+                  title="File Menu • Back to Admin"
                 >
-                  <rect x="2" y="4" width="9" height="10" rx="1.5" />
-                  <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
-                </svg>
-              </span>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="2" y="4" width="9" height="10" rx="1.5" />
+                    <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
+                  </svg>
+                </button>
+                <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-44 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
+                  >
+                    <ArrowLeft size={12} />
+                    <span>Return to Admin</span>
+                  </Link>
+                </div>
+              </div>
 
               <span
-                className="text-[12px] font-medium text-[#ececec] truncate max-w-[140px] tracking-tight"
+                className="text-[12px] font-medium text-[#ececec] truncate max-w-[150px] tracking-tight cursor-default"
                 title={projectName}
               >
                 {projectName}
@@ -2768,7 +2775,7 @@ export function EditorialCarouselClient() {
               <button
                 type="button"
                 onClick={() => setShowLeftSidebar(true)}
-                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors ml-0.5 cursor-pointer"
+                className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer ml-0.5"
                 title="Expand sidebar"
               >
                 <svg

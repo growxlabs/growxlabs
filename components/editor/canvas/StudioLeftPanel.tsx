@@ -93,32 +93,38 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
     <aside className="w-[240px] min-w-[240px] h-full flex flex-col bg-[#2a2a2a] border-r border-[#353535] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
       {/* 1. Paper.design Header Bar */}
       <div className="h-[42px] px-2.5 border-b border-[#353535] flex items-center justify-between shrink-0 bg-[#2a2a2a] gap-1.5">
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          {/* Back to Admin navigation */}
-          <Link
-            href="/admin"
-            className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors shrink-0"
-            title="Return to Admin Dashboard"
-          >
-            <ArrowLeft size={13} />
-          </Link>
-
-          {/* Paper Double-Sheet Document Icon */}
-          <span className="text-neutral-400 shrink-0 flex items-center justify-center">
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          {/* Paper Double-Sheet Document Icon with Menu */}
+          <div className="relative group/menu">
+            <button
+              type="button"
+              className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+              title="File Menu • Back to Admin"
             >
-              <rect x="2" y="4" width="9" height="10" rx="1.5" />
-              <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
-            </svg>
-          </span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="4" width="9" height="10" rx="1.5" />
+                <path d="M5 2h7a1.5 1.5 0 0 1 1.5 1.5V11" />
+              </svg>
+            </button>
+            <div className="hidden group-hover/menu:block absolute top-full left-0 mt-1 w-44 bg-[#242426] border border-[#383838] rounded-lg shadow-xl py-1 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5">
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                <ArrowLeft size={12} />
+                <span>Return to Admin</span>
+              </Link>
+            </div>
+          </div>
 
           {/* Document Title */}
           <span
