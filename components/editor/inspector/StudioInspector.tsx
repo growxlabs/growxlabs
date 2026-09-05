@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   AlignLeft,
   AlignCenter,
@@ -9,20 +9,17 @@ import {
   Unlock,
   Eye,
   EyeOff,
-  Copy,
-  Trash2,
   Download,
   Play,
-  RotateCcw,
   Type,
   ImageIcon,
-  Layers,
-  ChevronDown,
-  Plus,
-  Minus,
   Check,
-  LayoutGrid,
   FileText,
+  Smartphone,
+  ChevronDown,
+  Link2,
+  Sliders,
+  Sparkles,
 } from "lucide-react";
 import type { Slide, ElementKey } from "./inspectorTypes";
 
@@ -100,11 +97,15 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   onDownloadAllSvg,
   onClose,
 }) => {
+  const [fillMode, setFillMode] = useState<"solid" | "gradient" | "image">("solid");
+  const [aspectLocked, setAspectLocked] = useState(true);
+
   const currentElement = selectedElement ? activeSlide[selectedElement] : null;
-  const isTextType = selectedElement && ["headline", "category", "body", "quote", "cta", "author"].includes(selectedElement);
+  const isTextType =
+    selectedElement && ["headline", "category", "body", "quote", "cta", "author"].includes(selectedElement);
   const isImageType = selectedElement === "featuredImage";
 
-  // Alignment helpers
+  // Alignment handlers
   const handleAlign = (type: "left" | "center" | "right" | "top" | "middle" | "bottom") => {
     if (!selectedElement || !currentElement) return;
     const canvasW = activeFormat.width;
@@ -133,12 +134,12 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   };
 
   return (
-    <aside className="w-[320px] min-w-[320px] h-full flex flex-col bg-[#111214] border-l border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
-      {/* 1. Header Bar */}
-      <div className="h-[42px] px-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#141518]">
+    <aside className="w-[320px] min-w-[320px] h-full flex flex-col bg-[#121316] border-l border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
+      {/* 1. Paper.design Minimalist Header Bar */}
+      <div className="h-[46px] px-3.5 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a]">
         <div className="flex items-center gap-2 truncate">
-          <div className="w-2 h-2 rounded-full bg-[#1687f8]" />
-          <span className="font-bold text-[11px] uppercase tracking-wider text-neutral-200 truncate">
+          <div className="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+          <span className="font-semibold text-[11px] uppercase tracking-wider text-neutral-200 truncate">
             {isFooterSelected
               ? "Footer & Branding"
               : selectedElement
@@ -153,7 +154,9 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               <button
                 type="button"
                 onClick={() => onUpdateElement(selectedElement, { locked: !currentElement.locked })}
-                className={`p-1 rounded-md hover:bg-[#202128] transition-colors ${currentElement.locked ? "text-amber-400" : "text-neutral-400"}`}
+                className={`p-1.5 rounded-lg hover:bg-white/10 transition-colors ${
+                  currentElement.locked ? "text-amber-400" : "text-neutral-400 hover:text-white"
+                }`}
                 title={currentElement.locked ? "Unlock layer" : "Lock layer"}
               >
                 {currentElement.locked ? <Lock size={13} /> : <Unlock size={13} />}
@@ -161,7 +164,9 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               <button
                 type="button"
                 onClick={() => onUpdateElement(selectedElement, { visible: !currentElement.visible })}
-                className={`p-1 rounded-md hover:bg-[#202128] transition-colors ${!currentElement.visible ? "text-neutral-500" : "text-neutral-400"}`}
+                className={`p-1.5 rounded-lg hover:bg-white/10 transition-colors ${
+                  !currentElement.visible ? "text-neutral-500" : "text-neutral-400 hover:text-white"
+                }`}
                 title="Toggle visibility"
               >
                 {currentElement.visible ? <Eye size={13} /> : <EyeOff size={13} />}
@@ -172,7 +177,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-md hover:bg-[#202128] text-neutral-400 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white transition-colors ml-1"
               title="Close panel"
             >
               ✕
@@ -182,76 +187,25 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
       </div>
 
       {/* 2. Main Scrollable Body */}
-      <div className="flex-1 overflow-y-auto divide-y divide-white/[0.06] p-3 space-y-3">
+      <div className="flex-1 overflow-y-auto divide-y divide-white/[0.06] p-3.5 space-y-4">
         {/* ========================================================
-            SCENARIO A: AN ELEMENT IS SELECTED ON CANVAS
+            CASE A: CANVAS ELEMENT SELECTED (Paper Layout & Style)
             ======================================================== */}
         {selectedElement && currentElement && (
           <>
-            {/* Transform & Geometry */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                Position & Size
-              </span>
+            {/* SECTION 1: LAYOUT (Paper Style Align Header + X/Y/∠/W/H) */}
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  Layout
+                </span>
 
-              {/* 2x2 X, Y, W, H grid */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 font-mono w-4">X</span>
-                  <input
-                    type="number"
-                    value={Math.round(currentElement.x)}
-                    onChange={(e) => onUpdateElement(selectedElement, { x: Number(e.target.value) })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                </div>
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 font-mono w-4">Y</span>
-                  <input
-                    type="number"
-                    value={Math.round(currentElement.y)}
-                    onChange={(e) => onUpdateElement(selectedElement, { y: Number(e.target.value) })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                </div>
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 font-mono w-4">W</span>
-                  <input
-                    type="number"
-                    value={Math.round(currentElement.width)}
-                    onChange={(e) => onUpdateElement(selectedElement, { width: Math.max(40, Number(e.target.value)) })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                </div>
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 font-mono w-4">H</span>
-                  <input
-                    type="number"
-                    value={Math.round(currentElement.height)}
-                    onChange={(e) => onUpdateElement(selectedElement, { height: Math.max(20, Number(e.target.value)) })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                </div>
-              </div>
-
-              {/* Rotation & Align Strip */}
-              <div className="flex items-center justify-between gap-1.5 pt-0.5">
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8] flex-1">
-                  <span className="text-[10px] text-neutral-500 font-mono">∠</span>
-                  <input
-                    type="number"
-                    value={Math.round(currentElement.rotation || 0)}
-                    onChange={(e) => onUpdateElement(selectedElement, { rotation: Number(e.target.value) })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                  <span className="text-[10px] text-neutral-500 ml-0.5">°</span>
-                </div>
-
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md p-0.5">
+                {/* Paper.design Align Bar in Section Header */}
+                <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg p-0.5">
                   <button
                     type="button"
                     onClick={() => handleAlign("left")}
-                    className="p-1 hover:bg-[#202128] rounded text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
                     title="Align Left"
                   >
                     ⇤
@@ -259,7 +213,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAlign("center")}
-                    className="p-1 hover:bg-[#202128] rounded text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
                     title="Align Center"
                   >
                     ⬌
@@ -267,7 +221,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAlign("right")}
-                    className="p-1 hover:bg-[#202128] rounded text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
                     title="Align Right"
                   >
                     ⇥
@@ -275,20 +229,112 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAlign("middle")}
-                    className="p-1 hover:bg-[#202128] rounded text-neutral-400 hover:text-white transition-colors"
+                    className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-colors"
                     title="Align Middle"
                   >
                     ⬍
                   </button>
                 </div>
               </div>
+
+              {/* Row 1: X, Y, ∠ (Rotation) side-by-side */}
+              <div className="grid grid-cols-3 gap-1.5">
+                <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 font-mono w-3.5">X</span>
+                  <input
+                    type="number"
+                    value={Math.round(currentElement.x)}
+                    onChange={(e) => onUpdateElement(selectedElement, { x: Number(e.target.value) })}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                </div>
+
+                <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 font-mono w-3.5">Y</span>
+                  <input
+                    type="number"
+                    value={Math.round(currentElement.y)}
+                    onChange={(e) => onUpdateElement(selectedElement, { y: Number(e.target.value) })}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                </div>
+
+                <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 font-mono w-3.5">∠</span>
+                  <input
+                    type="number"
+                    value={Math.round(currentElement.rotation || 0)}
+                    onChange={(e) => onUpdateElement(selectedElement, { rotation: Number(e.target.value) })}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                  <span className="text-[10px] text-neutral-500 ml-0.5">°</span>
+                </div>
+              </div>
+
+              {/* Row 2: W, H and Aspect Ratio Lock */}
+              <div className="flex items-center gap-1.5">
+                <div className="flex-1 flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 font-mono w-3.5">W</span>
+                  <input
+                    type="number"
+                    value={Math.round(currentElement.width)}
+                    onChange={(e) => {
+                      const newW = Math.max(40, Number(e.target.value));
+                      if (aspectLocked && currentElement.width > 0) {
+                        const ratio = currentElement.height / currentElement.width;
+                        onUpdateElement(selectedElement, {
+                          width: newW,
+                          height: Math.max(20, Math.round(newW * ratio)),
+                        });
+                      } else {
+                        onUpdateElement(selectedElement, { width: newW });
+                      }
+                    }}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                </div>
+
+                <div className="flex-1 flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 font-mono w-3.5">H</span>
+                  <input
+                    type="number"
+                    value={Math.round(currentElement.height)}
+                    onChange={(e) => {
+                      const newH = Math.max(20, Number(e.target.value));
+                      if (aspectLocked && currentElement.height > 0) {
+                        const ratio = currentElement.width / currentElement.height;
+                        onUpdateElement(selectedElement, {
+                          height: newH,
+                          width: Math.max(40, Math.round(newH * ratio)),
+                        });
+                      } else {
+                        onUpdateElement(selectedElement, { height: newH });
+                      }
+                    }}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setAspectLocked(!aspectLocked)}
+                  className={`p-1.5 rounded-lg border transition-colors ${
+                    aspectLocked
+                      ? "bg-[#18191e] border-white/20 text-[#38bdf8]"
+                      : "bg-[#18191e] border-white/5 text-neutral-500 hover:text-neutral-300"
+                  }`}
+                  title={aspectLocked ? "Unlock Aspect Ratio" : "Lock Aspect Ratio"}
+                >
+                  <Link2 size={13} />
+                </button>
+              </div>
             </div>
 
-            {/* Typography Section (If Text Layer) */}
+            {/* SECTION 2: TYPOGRAPHY (If Text Layer) */}
             {isTextType && (
-              <div className="pt-3 space-y-2.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                  Typography & Style
+              <div className="pt-4 space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block">
+                  Typography
                 </span>
 
                 {/* Direct Text Editor Input */}
@@ -299,7 +345,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                       rows={3}
                       value={(currentElement as any).text}
                       onChange={(e) => onUpdateElement(selectedElement, { text: e.target.value })}
-                      className="w-full bg-[#18191d] border border-white/10 rounded-md p-2 text-[11px] font-medium text-neutral-200 focus:outline-none focus:border-[#1687f8] resize-none"
+                      className="w-full bg-[#18191e] border border-white/10 rounded-lg p-2.5 text-[11px] font-medium text-neutral-200 focus:outline-none focus:border-[#1687f8] resize-none"
                     />
                   </div>
                 )}
@@ -310,7 +356,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <select
                     value={currentElement.fontFamily}
                     onChange={(e) => onUpdateElement(selectedElement, { fontFamily: e.target.value })}
-                    className="w-full bg-[#18191d] border border-white/10 rounded-md px-2 py-1 text-[11px] font-bold text-neutral-200 focus:outline-none focus:border-[#1687f8]"
+                    className="w-full bg-[#18191e] border border-white/10 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-neutral-200 focus:outline-none focus:border-[#1687f8]"
                   >
                     {STUDIO_FONTS.map((f) => (
                       <option key={f.name} value={f.value} className="bg-neutral-900 text-white">
@@ -324,12 +370,12 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 <div className="grid grid-cols-2 gap-1.5">
                   <div className="space-y-1">
                     <label className="text-[10px] text-neutral-400">Size</label>
-                    <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1">
+                    <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2.5 py-1.5">
                       <input
                         type="number"
                         value={currentElement.fontSize}
                         onChange={(e) => onUpdateElement(selectedElement, { fontSize: Number(e.target.value) })}
-                        className="w-full bg-transparent font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
+                        className="w-full bg-transparent font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
                       />
                       <span className="text-[10px] text-neutral-500">px</span>
                     </div>
@@ -340,7 +386,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     <select
                       value={currentElement.fontWeight}
                       onChange={(e) => onUpdateElement(selectedElement, { fontWeight: e.target.value })}
-                      className="w-full bg-[#18191d] border border-white/10 rounded-md px-2 py-1 text-[11px] font-bold text-neutral-200 focus:outline-none"
+                      className="w-full bg-[#18191e] border border-white/10 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-neutral-200 focus:outline-none"
                     >
                       <option value="400" className="bg-neutral-900">Regular (400)</option>
                       <option value="600" className="bg-neutral-900">Medium (600)</option>
@@ -351,12 +397,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 </div>
 
                 {/* Alignment & Uppercase */}
-                <div className="flex items-center justify-between pt-0.5">
-                  <div className="flex bg-[#18191d] border border-white/10 rounded-md p-0.5">
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex bg-[#18191e] border border-white/10 rounded-lg p-0.5">
                     <button
                       type="button"
                       onClick={() => onUpdateElement(selectedElement, { align: "left" })}
-                      className={`p-1.5 rounded transition-colors ${currentElement.align === "left" ? "bg-[#22242c] text-white" : "text-neutral-400 hover:text-white"}`}
+                      className={`p-1.5 rounded transition-colors ${
+                        currentElement.align === "left"
+                          ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                          : "text-neutral-400 hover:text-white"
+                      }`}
                       title="Align Left"
                     >
                       <AlignLeft size={12} />
@@ -364,7 +414,11 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     <button
                       type="button"
                       onClick={() => onUpdateElement(selectedElement, { align: "center" })}
-                      className={`p-1.5 rounded transition-colors ${currentElement.align === "center" ? "bg-[#22242c] text-white" : "text-neutral-400 hover:text-white"}`}
+                      className={`p-1.5 rounded transition-colors ${
+                        currentElement.align === "center"
+                          ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                          : "text-neutral-400 hover:text-white"
+                      }`}
                       title="Align Center"
                     >
                       <AlignCenter size={12} />
@@ -372,7 +426,11 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     <button
                       type="button"
                       onClick={() => onUpdateElement(selectedElement, { align: "right" })}
-                      className={`p-1.5 rounded transition-colors ${currentElement.align === "right" ? "bg-[#22242c] text-white" : "text-neutral-400 hover:text-white"}`}
+                      className={`p-1.5 rounded transition-colors ${
+                        currentElement.align === "right"
+                          ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                          : "text-neutral-400 hover:text-white"
+                      }`}
                       title="Align Right"
                     >
                       <AlignRight size={12} />
@@ -382,10 +440,10 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <button
                     type="button"
                     onClick={() => onUpdateElement(selectedElement, { uppercase: !currentElement.uppercase })}
-                    className={`px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider transition-all ${
+                    className={`px-2.5 py-1.5 rounded-lg border text-[10px] font-semibold uppercase tracking-wider transition-all ${
                       currentElement.uppercase
-                        ? "bg-[#0d2238] border-[#1687f8] text-[#1687f8]"
-                        : "bg-[#18191d] hover:bg-[#202128] border-white/10 text-neutral-400 hover:text-white"
+                        ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
+                        : "bg-[#18191e] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
                     }`}
                   >
                     AA Uppercase
@@ -394,11 +452,44 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               </div>
             )}
 
-            {/* Image Section (If Image Layer) */}
+            {/* SECTION 3: RADIUS (Paper Slider + Number) */}
             {isImageType && (
-              <div className="pt-3 space-y-2.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                  Media & Framing
+              <div className="pt-4 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                    Radius
+                  </span>
+                  <div className="flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-0.5 w-16">
+                    <input
+                      type="number"
+                      min={0}
+                      max={120}
+                      value={(currentElement as any).borderRadius || 0}
+                      onChange={(e) => onUpdateElement(selectedElement, { borderRadius: Number(e.target.value) })}
+                      className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                    />
+                    <span className="text-[10px] text-neutral-500 ml-1">px</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={(currentElement as any).borderRadius || 0}
+                    onChange={(e) => onUpdateElement(selectedElement, { borderRadius: Number(e.target.value) })}
+                    className="w-full accent-[#1687f8] h-1.5 bg-[#18191e] rounded-lg cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* SECTION 4: MEDIA & FRAMING (If Image Layer) */}
+            {isImageType && (
+              <div className="pt-4 space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block">
+                  Media Framing
                 </span>
 
                 <div className="space-y-1">
@@ -408,54 +499,131 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     value={(currentElement as any).mediaUrl || ""}
                     onChange={(e) => onUpdateElement(selectedElement, { mediaUrl: e.target.value })}
                     placeholder="https://... image or video URL"
-                    className="w-full bg-[#18191d] border border-white/10 rounded-md p-2 text-[11px] font-mono text-neutral-200 focus:outline-none focus:border-[#1687f8]"
+                    className="w-full bg-[#18191e] border border-white/10 rounded-lg p-2.5 text-[11px] font-mono text-neutral-200 focus:outline-none focus:border-[#1687f8]"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-1.5">
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-neutral-400">Fit Mode</label>
-                    <select
-                      value={(currentElement as any).objectFit || "cover"}
-                      onChange={(e) => onUpdateElement(selectedElement, { objectFit: e.target.value })}
-                      className="w-full bg-[#18191d] border border-white/10 rounded-md px-2 py-1 text-[11px] font-bold text-neutral-200 focus:outline-none"
-                    >
-                      <option value="cover" className="bg-neutral-900">Cover</option>
-                      <option value="contain" className="bg-neutral-900">Contain</option>
-                      <option value="fill" className="bg-neutral-900">Fill</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] text-neutral-400">Corner Radius</label>
-                    <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1">
-                      <input
-                        type="number"
-                        value={(currentElement as any).borderRadius || 0}
-                        onChange={(e) => onUpdateElement(selectedElement, { borderRadius: Number(e.target.value) })}
-                        className="w-full bg-transparent font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                      />
-                      <span className="text-[10px] text-neutral-500">px</span>
-                    </div>
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-neutral-400">Object Fit</label>
+                  <select
+                    value={(currentElement as any).objectFit || "cover"}
+                    onChange={(e) => onUpdateElement(selectedElement, { objectFit: e.target.value })}
+                    className="w-full bg-[#18191e] border border-white/10 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-neutral-200 focus:outline-none"
+                  >
+                    <option value="cover" className="bg-neutral-900">Cover</option>
+                    <option value="contain" className="bg-neutral-900">Contain</option>
+                    <option value="fill" className="bg-neutral-900">Fill</option>
+                  </select>
                 </div>
               </div>
             )}
 
-            {/* Colors & Appearance Section */}
-            <div className="pt-3 space-y-2.5">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                Color & Appearance
-              </span>
+            {/* SECTION 5: FILL (Paper Solid/Gradient/Image Pill & Hex Input) */}
+            <div className="pt-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  Fill
+                </span>
+
+                {/* Paper Segmented Pill */}
+                <div className="flex bg-[#18191e] p-0.5 rounded-lg border border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setFillMode("solid")}
+                    className={`px-2 py-0.5 text-[9px] font-semibold rounded transition-all ${
+                      fillMode === "solid"
+                        ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                        : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    Solid
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFillMode("gradient")}
+                    className={`px-2 py-0.5 text-[9px] font-semibold rounded transition-all ${
+                      fillMode === "gradient"
+                        ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                        : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    Gradient
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFillMode("image")}
+                    className={`px-2 py-0.5 text-[9px] font-semibold rounded transition-all ${
+                      fillMode === "image"
+                        ? "bg-[#252834] text-white shadow-sm border border-white/10"
+                        : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    Image
+                  </button>
+                </div>
+              </div>
+
+              {/* Color Box Row (Swatch + Hex + Opacity + Visibility) */}
+              <div className="flex items-center gap-1.5">
+                {/* Native color picker box */}
+                <label
+                  className="w-8 h-8 rounded-lg border border-white/20 cursor-pointer shrink-0 transition-transform hover:scale-105 relative overflow-hidden"
+                  style={{ backgroundColor: currentElement.color || "#ffffff" }}
+                  title="Pick custom color"
+                >
+                  <input
+                    type="color"
+                    value={currentElement.color?.startsWith("#") ? currentElement.color : "#ffffff"}
+                    onChange={(e) => onUpdateElement(selectedElement, { color: e.target.value })}
+                    className="sr-only"
+                  />
+                </label>
+
+                {/* Hex code input */}
+                <div className="flex-1 flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1.5 focus-within:border-[#1687f8]">
+                  <span className="text-[10px] text-neutral-500 mr-1 font-mono">#</span>
+                  <input
+                    type="text"
+                    value={(currentElement.color || "#000000").replace("#", "")}
+                    onChange={(e) => onUpdateElement(selectedElement, { color: `#${e.target.value}` })}
+                    className="w-full bg-transparent font-mono text-[11px] font-semibold focus:outline-none uppercase text-neutral-200"
+                  />
+                </div>
+
+                {/* Opacity input */}
+                <div className="w-20 flex items-center bg-[#18191e] border border-white/10 rounded-lg px-2 py-1.5 focus-within:border-[#1687f8]">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={Math.round((currentElement.opacity ?? 1) * 100)}
+                    onChange={(e) => onUpdateElement(selectedElement, { opacity: Number(e.target.value) / 100 })}
+                    className="w-full bg-transparent text-right font-mono text-[11px] font-semibold focus:outline-none text-neutral-200"
+                  />
+                  <span className="text-[10px] text-neutral-500 ml-0.5">%</span>
+                </div>
+
+                {/* Visibility Toggle */}
+                <button
+                  type="button"
+                  onClick={() => onUpdateElement(selectedElement, { visible: !currentElement.visible })}
+                  className={`p-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors ${
+                    !currentElement.visible ? "text-neutral-500" : "text-neutral-300 hover:text-white"
+                  }`}
+                  title="Toggle fill visibility"
+                >
+                  {currentElement.visible ? <Eye size={13} /> : <EyeOff size={13} />}
+                </button>
+              </div>
 
               {/* Swatch chips */}
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
                 {COLOR_SWATCHES.map((hex) => (
                   <button
                     key={hex}
                     type="button"
                     onClick={() => onUpdateElement(selectedElement, { color: hex })}
-                    className="w-6 h-6 rounded-md border border-white/20 hover:scale-110 transition-transform relative"
+                    className="w-6 h-6 rounded-lg border border-white/20 hover:scale-110 transition-transform relative"
                     style={{ backgroundColor: hex }}
                   >
                     {currentElement.color?.toLowerCase() === hex.toLowerCase() && (
@@ -464,42 +632,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   </button>
                 ))}
               </div>
-
-              {/* Hex and Opacity */}
-              <div className="grid grid-cols-2 gap-1.5 pt-0.5">
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 mr-1 font-mono">#</span>
-                  <input
-                    type="text"
-                    value={(currentElement.color || "#000000").replace("#", "")}
-                    onChange={(e) => onUpdateElement(selectedElement, { color: `#${e.target.value}` })}
-                    className="w-full bg-transparent font-mono text-[11px] font-bold focus:outline-none uppercase text-neutral-200"
-                  />
-                </div>
-
-                <div className="flex items-center bg-[#18191d] border border-white/10 rounded-md px-2 py-1 focus-within:border-[#1687f8]">
-                  <span className="text-[10px] text-neutral-500 mr-1">Opacity</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={Math.round((currentElement.opacity ?? 1) * 100)}
-                    onChange={(e) => onUpdateElement(selectedElement, { opacity: Number(e.target.value) / 100 })}
-                    className="w-full bg-transparent text-right font-mono text-[11px] font-bold focus:outline-none text-neutral-200"
-                  />
-                  <span className="text-[10px] text-neutral-500 ml-0.5">%</span>
-                </div>
-              </div>
             </div>
           </>
         )}
 
         {/* ========================================================
-            SCENARIO B: FOOTER IS SELECTED
+            CASE B: FOOTER & BRANDING SELECTED
             ======================================================== */}
         {isFooterSelected && (
-          <div className="space-y-3">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
+          <div className="space-y-3.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block">
               Branding & Frame Line
             </span>
 
@@ -510,12 +652,12 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 value={activeSlide.footer.brandName}
                 onChange={(e) => onUpdateFooter({ brandName: e.target.value })}
                 placeholder="e.g. GROWXLABS"
-                className="w-full bg-[#18191d] border border-white/10 rounded-md p-2 text-[11px] font-bold uppercase text-neutral-200 focus:outline-none focus:border-[#1687f8]"
+                className="w-full bg-[#18191e] border border-white/10 rounded-lg p-2.5 text-[11px] font-bold uppercase text-neutral-200 focus:outline-none focus:border-[#1687f8]"
               />
             </div>
 
             <div className="flex flex-col gap-1.5 pt-1">
-              <label className="flex items-center justify-between p-2 rounded-md bg-[#18191d] border border-white/10 cursor-pointer hover:bg-[#202128] transition-colors">
+              <label className="flex items-center justify-between p-2.5 rounded-lg bg-[#18191e] border border-white/10 cursor-pointer hover:bg-[#202128] transition-colors">
                 <span className="text-[11px] text-neutral-300">Top Divider Line</span>
                 <input
                   type="checkbox"
@@ -525,7 +667,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 />
               </label>
 
-              <label className="flex items-center justify-between p-2 rounded-md bg-[#18191d] border border-white/10 cursor-pointer hover:bg-[#202128] transition-colors">
+              <label className="flex items-center justify-between p-2.5 rounded-lg bg-[#18191e] border border-white/10 cursor-pointer hover:bg-[#202128] transition-colors">
                 <span className="text-[11px] text-neutral-300">Page Number Indicator</span>
                 <input
                   type="checkbox"
@@ -539,14 +681,14 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
         )}
 
         {/* ========================================================
-            SCENARIO C: DOCUMENT VIEW (NO ELEMENT SELECTED)
+            CASE C: PAGE SETTINGS (NO ELEMENT SELECTED)
             ======================================================== */}
         {!selectedElement && !isFooterSelected && (
           <div className="space-y-4">
-            {/* Post Format Selector */}
+            {/* Target Format Presets */}
             <div className="space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                Post Target Format
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block">
+                Target Aspect Ratio
               </span>
 
               <div className="grid grid-cols-1 gap-1.5">
@@ -555,18 +697,18 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     key={preset.id}
                     type="button"
                     onClick={() => onFormatChange(preset)}
-                    className={`w-full p-2 rounded-lg border text-left flex items-center justify-between transition-all ${
+                    className={`w-full p-2.5 rounded-xl border text-left flex items-center justify-between transition-all ${
                       activeFormat.id === preset.id
-                        ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm"
-                        : "bg-[#18191d] hover:bg-[#202128] border-white/10 text-neutral-300"
+                        ? "bg-[#0d2238] border-[#1687f8] text-white shadow-[0_0_12px_rgba(22,135,248,0.25)] ring-1 ring-[#1687f8]/50"
+                        : "bg-[#18191e] hover:bg-[#202128] border-white/10 text-neutral-300"
                     }`}
                   >
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold">{preset.name}</span>
+                      <span className="text-[11px] font-semibold">{preset.name}</span>
                       <span className="text-[9px] text-neutral-400">{preset.badge}</span>
                     </div>
                     <span className="text-[10px] font-mono text-neutral-400 font-semibold bg-[#101114] px-1.5 py-0.5 rounded border border-white/5">
-                      {preset.width}x{preset.height}
+                      {preset.width}×{preset.height}
                     </span>
                   </button>
                 ))}
@@ -576,10 +718,10 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
             {/* Slide Canvas Background Color */}
             <div className="pt-2 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   Canvas Background
                 </span>
-                <span className="text-[10px] font-mono text-neutral-400 font-bold uppercase">
+                <span className="text-[10px] font-mono text-neutral-400 font-semibold uppercase">
                   {activeSlide.backgroundColor || "#ffffff"}
                 </span>
               </div>
@@ -590,18 +732,25 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     key={hex}
                     type="button"
                     onClick={() => onUpdateBackground(hex)}
-                    className="w-6 h-6 rounded-md border border-white/20 hover:scale-105 transition-transform relative"
+                    className="w-6 h-6 rounded-lg border border-white/20 hover:scale-105 transition-transform relative"
                     style={{ backgroundColor: hex }}
                   >
                     {activeSlide.backgroundColor?.toLowerCase() === hex.toLowerCase() && (
-                      <Check size={11} className={hex === "#ffffff" || hex === "#f8fafc" || hex === "#fdfbf7" ? "text-black mx-auto" : "text-white mx-auto"} />
+                      <Check
+                        size={11}
+                        className={
+                          hex === "#ffffff" || hex === "#f8fafc" || hex === "#fdfbf7"
+                            ? "text-black mx-auto"
+                            : "text-white mx-auto"
+                        }
+                      />
                     )}
                   </button>
                 ))}
 
-                {/* Custom Native Color Picker */}
+                {/* Native Picker Swatch */}
                 <label
-                  className="w-6 h-6 rounded-md border border-white/20 bg-[#18191d] hover:bg-[#202128] flex items-center justify-center cursor-pointer transition-transform hover:scale-105 relative"
+                  className="w-6 h-6 rounded-lg border border-white/20 bg-[#18191e] hover:bg-[#202128] flex items-center justify-center cursor-pointer transition-transform hover:scale-105 relative"
                   title="Pick custom canvas background"
                 >
                   <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-500 shadow-sm" />
@@ -615,16 +764,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               </div>
             </div>
 
-            {/* High-Resolution Exports */}
+            {/* One-Click Exports */}
             <div className="pt-3 space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block">
                 One-Click Exports
               </span>
 
               <button
                 type="button"
                 onClick={onDownloadPng}
-                className="w-full h-8 bg-[#1687f8] hover:bg-[#1374d6] text-white rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-2 shadow-sm"
+                className="w-full h-8 bg-[#1687f8] hover:bg-[#1374d6] text-white rounded-xl text-[11px] font-semibold transition-all flex items-center justify-center gap-2 shadow-sm"
               >
                 <Download size={13} />
                 <span>Download Current Slide (PNG)</span>
@@ -633,7 +782,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               <button
                 type="button"
                 onClick={onDownloadPdf}
-                className="w-full h-8 bg-[#18191d] hover:bg-[#202128] border border-white/10 text-neutral-200 hover:text-white rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full h-8 bg-[#18191e] hover:bg-[#202128] border border-white/10 text-neutral-200 hover:text-white rounded-xl text-[11px] font-semibold transition-all flex items-center justify-center gap-2"
               >
                 <FileText size={13} />
                 <span>Export Full PDF ({slidesCount} Slides)</span>
@@ -642,7 +791,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               <button
                 type="button"
                 onClick={onDownloadMp4}
-                className="w-full h-8 bg-[#18191d] hover:bg-[#202128] border border-white/10 text-neutral-200 hover:text-white rounded-lg text-[11px] font-semibold transition-all flex items-center justify-center gap-2"
+                className="w-full h-8 bg-[#18191e] hover:bg-[#202128] border border-white/10 text-neutral-200 hover:text-white rounded-xl text-[11px] font-semibold transition-all flex items-center justify-center gap-2"
               >
                 <Play size={13} />
                 <span>Render MP4 Video Reel</span>
@@ -651,7 +800,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               <button
                 type="button"
                 onClick={onDownloadAllSvg}
-                className="w-full h-7 bg-transparent hover:bg-white/5 border border-white/5 text-neutral-400 hover:text-white rounded-lg text-[10px] font-medium transition-all flex items-center justify-center gap-1.5"
+                className="w-full h-7 bg-transparent hover:bg-white/5 border border-white/5 text-neutral-400 hover:text-white rounded-xl text-[10px] font-medium transition-all flex items-center justify-center gap-1.5"
               >
                 <span>Export All Vector SVGs</span>
               </button>
@@ -662,4 +811,3 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
     </aside>
   );
 };
-

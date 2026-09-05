@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Layers,
   Copy,
   Trash2,
   Plus,
@@ -18,6 +17,10 @@ import {
   FileText,
   Smartphone,
   ChevronLeft,
+  ChevronDown,
+  ChevronRight,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import type { Slide, ElementKey } from "../inspector/inspectorTypes";
 import { CANVAS_FORMAT_PRESETS, CanvasPreset } from "../inspector/StudioInspector";
@@ -41,11 +44,12 @@ interface StudioLeftPanelProps {
   onFormatChange: (preset: CanvasPreset) => void;
   presets: { id: string; name: string; desc: string }[];
   onCollapse?: () => void;
+  projectName?: string;
 }
 
 const LAYER_ICONS: Record<string, React.ReactNode> = {
-  category: <Type size={12} className="text-neutral-400" />,
-  headline: <Type size={12} className="text-[#1687f8]" />,
+  category: <span className="font-mono text-[9px] font-bold text-neutral-400">TAG</span>,
+  headline: <span className="font-serif font-bold text-[11px] text-[#38bdf8]">Aa</span>,
   featuredImage: <ImageIcon size={12} className="text-emerald-400" />,
   body: <Type size={12} className="text-neutral-400" />,
   bullets: <LayoutGrid size={12} className="text-neutral-400" />,
@@ -88,20 +92,56 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
   onFormatChange,
   presets,
   onCollapse,
+  projectName = "Editorial Carousel",
 }) => {
   const [tab, setTab] = useState<"slides" | "layers" | "formats" | "presets">("slides");
+  const [expandedSlides, setExpandedSlides] = useState<Record<number, boolean>>({
+    [activeIndex]: true,
+  });
+
+  const toggleSlideExpand = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedSlides((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
 
   return (
-    <aside className="w-[260px] min-w-[260px] h-full flex flex-col bg-[#121316] border-r border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
-      {/* 1. Top Tabs Bar */}
-      <div className="h-[42px] px-2 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#141518]">
-        <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10 flex-1 mr-1.5">
+    <aside className="w-[270px] min-w-[270px] h-full flex flex-col bg-[#121316] border-r border-white/[0.08] text-white text-[12px] font-sans select-none z-20 shrink-0 overflow-hidden">
+      {/* 1. Paper.design Document Header Capsule */}
+      <div className="h-[46px] px-3 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#15161a]">
+        <div className="flex items-center gap-2 bg-[#1b1c22] border border-white/10 rounded-full px-2.5 py-1 max-w-[210px] shadow-sm">
+          <div className="w-3.5 h-3.5 rounded bg-[#1687f8]/20 border border-[#1687f8]/40 flex items-center justify-center shrink-0">
+            <span className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full" />
+          </div>
+          <span className="text-[11px] font-medium text-neutral-200 truncate tracking-tight">
+            {projectName}
+          </span>
+          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0 ml-auto" />
+        </div>
+
+        {onCollapse && (
+          <button
+            type="button"
+            onClick={onCollapse}
+            className="h-7 w-7 rounded-lg hover:bg-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0"
+            title="Collapse panel"
+          >
+            <ChevronLeft size={14} />
+          </button>
+        )}
+      </div>
+
+      {/* 2. Paper.design Compact Segmented Control */}
+      <div className="px-2.5 py-2 border-b border-white/[0.06] bg-[#141518]">
+        <div className="flex bg-[#18191e] p-0.5 rounded-lg border border-white/10">
           <button
             type="button"
             onClick={() => setTab("slides")}
-            className={`flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center ${
+            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
               tab === "slides"
-                ? "bg-[#1687f8] text-white shadow-sm"
+                ? "bg-[#252834] text-white shadow-sm border border-white/10"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
@@ -110,9 +150,9 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
           <button
             type="button"
             onClick={() => setTab("layers")}
-            className={`flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center ${
+            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
               tab === "layers"
-                ? "bg-[#1687f8] text-white shadow-sm"
+                ? "bg-[#252834] text-white shadow-sm border border-white/10"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
@@ -121,9 +161,9 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
           <button
             type="button"
             onClick={() => setTab("formats")}
-            className={`flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center ${
+            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
               tab === "formats"
-                ? "bg-[#1687f8] text-white shadow-sm"
+                ? "bg-[#252834] text-white shadow-sm border border-white/10"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
@@ -132,46 +172,35 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
           <button
             type="button"
             onClick={() => setTab("presets")}
-            className={`flex-1 h-6 text-[9px] font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center ${
+            className={`flex-1 h-6 text-[10px] font-semibold rounded-md transition-all flex items-center justify-center ${
               tab === "presets"
-                ? "bg-[#1687f8] text-white shadow-sm"
+                ? "bg-[#252834] text-white shadow-sm border border-white/10"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
             Styles
           </button>
         </div>
-
-        {onCollapse && (
-          <button
-            type="button"
-            onClick={onCollapse}
-            className="h-6 w-6 rounded hover:bg-white/10 text-neutral-400 hover:text-white flex items-center justify-center transition-colors shrink-0"
-            title="Collapse left panel"
-          >
-            <ChevronLeft size={13} />
-          </button>
-        )}
       </div>
 
-      {/* 2. Main Content Area */}
+      {/* 3. Main Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-2.5 min-h-0 space-y-2">
         {/* ========================================================
-            TAB 1: SLIDES LIST
+            TAB 1: SLIDES LIST (Paper Artboard Cards)
             ======================================================== */}
         {tab === "slides" && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between pb-1 border-b border-white/[0.06]">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                Deck ({slides.length} Slides)
+            <div className="flex items-center justify-between px-1 pb-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+                Pages ({slides.length})
               </span>
               <button
                 type="button"
                 onClick={onAddSlide}
-                className="flex items-center gap-1 text-[10px] font-bold text-[#1687f8] hover:text-[#38bdf8] transition-colors"
+                className="flex items-center gap-1 text-[10px] font-medium text-[#38bdf8] hover:text-[#7dd3fc] transition-colors"
               >
                 <Plus size={11} />
-                <span>Add Slide</span>
+                <span>Add Page</span>
               </button>
             </div>
 
@@ -186,37 +215,37 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                       onSelectElement(null);
                       onSelectFooter(false);
                     }}
-                    className={`p-2 rounded-lg border transition-all cursor-pointer group flex flex-col ${
+                    className={`p-2 rounded-xl border transition-all cursor-pointer group flex flex-col ${
                       isActive
-                        ? "bg-[#0d2238] border-[#1687f8] shadow-sm shadow-[#1687f8]/20"
-                        : "bg-[#18191d] hover:bg-[#202128] border-white/10"
+                        ? "bg-[#181a24] border-[#1687f8] shadow-[0_0_12px_rgba(22,135,248,0.25)] ring-1 ring-[#1687f8]/50"
+                        : "bg-[#16171c] hover:bg-[#1c1e26] border-white/10"
                     }`}
                   >
-                    {/* Mini Visual Preview Card */}
+                    {/* Visual Artboard Preview Thumbnail */}
                     <div
-                      className="w-full h-12 rounded relative overflow-hidden flex flex-col justify-between p-1.5 mb-1.5 border border-white/10 transition-colors"
-                      style={{ backgroundColor: slide.backgroundColor || "#0a0b0d" }}
+                      className="w-full h-14 rounded-lg relative overflow-hidden flex flex-col justify-between p-2 mb-1.5 border border-white/10 transition-colors shadow-inner"
+                      style={{ backgroundColor: slide.backgroundColor || "#0d0e12" }}
                     >
                       <div className="flex justify-between items-center">
-                        <span className="w-4 h-0.5 bg-[#1687f8] rounded-full" />
-                        <span className="text-[8px] font-mono font-bold text-neutral-400">
-                          {sIdx + 1}
+                        <span className="w-5 h-1 bg-[#1687f8] rounded-full" />
+                        <span className="text-[8px] font-mono font-bold px-1 py-0.5 rounded bg-black/40 text-neutral-300 border border-white/10">
+                          0{sIdx + 1}
                         </span>
                       </div>
-                      <div className="space-y-0.5">
-                        <div className="w-12 h-0.5 bg-neutral-400/30 rounded-full" />
-                        <div className="w-8 h-0.5 bg-neutral-400/20 rounded-full" />
+                      <div className="space-y-1">
+                        <div className="w-16 h-1 bg-neutral-400/40 rounded-full" />
+                        <div className="w-10 h-0.5 bg-neutral-400/25 rounded-full" />
                       </div>
                       <div className="flex justify-between items-center text-[7px] text-neutral-400 font-mono">
-                        <span>{slide.footer.brandName || "GROWX"}</span>
-                        <span>0{sIdx + 1}</span>
+                        <span className="truncate max-w-[80px]">{slide.footer.brandName || "GROWX"}</span>
+                        <span>{activeFormat.aspectRatio}</span>
                       </div>
                     </div>
 
-                    {/* Headline and Quick Actions */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold truncate flex-1 text-neutral-200 group-hover:text-white">
-                        {slide.headline.text ? slide.headline.text.slice(0, 28) : `Slide ${sIdx + 1}`}
+                    {/* Headline Title and Row Actions */}
+                    <div className="flex items-center justify-between px-0.5">
+                      <span className="text-[11px] font-medium truncate flex-1 text-neutral-200 group-hover:text-white">
+                        {slide.headline.text ? slide.headline.text.slice(0, 26) : `Slide ${sIdx + 1}`}
                       </span>
 
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-1.5 shrink-0">
@@ -226,7 +255,7 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                             e.stopPropagation();
                             onDuplicateSlide(sIdx);
                           }}
-                          className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                          className="p-1 rounded-md hover:bg-white/10 text-neutral-400 hover:text-white"
                           title="Duplicate slide"
                         >
                           <Copy size={11} />
@@ -238,7 +267,7 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                               e.stopPropagation();
                               onDeleteSlide(sIdx);
                             }}
-                            className="p-1 rounded hover:bg-red-500/20 text-neutral-400 hover:text-red-400"
+                            className="p-1 rounded-md hover:bg-red-500/20 text-neutral-400 hover:text-red-400"
                             title="Delete slide"
                           >
                             <Trash2 size={11} />
@@ -254,104 +283,168 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
             <button
               type="button"
               onClick={onAddSlide}
-              className="w-full h-8 rounded-lg border border-dashed border-white/15 hover:border-[#1687f8] bg-[#18191d] hover:bg-[#202128] text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-1.5 text-[10px] font-bold"
+              className="w-full h-8 rounded-xl border border-dashed border-white/15 hover:border-[#1687f8] bg-[#16171c] hover:bg-[#1c1e26] text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-1.5 text-[10px] font-medium mt-1"
             >
               <Plus size={12} />
-              <span>Add New Slide</span>
+              <span>Add New Page</span>
             </button>
           </div>
         )}
 
         {/* ========================================================
-            TAB 2: LAYERS TREE
+            TAB 2: PAPER NESTED LAYERS TREE
             ======================================================== */}
         {tab === "layers" && (
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block pb-1 border-b border-white/[0.06]">
-              Active Slide Layers
-            </span>
+            <div className="flex items-center justify-between px-1 pb-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+                Layer Hierarchy
+              </span>
+              <span className="text-[9px] font-mono text-neutral-500">
+                Slide {activeIndex + 1}
+              </span>
+            </div>
 
             <div className="flex flex-col gap-1">
-              {LAYER_ORDER.map((key) => {
-                const elem = activeSlide[key];
-                if (!elem) return null;
-                const isSelected = selectedElement === key;
+              {slides.map((slide, sIdx) => {
+                const isCurrentSlide = activeIndex === sIdx;
+                const isExpanded = expandedSlides[sIdx] ?? isCurrentSlide;
 
                 return (
-                  <div
-                    key={key}
-                    onClick={() => {
-                      onSelectElement(key);
-                      onSelectFooter(false);
-                    }}
-                    className={`flex items-center justify-between py-1.5 px-2 rounded-md cursor-pointer transition-all border ${
-                      isSelected
-                        ? "bg-[#0d2238] border-[#1687f8] text-white"
-                        : "bg-[#18191d] hover:bg-[#202128] border-transparent text-neutral-300"
-                    } ${!elem.visible ? "opacity-40" : ""}`}
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      {LAYER_ICONS[key]}
-                      <span className="text-[11px] font-medium truncate capitalize">
-                        {key === "featuredImage" ? "Featured Image" : key}
+                  <div key={slide.id} className="flex flex-col">
+                    {/* Slide Group Header */}
+                    <div
+                      onClick={() => {
+                        onSelectSlide(sIdx);
+                        onSelectElement(null);
+                        onSelectFooter(false);
+                      }}
+                      className={`flex items-center justify-between py-1.5 px-2 rounded-lg cursor-pointer transition-all border ${
+                        isCurrentSlide
+                          ? "bg-[#181a24] border-white/15 text-white font-semibold"
+                          : "hover:bg-[#16171c] border-transparent text-neutral-400"
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 truncate">
+                        <button
+                          type="button"
+                          onClick={(e) => toggleSlideExpand(sIdx, e)}
+                          className="p-0.5 hover:bg-white/10 rounded text-neutral-400 hover:text-white"
+                        >
+                          {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                        </button>
+                        <span className="text-[11px] truncate">
+                          Slide {sIdx + 1}
+                        </span>
+                      </div>
+
+                      <span className="text-[9px] font-mono text-neutral-500 bg-[#121316] px-1.5 py-0.5 rounded border border-white/5">
+                        {slide.headline.text ? slide.headline.text.slice(0, 12) + "..." : "Artboard"}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleLock(key);
-                        }}
-                        className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
-                      >
-                        {elem.locked ? <Lock size={11} className="text-amber-400" /> : <Unlock size={11} />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleVisibility(key);
-                        }}
-                        className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
-                      >
-                        {elem.visible ? <Eye size={11} /> : <EyeOff size={11} />}
-                      </button>
-                    </div>
+                    {/* Children Layers (Shown when expanded) */}
+                    {isExpanded && (
+                      <div className="pl-3 pr-0.5 py-0.5 flex flex-col gap-0.5 border-l border-white/[0.08] ml-3 mt-0.5">
+                        {LAYER_ORDER.map((key) => {
+                          const elem = slide[key];
+                          if (!elem) return null;
+                          const isSelected = isCurrentSlide && selectedElement === key;
+
+                          return (
+                            <div
+                              key={key}
+                              onClick={() => {
+                                if (!isCurrentSlide) onSelectSlide(sIdx);
+                                onSelectElement(key);
+                                onSelectFooter(false);
+                              }}
+                              className={`group/layer flex items-center justify-between py-1 px-2 rounded-md cursor-pointer transition-all border ${
+                                isSelected
+                                  ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm"
+                                  : "hover:bg-[#18191e] border-transparent text-neutral-300"
+                              } ${!elem.visible ? "opacity-35" : ""}`}
+                            >
+                              <div className="flex items-center gap-2 truncate">
+                                <div className="w-4 flex items-center justify-center shrink-0">
+                                  {LAYER_ICONS[key]}
+                                </div>
+                                <span className="text-[11px] truncate capitalize font-medium">
+                                  {key === "featuredImage" ? "Image" : key}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-0.5 opacity-0 group-hover/layer:opacity-100 transition-opacity shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!isCurrentSlide) onSelectSlide(sIdx);
+                                    onToggleLock(key);
+                                  }}
+                                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                                  title={elem.locked ? "Unlock layer" : "Lock layer"}
+                                >
+                                  {elem.locked ? (
+                                    <Lock size={11} className="text-amber-400" />
+                                  ) : (
+                                    <Unlock size={11} />
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!isCurrentSlide) onSelectSlide(sIdx);
+                                    onToggleVisibility(key);
+                                  }}
+                                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white"
+                                  title={elem.visible ? "Hide layer" : "Show layer"}
+                                >
+                                  {elem.visible ? <Eye size={11} /> : <EyeOff size={11} />}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Footer & Brand Layer Row */}
+                        <div
+                          onClick={() => {
+                            if (!isCurrentSlide) onSelectSlide(sIdx);
+                            onSelectElement(null);
+                            onSelectFooter(true);
+                          }}
+                          className={`flex items-center justify-between py-1 px-2 rounded-md cursor-pointer transition-all border ${
+                            isCurrentSlide && isFooterSelected
+                              ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm"
+                              : "hover:bg-[#18191e] border-transparent text-neutral-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <div className="w-4 flex items-center justify-center shrink-0">
+                              <FileText size={12} className="text-[#38bdf8]" />
+                            </div>
+                            <span className="text-[11px] font-medium truncate">Footer & Brand</span>
+                          </div>
+                          <span className="text-[8px] font-mono text-neutral-500">Lock</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
-
-              {/* Footer Layer Row */}
-              <div
-                onClick={() => {
-                  onSelectElement(null);
-                  onSelectFooter(true);
-                }}
-                className={`flex items-center justify-between py-1.5 px-2 rounded-md cursor-pointer transition-all border ${
-                  isFooterSelected
-                    ? "bg-[#0d2238] border-[#1687f8] text-white"
-                    : "bg-[#18191d] hover:bg-[#202128] border-transparent text-neutral-300"
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate">
-                  <FileText size={12} className="text-[#38bdf8]" />
-                  <span className="text-[11px] font-medium truncate">Footer / Brand</span>
-                </div>
-                <span className="text-[9px] font-mono text-neutral-500">Locked</span>
-              </div>
             </div>
           </div>
         )}
 
         {/* ========================================================
-            TAB 3: FORMATS & SIZES (Clean Dark Cards, No Light Parts)
+            TAB 3: FORMATS & SIZES
             ======================================================== */}
         {tab === "formats" && (
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block pb-1 border-b border-white/[0.06]">
-              Mobile & Social Presets
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block px-1 pb-1">
+              Canvas Aspect Ratio
             </span>
 
             <div className="flex flex-col gap-1.5">
@@ -362,18 +455,18 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                     key={preset.id}
                     type="button"
                     onClick={() => onFormatChange(preset)}
-                    className={`w-full p-2.5 rounded-lg border text-left flex items-center gap-2.5 transition-all ${
+                    className={`w-full p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
                       isActive
-                        ? "bg-[#0d2238] border-[#1687f8] text-white shadow-sm shadow-[#1687f8]/20"
-                        : "bg-[#18191d] hover:bg-[#202128] border-white/10 text-neutral-300"
+                        ? "bg-[#0d2238] border-[#1687f8] text-white shadow-[0_0_12px_rgba(22,135,248,0.25)] ring-1 ring-[#1687f8]/50"
+                        : "bg-[#16171c] hover:bg-[#1c1e26] border-white/10 text-neutral-300"
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-md bg-[#101114] border border-white/10 flex items-center justify-center shrink-0 text-[#1687f8]">
+                    <div className="w-8 h-8 rounded-lg bg-[#101114] border border-white/10 flex items-center justify-center shrink-0 text-[#38bdf8]">
                       <Smartphone size={15} />
                     </div>
                     <div className="flex flex-col flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold truncate">{preset.name}</span>
+                        <span className="text-[11px] font-semibold truncate">{preset.name}</span>
                         <span className="text-[10px] font-mono font-bold text-neutral-400 bg-[#101114] px-1.5 py-0.5 rounded border border-white/5 shrink-0 ml-1">
                           {preset.aspectRatio}
                         </span>
@@ -391,12 +484,12 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
         )}
 
         {/* ========================================================
-            TAB 4: PRESETS GALLERY
+            TAB 4: PRESETS & THEMES
             ======================================================== */}
         {tab === "presets" && (
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block pb-1 border-b border-white/[0.06]">
-              Slide Layout Styles
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block px-1 pb-1">
+              Editorial Layout Styles
             </span>
 
             <div className="flex flex-col gap-1.5">
@@ -405,11 +498,14 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                   key={preset.id}
                   type="button"
                   onClick={() => onApplyPreset(preset.id)}
-                  className="w-full p-2 rounded-lg border border-white/10 bg-[#18191d] hover:bg-[#202128] hover:border-[#1687f8]/50 text-left transition-all group"
+                  className="w-full p-2.5 rounded-xl border border-white/10 bg-[#16171c] hover:bg-[#1c1e26] hover:border-[#1687f8]/50 text-left transition-all group"
                 >
-                  <span className="text-[11px] font-bold text-neutral-200 group-hover:text-[#1687f8] block">
-                    {preset.name}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-neutral-200 group-hover:text-[#38bdf8] transition-colors">
+                      {preset.name}
+                    </span>
+                    <Sparkles size={11} className="text-neutral-500 group-hover:text-[#38bdf8]" />
+                  </div>
                   <span className="text-[9px] text-neutral-400 block mt-0.5">
                     {preset.desc}
                   </span>
@@ -418,6 +514,12 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
             </div>
           </div>
         )}
+      </div>
+
+      {/* 4. Bottom Status & Hotkey Helper */}
+      <div className="h-[34px] px-3 border-t border-white/[0.08] flex items-center justify-between shrink-0 bg-[#141518] text-[9px] font-mono text-neutral-500">
+        <span>V: Select • H: Hand</span>
+        <span>Auto-saved</span>
       </div>
     </aside>
   );

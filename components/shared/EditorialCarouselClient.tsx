@@ -50,6 +50,7 @@ import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { StudioInspector, CANVAS_FORMAT_PRESETS, CanvasPreset } from "../editor/inspector/StudioInspector";
 import { StudioLeftPanel } from "../editor/canvas/StudioLeftPanel";
+import { StudioVerticalToolDock } from "../editor/canvas/StudioVerticalToolDock";
 import { calculateSnap, SnapGuide } from "../editor/canvas/SmartSnapEngine";
 import { FigmaTransformGizmo, TransformHandle } from "../editor/canvas/FigmaTransformGizmo";
 import { InlineCanvasTextEditor } from "../editor/canvas/InlineCanvasTextEditor";
@@ -764,11 +765,11 @@ export function EditorialCarouselClient() {
     const rect = viewportRef.current.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
 
-    const marginX = 48;
-    const marginY = 56;
+    const marginX = 40;
+    const topPadding = 36;
+    const bottomDockSpace = 68; // Reserve space for bottom floating dock
     const availableWidth = rect.width - marginX * 2;
-    // Leave room for top floating canvas toolbar (top-3, ~40px) and bottom breathing space
-    const availableHeight = rect.height - marginY * 2 - 32;
+    const availableHeight = rect.height - topPadding - bottomDockSpace;
     const zoomW = availableWidth / format.width;
     const zoomH = availableHeight / format.height;
     const newZoom = Math.min(zoomW, zoomH, 1.0);
@@ -776,7 +777,7 @@ export function EditorialCarouselClient() {
     setZoomScale(clampedZoom);
     setPan({
       x: Math.round((rect.width - format.width * clampedZoom) / 2),
-      y: Math.round(48 + Math.max(0, (availableHeight - format.height * clampedZoom) / 2)),
+      y: Math.round(topPadding + Math.max(0, (availableHeight - format.height * clampedZoom) / 2)),
     });
   };
 
@@ -2857,6 +2858,7 @@ export function EditorialCarouselClient() {
             selectedElement={selectedElement}
             isFooterSelected={isFooterSelected}
             activeFormat={activeFormat}
+            projectName={projectName}
             onSelectSlide={(idx) => {
               setActiveIndex(idx);
               setSelectedElement(null);
@@ -2908,8 +2910,27 @@ export function EditorialCarouselClient() {
           }}
           onMouseDown={handleViewportMouseDown}
         >
-          {/* Floating Canvas Viewport Toolbar */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#141518]/95 px-2.5 py-1 border border-white/10 rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.5)] z-30 backdrop-blur-md">
+          {/* Vertical Floating Tool Palette (Paper.design Signature) */}
+          <StudioVerticalToolDock
+            activeTool={activeTool}
+            onSelectTool={(tool) => setActiveTool(tool)}
+            showSafeArea={showSafeArea}
+            onToggleSafeArea={() => setShowSafeArea(!showSafeArea)}
+            showGrid={showGrid}
+            onToggleGrid={() => setShowGrid(!showGrid)}
+            onSelectTextElement={() => {
+              setSelectedElement("headline");
+              setIsFooterSelected(false);
+            }}
+            onSelectImageElement={() => {
+              setSelectedElement("featuredImage");
+              setIsFooterSelected(false);
+            }}
+            onAddSlide={addSlide}
+            onOpenFormats={() => setShowLeftSidebar(true)}
+          />
+          {/* Floating Canvas Viewport Dock (Bottom Center) */}
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#141518]/95 px-3 py-1.5 border border-white/10 rounded-full shadow-[0_16px_40px_rgba(0,0,0,0.65)] z-30 backdrop-blur-md">
             <div className="flex bg-[#18191d] p-0.5 rounded border border-white/10">
               <button
                 type="button"
