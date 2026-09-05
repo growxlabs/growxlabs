@@ -828,6 +828,27 @@ export function EditorialCarouselClient() {
   const viewportRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  // Floating Paper.design pill file menu state
+  const [isFloatingFileMenuOpen, setIsFloatingFileMenuOpen] = useState(false);
+  const floatingFileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        floatingFileMenuRef.current &&
+        !floatingFileMenuRef.current.contains(e.target as Node)
+      ) {
+        setIsFloatingFileMenuOpen(false);
+      }
+    };
+    if (isFloatingFileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isFloatingFileMenuOpen]);
+
   // Figma interactive canvas states
   const [activeGuides, setActiveGuides] = useState<SnapGuide[]>([]);
   const [editingTextKey, setEditingTextKey] = useState<ElementKey | null>(null);
@@ -951,6 +972,14 @@ export function EditorialCarouselClient() {
     }, 40);
     return () => clearTimeout(timer);
   }, []);
+
+  // Recenter and fit canvas whenever sidebar collapse state toggles
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleFitToScreen();
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [showLeftSidebar, showRightSidebar]);
 
   // Format switcher handler
   const handleFormatChange = (preset: CanvasPreset) => {
@@ -3445,13 +3474,7 @@ export function EditorialCarouselClient() {
           MAIN THREE-COLUMN WORKSPACE (Full Viewport Height)
           ========================================== */}
       <div
-        className="flex-1 min-h-0 w-full grid select-none relative"
-        style={{
-          gridTemplateColumns: isMobileView
-            ? "1fr"
-            : `${showLeftSidebar ? "240px" : "0px"} minmax(0, 1fr) ${showRightSidebar ? "280px" : "0px"}`,
-          transition: "all 200ms ease",
-        }}
+        className="flex-1 min-h-0 w-full flex flex-row select-none relative overflow-hidden"
       >
         {/* ==========================================
             STUDIO LEFT PANEL (Paper.design 240px & Mobile Drawer)
@@ -3587,7 +3610,7 @@ export function EditorialCarouselClient() {
             ------------------------------------------ */}
         <main
           ref={viewportRef}
-          className="flex-1 h-full w-full overflow-hidden relative select-none touch-none"
+          className="flex-1 min-w-0 h-full overflow-hidden relative select-none touch-none"
           style={{
             backgroundColor: "#999999",
           }}
@@ -3607,21 +3630,23 @@ export function EditorialCarouselClient() {
                 <ArrowLeft size={13} />
               </Link>
 
-              <div className="relative group/menu">
+              <div ref={floatingFileMenuRef} className="relative group/menu">
                 <button
                   type="button"
-                  className="p-1 rounded hover:bg-white/10 text-neutral-400 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+                  onClick={() => setIsFloatingFileMenuOpen((prev) => !prev)}
+                  className={`p-1 rounded hover:bg-white/10 ${isFloatingFileMenuOpen ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white"} transition-colors flex items-center justify-center cursor-pointer`}
                   title="File Menu • Database Projects & Actions"
                 >
                   <FolderOpen size={13} />
                 </button>
-                <div className="hidden group-hover/menu:block before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 absolute top-full left-0 mt-1.5 w-52 bg-[#242426] border border-[#383838] rounded-xl shadow-2xl py-1.5 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5 animate-in fade-in duration-100">
+                <div className={`${isFloatingFileMenuOpen ? "block" : "hidden group-hover/menu:block"} before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 absolute top-full left-0 mt-1.5 w-52 bg-[#242426] border border-[#383838] rounded-xl shadow-2xl py-1.5 z-50 text-[11px] font-medium text-neutral-200 divide-y divide-white/5 animate-in fade-in duration-100`}>
                   <div className="py-1">
                     <button
                       type="button"
                       onClick={() => {
                         fetchSavedProjects();
                         setShowProjectsDrawer(true);
+                        setIsFloatingFileMenuOpen(false);
                       }}
                       className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
                     >
@@ -3630,7 +3655,10 @@ export function EditorialCarouselClient() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleCreateNewProject(documentKind)}
+                      onClick={() => {
+                        handleCreateNewProject(documentKind);
+                        setIsFloatingFileMenuOpen(false);
+                      }}
                       className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
                     >
                       <Plus size={12} />
@@ -3638,7 +3666,10 @@ export function EditorialCarouselClient() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => saveToDatabase(true)}
+                      onClick={() => {
+                        saveToDatabase(true);
+                        setIsFloatingFileMenuOpen(false);
+                      }}
                       className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-white/10 hover:text-white transition-colors text-left cursor-pointer"
                     >
                       <CloudCheck size={12} />
