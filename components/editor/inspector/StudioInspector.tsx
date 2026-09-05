@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import type { Slide, ElementKey } from "./inspectorTypes";
 import { toast } from "sonner";
+import { StudioDropdown } from "./StudioDropdown";
 
 export interface CanvasPreset {
   id: "carousel" | "mobile" | "square" | "landscape";
@@ -137,6 +138,8 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   const [outlineActive, setOutlineActive] = useState(false);
   const [activeConstraintH, setActiveConstraintH] = useState<"left" | "center" | "right">("left");
   const [activeConstraintV, setActiveConstraintV] = useState<"top" | "center" | "bottom">("top");
+  const [blendMode, setBlendMode] = useState<string>("normal");
+  const [outlinePosition, setOutlinePosition] = useState<string>("inside");
   const [activeFlexPos, setActiveFlexPos] = useState<[number, number]>([1, 1]); // [row, col] center default
 
   useEffect(() => {
@@ -668,33 +671,31 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               {/* Row 3: Constraints Selectors & Interactive 2D Cross Box */}
               <div className="flex items-center gap-2 pt-0.5">
                 <div className="flex-1 space-y-1.5">
-                  {/* Constraint Horizontal */}
-                  <div className="h-[24px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center justify-between text-[#ececec]">
-                    <span className="text-[10px] text-[#8e8e93]">|-|</span>
-                    <select
-                      value={activeConstraintH}
-                      onChange={(e) => setActiveConstraintH(e.target.value as any)}
-                      className="bg-transparent text-[11px] font-medium text-[#ececec] focus:outline-none cursor-pointer"
-                    >
-                      <option value="left" className="bg-[#242426]">Left</option>
-                      <option value="center" className="bg-[#242426]">Center</option>
-                      <option value="right" className="bg-[#242426]">Right</option>
-                    </select>
-                  </div>
+                  {/* Constraint Horizontal (Paper Custom Dropdown) */}
+                  <StudioDropdown
+                    value={activeConstraintH}
+                    onValueChange={(val) => setActiveConstraintH(val as any)}
+                    prefix="|-|"
+                    triggerHeight="h-[24px]"
+                    options={[
+                      { value: "left", label: "Left" },
+                      { value: "center", label: "Center" },
+                      { value: "right", label: "Right" },
+                    ]}
+                  />
 
-                  {/* Constraint Vertical */}
-                  <div className="h-[24px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center justify-between text-[#ececec]">
-                    <span className="text-[10px] text-[#8e8e93]">T</span>
-                    <select
-                      value={activeConstraintV}
-                      onChange={(e) => setActiveConstraintV(e.target.value as any)}
-                      className="bg-transparent text-[11px] font-medium text-[#ececec] focus:outline-none cursor-pointer"
-                    >
-                      <option value="top" className="bg-[#242426]">Top</option>
-                      <option value="center" className="bg-[#242426]">Center</option>
-                      <option value="bottom" className="bg-[#242426]">Bottom</option>
-                    </select>
-                  </div>
+                  {/* Constraint Vertical (Paper Custom Dropdown) */}
+                  <StudioDropdown
+                    value={activeConstraintV}
+                    onValueChange={(val) => setActiveConstraintV(val as any)}
+                    prefix="T"
+                    triggerHeight="h-[24px]"
+                    options={[
+                      { value: "top", label: "Top" },
+                      { value: "center", label: "Center" },
+                      { value: "bottom", label: "Bottom" },
+                    ]}
+                  />
                 </div>
 
                 {/* Paper Interactive Constraints 2D Cross Widget */}
@@ -945,20 +946,20 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <span className="text-[10px] text-[#8e8e93] select-none">%</span>
                 </div>
 
-                {/* Blend Mode */}
-                <div className="h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center justify-between text-[#ececec]">
-                  <span className="text-[10px] text-[#8e8e93] select-none">💧</span>
-                  <select
-                    defaultValue="normal"
-                    className="bg-transparent text-[11px] font-medium text-[#ececec] focus:outline-none cursor-pointer w-full text-right"
-                  >
-                    <option value="normal" className="bg-[#242426]">Normal</option>
-                    <option value="multiply" className="bg-[#242426]">Multiply</option>
-                    <option value="screen" className="bg-[#242426]">Screen</option>
-                    <option value="overlay" className="bg-[#242426]">Overlay</option>
-                    <option value="soft-light" className="bg-[#242426]">Soft Light</option>
-                  </select>
-                </div>
+                {/* Blend Mode (Paper Custom Dropdown) */}
+                <StudioDropdown
+                  value={blendMode}
+                  onValueChange={(val) => setBlendMode(val)}
+                  prefix="💧"
+                  triggerHeight="h-[26px]"
+                  options={[
+                    { value: "normal", label: "Normal" },
+                    { value: "multiply", label: "Multiply" },
+                    { value: "screen", label: "Screen" },
+                    { value: "overlay", label: "Overlay" },
+                    { value: "soft-light", label: "Soft Light" },
+                  ]}
+                />
               </div>
             </div>
 
@@ -1107,12 +1108,17 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     />
                     <span className="text-[10px] text-[#8e8e93] ml-0.5">px</span>
                   </div>
-                  <div className="h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center text-[#ececec]">
-                    <select defaultValue="inside" className="bg-transparent text-[11px] focus:outline-none cursor-pointer">
-                      <option value="inside" className="bg-[#242426]">Inside</option>
-                      <option value="center" className="bg-[#242426]">Center</option>
-                      <option value="outside" className="bg-[#242426]">Outside</option>
-                    </select>
+                  <div className="w-24">
+                    <StudioDropdown
+                      value={outlinePosition}
+                      onValueChange={(val) => setOutlinePosition(val)}
+                      triggerHeight="h-[26px]"
+                      options={[
+                        { value: "inside", label: "Inside" },
+                        { value: "center", label: "Center" },
+                        { value: "outside", label: "Outside" },
+                      ]}
+                    />
                   </div>
                 </div>
               )}
@@ -1136,20 +1142,22 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   </div>
                 )}
 
-                {/* Font Selector */}
+                {/* Font Selector (Paper Custom Dropdown with live typography preview) */}
                 <div className="space-y-1">
                   <label className="text-[10px] text-[#8e8e93]">Font Family</label>
-                  <select
-                    value={currentElement.fontFamily}
-                    onChange={(e) => onUpdateElement(selectedElement, { fontFamily: e.target.value })}
-                    className="w-full h-[28px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 text-[11px] font-medium text-[#ececec] focus:outline-none focus:border-[#1687f8] cursor-pointer"
-                  >
-                    {STUDIO_FONTS.map((f) => (
-                      <option key={f.name} value={f.value} className="bg-[#242426] text-white">
-                        {f.name}
-                      </option>
-                    ))}
-                  </select>
+                  <StudioDropdown
+                    value={
+                      STUDIO_FONTS.find((f) => f.value === currentElement.fontFamily)?.value ||
+                      STUDIO_FONTS[0].value
+                    }
+                    onValueChange={(val) => onUpdateElement(selectedElement, { fontFamily: val })}
+                    triggerHeight="h-[28px]"
+                    options={STUDIO_FONTS.map((f) => ({
+                      value: f.value,
+                      label: f.name,
+                      fontFamily: f.value,
+                    }))}
+                  />
                 </div>
 
                 {/* Font Size & Weight */}
@@ -1169,16 +1177,18 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
                   <div className="space-y-1">
                     <label className="text-[10px] text-[#8e8e93]">Weight</label>
-                    <select
-                      value={currentElement.fontWeight}
-                      onChange={(e) => onUpdateElement(selectedElement, { fontWeight: e.target.value })}
-                      className="w-full h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 text-[11px] text-[#ececec] focus:outline-none cursor-pointer"
-                    >
-                      <option value="400" className="bg-[#242426]">Regular (400)</option>
-                      <option value="600" className="bg-[#242426]">Medium (600)</option>
-                      <option value="700" className="bg-[#242426]">Bold (700)</option>
-                      <option value="900" className="bg-[#242426]">Black (900)</option>
-                    </select>
+                    <StudioDropdown
+                      value={String(currentElement.fontWeight || "400")}
+                      onValueChange={(val) => onUpdateElement(selectedElement, { fontWeight: val })}
+                      triggerHeight="h-[26px]"
+                      options={[
+                        { value: "400", label: "Regular (400)" },
+                        { value: "500", label: "Medium (500)" },
+                        { value: "600", label: "SemiBold (600)" },
+                        { value: "700", label: "Bold (700)" },
+                        { value: "900", label: "Black (900)" },
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -1256,15 +1266,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
                 <div className="space-y-1">
                   <label className="text-[10px] text-[#8e8e93]">Object Fit</label>
-                  <select
+                  <StudioDropdown
                     value={(currentElement as any).objectFit || "cover"}
-                    onChange={(e) => onUpdateElement(selectedElement, { objectFit: e.target.value })}
-                    className="w-full h-[28px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 text-[11px] text-[#ececec] focus:outline-none cursor-pointer"
-                  >
-                    <option value="cover" className="bg-[#242426]">Cover</option>
-                    <option value="contain" className="bg-[#242426]">Contain</option>
-                    <option value="fill" className="bg-[#242426]">Fill</option>
-                  </select>
+                    onValueChange={(val) => onUpdateElement(selectedElement, { objectFit: val as any })}
+                    triggerHeight="h-[28px]"
+                    options={[
+                      { value: "cover", label: "Cover" },
+                      { value: "contain", label: "Contain" },
+                      { value: "fill", label: "Fill" },
+                    ]}
+                  />
                 </div>
               </div>
             )}
