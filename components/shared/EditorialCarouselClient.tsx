@@ -757,57 +757,44 @@ export function EditorialCarouselClient() {
     setDarkMode(resolvedTheme === "dark");
   }, [resolvedTheme]);
 
-  // Center canvas on first load
-  useEffect(() => {
-    if (!viewportRef.current) return;
-    const rect = viewportRef.current.getBoundingClientRect();
-    const defaultZoom = 0.48;
-    const artboardWidth = activeFormat.width * defaultZoom;
-    const artboardHeight = activeFormat.height * defaultZoom;
-
-    setPan({
-      x: Math.max(20, (rect.width - artboardWidth) / 2),
-      y: Math.max(20, (rect.height - artboardHeight) / 2),
-    });
-    setZoomScale(defaultZoom);
-  }, []);
-
   // Fit canvas to screen function helper
-  const handleFitToScreen = () => {
+  const handleFitToScreen = (customFormat?: CanvasPreset) => {
     if (!viewportRef.current) return;
+    const format = customFormat || activeFormat;
     const rect = viewportRef.current.getBoundingClientRect();
-    const margin = 40;
-    const availableWidth = rect.width - margin * 2;
-    const availableHeight = rect.height - margin * 2;
-    const zoomW = availableWidth / activeFormat.width;
-    const zoomH = availableHeight / activeFormat.height;
-    const newZoom = Math.min(zoomW, zoomH, 1.2);
-    const clampedZoom = Math.max(0.15, newZoom);
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const marginX = 48;
+    const marginY = 56;
+    const availableWidth = rect.width - marginX * 2;
+    // Leave room for top floating canvas toolbar (top-3, ~40px) and bottom breathing space
+    const availableHeight = rect.height - marginY * 2 - 32;
+    const zoomW = availableWidth / format.width;
+    const zoomH = availableHeight / format.height;
+    const newZoom = Math.min(zoomW, zoomH, 1.0);
+    const clampedZoom = Math.max(0.15, Number(newZoom.toFixed(2)));
     setZoomScale(clampedZoom);
     setPan({
-      x: (rect.width - activeFormat.width * clampedZoom) / 2,
-      y: (rect.height - activeFormat.height * clampedZoom) / 2,
+      x: Math.round((rect.width - format.width * clampedZoom) / 2),
+      y: Math.round(48 + Math.max(0, (availableHeight - format.height * clampedZoom) / 2)),
     });
   };
+
+  // Center and fit canvas on first load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleFitToScreen();
+    }, 40);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Format switcher handler
   const handleFormatChange = (preset: CanvasPreset) => {
     setActiveFormat(preset);
     toast.success(`Switched format: ${preset.name} (${preset.width} × ${preset.height})`);
-    if (viewportRef.current) {
-      const rect = viewportRef.current.getBoundingClientRect();
-      const margin = 40;
-      const availableWidth = rect.width - margin * 2;
-      const availableHeight = rect.height - margin * 2;
-      const zoomW = availableWidth / preset.width;
-      const zoomH = availableHeight / preset.height;
-      const newZoom = Math.max(0.15, Math.min(zoomW, zoomH, 1.0));
-      setZoomScale(newZoom);
-      setPan({
-        x: Math.max(20, (rect.width - preset.width * newZoom) / 2),
-        y: Math.max(20, (rect.height - preset.height * newZoom) / 2),
-      });
-    }
+    setTimeout(() => {
+      handleFitToScreen(preset);
+    }, 20);
   };
 
   // Viewport wheel zooming & scroll-panning
@@ -2697,9 +2684,9 @@ export function EditorialCarouselClient() {
             <button
               type="button"
               onClick={() => switchDocumentKind("editorial")}
-              className={`rounded px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider transition-all ${
+              className={`rounded px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all ${
                 documentKind === "editorial"
-                  ? "bg-white text-black shadow-sm"
+                  ? "bg-[#252834] text-white shadow-sm border border-white/10"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -2708,9 +2695,9 @@ export function EditorialCarouselClient() {
             <button
               type="button"
               onClick={() => switchDocumentKind("product")}
-              className={`rounded px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider transition-all ${
+              className={`rounded px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider transition-all ${
                 documentKind === "product"
-                  ? "bg-[#bdefff] text-black shadow-sm"
+                  ? "bg-[#252834] text-[#38bdf8] shadow-sm border border-white/10"
                   : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -2740,10 +2727,11 @@ export function EditorialCarouselClient() {
           </div>
         </div>
 
-        {/* Center Section: Tools, History, Zoom */}
-        <div className="flex items-center gap-1">
+        {/* Center Section: Primary Tools & History */}
+        <div className="flex items-center gap-1.5">
           <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10">
             <button
+              type="button"
               onClick={() => setActiveTool("select")}
               className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
                 activeTool === "select"
@@ -2755,6 +2743,7 @@ export function EditorialCarouselClient() {
               <MousePointer size={12} />
             </button>
             <button
+              type="button"
               onClick={() => setActiveTool("hand")}
               className={`h-6 w-6 rounded flex items-center justify-center transition-all ${
                 activeTool === "hand"
@@ -2769,99 +2758,27 @@ export function EditorialCarouselClient() {
 
           <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
-          {/* History */}
-          <button
-            onClick={handleUndo}
-            disabled={historyIndex <= 0}
-            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white transition-all"
-            title="Undo (Ctrl+Z)"
-          >
-            <Undo size={12} />
-          </button>
-          <button
-            onClick={handleRedo}
-            disabled={historyIndex >= history.length - 1}
-            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white transition-all"
-            title="Redo (Ctrl+Shift+Z)"
-          >
-            <Redo size={12} />
-          </button>
-
-          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
-
-          {/* Zoom & Viewport */}
-          <button
-            onClick={() => setZoomScale((prev) => Math.max(0.15, prev - 0.05))}
-            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-all"
-            title="Zoom Out"
-          >
-            <Minimize2 size={12} />
-          </button>
-
-          <div className="relative group">
-            <button className="h-7 px-2 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[11px] font-mono font-bold text-neutral-300 flex items-center gap-1 transition-all">
-              {Math.round(zoomScale * 100)}% <ChevronDown size={9} />
+          {/* History (Undo / Redo) */}
+          <div className="flex bg-[#18191d] p-0.5 rounded-md border border-white/10">
+            <button
+              type="button"
+              onClick={handleUndo}
+              disabled={historyIndex <= 0}
+              className="h-6 w-6 rounded flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo size={11} />
             </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-[#18191d] border border-white/10 rounded-lg shadow-xl py-1 hidden group-hover:block hover:block z-50 w-24 text-left">
-              {[0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setZoomScale(p)}
-                  className="w-full px-2.5 py-1 hover:bg-[#22242c] text-[11px] font-mono text-neutral-300 text-left block"
-                >
-                  {Math.round(p * 100)}%
-                </button>
-              ))}
-              <button
-                onClick={handleFitToScreen}
-                className="w-full px-2.5 py-1 hover:bg-[#22242c] text-[10px] font-semibold text-neutral-300 text-left border-t border-white/10 block"
-              >
-                Fit view
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleRedo}
+              disabled={historyIndex >= history.length - 1}
+              className="h-6 w-6 rounded flex items-center justify-center disabled:opacity-25 text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
+              title="Redo (Ctrl+Shift+Z)"
+            >
+              <Redo size={11} />
+            </button>
           </div>
-
-          <button
-            onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
-            className="h-7 w-7 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-all"
-            title="Zoom In"
-          >
-            <Maximize2 size={12} />
-          </button>
-
-          <button
-            onClick={handleFitToScreen}
-            className="h-7 px-2 rounded-md bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-[10px] font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-all"
-            title="Fit artboard inside view"
-          >
-            Fit View
-          </button>
-
-          <div className="h-3.5 w-px bg-white/10 mx-0.5" />
-
-          {/* Grid overlays */}
-          <button
-            onClick={() => setShowSafeArea(!showSafeArea)}
-            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
-              showSafeArea
-                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
-                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
-            }`}
-            title="Toggle Safe Margins Grid"
-          >
-            <Smartphone size={12} />
-          </button>
-          <button
-            onClick={() => setShowGrid(!showGrid)}
-            className={`h-7 w-7 rounded-md border flex items-center justify-center transition-all ${
-              showGrid
-                ? "bg-[#0d2238] border-[#1687f8] text-[#38bdf8]"
-                : "bg-[#18191d] hover:bg-[#22242c] border-white/10 text-neutral-400 hover:text-white"
-            }`}
-            title="Toggle Pixel Grid Dots"
-          >
-            <Grid size={12} />
-          </button>
         </div>
 
         {/* Right Section: Exports & Inspector Toggle */}
@@ -2991,24 +2908,26 @@ export function EditorialCarouselClient() {
           }}
           onMouseDown={handleViewportMouseDown}
         >
-          {/* Floating Canvas Toolbar */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-[#141518]/95 px-2 py-1 border border-white/10 rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.4)] z-30 backdrop-blur-md">
-            <div className="flex bg-[#1a1b20] p-0.5 rounded border border-white/10">
+          {/* Floating Canvas Viewport Toolbar */}
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-[#141518]/95 px-2.5 py-1 border border-white/10 rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.5)] z-30 backdrop-blur-md">
+            <div className="flex bg-[#18191d] p-0.5 rounded border border-white/10">
               <button
+                type="button"
                 onClick={() => setEditorMode("fixed")}
                 className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
                   editorMode === "fixed"
-                    ? "bg-[#252730] text-white shadow-sm"
+                    ? "bg-[#22252e] text-white shadow-sm border border-white/10"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
                 Fixed Grid
               </button>
               <button
+                type="button"
                 onClick={() => setEditorMode("free")}
                 className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all ${
                   editorMode === "free"
-                    ? "bg-[#252730] text-white shadow-sm"
+                    ? "bg-[#22252e] text-[#38bdf8] shadow-sm border border-white/10"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
@@ -3016,56 +2935,67 @@ export function EditorialCarouselClient() {
               </button>
             </div>
 
-            <div className="h-3.5 w-px bg-white/10 mx-1" />
+            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
             <button
+              type="button"
               onClick={() => setShowSafeArea(!showSafeArea)}
               className={`p-1 rounded transition-all ${
                 showSafeArea
-                  ? "bg-[#0d2238] text-[#38bdf8]"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/30"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
-              title="Safe Area Grid"
+              title="Toggle Safe Margins Grid (S)"
             >
-              <Smartphone size={11} />
+              <Smartphone size={12} />
             </button>
             <button
+              type="button"
               onClick={() => setShowGrid(!showGrid)}
               className={`p-1 rounded transition-all ${
                 showGrid
-                  ? "bg-[#0d2238] text-[#38bdf8]"
-                  : "text-neutral-400 hover:text-white"
+                  ? "bg-[#0d2238] text-[#38bdf8] border border-[#1687f8]/30"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
-              title="Toggle Grid overlay"
+              title="Toggle Pixel Grid Dots (G)"
             >
-              <Grid size={11} />
+              <Grid size={12} />
             </button>
 
-            <div className="h-3.5 w-px bg-white/10 mx-1" />
+            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
             <button
-              onClick={() =>
-                setZoomScale((prev) => Math.max(0.15, prev - 0.05))
-              }
+              type="button"
+              onClick={() => setZoomScale((prev) => Math.max(0.15, Number((prev - 0.05).toFixed(2))))}
               className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
+              title="Zoom Out (-)"
             >
               <Minimize2 size={11} />
             </button>
-            <span className="text-[10px] font-mono font-bold text-neutral-300 w-9 text-center select-none">
-              {Math.round(zoomScale * 100)}%
-            </span>
             <button
-              onClick={() => setZoomScale((prev) => Math.min(3.0, prev + 0.05))}
+              type="button"
+              onClick={() => handleFitToScreen()}
+              className="text-[10px] font-mono font-bold text-neutral-200 px-1.5 py-0.5 rounded hover:bg-white/5 transition-all text-center select-none"
+              title="Click to auto-fit view"
+            >
+              {Math.round(zoomScale * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => setZoomScale((prev) => Math.min(3.0, Number((prev + 0.05).toFixed(2))))}
               className="p-1 hover:bg-white/10 rounded text-neutral-400 hover:text-white transition-all"
+              title="Zoom In (+)"
             >
               <Maximize2 size={11} />
             </button>
 
-            <div className="h-3.5 w-px bg-white/10 mx-1" />
+            <div className="h-3.5 w-px bg-white/10 mx-0.5" />
 
             <button
-              onClick={handleFitToScreen}
-              className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#1a1b20] hover:bg-[#252730] border border-white/10 text-neutral-300 hover:text-white rounded transition-all"
+              type="button"
+              onClick={() => handleFitToScreen()}
+              className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#18191d] hover:bg-[#22242c] border border-white/10 text-neutral-300 hover:text-white rounded transition-all"
+              title="Fit artboard inside view"
             >
               Fit
             </button>

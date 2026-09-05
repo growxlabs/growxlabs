@@ -575,12 +575,17 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
             {/* Slide Canvas Background Color */}
             <div className="pt-2 space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 block">
-                Canvas Background
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                  Canvas Background
+                </span>
+                <span className="text-[10px] font-mono text-neutral-400 font-bold uppercase">
+                  {activeSlide.backgroundColor || "#ffffff"}
+                </span>
+              </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
-                {["#ffffff", "#000000", "#0a0a0c", "#18181b", "#0f172a", "#f8fafc"].map((hex) => (
+                {["#ffffff", "#000000", "#0a0a0c", "#18181b", "#0f172a", "#f8fafc", "#fdfbf7"].map((hex) => (
                   <button
                     key={hex}
                     type="button"
@@ -589,10 +594,24 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     style={{ backgroundColor: hex }}
                   >
                     {activeSlide.backgroundColor?.toLowerCase() === hex.toLowerCase() && (
-                      <Check size={11} className={hex === "#ffffff" || hex === "#f8fafc" ? "text-black mx-auto" : "text-white mx-auto"} />
+                      <Check size={11} className={hex === "#ffffff" || hex === "#f8fafc" || hex === "#fdfbf7" ? "text-black mx-auto" : "text-white mx-auto"} />
                     )}
                   </button>
                 ))}
+
+                {/* Custom Native Color Picker */}
+                <label
+                  className="w-6 h-6 rounded-md border border-white/20 bg-[#18191d] hover:bg-[#202128] flex items-center justify-center cursor-pointer transition-transform hover:scale-105 relative"
+                  title="Pick custom canvas background"
+                >
+                  <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-500 shadow-sm" />
+                  <input
+                    type="color"
+                    value={activeSlide.backgroundColor?.startsWith("#") ? activeSlide.backgroundColor : "#ffffff"}
+                    onChange={(e) => onUpdateBackground(e.target.value)}
+                    className="sr-only"
+                  />
+                </label>
               </div>
             </div>
 
