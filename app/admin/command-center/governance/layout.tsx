@@ -1,29 +1,50 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
+import { GovernanceNav } from "./GovernanceNav";
 
 export default async function GovernanceLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+
   return (
-    <main className="min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:px-6 sm:py-8">
+    <main className="min-h-screen bg-[#09090b] text-[#f4f4f5] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        {/* Top Header & Navigation */}
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-6 pb-6 border-b border-white/[0.08]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Command Center</p>
-            <h1 className="mt-2 text-3xl font-semibold">Governance</h1>
-            <p className="mt-2 text-sm text-slate-500">Policy decisions, human approvals, and tamper-evident audit history.</p>
+            <div className="flex items-center gap-2 text-xs">
+              <Link
+                href="/admin/command-center"
+                className="inline-flex items-center gap-1.5 font-medium text-zinc-400 hover:text-white transition-colors"
+              >
+                <ArrowLeft size={13} />
+                <span>Command Center</span>
+              </Link>
+              <span className="text-zinc-600">/</span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-blue-400 uppercase tracking-wider">
+                <ShieldCheck size={13} />
+                Governance & Security
+              </span>
+            </div>
+            <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-white font-serif">
+              Command Governance
+            </h1>
+            <p className="mt-1.5 text-xs sm:text-sm text-zinc-400 max-w-2xl">
+              Policy decisions, human-in-the-loop approvals, and tamper-evident audit history.
+            </p>
           </div>
-          <nav className="flex gap-2 text-sm">
-            <Link className="rounded-lg px-3 py-2 text-slate-500 hover:bg-white" href="/admin/command-center">← Command Center</Link>
-            <Link className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:border-blue-300" href="/admin/command-center/governance/approvals">Approvals</Link>
-            <Link className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:border-blue-300" href="/admin/command-center/governance/policies">Policies</Link>
-            <Link className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:border-blue-300" href="/admin/command-center/governance/audit">Audit</Link>
-          </nav>
+
+          <GovernanceNav />
         </div>
-        {children}
+
+        {/* Content Area */}
+        <div className="min-h-[500px]">
+          {children}
+        </div>
       </div>
     </main>
   );

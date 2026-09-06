@@ -44,21 +44,98 @@ export function AuditViewer() {
 
   return (
     <section>
-      <div className="mb-5"><h2 className="text-xl font-semibold">Audit history</h2><p className="mt-1 text-sm text-slate-500">Read-only, tenant-scoped, and hash-chain protected.</p></div>
-      <div className="mb-4 grid gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-[1fr_auto_auto_auto]">
-        <label className="relative"><Search className="absolute left-3 top-2.5 text-slate-400" size={15} /><span className="sr-only">Search audit events</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Actor, event, run, request, or tool" className="h-9 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-xs outline-none focus:border-blue-500" /></label>
-        <select aria-label="Outcome" value={outcome} onChange={(event) => setOutcome(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs"><option value="">All outcomes</option><option value="success">Success</option><option value="failure">Failure</option><option value="denied">Denied</option></select>
-        <input aria-label="From date" type="date" value={from} onChange={(event) => setFrom(event.target.value)} className="h-9 rounded-lg border border-slate-200 px-3 text-xs" />
-        <input aria-label="To date" type="date" value={to} onChange={(event) => setTo(event.target.value)} className="h-9 rounded-lg border border-slate-200 px-3 text-xs" />
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-white tracking-tight">Audit History</h2>
+        <p className="mt-1 text-xs text-zinc-400">
+          Read-only, tenant-scoped, and cryptographically hash-chain protected.
+        </p>
       </div>
-      {message && <div className="grid min-h-52 place-items-center rounded-xl border border-dashed border-slate-200 p-10 text-center text-sm text-slate-400"><div><ShieldCheck className="mx-auto mb-3" />{message}</div></div>}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        {filtered.map((item) => <div key={item.id} className="grid gap-2 border-b border-slate-100 p-4 text-xs last:border-0 md:grid-cols-[1.2fr_1fr_0.7fr_1fr]">
-          <div><p className="font-semibold text-slate-800">{item.eventType}</p><p className="mt-1 text-slate-400">{item.category} · {item.action}</p></div>
-          <div><p className="text-slate-600">{item.actor || "system"}</p><p className="mt-1 truncate text-slate-400">{item.requestId || item.runId}</p></div>
-          <div><span className="rounded-full bg-slate-100 px-2 py-1 capitalize text-slate-600">{item.outcome}</span></div>
-          <div><time className="text-slate-500">{new Date(item.occurredAt).toLocaleString()}</time><code className="mt-1 block truncate text-[10px] text-blue-600" title={item.eventHash}>{item.eventHash}</code></div>
-        </div>)}
+
+      <div className="mb-5 grid gap-3 rounded-2xl border border-[#27272a] bg-[#141416] p-3.5 shadow-xl sm:grid-cols-[1fr_auto_auto_auto]">
+        <label className="relative">
+          <Search className="absolute left-3 top-2.5 text-zinc-400" size={15} />
+          <span className="sr-only">Search audit events</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Actor, event, run, request, or tool"
+            className="h-9 w-full rounded-xl border border-white/10 bg-[#1a1a1e] pl-9 pr-3 text-xs text-white placeholder:text-zinc-500 outline-none focus:border-blue-500 transition-colors"
+          />
+        </label>
+
+        <select
+          aria-label="Outcome"
+          value={outcome}
+          onChange={(event) => setOutcome(event.target.value)}
+          className="h-9 rounded-xl border border-white/10 bg-[#1a1a1e] px-3 text-xs text-white outline-none focus:border-blue-500 cursor-pointer"
+        >
+          <option value="">All outcomes</option>
+          <option value="success">Success</option>
+          <option value="failure">Failure</option>
+          <option value="denied">Denied</option>
+        </select>
+
+        <input
+          aria-label="From date"
+          type="date"
+          value={from}
+          onChange={(event) => setFrom(event.target.value)}
+          className="h-9 rounded-xl border border-white/10 bg-[#1a1a1e] px-3 text-xs text-white outline-none focus:border-blue-500 cursor-pointer"
+        />
+
+        <input
+          aria-label="To date"
+          type="date"
+          value={to}
+          onChange={(event) => setTo(event.target.value)}
+          className="h-9 rounded-xl border border-white/10 bg-[#1a1a1e] px-3 text-xs text-white outline-none focus:border-blue-500 cursor-pointer"
+        />
+      </div>
+
+      {message && (
+        <div className="grid min-h-52 place-items-center rounded-2xl border border-dashed border-white/10 bg-[#141416]/50 p-10 text-center text-xs text-zinc-400 mb-4">
+          <div className="flex flex-col items-center">
+            <div className="grid size-10 place-items-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-2">
+              <ShieldCheck size={20} />
+            </div>
+            <p className="mt-1">{message}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-hidden rounded-2xl border border-[#27272a] bg-[#141416] shadow-xl">
+        {filtered.map((item) => (
+          <div
+            key={item.id}
+            className="grid gap-2 border-b border-[#27272a] p-4 text-xs last:border-0 hover:bg-white/[0.02] md:grid-cols-[1.2fr_1fr_0.7fr_1fr]"
+          >
+            <div>
+              <p className="font-semibold text-zinc-100">{item.eventType}</p>
+              <p className="mt-1 text-zinc-400 text-[11px]">{item.category} · {item.action}</p>
+            </div>
+            <div>
+              <p className="text-zinc-300">{item.actor || "system"}</p>
+              <p className="mt-1 truncate text-zinc-500 text-[11px] font-mono">{item.requestId || item.runId}</p>
+            </div>
+            <div>
+              <span className={`inline-block rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                item.outcome === "success"
+                  ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+                  : item.outcome === "failure"
+                  ? "bg-red-500/10 border border-red-500/20 text-red-400"
+                  : "bg-amber-500/10 border border-amber-500/20 text-amber-400"
+              }`}>
+                {item.outcome}
+              </span>
+            </div>
+            <div>
+              <time className="text-zinc-400 text-[11px] block">{new Date(item.occurredAt).toLocaleString()}</time>
+              <code className="mt-1 block truncate text-[10px] text-blue-400/80 font-mono" title={item.eventHash}>
+                {item.eventHash}
+              </code>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
