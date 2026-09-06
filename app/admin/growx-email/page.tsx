@@ -20,8 +20,8 @@ interface RecipientOption {
 
 export default function GrowXEmailPage() {
   // Input fields
-  const [senderName, setSenderName] = useState("GrowX Labs");
-  const [senderEmail, setSenderEmail] = useState("hello@growxlabs.tech");
+  const [senderName, setSenderName] = useState("Sai Varshith | GrowX Labs");
+  const [senderEmail, setSenderEmail] = useState("sai@growxlabs.tech");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [subject, setSubject] = useState("");
@@ -322,6 +322,7 @@ GrowX Labs Team`
                     onChange={(e) => setSenderEmail(e.target.value)}
                     className="w-full h-11 bg-neutral-900 border border-white/5 rounded-xl px-4 text-white text-sm focus:outline-none focus:border-white/20 transition-colors"
                   >
+                    <option value="sai@growxlabs.tech">sai@growxlabs.tech (Founder)</option>
                     <option value="hello@growxlabs.tech">hello@growxlabs.tech</option>
                     <option value="contact@growxlabs.tech">contact@growxlabs.tech</option>
                     <option value="outreach@growxlabs.tech">outreach@growxlabs.tech</option>
