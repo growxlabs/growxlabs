@@ -1697,3 +1697,10 @@ html {
   box-shadow: none !important;
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+
