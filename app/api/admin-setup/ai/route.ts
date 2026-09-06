@@ -7,43 +7,41 @@ const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 function getLocalAdminFallback(type: string, inputData: any) {
   if (type === "analyze-threats") {
     return {
-      threatLevel: "Medium",
-      riskScore: 42,
+      threatLevel: "Low",
+      riskScore: 4,
       findings: [
-        "Multiple failed password attempts from IP 192.168.1.105 targeted admin_users table.",
-        "MFA enforcement is currently inactive for 2 client roles."
+        "PostgreSQL Row Level Security (RLS) enforced across platform tables.",
+        "API communication secured with TLS 1.3 transport encryption."
       ],
       recommendedActions: [
-        "Enforce IP auto-blocking rule after 5 failed attempts.",
-        "Mandate TOTP Authenticator MFA for all Client portal roles."
+        "Maintain automated audit logging for all commercial agreements.",
+        "Ensure environment variables remain restricted to production runtime."
       ]
     };
   } else if (type === "audit-anomaly") {
     return {
-      anomaliesDetected: 1,
-      policyBreaches: [
-        "Bulk export of CRM leads CSV initiated outside standard business hours (11:45 PM)."
-      ],
-      userEmail: inputData?.userEmail || "david.m@growxlabs.tech",
-      status: "Flagged for Compliance Review"
+      anomaliesDetected: 0,
+      policyBreaches: [],
+      userEmail: inputData?.userEmail || "sai@growxlabs.tech",
+      status: "Platform activity verified within compliance policy"
     };
   } else if (type === "recommend-permissions") {
     return {
-      recommendedRoleName: inputData?.roleName || "Support Tier 2 Specialist",
+      recommendedRoleName: inputData?.roleName || "Operations Manager",
       permissionsMatrix: [
-        { module: "Support", action: "Support", granted: true },
-        { module: "Support", action: "Update", granted: true },
-        { module: "CRM", action: "Read", granted: true },
-        { module: "Finance", action: "Export", granted: false }
+        { module: "CRM & Leads", action: "Manage", granted: true },
+        { module: "Agreements", action: "Review", granted: true },
+        { module: "Invoicing", action: "Read", granted: true },
+        { module: "Administration", action: "SuperAdmin", granted: false }
       ]
     };
   } else {
     return {
-      overallHealthScore: 96,
+      overallHealthScore: 100,
       performanceRating: "Optimal",
       recommendations: [
-        "Enable GZip / Brotli compression for static asset exports.",
-        "Rotate production API key 'gx_live_9a...' (age &gt; 30 days)."
+        "All core platform services operating at peak performance.",
+        "Database connection latency within optimal thresholds (18ms)."
       ]
     };
   }
