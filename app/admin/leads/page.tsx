@@ -172,6 +172,7 @@ export default function LeadsAdminPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newLead, setNewLead] = useState({
     business_name: "",
+    name: "",
     email: "",
     phone: "",
     city: "",
@@ -382,7 +383,7 @@ export default function LeadsAdminPage() {
       
       showToast("Lead added successfully");
       setShowAddLead(false);
-      setNewLead({ business_name: "", email: "", phone: "", city: "", status: "new" });
+      setNewLead({ business_name: "", name: "", email: "", phone: "", city: "", status: "new" });
       fetchLeads();
     } catch (e: unknown) {
       showToast(e instanceof Error ? e.message : "Unable to create lead", "error");
@@ -1121,8 +1122,8 @@ export default function LeadsAdminPage() {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">Contact Person</label>
                 <input 
-                  value={newLead.business_name} // default mock name field mapping
-                  onChange={(e) => setNewLead({...newLead, business_name: e.target.value})}
+                  value={newLead.name}
+                  onChange={(e) => setNewLead({...newLead, name: e.target.value})}
                   className="w-full bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-lg h-10 px-3.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] focus:bg-[var(--card)] transition-all"
                   placeholder="Founder or manager name..."
                 />
