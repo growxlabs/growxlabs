@@ -1,9 +1,13 @@
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { supabaseAdmin } from "../supabase/admin.ts";
+
+const envOrg =
+  process.env.DEFAULT_ORGANISATION_ID ||
+  process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID;
 
 export const CAREERS_ORGANISATION =
-  process.env.DEFAULT_ORGANISATION_ID ||
-  process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID ||
-  "org_default";
+  envOrg && !envOrg.includes("REPLACE_WITH_")
+    ? envOrg
+    : "8e7d6c54-68f1-4d19-9bf5-c20fe6c37721";
 
 export type CareersJob = Record<string, any>;
 
@@ -38,5 +42,6 @@ export async function nextJobReference() {
 export async function nextApplicationReference() {
   const year = new Date().getUTCFullYear();
   const { count } = await supabaseAdmin.schema("recruitment").from("careers_applications").select("id", { count: "exact", head: true }).eq("organisation_id", CAREERS_ORGANISATION);
-  return `GXL-APP-${year}-${String((count || 0) + 1).padStart(5, "0")}`;
+  const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `GXL-APP-${year}-${String((count || 0) + 1).padStart(5, "0")}-${rand}`;
 }

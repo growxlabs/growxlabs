@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { validateApplicationPayload } from "@/lib/careers/validation";
+import { syncApplicationToHrms } from "@/lib/careers/sync-hrms";
 
 export async function POST(request: Request) {
   try {
@@ -67,6 +68,30 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    // Non-blocking sync to HRMS Recruitment Pipeline
+    void syncApplicationToHrms({
+      name,
+      email,
+      phone,
+      location,
+      role,
+      experience,
+      techStack,
+      github,
+      linkedin,
+      portfolio,
+      resume,
+      jobTitle,
+      company,
+      expectedSalary,
+      noticePeriod,
+      employmentType,
+      motivation,
+      status: "new",
+    }).catch((syncErr) => {
+      console.warn("Background HRMS sync error (non-fatal):", syncErr);
+    });
 
     return NextResponse.json(
       { message: "Application submitted successfully." },

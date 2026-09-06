@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getToken } from "next-auth/jwt";
 import { Resend } from "resend";
 import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
+import { syncStatusToHrms } from "@/lib/careers/sync-hrms";
 
 function getEmailContent(name: string, role: string, status: string) {
   let subject = "";
@@ -163,6 +164,9 @@ export async function POST(request: Request) {
     if (error) throw error;
 
     if (status && data && data.email) {
+      // Non-blocking sync to HRMS Recruitment Pipeline stage
+      void syncStatusToHrms(data.email, status);
+
       const apiKey = process.env.RESEND_API_KEY;
       if (apiKey && apiKey !== "your_resend_key_here") {
         try {
