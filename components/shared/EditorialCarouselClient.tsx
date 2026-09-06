@@ -37,6 +37,8 @@ import {
   CheckSquare,
   Quote as QuoteIcon,
   Play,
+  Pause,
+  Video,
   Share2,
   ChevronDown,
   RotateCcw,
@@ -122,6 +124,8 @@ interface BulletElementStyle extends ElementStyle {
   bulletStyle: "check" | "dot" | "number";
   spacing: number;
   items: string[];
+  bulletColor?: string;
+  bulletSize?: number;
 }
 
 interface QuoteElementStyle extends ElementStyle {
@@ -130,6 +134,9 @@ interface QuoteElementStyle extends ElementStyle {
   borderRadius: number;
   borderColor: string;
   backgroundColor: string;
+  borderWidth?: number;
+  authorFontSize?: number;
+  authorColor?: string;
 }
 
 interface CtaElementStyle extends ElementStyle {
@@ -150,6 +157,7 @@ interface Slide {
     autoScale: boolean;
   };
   featuredImage: ImageElementStyle;
+  secondaryImage: ImageElementStyle;
   body: ElementStyle & { text: string; maxLines: number; autoScale: boolean };
   bullets: BulletElementStyle;
   quote: QuoteElementStyle;
@@ -172,6 +180,7 @@ type ElementKey =
   | "category"
   | "headline"
   | "featuredImage"
+  | "secondaryImage"
   | "body"
   | "bullets"
   | "quote"
@@ -732,6 +741,13 @@ export function EditorialCarouselClient() {
   const [editorMode, setEditorMode] = useState<"fixed" | "free">("fixed");
   const [viewportViewMode, setViewportViewMode] = useState<"desk" | "single">("desk");
 
+  // Media Assets & Reels Video States
+  const [uploadedAssets, setUploadedAssets] = useState<
+    Array<{ id: string; name: string; url: string; type: "video" | "image" }>
+  >([]);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoPlayerRef = useRef<HTMLVideoElement | null>(null);
+
   // Viewport & Infinite Canvas Control
   const [zoomScale, setZoomScale] = useState(0.48);
   const [showGrid, setShowGrid] = useState(false);
@@ -1198,8 +1214,23 @@ export function EditorialCarouselClient() {
       const doc = docJson.data || docJson;
       const payload = doc.background || doc || {};
       if (payload.slides && Array.isArray(payload.slides) && payload.slides.length > 0) {
-        setSlides(payload.slides);
-        saveHistory(payload.slides);
+        const sanitizedSlides = payload.slides.map((s: any, idx: number) => ({
+          ...DEFAULT_SLIDE(idx),
+          ...s,
+          category: { ...DEFAULT_SLIDE(idx).category, ...(s.category || {}) },
+          headline: { ...DEFAULT_SLIDE(idx).headline, ...(s.headline || {}) },
+          featuredImage: { ...DEFAULT_SLIDE(idx).featuredImage, ...(s.featuredImage || {}) },
+          body: { ...DEFAULT_SLIDE(idx).body, ...(s.body || {}) },
+          bullets: { ...DEFAULT_SLIDE(idx).bullets, ...(s.bullets || {}) },
+          quote: { ...DEFAULT_SLIDE(idx).quote, ...(s.quote || {}) },
+          cta: { ...DEFAULT_SLIDE(idx).cta, ...(s.cta || {}) },
+          logo: { ...DEFAULT_SLIDE(idx).logo, ...(s.logo || {}) },
+          divider: { ...DEFAULT_SLIDE(idx).divider, ...(s.divider || {}) },
+          author: { ...DEFAULT_SLIDE(idx).author, ...(s.author || {}) },
+          footer: { ...DEFAULT_SLIDE(idx).footer, ...(s.footer || {}) },
+        }));
+        setSlides(sanitizedSlides);
+        saveHistory(sanitizedSlides);
       }
       if (payload.activeFormat) {
         setActiveFormat(payload.activeFormat);
@@ -1371,8 +1402,23 @@ export function EditorialCarouselClient() {
               const fullDoc = docJson.data || docJson;
               const payload = fullDoc.background || fullDoc || {};
               if (payload.slides && Array.isArray(payload.slides) && payload.slides.length > 0) {
-                setSlides(payload.slides);
-                saveHistory(payload.slides);
+                const sanitizedSlides = payload.slides.map((s: any, idx: number) => ({
+                  ...DEFAULT_SLIDE(idx),
+                  ...s,
+                  category: { ...DEFAULT_SLIDE(idx).category, ...(s.category || {}) },
+                  headline: { ...DEFAULT_SLIDE(idx).headline, ...(s.headline || {}) },
+                  featuredImage: { ...DEFAULT_SLIDE(idx).featuredImage, ...(s.featuredImage || {}) },
+                  body: { ...DEFAULT_SLIDE(idx).body, ...(s.body || {}) },
+                  bullets: { ...DEFAULT_SLIDE(idx).bullets, ...(s.bullets || {}) },
+                  quote: { ...DEFAULT_SLIDE(idx).quote, ...(s.quote || {}) },
+                  cta: { ...DEFAULT_SLIDE(idx).cta, ...(s.cta || {}) },
+                  logo: { ...DEFAULT_SLIDE(idx).logo, ...(s.logo || {}) },
+                  divider: { ...DEFAULT_SLIDE(idx).divider, ...(s.divider || {}) },
+                  author: { ...DEFAULT_SLIDE(idx).author, ...(s.author || {}) },
+                  footer: { ...DEFAULT_SLIDE(idx).footer, ...(s.footer || {}) },
+                }));
+                setSlides(sanitizedSlides);
+                saveHistory(sanitizedSlides);
               }
               if (payload.activeFormat) {
                 setActiveFormat(payload.activeFormat);
@@ -1541,6 +1587,209 @@ export function EditorialCarouselClient() {
     }
   };
 
+  // ----------------------------------------------------
+  // REELS VIDEO & OVERLAY ASSET WORKFLOW
+  // ----------------------------------------------------
+  const handleUploadAssets = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    if (fileArray.length === 0) return;
+
+    for (const file of fileArray) {
+      const isVid = file.type.startsWith("video/") || isVideo(file.name);
+      const localUrl = URL.createObjectURL(file);
+      const assetId = `asset_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const newAsset = {
+        id: assetId,
+        name: file.name,
+        url: localUrl,
+        type: (isVid ? "video" : "image") as "video" | "image",
+      };
+
+      setUploadedAssets((prev) => [newAsset, ...prev]);
+
+      if (isVid) {
+        toast.success(`Video "${file.name}" added to Assets!`, {
+          description: "Click 'Set 9:16 Background' or drag directly onto the canvas.",
+        });
+      } else {
+        toast.success(`Asset "${file.name}" added to Assets!`, {
+          description: "Click 'Add as Overlay Card' or drag directly onto the canvas.",
+        });
+      }
+
+      // Upload to Supabase bucket in background for persistent sharing/export
+      const formData = new FormData();
+      formData.append("file", file);
+      fetch("/api/upload", { method: "POST", body: formData })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.url) {
+            setUploadedAssets((prev) =>
+              prev.map((a) => (a.id === assetId ? { ...a, url: data.url } : a)),
+            );
+          }
+        })
+        .catch((err) => console.warn("Asset upload to cloud background failed:", err));
+    }
+  };
+
+  const handleSetVideoBackground = (url: string) => {
+    // 1. Switch format to 9:16 Mobile if not already
+    const mobilePreset = CANVAS_FORMAT_PRESETS.find((p) => p.id === "mobile") || CANVAS_FORMAT_PRESETS[1];
+    if (activeFormat.id !== "mobile") {
+      setActiveFormat(mobilePreset);
+    }
+    // 2. Set featuredImage as full-bleed 1080x1920 video
+    updateSlideElement("featuredImage", {
+      mediaUrl: url,
+      visible: true,
+      x: 0,
+      y: 0,
+      width: 1080,
+      height: 1920,
+      objectFit: "cover",
+      zIndex: 0,
+      borderRadius: 0,
+      borderWidth: 0,
+      locked: false,
+    });
+    setSelectedElement("featuredImage");
+    setIsVideoPlaying(true);
+    toast.success("Set as 9:16 Video Background!");
+  };
+
+  const handleAddOverlayImage = (url: string) => {
+    const targetW = Math.round(activeFormat.width * 0.65);
+    const targetH = Math.round(targetW * 0.75);
+    const posX = Math.round((activeFormat.width - targetW) / 2);
+    const posY = Math.round((activeFormat.height - targetH) / 2.3);
+
+    updateSlideElement("secondaryImage", {
+      mediaUrl: url,
+      visible: true,
+      x: posX,
+      y: posY,
+      width: targetW,
+      height: targetH,
+      objectFit: "cover",
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: "rgba(255, 255, 255, 0.25)",
+      shadowEnabled: true,
+      zIndex: 10,
+      locked: false,
+    });
+    setSelectedElement("secondaryImage");
+    toast.success("Added as Floating Overlay Card!", {
+      description: "Use corner handles to resize or drag to position.",
+    });
+  };
+
+  const handleApplyImageSizePreset = (preset: "badge" | "card" | "hero" | "split") => {
+    const targetKey: ElementKey =
+      selectedElement === "featuredImage" && !isVideo(activeSlide.featuredImage?.mediaUrl)
+        ? "featuredImage"
+        : "secondaryImage";
+
+    if (preset === "badge") {
+      const w = Math.round(activeFormat.width * 0.32);
+      const h = Math.round(w * 0.9);
+      updateSlideElement(targetKey, {
+        width: w,
+        height: h,
+        x: activeFormat.width - w - 48,
+        y: 120,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.3)",
+        shadowEnabled: true,
+      });
+      toast.success("Applied 30% Corner Badge Size");
+    } else if (preset === "card") {
+      const w = Math.round(activeFormat.width * 0.62);
+      const h = Math.round(w * 0.75);
+      updateSlideElement(targetKey, {
+        width: w,
+        height: h,
+        x: Math.round((activeFormat.width - w) / 2),
+        y: Math.round(activeFormat.height * 0.35),
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.25)",
+        shadowEnabled: true,
+      });
+      toast.success("Applied 60% Floating Card Size");
+    } else if (preset === "hero") {
+      const w = Math.round(activeFormat.width * 0.88);
+      const h = Math.round(w * 0.75);
+      updateSlideElement(targetKey, {
+        width: w,
+        height: h,
+        x: Math.round((activeFormat.width - w) / 2),
+        y: Math.round((activeFormat.height - h) / 2),
+        borderRadius: 28,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.25)",
+        shadowEnabled: true,
+      });
+      toast.success("Applied 85% Spotlight Hero Size");
+    } else if (preset === "split") {
+      const w = activeFormat.width - 96;
+      const h = Math.round(activeFormat.height * 0.44);
+      updateSlideElement(targetKey, {
+        width: w,
+        height: h,
+        x: 48,
+        y: 120,
+        borderRadius: 28,
+        borderWidth: 0,
+        shadowEnabled: true,
+      });
+      toast.success("Applied Top Split Frame Size");
+    }
+  };
+
+  const handleDeleteAsset = (id: string) => {
+    setUploadedAssets((prev) => prev.filter((a) => a.id !== id));
+    toast.success("Asset removed from library");
+  };
+
+  const handleArtboardDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 1. Check internal drag from Assets panel
+    const internalRaw = e.dataTransfer.getData("application/growx-asset");
+    if (internalRaw) {
+      try {
+        const asset = JSON.parse(internalRaw);
+        if (asset.type === "video") {
+          handleSetVideoBackground(asset.url);
+        } else {
+          handleAddOverlayImage(asset.url);
+        }
+        return;
+      } catch (err) {
+        console.error("Failed to parse dragged asset:", err);
+      }
+    }
+
+    // 2. Check external drag from desktop/file explorer
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      const isVid = file.type.startsWith("video/") || isVideo(file.name);
+      const localUrl = URL.createObjectURL(file);
+
+      handleUploadAssets(e.dataTransfer.files);
+
+      if (isVid) {
+        handleSetVideoBackground(localUrl);
+      } else {
+        handleAddOverlayImage(localUrl);
+      }
+    }
+  };
+
   // Initialize history
   useEffect(() => {
     if (history.length === 0) {
@@ -1615,16 +1864,16 @@ export function EditorialCarouselClient() {
       );
     }
   }, [
-    activeSlide.category.height,
-    activeSlide.category.visible,
-    activeSlide.headline.height,
-    activeSlide.headline.visible,
-    activeSlide.featuredImage.height,
-    activeSlide.featuredImage.visible,
-    activeSlide.body.height,
-    activeSlide.body.visible,
-    activeSlide.bullets.height,
-    activeSlide.bullets.visible,
+    activeSlide?.category?.height,
+    activeSlide?.category?.visible,
+    activeSlide?.headline?.height,
+    activeSlide?.headline?.visible,
+    activeSlide?.featuredImage?.height,
+    activeSlide?.featuredImage?.visible,
+    activeSlide?.body?.height,
+    activeSlide?.body?.visible,
+    activeSlide?.bullets?.height,
+    activeSlide?.bullets?.visible,
     editorMode,
     activeIndex,
   ]);
@@ -3495,6 +3744,12 @@ export function EditorialCarouselClient() {
                 activeFormat={activeFormat}
                 projectName={projectName}
                 cloudSaveStatus={cloudSaveStatus}
+                uploadedAssets={uploadedAssets}
+                onUploadAssets={handleUploadAssets}
+                onSetVideoBackground={handleSetVideoBackground}
+                onAddOverlayImage={handleAddOverlayImage}
+                onApplyImageSizePreset={handleApplyImageSizePreset}
+                onDeleteAsset={handleDeleteAsset}
                 onOpenProjectsDrawer={() => {
                   fetchSavedProjects();
                   setShowProjectsDrawer(true);
@@ -3562,6 +3817,12 @@ export function EditorialCarouselClient() {
             activeFormat={activeFormat}
             projectName={projectName}
             cloudSaveStatus={cloudSaveStatus}
+            uploadedAssets={uploadedAssets}
+            onUploadAssets={handleUploadAssets}
+            onSetVideoBackground={handleSetVideoBackground}
+            onAddOverlayImage={handleAddOverlayImage}
+            onApplyImageSizePreset={handleApplyImageSizePreset}
+            onDeleteAsset={handleDeleteAsset}
             onOpenProjectsDrawer={() => {
               fetchSavedProjects();
               setShowProjectsDrawer(true);
@@ -3886,6 +4147,35 @@ export function EditorialCarouselClient() {
               </span>
             </button>
 
+            {/* Live Video Reel Play/Pause Preview */}
+            {(activeFormat.id === "mobile" || isVideo(activeSlide.featuredImage?.mediaUrl)) && (
+              <>
+                <div className="h-4 w-px bg-[#383838] mx-0.5" />
+                <button
+                  type="button"
+                  onClick={() => setIsVideoPlaying(!isVideoPlaying)}
+                  className={`px-2.5 h-7 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer font-semibold text-[11px] ${
+                    isVideoPlaying
+                      ? "bg-[#1687f8] text-white shadow-[0_0_12px_#1687f8]"
+                      : "bg-[#3a3a3c] text-neutral-200 hover:text-white hover:bg-white/10"
+                  }`}
+                  title="Play / Pause Video Reel Preview (Space)"
+                >
+                  {isVideoPlaying ? (
+                    <>
+                      <Pause size={12} />
+                      <span>Pause Reel</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={12} />
+                      <span>Play Reel</span>
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+
             <div className="h-4 w-px bg-[#383838] mx-0.5" />
 
             {/* 4. Slide Pagination Controls (‹ 1 / N ›) */}
@@ -4038,6 +4328,11 @@ export function EditorialCarouselClient() {
                   {/* Active Artboard Frame */}
                   <div
                     className="editor-canvas bg-white relative select-none overflow-hidden ring-2 ring-[#1687f8] shadow-[0_8px_32px_rgba(0,0,0,0.22)]"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = "copy";
+                    }}
+                    onDrop={handleArtboardDrop}
                     style={{
                       width: `${activeFormat.width}px`,
                       height: `${activeFormat.height}px`,
@@ -4153,11 +4448,16 @@ export function EditorialCarouselClient() {
                       activeSlide.featuredImage.borderWidth > 0
                         ? `${activeSlide.featuredImage.borderWidth}px solid ${activeSlide.featuredImage.borderColor}`
                         : "none",
+                    boxShadow:
+                      activeSlide.featuredImage.shadowEnabled && activeSlide.featuredImage.width < activeFormat.width
+                        ? "0 24px 48px -12px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.15)"
+                        : "none",
                   }}
                 >
                   {activeSlide.featuredImage.mediaUrl ? (
                     isVideo(activeSlide.featuredImage.mediaUrl) ? (
                       <video
+                        ref={videoPlayerRef}
                         src={activeSlide.featuredImage.mediaUrl}
                         autoPlay
                         loop
@@ -4211,6 +4511,10 @@ export function EditorialCarouselClient() {
                     border:
                       (activeSlide.secondaryImage?.borderWidth || 0) > 0
                         ? `${activeSlide.secondaryImage?.borderWidth}px solid ${activeSlide.secondaryImage?.borderColor}`
+                        : "none",
+                    boxShadow:
+                      activeSlide.secondaryImage?.shadowEnabled !== false
+                        ? "0 24px 48px -12px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.15)"
                         : "none",
                   }}
                 >

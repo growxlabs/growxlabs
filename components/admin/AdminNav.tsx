@@ -183,9 +183,10 @@ const NAV_GROUPS: NavGroup[] = [
     icon: IconMarketing,
     items: [
       { name: "Marketing Hub", href: "/admin/marketing", icon: IconMarketing },
-      { name: "Carousel Creator", href: "/admin/instagram-carousel", icon: IconFile },
       { name: "Editorial Carousel", href: "/admin/editorial-carousel", icon: IconFile },
-      { name: "Reels Creator", href: "/admin/reels-creator", icon: IconFile },
+      // Hidden from navbar (code preserved):
+      // { name: "Carousel Creator", href: "/admin/instagram-carousel", icon: IconFile },
+      // { name: "Reels Creator", href: "/admin/reels-creator", icon: IconFile },
     ],
   },
   {

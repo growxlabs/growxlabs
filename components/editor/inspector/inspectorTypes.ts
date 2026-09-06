@@ -16,11 +16,16 @@ export interface ImageElementStyle extends ElementStyle {
 
 export interface BulletElementStyle extends ElementStyle {
   bulletStyle: "check" | "dot" | "number"; spacing: number; items: string[];
+  bulletColor?: string;
+  bulletSize?: number;
 }
 
 export interface QuoteElementStyle extends ElementStyle {
   text: string; author: string; borderRadius: number;
   borderColor: string; backgroundColor: string;
+  borderWidth?: number;
+  authorFontSize?: number;
+  authorColor?: string;
 }
 
 export interface CtaElementStyle extends ElementStyle {

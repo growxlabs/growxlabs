@@ -730,6 +730,98 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 </div>
               </div>
 
+              {/* Preset Card Sizes for Reels & Media Overlays */}
+              {isImageType && (
+                <div className="pt-2 border-t border-[#373737]/60 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-medium text-[#8e8e93] uppercase tracking-wider">
+                      Reel Overlay Presets
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1 text-[10px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const w = Math.round(activeFormat.width * 0.32);
+                        const h = Math.round(w * 0.9);
+                        onUpdateElement(selectedElement, {
+                          width: w,
+                          height: h,
+                          x: activeFormat.width - w - 48,
+                          y: 120,
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: "rgba(255, 255, 255, 0.3)",
+                        });
+                      }}
+                      className="px-1 py-1 rounded bg-[#373737] hover:bg-white/10 hover:text-white text-[#ececec] text-center transition-all cursor-pointer truncate"
+                      title="Corner Badge (30% width)"
+                    >
+                      30% Badge
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const w = Math.round(activeFormat.width * 0.62);
+                        const h = Math.round(w * 0.75);
+                        onUpdateElement(selectedElement, {
+                          width: w,
+                          height: h,
+                          x: Math.round((activeFormat.width - w) / 2),
+                          y: Math.round(activeFormat.height * 0.35),
+                          borderRadius: 24,
+                          borderWidth: 1,
+                          borderColor: "rgba(255, 255, 255, 0.25)",
+                        });
+                      }}
+                      className="px-1 py-1 rounded bg-[#373737] hover:bg-white/10 hover:text-white text-[#1687f8] text-center transition-all cursor-pointer font-semibold truncate"
+                      title="Floating Card (60% width)"
+                    >
+                      60% Card
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const w = Math.round(activeFormat.width * 0.88);
+                        const h = Math.round(w * 0.75);
+                        onUpdateElement(selectedElement, {
+                          width: w,
+                          height: h,
+                          x: Math.round((activeFormat.width - w) / 2),
+                          y: Math.round((activeFormat.height - h) / 2),
+                          borderRadius: 28,
+                          borderWidth: 1,
+                          borderColor: "rgba(255, 255, 255, 0.25)",
+                        });
+                      }}
+                      className="px-1 py-1 rounded bg-[#373737] hover:bg-white/10 hover:text-white text-[#ececec] text-center transition-all cursor-pointer truncate"
+                      title="Spotlight Hero (85% width)"
+                    >
+                      85% Hero
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const w = activeFormat.width - 96;
+                        const h = Math.round(activeFormat.height * 0.44);
+                        onUpdateElement(selectedElement, {
+                          width: w,
+                          height: h,
+                          x: 48,
+                          y: 120,
+                          borderRadius: 28,
+                          borderWidth: 0,
+                        });
+                      }}
+                      className="px-1 py-1 rounded bg-[#373737] hover:bg-white/10 hover:text-white text-[#ececec] text-center transition-all cursor-pointer truncate"
+                      title="Split Frame (Top 50%)"
+                    >
+                      Split Top
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Row 3: Constraints Selectors & Interactive 2D Cross Box */}
               <div className="flex items-center gap-2 pt-0.5">
                 <div className="flex-1 space-y-1.5">

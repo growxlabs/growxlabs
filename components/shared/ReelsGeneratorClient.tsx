@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { 
-  Sparkles, Download, Edit3, Image as ImageIcon, Plus, Trash2, 
-  Palette, Play, Pause, RotateCw, Info, Check, ArrowRight, AlertCircle, Video
-} from "lucide-react";
+  Sparkles, Download, Edit3, ImageIcon, Plus, Trash2, 
+  Palette, Play, Pause, RotateCw, Info, Check, ArrowRight, AlertCircle, Video, Camera, Share2
+} from "@/components/editor/icons/StudioIcons";
 import { toast } from "sonner";
+import { SelfRecordedVideoStudio } from "@/components/editor/reels/SelfRecordedVideoStudio";
+import { ReelsDistributionModal } from "@/components/editor/reels/ReelsDistributionModal";
 
 interface Scene {
   sceneNumber: number;
@@ -17,6 +19,10 @@ interface Scene {
 }
 
 export function ReelsGeneratorClient() {
+  // Studio Mode: Self-Recorded Video Studio vs AI Storyboard Generator
+  const [studioMode, setStudioMode] = useState<"self-recorded" | "ai-storyboard">("self-recorded");
+  const [isDistributeModalOpen, setIsDistributeModalOpen] = useState(false);
+
   // Content state
   const [topic, setTopic] = useState("Explain how Rapido uses the same OTP for rides");
   const [tone, setTone] = useState<"Hype" | "Professional" | "Casual" | "Technical" | "Minimalist">("Technical");
@@ -988,8 +994,63 @@ export function ReelsGeneratorClient() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <style dangerouslySetInnerHTML={{ __html: `
+    <div className="flex flex-col gap-6 w-full">
+      {/* Top Studio Mode Selector */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-2.5 bg-[#17171a] border border-[#2b2b30] rounded-2xl shadow-sm">
+        <div className="flex flex-wrap bg-[#101012] p-1 rounded-xl border border-[#26262a] gap-1">
+          <button
+            type="button"
+            onClick={() => setStudioMode("self-recorded")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              studioMode === "self-recorded"
+                ? "bg-[#27272e] text-white shadow-sm border border-[#3c3c46]"
+                : "text-neutral-400 hover:text-white"
+            }`}
+          >
+            <Camera size={14} className="text-rose-400" />
+            <span>Self-Recorded Video Studio</span>
+            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">
+              No CapCut Needed
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setStudioMode("ai-storyboard")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              studioMode === "ai-storyboard"
+                ? "bg-[#27272e] text-white shadow-sm border border-[#3c3c46]"
+                : "text-neutral-400 hover:text-white"
+            }`}
+          >
+            <Sparkles size={14} className="text-amber-400" />
+            <span>AI Storyboard & Graphic Reel</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 pr-2">
+          <button
+            type="button"
+            onClick={() => setIsDistributeModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#1687f8] to-[#1376dc] hover:from-[#1376dc] hover:to-[#0f60b4] text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Share2 size={13} />
+            <span>Distribute Channels</span>
+          </button>
+          <span className="hidden md:inline text-xs text-neutral-400 font-mono">
+            9:16 Vertical
+          </span>
+        </div>
+      </div>
+
+      {studioMode === "self-recorded" ? (
+        <SelfRecordedVideoStudio
+          initialTopic={topic}
+          initialScript={scenes.map((s) => s.content).join(" ")}
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <style dangerouslySetInnerHTML={{ __html: `
         @keyframes liquidFlow {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -1501,6 +1562,8 @@ export function ReelsGeneratorClient() {
         </div>
 
       </div>
+        </div>
+      )}
 
       {isExporting && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1526,6 +1589,17 @@ export function ReelsGeneratorClient() {
         </div>
       )}
 
+      {/* Distribution Modal for AI Storyboard Mode */}
+      <ReelsDistributionModal
+        isOpen={isDistributeModalOpen}
+        onClose={() => setIsDistributeModalOpen(false)}
+        videoUrl={null}
+        videoBlob={null}
+        topic={topic}
+        script={scenes.map((s) => s.content).join(" ")}
+        brandName={brandName}
+        authorName="GrowXLabs Team"
+      />
     </div>
   );
 }

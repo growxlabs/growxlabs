@@ -22,6 +22,9 @@ import {
   CloudCheck,
   CloudUpload,
   CloudAlert,
+  Upload,
+  Play,
+  Video,
 } from "@/components/editor/icons/StudioIcons";
 import type { Slide, ElementKey } from "../inspector/inspectorTypes";
 import { CANVAS_FORMAT_PRESETS, CanvasPreset } from "../inspector/StudioInspector";
@@ -50,6 +53,12 @@ interface StudioLeftPanelProps {
   onOpenProjectsDrawer?: () => void;
   onCreateNewProject?: () => void;
   onSaveToDatabase?: () => void;
+  uploadedAssets?: Array<{ id: string; name: string; url: string; type: "video" | "image" }>;
+  onUploadAssets?: (files: FileList | File[]) => void;
+  onSetVideoBackground?: (url: string) => void;
+  onAddOverlayImage?: (url: string) => void;
+  onApplyImageSizePreset?: (preset: "badge" | "card" | "hero" | "split") => void;
+  onDeleteAsset?: (id: string) => void;
 }
 
 const LAYER_ORDER: ElementKey[] = [
@@ -90,8 +99,14 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
   onOpenProjectsDrawer,
   onCreateNewProject,
   onSaveToDatabase,
+  uploadedAssets = [],
+  onUploadAssets,
+  onSetVideoBackground,
+  onAddOverlayImage,
+  onApplyImageSizePreset,
+  onDeleteAsset,
 }) => {
-  const [tab, setTab] = useState<"design" | "theme">("design");
+  const [tab, setTab] = useState<"design" | "theme" | "assets">("design");
   const [isPageExpanded, setIsPageExpanded] = useState(true);
   const [expandedSlides, setExpandedSlides] = useState<Record<number, boolean>>({
     0: true,
@@ -309,6 +324,17 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
             }`}
           >
             Theme
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("assets")}
+            className={`flex-1 h-6 text-[11px] font-medium rounded-md transition-all flex items-center justify-center cursor-pointer ${
+              tab === "assets"
+                ? "bg-[#3f3f3f] text-white shadow-sm font-semibold"
+                : "text-[#8e8e93] hover:text-white hover:bg-white/5"
+            }`}
+          >
+            Assets
           </button>
         </div>
       </div>
@@ -698,6 +724,193 @@ export const StudioLeftPanel: React.FC<StudioLeftPanelProps> = ({
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================
+            TAB 3: REELS & MEDIA ASSETS (Video & Graphic Overlays)
+            ======================================================== */}
+        {tab === "assets" && (
+          <div className="space-y-3.5 py-1">
+            {/* Header & Quick Action */}
+            <div className="px-1.5 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-white uppercase tracking-wider">
+                  Reel & Slide Assets
+                </span>
+                <span className="text-[9px] font-mono text-neutral-400 bg-white/5 px-1.5 py-0.5 rounded">
+                  {uploadedAssets?.length || 0} Assets
+                </span>
+              </div>
+              <p className="text-[10px] text-neutral-400 leading-snug">
+                Drop your phone talking video or diagrams here, then drag onto the canvas.
+              </p>
+            </div>
+
+            {/* Upload Dropzone */}
+            <div className="px-1.5">
+              <label className="border border-dashed border-[#444] hover:border-[#1687f8] bg-[#222224] hover:bg-[#252528] rounded-xl p-3 flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer transition-all group">
+                <input
+                  type="file"
+                  multiple
+                  accept="video/mp4,video/webm,video/quicktime,image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && onUploadAssets) {
+                      onUploadAssets(e.target.files);
+                      e.target.value = "";
+                    }
+                  }}
+                />
+                <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-[#1687f8]/10 text-neutral-400 group-hover:text-[#1687f8] flex items-center justify-center transition-colors">
+                  <Upload size={14} />
+                </div>
+                <div>
+                  <span className="text-[11px] font-semibold text-neutral-200 block group-hover:text-white">
+                    Upload Video or Images
+                  </span>
+                  <span className="text-[9px] text-neutral-500 font-mono">
+                    .MP4, .MOV, .PNG, .JPG, .SVG
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            {/* Overlay Sizing Presets for Active Slide */}
+            <div className="px-1.5 space-y-1.5 pt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block">
+                Overlay Card Sizing
+              </span>
+              <div className="grid grid-cols-2 gap-1 text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => onApplyImageSizePreset?.("badge")}
+                  className="px-2 py-1.5 rounded-lg bg-[#222224] hover:bg-[#2c2c30] text-neutral-300 hover:text-white border border-[#353535] text-left transition-all cursor-pointer flex items-center justify-between"
+                  title="30% Mini Badge in Corner"
+                >
+                  <span>30% Badge</span>
+                  <span className="text-[9px] text-neutral-500 font-mono">Corner</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyImageSizePreset?.("card")}
+                  className="px-2 py-1.5 rounded-lg bg-[#222224] hover:bg-[#2c2c30] text-[#1687f8] hover:text-white border border-[#353535] text-left transition-all cursor-pointer flex items-center justify-between font-semibold"
+                  title="60% Modern Floating Card"
+                >
+                  <span>60% Card</span>
+                  <span className="text-[9px] text-[#1687f8] font-mono">Center</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyImageSizePreset?.("hero")}
+                  className="px-2 py-1.5 rounded-lg bg-[#222224] hover:bg-[#2c2c30] text-neutral-300 hover:text-white border border-[#353535] text-left transition-all cursor-pointer flex items-center justify-between"
+                  title="85% Spotlight Hero"
+                >
+                  <span>85% Hero</span>
+                  <span className="text-[9px] text-neutral-500 font-mono">Focus</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onApplyImageSizePreset?.("split")}
+                  className="px-2 py-1.5 rounded-lg bg-[#222224] hover:bg-[#2c2c30] text-neutral-300 hover:text-white border border-[#353535] text-left transition-all cursor-pointer flex items-center justify-between"
+                  title="Upper 50% Split Frame"
+                >
+                  <span>Split Top</span>
+                  <span className="text-[9px] text-neutral-500 font-mono">Half</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Uploaded Assets List */}
+            <div className="px-1.5 space-y-2 pt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 block">
+                Project Assets
+              </span>
+
+              {(!uploadedAssets || uploadedAssets.length === 0) ? (
+                <div className="p-4 rounded-xl bg-[#222224]/60 border border-[#333] text-center space-y-1 text-neutral-500">
+                  <span className="text-[11px] block font-medium">No media uploaded yet</span>
+                  <span className="text-[9px] block">Upload your talking video or diagrams above to get started</span>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {uploadedAssets.map((asset) => (
+                    <div
+                      key={asset.id}
+                      draggable={true}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("application/growx-asset", JSON.stringify(asset));
+                        e.dataTransfer.setData("text/plain", asset.url);
+                      }}
+                      className="p-2 rounded-xl bg-[#222224] border border-[#353535] hover:border-[#555] space-y-2 transition-all cursor-grab active:cursor-grabbing group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-lg bg-black/50 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                          {asset.type === "video" ? (
+                            <video
+                              src={asset.url}
+                              className="w-full h-full object-cover pointer-events-none"
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <img
+                              src={asset.url}
+                              alt={asset.name}
+                              className="w-full h-full object-cover pointer-events-none"
+                            />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[11px] font-medium text-neutral-200 block truncate group-hover:text-white">
+                            {asset.name}
+                          </span>
+                          <span className="text-[9px] font-mono uppercase text-neutral-500 block">
+                            {asset.type === "video" ? "Video (9:16 Reel)" : "Graphic Asset"}
+                          </span>
+                        </div>
+                        {onDeleteAsset && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteAsset(asset.id);
+                            }}
+                            className="p-1 rounded text-neutral-500 hover:text-rose-400 hover:bg-rose-400/10 transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                            title="Delete Asset"
+                          >
+                            <Trash2 size={11} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Quick Apply Action Buttons */}
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        {asset.type === "video" ? (
+                          <button
+                            type="button"
+                            onClick={() => onSetVideoBackground?.(asset.url)}
+                            className="flex-1 py-1 px-2 rounded-md bg-[#1687f8] hover:bg-[#1376dc] text-white text-[10px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1 shadow-sm"
+                          >
+                            <Video size={11} />
+                            <span>Set 9:16 Background</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onAddOverlayImage?.(asset.url)}
+                            className="flex-1 py-1 px-2 rounded-md bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1"
+                          >
+                            <ImageIcon size={11} />
+                            <span>Add as Overlay Card</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
