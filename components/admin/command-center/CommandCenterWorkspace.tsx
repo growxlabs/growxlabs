@@ -57,7 +57,7 @@ export function CommandCenterWorkspace() {
           const serverItems = payload.conversations.map((c: any) => ({
             id: String(c.id),
             title: String(c.title || "Conversation"),
-            createdAt: String(c.created_at || new Date().toISOString()),
+            createdAt: String(c.created_at || c.createdAt || new Date().toISOString()),
           }));
           const merged = [...serverItems];
           localItems.forEach((loc) => {
@@ -101,6 +101,27 @@ export function CommandCenterWorkspace() {
     } else {
       setMessages([]);
     }
+
+    try {
+      const response = await fetch(`/api/admin/command-center?conversationId=${encodeURIComponent(conversationId)}`, { cache: "no-store" });
+      if (response.ok) {
+        const payload = record(await response.json());
+        if (Array.isArray(payload.messages) && payload.messages.length > 0) {
+          const serverMsgs: CommandMessage[] = payload.messages.map((m: any) => ({
+            id: String(m.id),
+            conversationId: String(m.conversationId || conversationId),
+            sender: m.sender === "gxl" ? "gxl" : "user",
+            text: String(m.text || ""),
+            timestamp: String(m.timestamp || m.created_at || new Date().toISOString()),
+            toolCalls: Array.isArray(m.toolCalls) ? m.toolCalls : (Array.isArray(m.tool_calls) ? m.tool_calls : undefined),
+          }));
+          setMessages(serverMsgs);
+          try {
+            localStorage.setItem(`gxl_cc_msgs_${conversationId}`, JSON.stringify(serverMsgs));
+          } catch (_e) {}
+        }
+      }
+    } catch (_e) {}
   }, []);
 
   useEffect(() => {

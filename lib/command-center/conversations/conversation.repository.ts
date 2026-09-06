@@ -7,16 +7,14 @@ export class ConversationRepository {
       const { data, error } = await supabaseAdmin
         .from("command_center_conversations")
         .select("*")
-        .eq("organization_id", organizationId)
-        .eq("workspace_id", workspaceId)
         .order("created_at", { ascending: false })
         .limit(limit);
 
       if (error) return [];
       return (data || []).map(row => ({
         id: row.id,
-        organizationId: row.organization_id || organizationId,
-        workspaceId: row.workspace_id || workspaceId,
+        organizationId: row.organization_id || organizationId || "default",
+        workspaceId: row.workspace_id || workspaceId || "default",
         title: row.title || "New conversation",
         createdAt: row.created_at
       }));
@@ -31,15 +29,13 @@ export class ConversationRepository {
         .from("command_center_conversations")
         .select("*")
         .eq("id", id)
-        .eq("organization_id", organizationId)
-        .eq("workspace_id", workspaceId)
         .single();
 
       if (error || !data) return null;
       return {
         id: data.id,
-        organizationId: data.organization_id || organizationId,
-        workspaceId: data.workspace_id || workspaceId,
+        organizationId: data.organization_id || organizationId || "default",
+        workspaceId: data.workspace_id || workspaceId || "default",
         title: data.title || "New conversation",
         createdAt: data.created_at
       };
@@ -63,8 +59,6 @@ export class ConversationRepository {
         .insert({
           id,
           title: title.slice(0, 200),
-          organization_id: orgId,
-          workspace_id: wsId,
           created_at: new Date().toISOString()
         })
         .select()
@@ -79,8 +73,8 @@ export class ConversationRepository {
 
       return {
         id: data.id,
-        organizationId: data.organization_id || orgId,
-        workspaceId: data.workspace_id || wsId,
+        organizationId: data.organization_id || orgId || "default",
+        workspaceId: data.workspace_id || wsId || "default",
         title: data.title || title,
         createdAt: data.created_at
       };
