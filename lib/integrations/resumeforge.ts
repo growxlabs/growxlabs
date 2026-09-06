@@ -186,21 +186,34 @@ export class ResumeForgeClient {
       };
     }
 
-    const res = await this.request<any>("/api/v1/company/invoices", {
-      page: params.page || 1,
-      limit: params.limit || 50,
-      status: params.status,
-    });
+    try {
+      const res = await this.request<any>("/api/v1/company/invoices", {
+        page: params.page || 1,
+        limit: params.limit || 50,
+        status: params.status,
+      });
 
-    return {
-      success: res.success ?? true,
-      total_count: res.total_count ?? (res.invoices?.length || 0),
-      page: res.page ?? (params.page || 1),
-      limit: res.limit ?? (params.limit || 50),
-      total_pages: res.total_pages ?? 1,
-      invoices: res.invoices || [],
-      configured: true,
-    };
+      return {
+        success: res.success ?? true,
+        total_count: res.total_count ?? (res.invoices?.length || 0),
+        page: res.page ?? (params.page || 1),
+        limit: res.limit ?? (params.limit || 50),
+        total_pages: res.total_pages ?? 1,
+        invoices: res.invoices || [],
+        configured: true,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        total_count: 0,
+        page: params.page || 1,
+        limit: params.limit || 50,
+        total_pages: 0,
+        invoices: [],
+        configured: true,
+        error: e.message || "Failed to fetch invoices",
+      };
+    }
   }
 
   /**
@@ -223,20 +236,33 @@ export class ResumeForgeClient {
       };
     }
 
-    const res = await this.request<any>("/api/v1/company/payments", {
-      page: params.page || 1,
-      limit: params.limit || 50,
-    });
+    try {
+      const res = await this.request<any>("/api/v1/company/payments", {
+        page: params.page || 1,
+        limit: params.limit || 50,
+      });
 
-    return {
-      success: res.success ?? true,
-      total_count: res.total_count ?? (res.payments?.length || 0),
-      page: res.page ?? (params.page || 1),
-      limit: res.limit ?? (params.limit || 50),
-      total_pages: res.total_pages ?? 1,
-      payments: res.payments || [],
-      configured: true,
-    };
+      return {
+        success: res.success ?? true,
+        total_count: res.total_count ?? (res.payments?.length || 0),
+        page: res.page ?? (params.page || 1),
+        limit: res.limit ?? (params.limit || 50),
+        total_pages: res.total_pages ?? 1,
+        payments: res.payments || [],
+        configured: true,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        total_count: 0,
+        page: params.page || 1,
+        limit: params.limit || 50,
+        total_pages: 0,
+        payments: [],
+        configured: true,
+        error: e.message || "Failed to fetch payments",
+      };
+    }
   }
 
   /**
@@ -260,21 +286,34 @@ export class ResumeForgeClient {
       };
     }
 
-    const res = await this.request<any>("/api/v1/company/users", {
-      page: params.page || 1,
-      limit: params.limit || 50,
-      plan: params.plan,
-    });
+    try {
+      const res = await this.request<any>("/api/v1/company/users", {
+        page: params.page || 1,
+        limit: params.limit || 50,
+        plan: params.plan,
+      });
 
-    return {
-      success: res.success ?? true,
-      total_count: res.total_count ?? (res.users?.length || 0),
-      page: res.page ?? (params.page || 1),
-      limit: res.limit ?? (params.limit || 50),
-      total_pages: res.total_pages ?? 1,
-      users: res.users || [],
-      configured: true,
-    };
+      return {
+        success: res.success ?? true,
+        total_count: res.total_count ?? (res.users?.length || 0),
+        page: res.page ?? (params.page || 1),
+        limit: res.limit ?? (params.limit || 50),
+        total_pages: res.total_pages ?? 1,
+        users: res.users || [],
+        configured: true,
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        total_count: 0,
+        page: params.page || 1,
+        limit: params.limit || 50,
+        total_pages: 0,
+        users: [],
+        configured: true,
+        error: e.message || "Failed to fetch users",
+      };
+    }
   }
 
   /**
@@ -295,10 +334,14 @@ export class ResumeForgeClient {
 
     try {
       const [invoicesData, paymentsData, usersData] = await Promise.all([
-        this.getInvoices({ limit: 100, status: "paid" }),
+        this.getInvoices({ limit: 100 }),
         this.getPayments({ limit: 100 }),
         this.getUsers({ limit: 100 }),
       ]);
+
+      const paidInvoices = (invoicesData.invoices || []).filter(
+        (inv) => inv.status === "paid"
+      );
 
       const totalRevenueInr = (invoicesData.invoices || []).reduce(
         (sum, inv) => sum + (inv.amount || 0),
@@ -311,7 +354,7 @@ export class ResumeForgeClient {
 
       return {
         totalRevenueInr,
-        totalPaidInvoices: invoicesData.total_count,
+        totalPaidInvoices: paidInvoices.length > 0 ? paidInvoices.length : invoicesData.total_count,
         totalTransactions: paymentsData.total_count,
         totalUsers: usersData.total_count,
         proUsersCount,
