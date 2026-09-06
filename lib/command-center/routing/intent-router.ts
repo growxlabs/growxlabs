@@ -159,13 +159,29 @@ export function routeCommandIntent(input: {
     }
   }
 
-  // 7. BUSINESS OPERATIONS WRITE (create lead, generate proposal, create invoice, send invoice)
-  const isWrite = normalized.includes("add") || normalized.includes("create") || normalized.includes("insert") || normalized.includes("save") || normalized.includes("generate") || normalized.includes("new") || normalized.includes("send") || normalized.includes("dispatch");
+  // 7. BUSINESS OPERATIONS WRITE (create lead, generate proposal, create invoice, send invoice, upload/import leads)
+  const hasLeadAttachment = (input.attachments || []).some(a => /\.(csv|tsv|xlsx|xls|txt|json)$/i.test(a.name || "") || (a.type && (a.type.includes("csv") || a.type.includes("spreadsheet") || a.type.includes("excel"))));
+  const isWrite = normalized.includes("add") || 
+    normalized.includes("create") || 
+    normalized.includes("insert") || 
+    normalized.includes("save") || 
+    normalized.includes("generate") || 
+    normalized.includes("new") || 
+    normalized.includes("send") || 
+    normalized.includes("dispatch") ||
+    normalized.includes("upload") ||
+    normalized.includes("import") ||
+    normalized.includes("store") ||
+    normalized.includes("bulk") ||
+    (hasLeadAttachment && (isLeads || normalized.includes("database") || normalized.includes("db")));
+
   if (isWrite) {
     const tools: string[] = [];
-    if (isLeads) {
+    if (isLeads || hasLeadAttachment) {
       tools.push("create_lead");
       tools.push("create_leads_batch");
+      tools.push("batch_create_leads");
+      tools.push("query_leads");
     }
     if (isAgreement || normalized.includes("proposal")) {
       tools.push("generate_proposal");

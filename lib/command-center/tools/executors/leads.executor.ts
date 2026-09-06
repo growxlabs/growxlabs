@@ -121,22 +121,26 @@ export const createLeadExecutor: ToolExecutor<z.infer<typeof CreateLeadSchema>, 
 };
 
 export const createLeadsBatchExecutor: ToolExecutor<z.infer<typeof BatchCreateLeadsSchema>, unknown> = {
-  name: "batch_create_leads",
+  name: "create_leads_batch",
   description: "Insert multiple lead records into the database in bulk.",
   inputSchema: BatchCreateLeadsSchema,
   riskLevel: "high",
   requiredPermissions: ["leads:write"],
-  async execute(input) {
+  async execute(input, context) {
+    const orgId = context?.commandContext?.organizationId || process.env.DEFAULT_ORGANISATION_ID;
     const rows = input.leads.map(l => ({
       business_name: l.business_name,
-      city: l.city,
-      email: l.email,
-      phone: l.phone,
+      city: l.city || "Unknown",
+      email: l.email || null,
+      phone: l.phone || null,
       name: l.name || null,
       website_url: l.website_url || null,
       notes: l.notes || null,
       status: "new",
-      lead_score: 5
+      lead_score: 5,
+      organisation_id: orgId,
+      organization_id: orgId,
+      source: "csv_import"
     }));
 
     const { data, error } = await supabaseAdmin
@@ -147,4 +151,9 @@ export const createLeadsBatchExecutor: ToolExecutor<z.infer<typeof BatchCreateLe
     if (error) throw error;
     return { createdCount: data?.length || 0, leads: data || [] };
   }
+};
+
+export const batchCreateLeadsExecutor: ToolExecutor<z.infer<typeof BatchCreateLeadsSchema>, unknown> = {
+  ...createLeadsBatchExecutor,
+  name: "batch_create_leads"
 };

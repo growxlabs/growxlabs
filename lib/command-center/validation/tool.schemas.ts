@@ -21,12 +21,12 @@ export const CreateLeadSchema = z.object({
 export const BatchCreateLeadsSchema = z.object({
   leads: z.array(z.object({
     business_name: z.string().min(1),
-    city: z.string().min(1),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    name: z.string().optional(),
-    website_url: z.string().optional(),
-    notes: z.string().optional()
+    city: z.string().optional().nullable().default("Unknown"),
+    email: z.string().optional().nullable(),
+    phone: z.string().optional().nullable(),
+    name: z.string().optional().nullable(),
+    website_url: z.string().optional().nullable(),
+    notes: z.string().optional().nullable()
   })).min(1)
 });
 

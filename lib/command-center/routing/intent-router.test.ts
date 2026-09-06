@@ -94,3 +94,22 @@ test("GXL Command Center Pre-Router — Intent Precedence", () => {
   const res2 = routeCommandIntent({ message: "hello can you list invoices" });
   assert.strictEqual(res2.intent, "business_read");
 });
+
+test("GXL Command Center Pre-Router — Lead Upload with Attachment", () => {
+  const res1 = routeCommandIntent({
+    message: "upload this leads in data base",
+    attachments: [{ name: "indiamart.csv", type: "text/csv" }]
+  });
+  assert.strictEqual(res1.intent, "business_write");
+  assert.ok(res1.requiresTools);
+  assert.ok(res1.allowedTools.includes("create_leads_batch"));
+  assert.ok(res1.allowedTools.includes("create_lead"));
+
+  const res2 = routeCommandIntent({
+    message: "import leads from sheet",
+    attachments: [{ name: "leads.xlsx", type: "application/vnd.ms-excel" }]
+  });
+  assert.strictEqual(res2.intent, "business_write");
+  assert.ok(res2.allowedTools.includes("create_leads_batch"));
+});
+

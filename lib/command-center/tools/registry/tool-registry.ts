@@ -1,5 +1,5 @@
 import { ToolExecutor, ToolExecutionContext } from "./tool-types";
-import { getCompanyStatsExecutor, queryLeadsExecutor, createLeadExecutor, createLeadsBatchExecutor } from "../executors/leads.executor";
+import { getCompanyStatsExecutor, queryLeadsExecutor, createLeadExecutor, createLeadsBatchExecutor, batchCreateLeadsExecutor } from "../executors/leads.executor";
 import { generateProposalExecutor } from "../executors/proposal.executor";
 import { searchWebExecutor, spawnSubagentExecutor } from "../executors/search.executor";
 import { getBlogPostsStatsExecutor, queryWishGameDataExecutor, sendBlogToSubscribersExecutor } from "../executors/content.executor";
@@ -21,6 +21,7 @@ export class ToolRegistry {
     this.register(queryLeadsExecutor);
     this.register(createLeadExecutor);
     this.register(createLeadsBatchExecutor);
+    this.register(batchCreateLeadsExecutor);
     this.register(generateProposalExecutor);
     this.register(searchWebExecutor);
     this.register(spawnSubagentExecutor);

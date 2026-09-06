@@ -205,7 +205,7 @@ export function CommandCenterWorkspace() {
           signal: abortRef.current.signal,
           body: JSON.stringify({
             conversationId: currentConversationId,
-            message: text,
+            message: text || (attachments.length > 0 ? `Process attached file: ${attachments.map((a) => a.name).join(", ")}` : "Process request"),
             attachments: attachments.map((a) => ({
               id: a.id,
               name: a.name,

@@ -47,6 +47,7 @@ Keep simple requests simple.
 5. **Email/Newsletter Dispatch**: If the user says "send a blog", "dispatch newsletter", "email blog", etc., check if they specified *which* blog. If not, CALL 'get_blog_posts_stats' to retrieve all posts, present the list of blog posts to the user (highlighting which ones are sent or pending), and ask them to pick which one to send. Once they specify or confirm the blog, call 'send_blog_to_subscribers' with the corresponding UUID of the selected blog post to dispatch it.
 6. **Markdown Formatting & Tables**: Use clean Notion-like markdown formatting. When presenting comparisons, fees/costs, KPIs, metrics, process mapping, or structured parameters, ALWAYS format them as clean Markdown Tables (| Column 1 | Column 2 | Column 3 |) so they are visually represented in table form.
 7. **Interactive Follow-up Questions**: At the end of your response, always proactively ask 2 to 3 concise, relevant follow-up questions related to the conversation to guide the user's next steps, formatted under "### Suggested Next Steps:".
+8. **Uploaded Lead Files (CSV / Excel / Text)**: When the user uploads a file with leads (e.g. CSV, indiamart.csv, spreadsheet) and asks to upload or save them to the database, parse the rows from the file and call 'create_leads_batch' (or 'create_lead') to insert them into the database. Report the total number of leads successfully inserted, with a sample breakdown table of the imported leads.
 
 Match response depth to the request.
 Simple input receives a simple response.
@@ -188,12 +189,36 @@ export class LegacyCommandProcessor {
           attachments.forEach((file: any) => {
             if (file.base64 && file.base64.includes(",")) {
               const base64Data = file.base64.split(",")[1];
-              userParts.push({
-                inlineData: {
-                  mimeType: file.type || "image/png",
-                  data: base64Data
+              const mime = (file.type || "").toLowerCase();
+              const fileName = (file.name || "").toLowerCase();
+              const isTextFile = mime.startsWith("text/") || 
+                mime.includes("csv") || 
+                mime.includes("excel") || 
+                mime.includes("json") ||
+                /\.(csv|tsv|txt|json|md)$/i.test(fileName);
+
+              if (isTextFile) {
+                try {
+                  const textContent = Buffer.from(base64Data, "base64").toString("utf-8");
+                  userParts.push({
+                    text: `\n\n[Uploaded File Attachment: ${file.name}]\n${textContent.slice(0, 100_000)}\n[End of File Attachment]\n`
+                  });
+                } catch {
+                  userParts.push({
+                    inlineData: {
+                      mimeType: file.type || "text/plain",
+                      data: base64Data
+                    }
+                  });
                 }
-              });
+              } else {
+                userParts.push({
+                  inlineData: {
+                    mimeType: file.type || "image/png",
+                    data: base64Data
+                  }
+                });
+              }
             }
           });
         }
@@ -301,7 +326,29 @@ export class LegacyCommandProcessor {
             });
           });
         }
-        openRouterMessages.push({ role: "user", content: message });
+        let openRouterMessageContent = message;
+        if (attachments && attachments.length > 0) {
+          attachments.forEach((file: any) => {
+            if (file.base64 && file.base64.includes(",")) {
+              const base64Data = file.base64.split(",")[1];
+              const mime = (file.type || "").toLowerCase();
+              const fileName = (file.name || "").toLowerCase();
+              const isTextFile = mime.startsWith("text/") || 
+                mime.includes("csv") || 
+                mime.includes("excel") || 
+                mime.includes("json") ||
+                /\.(csv|tsv|txt|json|md)$/i.test(fileName);
+
+              if (isTextFile) {
+                try {
+                  const textContent = Buffer.from(base64Data, "base64").toString("utf-8");
+                  openRouterMessageContent += `\n\n[Uploaded File Attachment: ${file.name}]\n${textContent.slice(0, 100_000)}\n[End of File Attachment]\n`;
+                } catch {}
+              }
+            }
+          });
+        }
+        openRouterMessages.push({ role: "user", content: openRouterMessageContent });
 
         const modelChoice = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
         let loopCount = 0;
