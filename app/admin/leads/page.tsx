@@ -23,14 +23,14 @@ const LeadScoreBar = ({ score }: { score: number }) => {
   
   return (
     <div className="flex items-center gap-1.5" title={`Score: ${score}/10`}>
-      <span className="text-xs font-semibold text-[#111827] w-6">{score.toFixed(1)}</span>
+      <span className="text-xs font-semibold text-[var(--text-primary)] w-6">{score.toFixed(1)}</span>
       <div className="flex gap-0.5">
         {[1, 2, 3].map((bar) => (
           <div
             key={bar}
             className={cn(
               "w-1 h-3 rounded-full",
-              bar <= filledBars ? barColors : "bg-[#E5E7EB]"
+              bar <= filledBars ? barColors : "bg-[var(--border-subtle)]"
             )}
           />
         ))}
@@ -42,13 +42,13 @@ const LeadScoreBar = ({ score }: { score: number }) => {
 // --- STATUS PILL CHIPS ---
 const StatusChip = ({ status }: { status: Lead['status'] }) => {
   const configs: Record<string, { label: string, color: string }> = {
-    new: { label: "New", color: "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]" },
-    qualified: { label: "Qualified", color: "bg-[#EFF6FF] text-[#1D4ED8] border-[#DBEAFE]" },
-    outreach: { label: "Outreach", color: "bg-[#FFFBEB] text-[#B45309] border-[#FEF3C7]" },
-    contacted: { label: "Contacted", color: "bg-[#F0FDF4] text-[#16A34A] border-[#DCFCE7]" },
-    warm: { label: "Warm", color: "bg-[#FFFBEB] text-[#D97706] border-[#FEF3C7]" },
-    cold: { label: "Cold", color: "bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0]" },
-    client: { label: "Client", color: "bg-[#F0FDF4] text-[#15803D] border-[#DCFCE7]" },
+    new: { label: "New", color: "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0] dark:bg-white/5 dark:text-neutral-400 dark:border-white/10" },
+    qualified: { label: "Qualified", color: "bg-[#EFF6FF] text-[#1D4ED8] border-[#DBEAFE] dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20" },
+    outreach: { label: "Outreach", color: "bg-[#FFFBEB] text-[#B45309] border-[#FEF3C7] dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20" },
+    contacted: { label: "Contacted", color: "bg-[#F0FDF4] text-[#16A34A] border-[#DCFCE7] dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20" },
+    warm: { label: "Warm", color: "bg-[#FFFBEB] text-[#D97706] border-[#FEF3C7] dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20" },
+    cold: { label: "Cold", color: "bg-[#F8FAFC] text-[#64748B] border-[#E2E8F0] dark:bg-white/5 dark:text-neutral-400 dark:border-white/10" },
+    client: { label: "Client", color: "bg-[#F0FDF4] text-[#15803D] border-[#DCFCE7] dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20" },
   };
 
   const config = configs[status] || configs.new;
@@ -574,8 +574,8 @@ export default function LeadsAdminPage() {
           </div>
 
           {/* Filters Row */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5E7EB]">
-            <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mr-1">Filters:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--border-subtle)]">
+            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mr-1">Filters:</span>
             
             {/* Status Dropdown */}
             <DropdownFilter
@@ -634,7 +634,7 @@ export default function LeadsAdminPage() {
             {/* Bulk actions */}
             {selectedLeadIds.length > 0 && (
               <div className="flex items-center gap-2 ml-auto">
-                <span className="text-xs font-semibold text-[#6B7280]">{selectedLeadIds.length} selected</span>
+                <span className="text-xs font-semibold text-[var(--text-muted)]">{selectedLeadIds.length} selected</span>
                 {isAdminOrCoAdmin && (
                   <Button
                     onClick={handleDeleteSelectedLeads}
@@ -683,7 +683,7 @@ export default function LeadsAdminPage() {
                           setSelectedLeadIds([]);
                         }
                       }}
-                      className="rounded border-[#E5E7EB] text-[#2563EB] focus:ring-[#2563EB] h-3.5 w-3.5"
+                      className="rounded border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--primary)] focus:ring-[var(--primary)] h-3.5 w-3.5"
                     />
                   </th>
                   <th className="px-5 py-3 w-48 font-bold uppercase tracking-wider text-[10px]">Company</th>
@@ -699,12 +699,12 @@ export default function LeadsAdminPage() {
                   <th className="px-4 py-3 w-16 text-center font-bold uppercase tracking-wider text-[10px]"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E5E7EB]">
+              <tbody className="divide-y divide-[var(--border-subtle)] bg-[var(--card)]">
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="px-6 py-20 text-center text-slate-400">
+                    <td colSpan={12} className="px-6 py-20 text-center text-[var(--text-muted)]">
                       <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin text-[#2563EB]" />
+                        <Loader2 className="h-4 w-4 animate-spin text-[var(--primary)]" />
                         Loading lead intelligence...
                       </div>
                     </td>
@@ -732,8 +732,8 @@ export default function LeadsAdminPage() {
                     <tr 
                       key={lead.id} 
                       className={cn(
-                        "h-14 hover:bg-[var(--surface-2)]/40 border-b border-[var(--border-subtle)] transition-all cursor-pointer", 
-                        isCurrentActive && "bg-[var(--primary)]/10 hover:bg-[var(--primary)]/15"
+                        "h-14 bg-[var(--card)] hover:bg-[var(--surface-2)]/60 border-b border-[var(--border-subtle)] transition-all cursor-pointer", 
+                        isCurrentActive && "bg-[var(--primary)]/15 hover:bg-[var(--primary)]/20"
                       )}
                       onClick={() => setActiveLeadId(lead.id || null)}
                     >
@@ -871,38 +871,38 @@ export default function LeadsAdminPage() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 26, stiffness: 220 }}
-              className="relative w-full max-w-[420px] bg-white border-l border-[#E5E7EB] shadow-2xl flex flex-col h-full z-10"
+              className="relative w-full max-w-[420px] bg-[var(--card)] border-l border-[var(--border-subtle)] text-[var(--text-primary)] shadow-2xl flex flex-col h-full z-10"
             >
               {/* Header */}
-              <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between bg-slate-50/60">
+              <div className="p-5 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--surface-2)]/60">
                 <div className="flex items-center gap-2">
-                  <Building2 size={16} className="text-[#6B7280]" />
+                  <Building2 size={16} className="text-[var(--text-muted)]" />
                   <div>
-                    <h2 className="text-sm font-bold text-[#111827] leading-none truncate max-w-[280px]" title={selectedLead.business_name}>
+                    <h2 className="text-sm font-bold text-[var(--text-primary)] leading-none truncate max-w-[280px]" title={selectedLead.business_name}>
                       {selectedLead.business_name}
                     </h2>
-                    <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-wider mt-1">Lead Intelligence Profile</p>
+                    <p className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mt-1">Lead Intelligence Profile</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setActiveLeadId(null)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                  className="p-1.5 hover:bg-[var(--surface-2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <X size={15} />
                 </button>
               </div>
 
               {/* Content Panel Scrollable */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar bg-[#F8FAFC]/40">
+              <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar bg-[var(--background)]">
                 
                 {/* Section 1: Lead Score Widget */}
-                <div className="bg-white border border-[#E5E7EB] p-4 rounded-xl shadow-sm">
-                  <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-2">Opportunity Score</p>
+                <div className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Opportunity Score</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-extrabold text-[#111827] leading-none">{(selectedLead.lead_score || 0).toFixed(1)}</span>
-                    <span className="text-xs font-semibold text-[#6B7280]">/ 10.0 Calculated Quality</span>
+                    <span className="text-3xl font-extrabold text-[var(--text-primary)] leading-none">{(selectedLead.lead_score || 0).toFixed(1)}</span>
+                    <span className="text-xs font-semibold text-[var(--text-muted)]">/ 10.0 Calculated Quality</span>
                   </div>
-                  <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full mt-3 overflow-hidden">
+                  <div className="w-full bg-[var(--border-subtle)] h-1.5 rounded-full mt-3 overflow-hidden">
                     <div 
                       className={cn(
                         "h-full rounded-full transition-all duration-500",
@@ -914,29 +914,29 @@ export default function LeadsAdminPage() {
                 </div>
 
                 {/* Section 2: Contact Details */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
-                  <div className="px-4 py-2.5 bg-slate-50 border-b border-[#E5E7EB]">
-                    <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Contact Details</p>
+                <div className="bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm overflow-hidden">
+                  <div className="px-4 py-2.5 bg-[var(--surface-2)]/60 border-b border-[var(--border-subtle)]">
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Contact Details</p>
                   </div>
-                  <div className="p-4 space-y-3.5 text-xs text-[#111827] font-medium">
+                  <div className="p-4 space-y-3.5 text-xs text-[var(--text-primary)] font-medium">
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B7280] font-normal">Contact Person</span>
+                      <span className="text-[var(--text-muted)] font-normal">Contact Person</span>
                       <span>{selectedLead.name || "—"}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B7280] font-normal">Phone</span>
+                      <span className="text-[var(--text-muted)] font-normal">Phone</span>
                       <a href={`tel:${selectedLead.phone}`} className="text-[#2563EB] hover:underline flex items-center gap-1">
                         <Phone size={11} /> {selectedLead.phone || "—"}
                       </a>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B7280] font-normal">Email</span>
+                      <span className="text-[var(--text-muted)] font-normal">Email</span>
                       <a href={`mailto:${selectedLead.email}`} className="text-[#2563EB] hover:underline flex items-center gap-1">
                         <Mail size={11} /> {selectedLead.email || "—"}
                       </a>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#6B7280] font-normal">Website</span>
+                      <span className="text-[var(--text-muted)] font-normal">Website</span>
                       {selectedLead.website_url ? (
                         <a 
                           href={selectedLead.website_url.startsWith("http") ? selectedLead.website_url : `https://${selectedLead.website_url}`}
@@ -952,20 +952,20 @@ export default function LeadsAdminPage() {
                 </div>
 
                 {/* Section 3: AI Analysis Card (HubSpot style) */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
-                  <div className="px-4 py-2.5 bg-slate-50 border-b border-[#E5E7EB] flex items-center justify-between">
-                    <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider flex items-center gap-1.5">
+                <div className="bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm overflow-hidden">
+                  <div className="px-4 py-2.5 bg-[var(--surface-2)]/60 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
                       <Sparkles size={12} className="text-[#2563EB]" /> AI Analysis
                     </p>
-                    <span className="inline-flex px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold uppercase tracking-wider">
+                    <span className="inline-flex px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-wider">
                       Verified
                     </span>
                   </div>
-                  <div className="p-4 space-y-4 text-xs text-[#111827]">
+                  <div className="p-4 space-y-4 text-xs text-[var(--text-primary)]">
                     {/* Critical Issues */}
                     <div>
                       <h4 className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider mb-2">Critical issues</h4>
-                      <ul className="space-y-1.5 text-neutral-600 pl-1 list-none">
+                      <ul className="space-y-1.5 text-[var(--text-secondary)] pl-1 list-none">
                         {!selectedLead.has_website ? (
                           <li className="flex items-start gap-2">
                             <span className="text-[#DC2626] shrink-0 mt-0.5">⚠️</span>
@@ -994,9 +994,9 @@ export default function LeadsAdminPage() {
                     </div>
 
                     {/* Recommended Action Checklist */}
-                    <div className="pt-3 border-t border-[#E5E7EB]">
-                      <h4 className="text-[10px] font-bold text-[#111827] uppercase tracking-wider mb-2">Recommended action</h4>
-                      <ul className="space-y-1.5 text-neutral-600 pl-1 list-none">
+                    <div className="pt-3 border-t border-[var(--border-subtle)]">
+                      <h4 className="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider mb-2">Recommended action</h4>
+                      <ul className="space-y-1.5 text-[var(--text-secondary)] pl-1 list-none">
                         {!selectedLead.has_website ? (
                           <>
                             <li className="flex items-center gap-2">
@@ -1026,22 +1026,22 @@ export default function LeadsAdminPage() {
                 </div>
 
                 {/* Section 4: Notes */}
-                <div className="bg-white border border-[#E5E7EB] p-4 rounded-xl shadow-sm space-y-2">
-                  <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">Notes</p>
-                  <p className="text-xs text-neutral-600 italic leading-relaxed pt-1">
+                <div className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm space-y-2">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border-subtle)] pb-2">Notes</p>
+                  <p className="text-xs text-[var(--text-secondary)] italic leading-relaxed pt-1">
                     {selectedLead.notes ? selectedLead.notes.replace(/\[Source:.*\]/, "").replace(/\[Created By:.*\]/, "").trim() : "No custom notes recorded for this pipeline lead."}
                   </p>
                 </div>
 
                 {/* Section 5: Timeline / Recent Activity */}
-                <div className="bg-white border border-[#E5E7EB] p-4 rounded-xl shadow-sm space-y-3">
-                  <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider border-b border-[#E5E7EB] pb-2">Timeline & Logs</p>
+                <div className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm space-y-3">
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border-subtle)] pb-2">Timeline & Logs</p>
                   <div className="space-y-3 pt-1">
                     <div className="flex gap-2.5 items-start">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                       <div>
-                        <p className="text-xs font-semibold text-neutral-700">Lead Created</p>
-                        <p className="text-[10px] text-[#6B7280]">
+                        <p className="text-xs font-semibold text-[var(--text-primary)]">Lead Created</p>
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {selectedLead.created_at ? new Date(selectedLead.created_at).toLocaleString() : "Recently"} • Pipeline Registered
                         </p>
                       </div>
@@ -1050,8 +1050,8 @@ export default function LeadsAdminPage() {
                       <div className="flex gap-2.5 items-start">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#2563EB] mt-1.5 shrink-0" />
                         <div>
-                          <p className="text-xs font-semibold text-neutral-700">Outreach Delivered</p>
-                          <p className="text-[10px] text-[#6B7280]">Status switched to Contacted</p>
+                          <p className="text-xs font-semibold text-[var(--text-primary)]">Outreach Delivered</p>
+                          <p className="text-[10px] text-[var(--text-muted)]">Status switched to Contacted</p>
                         </div>
                       </div>
                     )}
@@ -1061,28 +1061,28 @@ export default function LeadsAdminPage() {
               </div>
 
               {/* Drawer Actions Footer */}
-              <div className="p-5 border-t border-[#E5E7EB] bg-slate-50/50 flex flex-col gap-2">
-                <Button onClick={() => router.push(`/admin/leads/${selectedLead.id}`)} className="w-full h-8.5 bg-white border border-[#E5E7EB] text-neutral-700 hover:bg-slate-50 text-[9px] font-semibold tracking-wide rounded-md shadow-sm">
+              <div className="p-5 border-t border-[var(--border-subtle)] bg-[var(--surface-2)]/60 flex flex-col gap-2">
+                <Button onClick={() => router.push(`/admin/leads/${selectedLead.id}`)} className="w-full h-8.5 bg-[var(--surface-1)] border border-[var(--border-subtle)] text-[var(--text-primary)] hover:bg-[var(--surface-2)] text-[9px] font-semibold tracking-wide rounded-md shadow-sm cursor-pointer">
                   Edit Lead Details
                 </Button>
-                {selectedLead.status === "qualified" && <div className="mb-1 rounded-lg border border-[#E5E7EB] bg-white px-3 py-2 text-[10px] text-[#6B7280]"><span className="font-bold uppercase tracking-wider text-neutral-700">Client invitation: </span>{invitation.status === "loading" ? "Checking…" : invitation.status === "accepted" ? "Accepted" : invitation.status === "sent" ? `Sent${invitation.email ? ` to ${invitation.email}` : ""}${invitation.expiresAt ? ` · expires ${new Date(invitation.expiresAt).toLocaleString()}` : ""}` : invitation.status === "expired" ? "Expired — resend required" : invitation.status === "revoked" ? "Revoked" : "Not invited"}</div>}
+                {selectedLead.status === "qualified" && <div className="mb-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--card)] px-3 py-2 text-[10px] text-[var(--text-muted)]"><span className="font-bold uppercase tracking-wider text-[var(--text-primary)]">Client invitation: </span>{invitation.status === "loading" ? "Checking…" : invitation.status === "accepted" ? "Accepted" : invitation.status === "sent" ? `Sent${invitation.email ? ` to ${invitation.email}` : ""}${invitation.expiresAt ? ` · expires ${new Date(invitation.expiresAt).toLocaleString()}` : ""}` : invitation.status === "expired" ? "Expired — resend required" : invitation.status === "revoked" ? "Revoked" : "Not invited"}</div>}
                 <div className="flex gap-2">
                   {selectedLead.status === "qualified" ? <Button
                     onClick={() => inviteQualifiedClient(selectedLead)}
                     isLoading={inviting || invitation.status === "loading"}
                     disabled={invitation.status === "accepted"}
-                    className="flex-1 h-8.5 bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700 text-[9px] font-semibold tracking-wide rounded-md shadow-sm disabled:bg-emerald-100 disabled:text-emerald-800"
+                    className="flex-1 h-8.5 bg-emerald-600 border border-emerald-700 text-white hover:bg-emerald-700 text-[9px] font-semibold tracking-wide rounded-md shadow-sm disabled:bg-emerald-100 disabled:text-emerald-800 cursor-pointer"
                   >{invitation.status === "accepted" ? "Invitation Accepted" : invitation.status === "sent" ? "Resend Invitation" : "Invite Client"}</Button> : <Button
                     onClick={() => updateStatus(selectedLead.id, 'qualified')}
                     isLoading={updatingId === selectedLead.id}
-                    className="flex-1 h-8.5 bg-white border border-[#E5E7EB] text-neutral-600 hover:bg-slate-50 text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
+                    className="flex-1 h-8.5 bg-[var(--surface-1)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:bg-[var(--surface-2)] text-[9px] font-semibold tracking-wide rounded-md shadow-sm cursor-pointer"
                   >Mark Qualified</Button>}
                   <Button 
                     onClick={() => {
                       generateAIOutreach(selectedLead);
                       showToast("Outreach generator active");
                     }}
-                    className="flex-1 h-8.5 bg-[#2563EB] hover:bg-blue-700 text-white text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
+                    className="flex-1 h-8.5 bg-[#2563EB] hover:bg-blue-700 text-white text-[9px] font-semibold tracking-wide rounded-md shadow-sm cursor-pointer"
                   >
                     Start Outreach
                   </Button>
@@ -1090,7 +1090,7 @@ export default function LeadsAdminPage() {
                 <Button 
                   onClick={() => alert("Proposal generator active for company.")}
                   variant="outline"
-                  className="w-full h-8.5 bg-white border border-[#E5E7EB] hover:bg-slate-50 text-neutral-500 text-[9px] font-semibold tracking-wide rounded-md shadow-sm"
+                  className="w-full h-8.5 bg-[var(--surface-1)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[9px] font-semibold tracking-wide rounded-md shadow-sm cursor-pointer"
                 >
                   Generate Proposal
                 </Button>

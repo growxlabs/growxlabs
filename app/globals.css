@@ -610,7 +610,7 @@ html.dark .notion-theme,
 
 /* Notion-style tables */
 .notion-theme table {
-  background-color: #ffffff !important;
+  background-color: var(--card) !important;
   border-collapse: collapse !important;
 }
 .notion-theme th {
@@ -620,11 +620,11 @@ html.dark .notion-theme,
   font-size: 11px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  border-bottom: 1px solid var(--border) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
   padding: 8px 12px !important;
 }
 .notion-theme td {
-  border-bottom: 1px solid var(--border) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
   padding: 10px 12px !important;
   color: var(--text-secondary) !important;
 }
@@ -1364,6 +1364,13 @@ html {
 /* ═══════════════════════════════════════════════════ */
 /* VERCEL DARK THEME — Global color overrides         */
 /* ═══════════════════════════════════════════════════ */
+.dark .notion-theme table,
+.dark .notion-theme tbody {
+  background-color: var(--card) !important;
+}
+.dark .notion-theme tr {
+  background-color: transparent !important;
+}
 .dark .notion-theme .bg-white {
   background-color: var(--card) !important;
 }
