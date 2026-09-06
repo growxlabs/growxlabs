@@ -6,6 +6,28 @@ import { Check, Loader2, FileText } from "lucide-react";
 import { useRouter } from "@/navigation-client";
 import { cn } from "@/lib/utils";
 import { FlickerText } from "@/components/marketing/FlickerText";
+import {
+  validateName,
+  validateEmail,
+  validatePhone,
+  validateLocation,
+  validateRole,
+  validateLinkedIn,
+  validateGitHub,
+  validatePortfolio,
+  validateExperience,
+  validateTechStack,
+  validateResume,
+  validateJobTitle,
+  validateCompany,
+  validateEmploymentType,
+  validateNoticePeriod,
+  validateMotivation,
+  validateApplicationPayload,
+  isValidLinkedIn,
+  isValidUrl,
+  normalizeUrl,
+} from "@/lib/careers/validation";
 
 // Roles matching 360labs reference screenshot exactly
 const ROLES = [
@@ -243,60 +265,50 @@ export function CareersContent() {
     return `● Q.${String(step).padStart(2, "0")}`;
   };
 
-  // Validation
+  // Update field and clear active error
+  const updateField = (field: keyof typeof formData, value: string) => {
+    setError("");
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Strict Validation for current step
   const validateCurrentStep = () => {
     switch (step) {
       case 1:
-        if (!formData.name.trim()) return "Full name is required.";
-        break;
-      case 2: {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!formData.email.trim()) return "Email address is required.";
-        if (!emailRegex.test(formData.email.trim())) return "Please enter a valid email address.";
-        break;
-      }
+        return validateName(formData.name) || "";
+      case 2:
+        return validateEmail(formData.email) || "";
       case 3:
-        if (!formData.phone.trim()) return "Phone number is required.";
-        break;
+        return validatePhone(formData.phone) || "";
       case 4:
-        if (!formData.location.trim()) return "Location is required.";
-        break;
+        return validateLocation(formData.location) || "";
       case 5:
-        if (!formData.role) return "Please select a target role.";
-        break;
+        return validateRole(formData.role) || "";
       case 7:
-        if (formData.linkedin.trim() && !formData.linkedin.toLowerCase().includes("linkedin.com")) {
-          return "That doesn't look like a LinkedIn profile. Try https://linkedin.com/in/yourname";
-        }
-        break;
+        return validateLinkedIn(formData.linkedin) || "";
+      case 8:
+        return validateGitHub(formData.github, formData.linkedin) || "";
+      case 9:
+        return validatePortfolio(formData.portfolio, formData.linkedin, formData.github) || "";
       case 10:
-        if (!formData.experience.trim()) return "Years of experience is required.";
-        break;
+        return validateExperience(formData.experience) || "";
       case 11:
-        if (!formData.techStack.trim()) return "Primary tech or tool is required.";
-        break;
+        return validateTechStack(formData.techStack) || "";
       case 12:
-        if (!formData.resume.trim()) return "Please upload your resume or CV.";
-        break;
+        return validateResume(formData.resume) || "";
       case 13:
-        if (!formData.jobTitle.trim()) return "Current or last job title is required.";
-        break;
+        return validateJobTitle(formData.jobTitle) || "";
       case 14:
-        if (!formData.company.trim()) return "Current or last company/school is required.";
-        break;
+        return validateCompany(formData.company, formData.jobTitle) || "";
       case 15:
-        if (!formData.employmentType) return "Please select an employment preference.";
-        break;
+        return validateEmploymentType(formData.employmentType) || "";
       case 16:
-        if (!formData.noticePeriod) return "Please select your notice period.";
-        break;
+        return validateNoticePeriod(formData.noticePeriod) || "";
       case 17:
-        if (formData.motivation.trim().length < 10) return "Please share a brief note on what drives you (at least 10 characters).";
-        break;
+        return validateMotivation(formData.motivation) || "";
       default:
-        break;
+        return "";
     }
-    return "";
   };
 
   // Navigation handlers
@@ -321,17 +333,17 @@ export function CareersContent() {
   };
 
   const selectRole = (roleTitle: string) => {
-    setFormData(prev => ({ ...prev, role: roleTitle }));
+    updateField("role", roleTitle);
     setTimeout(() => setStep(6), 150);
   };
 
   const selectEmploymentType = (type: string) => {
-    setFormData(prev => ({ ...prev, employmentType: type }));
+    updateField("employmentType", type);
     setTimeout(() => setStep(16), 150);
   };
 
   const selectNoticePeriod = (period: string) => {
-    setFormData(prev => ({ ...prev, noticePeriod: period }));
+    updateField("noticePeriod", period);
     setTimeout(() => setStep(17), 150);
   };
 
@@ -364,8 +376,15 @@ export function CareersContent() {
     }
   };
 
-  // Submit Handler: Posts exact schema to /api/careers
+  // Submit Handler: Validates full payload across all 17 steps and posts exact schema to /api/careers
   const submitApplication = async () => {
+    const validationError = validateApplicationPayload(formData);
+    if (validationError) {
+      setStep(validationError.step);
+      setError(validationError.error);
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
 
@@ -524,11 +543,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => updateField("name", e.target.value)}
                     placeholder="Jane Doe"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -548,11 +570,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => updateField("email", e.target.value)}
                     placeholder="name@example.com"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -572,11 +597,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) => updateField("phone", e.target.value)}
                     placeholder="+91 98765 43210"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -596,11 +624,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    onChange={(e) => updateField("location", e.target.value)}
                     placeholder="Bengaluru, India or Remote"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -651,6 +682,10 @@ export function CareersContent() {
                     );
                   })}
                 </div>
+
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
 
                 <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
                   <div className="flex items-center gap-3">
@@ -737,18 +772,20 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="url"
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={(e) => updateField("linkedin", e.target.value)}
                     placeholder="https://linkedin.com/in/..."
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
 
-                {/* 360labs inline validation note */}
-                {formData.linkedin.trim() && !formData.linkedin.toLowerCase().includes("linkedin.com") && (
+                {/* Inline validation / error note */}
+                {error ? (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                ) : (formData.linkedin.trim() && !isValidLinkedIn(formData.linkedin)) ? (
                   <p className="text-xs font-mono text-rose-400/90 pt-1">
                     ! That doesn't look like a LinkedIn profile. Try https://linkedin.com/in/yourname
                   </p>
-                )}
+                ) : null}
 
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
@@ -768,12 +805,26 @@ export function CareersContent() {
                   <input
                     ref={inputRef as any}
                     type="url"
-                    value={formData.github || formData.portfolio}
-                    onChange={(e) => setFormData({ ...formData, github: e.target.value, portfolio: e.target.value })}
+                    value={formData.github}
+                    onChange={(e) => updateField("github", e.target.value)}
                     placeholder="https://github.com/... or https://yourportfolio.com"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+
+                {/* Inline validation / error note */}
+                {error ? (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                ) : (formData.github.trim() && formData.linkedin.trim() && normalizeUrl(formData.github) === normalizeUrl(formData.linkedin)) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Duplicate detected: GitHub/Portfolio link cannot duplicate your LinkedIn profile.
+                  </p>
+                ) : (formData.github.trim() && !isValidUrl(formData.github)) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Please enter a valid URL (e.g. https://github.com/username or https://portfolio.com)
+                  </p>
+                ) : null}
+
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -793,11 +844,29 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="url"
                     value={formData.portfolio}
-                    onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                    onChange={(e) => updateField("portfolio", e.target.value)}
                     placeholder="https://..."
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+
+                {/* Inline validation / error note */}
+                {error ? (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                ) : (formData.portfolio.trim() && formData.linkedin.trim() && normalizeUrl(formData.portfolio) === normalizeUrl(formData.linkedin)) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Duplicate detected: This project link cannot duplicate your LinkedIn profile.
+                  </p>
+                ) : (formData.portfolio.trim() && formData.github.trim() && normalizeUrl(formData.portfolio) === normalizeUrl(formData.github)) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Duplicate detected: This project link cannot duplicate your GitHub/portfolio link.
+                  </p>
+                ) : (formData.portfolio.trim() && !isValidUrl(formData.portfolio)) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Please enter a valid project URL (e.g. https://case-study.com)
+                  </p>
+                ) : null}
+
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -817,11 +886,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                    onChange={(e) => updateField("experience", e.target.value)}
                     placeholder="Years (e.g. 2)"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -841,11 +913,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.techStack}
-                    onChange={(e) => setFormData({ ...formData, techStack: e.target.value })}
+                    onChange={(e) => updateField("techStack", e.target.value)}
                     placeholder="e.g. TypeScript / Next.js or Premiere Pro / Figma"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -926,6 +1001,10 @@ export function CareersContent() {
                   </div>
                 )}
 
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
+
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -945,11 +1024,14 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.jobTitle}
-                    onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                    onChange={(e) => updateField("jobTitle", e.target.value)}
                     placeholder="Software Engineer, Product Designer, or Student"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -969,11 +1051,20 @@ export function CareersContent() {
                     ref={inputRef as any}
                     type="text"
                     value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    onChange={(e) => updateField("company", e.target.value)}
                     placeholder="Company or College name"
                     className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
                   />
                 </div>
+
+                {error ? (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                ) : (formData.company.trim() && formData.jobTitle.trim() && formData.company.trim().toLowerCase() === formData.jobTitle.trim().toLowerCase()) ? (
+                  <p className="text-xs font-mono text-rose-400/90 pt-1">
+                    ! Duplicate detected: Company name cannot be identical to your job title.
+                  </p>
+                ) : null}
+
                 <ActionBar onNext={handleNext} onBack={handleBack} />
               </div>
             )}
@@ -1023,6 +1114,10 @@ export function CareersContent() {
                     );
                   })}
                 </div>
+
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
 
                 <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
                   <div className="flex items-center gap-3">
@@ -1102,6 +1197,10 @@ export function CareersContent() {
                   })}
                 </div>
 
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
+
                 <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
                   <div className="flex items-center gap-3">
                     <button
@@ -1148,11 +1247,20 @@ export function CareersContent() {
                     ref={inputRef as any}
                     rows={4}
                     value={formData.motivation}
-                    onChange={(e) => setFormData({ ...formData, motivation: e.target.value })}
+                    onChange={(e) => updateField("motivation", e.target.value)}
                     placeholder="Tell us what drives you, projects you're proud of, or why you want to build with us..."
                     className="w-full bg-transparent text-base sm:text-lg text-white outline-none font-sans placeholder-zinc-700 leading-relaxed resize-none font-normal"
                   />
                 </div>
+
+                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500 pt-1">
+                  <span>{formData.motivation.trim().length} characters (min 20)</span>
+                  <span>{formData.motivation.trim().split(/\s+/).filter(Boolean).length} words</span>
+                </div>
+
+                {error && (
+                  <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
+                )}
 
                 <div className="flex items-center justify-between pt-4">
                   <div className="flex items-center gap-3">
@@ -1208,13 +1316,6 @@ export function CareersContent() {
                   </button>
                 </div>
               </div>
-            )}
-
-            {/* Error Message */}
-            {error && step !== 7 && (
-              <p className="text-xs font-mono text-rose-400 pt-2 flex items-center gap-1.5">
-                <span>! {error}</span>
-              </p>
             )}
           </motion.div>
         </AnimatePresence>

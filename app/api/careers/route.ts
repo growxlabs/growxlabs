@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { validateApplicationPayload } from "@/lib/careers/validation";
 
 export async function POST(request: Request) {
   try {
@@ -24,10 +25,11 @@ export async function POST(request: Request) {
       motivation,
     } = body;
 
-    // Basic Validation
-    if (!name || !email) {
+    // Strict Validation & Anti-Duplication Enforcement
+    const validationError = validateApplicationPayload(body);
+    if (validationError) {
       return NextResponse.json(
-        { error: "Name and Email are required fields." },
+        { error: validationError.error, step: validationError.step },
         { status: 400 }
       );
     }
