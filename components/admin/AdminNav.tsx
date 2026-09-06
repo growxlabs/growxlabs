@@ -79,6 +79,7 @@ const NAV_GROUPS: NavGroup[] = [
       { name: "Lead Imports", href: "/admin/leads/imports", icon: IconFile },
       { name: "Lead Research", href: "/admin/leads/scrape", icon: IconZap },
       { name: "Products", href: "/admin/products", icon: IconFile },
+      { name: "ResumeForge AI", href: "/admin/resumeforge", icon: IconSparkle },
       { name: "Quotations", href: "/admin/quotations", icon: IconFile },
       { name: "Invoices", href: "/admin/invoices", icon: IconFinance },
       { name: "Proposals", href: "/admin/proposals", icon: IconFile },

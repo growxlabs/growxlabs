@@ -217,6 +217,26 @@ export default function InvoicesPage() {
         }
       `}</style>
 
+      {/* Product View Switcher */}
+      <div className="flex items-center gap-2 p-1.5 bg-[#141416] border border-neutral-800 rounded-xl w-fit no-print">
+        <button
+          className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white text-black shadow-sm transition-all flex items-center gap-2"
+        >
+          <CreditCard size={13} />
+          GrowX Consulting Invoices
+        </button>
+        <Link
+          href="/admin/resumeforge"
+          className="px-4 py-1.5 rounded-lg text-xs font-semibold text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all flex items-center gap-2"
+        >
+          <span className="w-2 h-2 rounded-full bg-indigo-500" />
+          ResumeForge AI Invoices
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-mono">
+            Venture
+          </span>
+        </Link>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 no-print">
         <div className="space-y-1">
