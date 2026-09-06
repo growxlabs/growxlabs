@@ -7,6 +7,7 @@
   --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-lora: Lora, Georgia, "Times New Roman", serif;
   --font-outfit: Outfit, "Segoe UI", Arial, sans-serif;
+  --font-mono: "Fira Code", monospace;
 }
 @variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
@@ -220,7 +221,7 @@ body:has(.candidate-portal-theme) {
   --font-serif: var(--font-serif), serif;
   --font-lora: var(--font-lora), serif;
   --font-outfit: var(--font-outfit), sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
