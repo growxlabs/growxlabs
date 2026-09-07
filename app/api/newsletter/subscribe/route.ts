@@ -54,7 +54,7 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: fromAddress,
           to: [rawEmail],
-          subject: "Subscription Confirmed · GrowxLabs Dispatch",
+          subject: "You’re subscribed to the GrowxLabs newsletter",
           html: `
             <!DOCTYPE html>
             <html lang="en">
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
                             <tr>
                               <td align="left">
                                 <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: #f8fafc;">GROWX LABS</span>
-                                <span style="font-size: 13px; font-weight: 400; color: #64748b; margin-left: 6px;">/ Technical Dispatch</span>
+                                <span style="font-size: 13px; font-weight: 400; color: #64748b; margin-left: 6px;">/ Newsletter</span>
                               </td>
                               <td align="right">
                                 <span style="font-size: 12px; color: #34d399; font-weight: 500;">Confirmed</span>
@@ -98,23 +98,23 @@ export async function POST(request: Request) {
                           </p>
 
                           <p style="font-size: 14px; line-height: 1.7; color: #cbd5e1; margin: 0 0 16px 0;">
-                            You are confirmed to receive new technical briefings from GrowxLabs. We publish engineering deep-dives covering frontier AI model architectures, distributed systems, and developer infrastructure.
+                            You’re now subscribed to the GrowxLabs newsletter. We’ll send you practical articles about software, artificial intelligence, and the systems that support modern businesses.
                           </p>
 
                           <p style="font-size: 14px; line-height: 1.7; color: #cbd5e1; margin: 0 0 24px 0;">
-                            Each edition includes architectural breakdowns, verified benchmark numbers, and practical implementation context. Zero sponsored filler or promotional marketing.
+                            Our articles explain what changed, why it matters, and how teams can apply it. We keep each edition focused, useful, and easy to follow.
                           </p>
 
                           <!-- Featured Edition Card -->
                           <div style="background-color: #171a23; border: 1px solid #232733; border-radius: 8px; padding: 20px; margin: 24px 0;">
                             <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #38bdf8; display: block; margin-bottom: 8px;">
-                              Current Edition
+                              Featured article
                             </span>
                             <h2 style="font-size: 16px; font-weight: 700; color: #f8fafc; margin: 0 0 8px 0; line-height: 1.4;">
                               GPT-6 Astra: Inside OpenAI’s Autonomous Desktop Agent
                             </h2>
                             <p style="font-size: 13px; line-height: 1.6; color: #94a3b8; margin: 0 0 16px 0;">
-                              A technical analysis of OSWorld 2.0 and BenchCAD benchmark evaluations, native computer control, and security thresholds.
+                              A clear look at new developments in AI software, how they work, and what they mean for people building products.
                             </p>
                             <a href="https://growxlabs.tech/blog/gpt-6-astra" style="display: inline-block; background-color: #0075de; color: #ffffff; font-size: 13px; font-weight: 600; padding: 9px 18px; text-decoration: none; border-radius: 6px;">
                               Read Article →
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
                           </div>
 
                           <p style="font-size: 13px; line-height: 1.6; color: #94a3b8; margin: 20px 0 0;">
-                            Expect new editions as notable systems or research papers are published.
+                            We’ll email you when there’s a useful new article to share—not for every update.
                           </p>
                         </td>
                       </tr>
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
                           <table width="100%" cellspacing="0" cellpadding="0">
                             <tr>
                               <td align="left" style="font-size: 12px; color: #64748b; line-height: 1.5;">
-                                GrowxLabs · Systems Engineering & Architecture<br>
+                                GrowxLabs · Software, AI & Product Engineering<br>
                                 <a href="https://growxlabs.tech" style="color: #64748b; text-decoration: underline;">growxlabs.tech</a>
                               </td>
                               <td align="right" style="font-size: 12px; color: #64748b; vertical-align: top;">

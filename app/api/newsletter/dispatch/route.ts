@@ -50,7 +50,7 @@ export async function POST(request: Request) {
                       <tr>
                         <td align="left">
                           <span style="font-size: 13px; font-weight: 700; letter-spacing: 0.05em; color: #f8fafc;">GROWX LABS</span>
-                          <span style="font-size: 13px; font-weight: 400; color: #64748b; margin-left: 6px;">/ Technical Dispatch</span>
+                          <span style="font-size: 13px; font-weight: 400; color: #64748b; margin-left: 6px;">/ Newsletter</span>
                         </td>
                         <td align="right">
                           <span style="font-size: 12px; color: #64748b;">
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
                   <td style="padding: 28px 32px 24px;">
                     
                     <span style="display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #38bdf8; background-color: rgba(56, 189, 248, 0.1); padding: 3px 8px; border-radius: 4px; margin-bottom: 14px;">
-                      Engineering Research
+                      Featured article
                     </span>
 
                     <h1 style="font-size: 22px; font-weight: 700; line-height: 1.35; color: #f8fafc; margin: 0 0 12px 0;">
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
                       <tr>
                         <td align="left">
                           <a href="${blogUrl}" style="display: inline-block; background-color: #0075de; color: #ffffff; font-size: 13px; font-weight: 600; padding: 12px 22px; text-decoration: none; border-radius: 6px;">
-                            Read Technical Breakdown →
+                            Read the article →
                           </a>
                         </td>
                       </tr>
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
                     <table width="100%" cellspacing="0" cellpadding="0">
                       <tr>
                         <td align="left" style="font-size: 12px; color: #64748b; line-height: 1.5;">
-                          GrowxLabs · Systems Engineering & Architecture<br>
+                          GrowxLabs · Software, AI & Product Engineering<br>
                           <a href="https://growxlabs.tech" style="color: #64748b; text-decoration: underline;">growxlabs.tech</a>
                         </td>
                         <td align="right" style="font-size: 12px; color: #64748b; vertical-align: top;">

@@ -508,7 +508,7 @@ export default function DispatchAdminClient({
 
             <div className="text-neutral-400">
               <span className="font-mono text-[11px] text-neutral-500 mr-2">To:</span>
-              <span className="text-neutral-300">subscriber@frontier-ai.org</span>
+              <span className="text-neutral-300">subscriber@example.com</span>
             </div>
 
             <div className="pt-1 text-white font-semibold text-sm">
@@ -525,7 +525,7 @@ export default function DispatchAdminClient({
               <div className="px-6 py-4 border-b border-[#1e2330] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <span className="font-bold text-xs tracking-wider text-[#f8fafc]">GROWX LABS</span>
-                  <span className="text-xs text-[#64748b]">/ Technical Dispatch</span>
+                  <span className="text-xs text-[#64748b]">/ Newsletter</span>
                 </div>
                 <span className="text-xs text-[#64748b] font-sans">September 2026</span>
               </div>
@@ -545,7 +545,7 @@ export default function DispatchAdminClient({
               {/* Email Content Body */}
               <div className="p-6 sm:p-8 space-y-3.5 font-sans">
                 <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-[#38bdf8] bg-[#38bdf8]/10 px-2 py-0.5 rounded">
-                  Engineering Research
+                  Featured article
                 </span>
 
                 <h2 className="text-xl sm:text-2xl font-bold text-[#f8fafc] tracking-tight leading-snug">
@@ -565,14 +565,14 @@ export default function DispatchAdminClient({
                 {/* CTA Action */}
                 <div className="pt-4 pb-1 text-left">
                   <span className="inline-block px-5 py-2.5 rounded-md bg-[#0075de] text-white font-semibold text-xs shadow-sm hover:bg-[#005bab] transition-colors">
-                    Read Technical Breakdown →
+                    Read the article →
                   </span>
                 </div>
               </div>
 
               {/* Footer */}
               <div className="px-6 py-4 border-t border-[#1e2330] bg-[#0f1117] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#64748b]">
-                <span>GrowxLabs · Systems Engineering & Architecture</span>
+                <span>GrowxLabs · Software, AI & Product Engineering</span>
                 <span className="text-[11px]">growxlabs.tech · Unsubscribe</span>
               </div>
 

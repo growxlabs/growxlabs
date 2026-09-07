@@ -66,14 +66,14 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: "GrowX Labs <blogs@growxlabs.tech>",
           to: sub.email,
-          subject: `Your Wish Led You Here — ${post.title} | GrowX Labs`,
+          subject: `${post.title} · GrowxLabs`,
           html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0d0d0c; color: #f4f4f5; border: 1px solid #1f1f23; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);">
               <div style="height: 4px; background: linear-gradient(90deg, #CC1F1F, #ff5757, #7f1d1d);"></div>
               
               <div style="padding: 32px 40px 24px; text-align: center; border-bottom: 1px solid #1f1f23;">
                 <span style="font-size: 20px; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; color: #ffffff; display: block; margin-bottom: 4px;">GROWX LABS</span>
-                <span style="font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #a1a1aa; display: block;">AI-Native Software & Product Studio</span>
+                <span style="font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #a1a1aa; display: block;">Software, AI & Product Engineering</span>
               </div>
               
               ${post.cover_image ? `
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 
               <div style="padding: 40px 40px 32px;">
                 <div style="border-left: 3px solid #CC1F1F; padding-left: 16px; margin-bottom: 32px; color: #d4d4d8; font-size: 14px; font-style: italic; line-height: 1.5;">
-                  "You made a wish on the One Wish Willow. Here is the path it revealed..."
+                  "A new article from GrowxLabs"
                 </div>
                 
                 <h2 style="color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.35; margin: 0 0 16px 0; letter-spacing: -0.01em;">
@@ -97,17 +97,17 @@ export async function POST(request: Request) {
                 
                 <div style="text-align: center; margin: 32px 0 16px;">
                   <a href="${blogPostUrl}" style="display: inline-block; background-color: #CC1F1F; color: #ffffff; padding: 14px 32px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; border-radius: 6px; box-shadow: 0 4px 12px rgba(204, 31, 31, 0.3);">
-                    Read Full Insight
+                    Read the article
                   </a>
                 </div>
               </div>
               
               <div style="padding: 32px 40px; background-color: #080808; border-top: 1px solid #1f1f23; text-align: center;">
                 <p style="color: #71717a; font-size: 11px; margin: 0 0 8px 0; line-height: 1.6;">
-                  This email was dispatched because you engaged with the One Wish Willow portal.
+                  You’re receiving this email because you subscribed to GrowxLabs updates.
                 </p>
                 <p style="color: #71717a; font-size: 11px; margin: 0; line-height: 1.6;">
-                  Want to opt out? <a href="${unsubscribeUrl}" style="color: #a1a1aa; text-decoration: underline; font-weight: 500;">Unsubscribe here</a>.
+                  Prefer not to receive these emails? <a href="${unsubscribeUrl}" style="color: #a1a1aa; text-decoration: underline; font-weight: 500;">Unsubscribe here</a>.
                 </p>
               </div>
             </div>
