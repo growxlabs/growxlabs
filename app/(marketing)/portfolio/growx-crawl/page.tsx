@@ -191,158 +191,256 @@ export default function GrowXCrawlCaseStudy() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            04 — PLATFORM ARCHITECTURE (Wide Horizontal Blueprint)
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16 space-y-8">
-          <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 03 ARCHITECTURE
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Platform Architecture
-            </h2>
-            <p className="text-muted-foreground text-base max-w-3xl leading-relaxed">
-              System architecture detailing the dual-engine crawl pipeline, extraction layers, and evidence storage.
-            </p>
-          </div>
-
-          <div className="w-full overflow-x-auto py-6 border-y border-neutral-800/80">
-            <div className="min-w-[1000px] max-w-[1300px] mx-auto">
-              <svg viewBox="0 0 1200 520" className="w-full h-auto text-foreground" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Zone Headers */}
-                <g className="font-mono text-[10px] font-bold tracking-[0.2em] fill-[#bdefff] uppercase">
-                  <text x="30" y="24">01 / INPUT &amp; RUNTIME</text>
-                  <text x="280" y="24">02 / CRAWL &amp; ENGINE</text>
-                  <text x="600" y="24">03 / EXTRACTION &amp; AUDITS</text>
-                  <text x="920" y="24">04 / OUTPUT &amp; DELIVERY</text>
-                </g>
-
-                {/* Vertical Zone Demarcators */}
-                <line x1="240" y1="10" x2="240" y2="420" stroke="#262626" strokeWidth="1" strokeDasharray="3 3" />
-                <line x1="560" y1="10" x2="560" y2="420" stroke="#262626" strokeWidth="1" strokeDasharray="3 3" />
-                <line x1="880" y1="10" x2="880" y2="420" stroke="#262626" strokeWidth="1" strokeDasharray="3 3" />
-
-                {/* Flow Connectors */}
-                <line x1="170" y1="90" x2="200" y2="90" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                <line x1="170" y1="210" x2="200" y2="210" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                
-                <path d="M 230 210 C 260 210, 260 90, 290 90" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="290,90 282,86 282,94" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 230 210 C 260 210, 260 160, 290 160" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="290,160 282,156 282,164" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 230 210 L 290 210" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                <polygon points="290,210 282,206 282,214" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 420 210 C 440 210, 440 185, 460 185" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="460,185 452,181 452,189" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 420 210 C 440 210, 440 235, 460 235" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="460,235 452,231 452,239" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 540 210 L 580 210" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                <polygon points="580,210 572,206 572,214" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 700 200 C 720 200, 720 120, 740 120" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="740,120 732,116 732,124" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 700 220 C 720 220, 720 300, 740 300" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="740,300 732,296 732,304" fill="#bdefff" fillOpacity="0.8" />
-
-                <line x1="860" y1="120" x2="890" y2="120" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                <polygon points="890,120 882,116 882,124" fill="#bdefff" fillOpacity="0.8" />
-
-                <line x1="860" y1="300" x2="890" y2="300" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" />
-                <polygon points="890,300 882,296 882,304" fill="#bdefff" fillOpacity="0.8" />
-
-                <path d="M 1010 120 C 1040 120, 1040 210, 1060 210" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <path d="M 1010 300 C 1040 300, 1040 210, 1060 210" stroke="#bdefff" strokeWidth="1.2" strokeOpacity="0.6" fill="none" />
-                <polygon points="1060,210 1052,206 1052,214" fill="#bdefff" fillOpacity="0.8" />
-
-                {/* Nodes Zone 01 */}
-                <g>
-                  <rect x="30" y="65" width="140" height="50" rx="4" fill="#141414" stroke="#333333" />
-                  <text x="100" y="88" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Research Goal</text>
-                  <text x="100" y="103" textAnchor="middle" fill="#888888" fontFamily="monospace" fontSize="8.5">Seed URL / Topic</text>
-
-                  <rect x="30" y="185" width="140" height="50" rx="4" fill="#141414" stroke="#333333" />
-                  <text x="100" y="208" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">CLI / Agent</text>
-                  <text x="100" y="223" textAnchor="middle" fill="#888888" fontFamily="monospace" fontSize="8.5">Local Node Runtime</text>
-                </g>
-
-                {/* Nodes Zone 02 */}
-                <g>
-                  <rect x="290" y="68" width="130" height="42" rx="3" fill="#121212" stroke="#333333" />
-                  <text x="355" y="93" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="10" fontWeight="bold">DISCOVERY</text>
-
-                  <rect x="290" y="138" width="130" height="42" rx="3" fill="#121212" stroke="#333333" />
-                  <text x="355" y="163" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="10" fontWeight="bold">SITE MAPPING</text>
-
-                  <rect x="290" y="195" width="130" height="60" rx="4" fill="#181818" stroke="#555555" />
-                  <text x="355" y="222" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Crawl Engine</text>
-                  <text x="355" y="238" textAnchor="middle" fill="#bdefff" fontFamily="monospace" fontSize="8">Dual-Mode Fetch</text>
-
-                  <rect x="460" y="165" width="80" height="30" rx="3" fill="#0f0f0f" stroke="#2a2a2a" />
-                  <text x="500" y="184" textAnchor="middle" fill="#AAAAAA" fontFamily="monospace" fontSize="8.5">FAST HTTP</text>
-
-                  <rect x="460" y="220" width="80" height="30" rx="3" fill="#0f0f0f" stroke="#2a2a2a" />
-                  <text x="500" y="239" textAnchor="middle" fill="#AAAAAA" fontFamily="monospace" fontSize="8.5">PLAYWRIGHT</text>
-
-                  <rect x="580" y="185" width="120" height="50" rx="4" fill="#181818" stroke="#bdefff" strokeWidth="1.2" />
-                  <text x="640" y="208" textAnchor="middle" fill="#FFFFFF" fontFamily="serif" fontSize="11" fontWeight="bold">Page Intelligence</text>
-                  <text x="640" y="222" textAnchor="middle" fill="#bdefff" fontFamily="monospace" fontSize="8">DOM &amp; Schema Parser</text>
-                </g>
-
-                {/* Nodes Zone 03 */}
-                <g>
-                  <rect x="740" y="98" width="120" height="42" rx="3" fill="#141414" stroke="#333333" />
-                  <text x="800" y="123" textAnchor="middle" fill="#E5E5E5" fontFamily="monospace" fontSize="9.5" fontWeight="bold">EXTRACTION</text>
-
-                  <rect x="890" y="98" width="120" height="42" rx="3" fill="#141414" stroke="#444444" />
-                  <text x="950" y="118" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10" fontWeight="bold">Evidence Layer</text>
-                  <text x="950" y="130" textAnchor="middle" fill="#888888" fontFamily="monospace" fontSize="8">DuckDB Hash Trace</text>
-
-                  <rect x="740" y="278" width="120" height="42" rx="3" fill="#141414" stroke="#333333" />
-                  <text x="800" y="303" textAnchor="middle" fill="#E5E5E5" fontFamily="monospace" fontSize="9.5" fontWeight="bold">SEO / AEO / GEO</text>
-
-                  <rect x="890" y="278" width="120" height="42" rx="3" fill="#141414" stroke="#444444" />
-                  <text x="950" y="298" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10" fontWeight="bold">Visibility Analysis</text>
-                  <text x="950" y="310" textAnchor="middle" fill="#888888" fontFamily="monospace" fontSize="8">Comparative Index</text>
-                </g>
-
-                {/* Nodes Zone 04 */}
-                <g>
-                  <rect x="1060" y="170" width="115" height="80" rx="6" fill="#1a2630" stroke="#bdefff" strokeWidth="1.5" />
-                  <text x="1117" y="200" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Research Output</text>
-                  <text x="1117" y="216" textAnchor="middle" fill="#bdefff" fontFamily="monospace" fontSize="8.5">JSON · CSV · PDF</text>
-                  <text x="1117" y="232" textAnchor="middle" fill="#888888" fontFamily="monospace" fontSize="8">GrowxLabs Dossier</text>
-                </g>
-
-                {/* Bottom Rail */}
-                <line x1="30" y1="440" x2="1170" y2="440" stroke="#222222" strokeWidth="1" />
-                <text x="600" y="430" textAnchor="middle" fill="#666666" fontFamily="monospace" fontSize="9" fontWeight="bold" letterSpacing="0.2em">
-                  // RUNTIME ENGINES &amp; INTEGRATIONS
-                </text>
-
-                <g fontFamily="monospace" fontSize="9.5" fill="#A3A3A3">
-                  <rect x="160" y="460" width="160" height="28" rx="3" fill="#0d0d0d" stroke="#2a2a2a" />
-                  <text x="240" y="478" textAnchor="middle">CHROMIUM / HEADLESS</text>
-
-                  <rect x="380" y="460" width="160" height="28" rx="3" fill="#0d0d0d" stroke="#2a2a2a" />
-                  <text x="460" y="478" textAnchor="middle">SITEMAP / DNS RESOLVER</text>
-
-                  <rect x="600" y="460" width="160" height="28" rx="3" fill="#0d0d0d" stroke="#2a2a2a" />
-                  <text x="680" y="478" textAnchor="middle">LOCAL DUCKDB PERSISTENCE</text>
-
-                  <rect x="820" y="460" width="160" height="28" rx="3" fill="#0d0d0d" stroke="#2a2a2a" />
-                  <text x="900" y="478" textAnchor="middle">PDF &amp; MEDIA SCREENSHOTS</text>
-                </g>
-              </svg>
-            </div>
-          </div>
-        </section>
+        {/* ══════════════════════════════════════════════════════════════════
+            03 — PLATFORM ARCHITECTURE (Engineering Blueprint & Pipeline)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16 space-y-10">
+          <div className="space-y-3">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+              // 03 ARCHITECTURE
+            </span>
+            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
+              Platform Architecture
+            </h2>
+            <p className="text-muted-foreground text-base max-w-3xl leading-relaxed">
+              End-to-end technical blueprint detailing dual-engine ingestion, stealth browser orchestration, multi-dimensional auditing, cryptographic provenance, and CRM pipeline sync.
+            </p>
+          </div>
+
+          {/* SVG Blueprint Canvas */}
+          <div className="w-full overflow-x-auto py-6 px-2 border-y border-neutral-800/80 bg-[#060608] rounded-xl">
+            <div className="min-w-[1100px] max-w-[1340px] mx-auto">
+              <svg viewBox="0 0 1280 540" className="w-full h-auto text-foreground" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C0F0FB" />
+                  </marker>
+                  <marker id="arrowDim" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#52525B" />
+                  </marker>
+                  <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#15151A" />
+                    <stop offset="100%" stopColor="#0D0D11" />
+                  </linearGradient>
+                  <linearGradient id="activeGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#18232C" />
+                    <stop offset="100%" stopColor="#0D151C" />
+                  </linearGradient>
+                </defs>
+
+                {/* Zone Headers */}
+                <g className="font-mono text-[10.5px] font-bold tracking-[0.2em] fill-[#C0F0FB] uppercase">
+                  <text x="35" y="24">01 / INGESTION &amp; RUNTIME</text>
+                  <text x="320" y="24">02 / CRAWL &amp; RESILIENCE</text>
+                  <text x="655" y="24">03 / INTELLIGENCE &amp; AUDITS</text>
+                  <text x="990" y="24">04 / EVIDENCE &amp; DELIVERY</text>
+                </g>
+
+                {/* Vertical Zone Demarcators */}
+                <line x1="295" y1="10" x2="295" y2="445" stroke="#222228" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="630" y1="10" x2="630" y2="445" stroke="#222228" strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="965" y1="10" x2="965" y2="445" stroke="#222228" strokeWidth="1" strokeDasharray="3 3" />
+
+                {/* ── FLOW CONNECTORS ── */}
+                <path d="M 260 92 L 315 92" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 260 185 C 285 185, 285 195, 315 195" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 260 278 C 285 278, 285 205, 315 205" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 455 120 L 455 135 C 455 145, 415 145, 395 155" stroke="#52525B" strokeWidth="1.2" strokeOpacity="0.6" markerEnd="url(#arrowDim)" fill="none" />
+                <path d="M 435 178 C 450 178, 455 168, 470 168" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 435 218 C 450 218, 455 228, 470 228" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 545 250 L 545 270" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" strokeDasharray="3 3" fill="none" />
+                <path d="M 380 275 C 380 255, 380 245, 380 238" stroke="#52525B" strokeWidth="1.2" strokeOpacity="0.6" markerEnd="url(#arrowDim)" fill="none" />
+                <path d="M 610 168 C 630 168, 635 185, 650 185" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 610 228 C 630 228, 635 210, 650 210" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 785 175 C 805 175, 805 92, 820 92" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 785 198 L 820 198" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 785 220 C 805 220, 805 302, 820 302" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 950 92 L 985 92" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 950 198 L 985 198" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 950 302 C 965 302, 970 215, 985 215" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 1105 125 L 1105 155" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+                <path d="M 1105 238 L 1105 268" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.65" markerEnd="url(#arrow)" fill="none" />
+
+                {/* ── ZONE 01: INGESTION & RUNTIME ── */}
+                <g>
+                  <rect x="35" y="65" width="225" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="45" y="73" width="70" height="13" rx="2" fill="#1C1C24" />
+                  <text x="80" y="82.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">INPUT SPEC</text>
+                  <text x="45" y="99" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Seed URLs &amp; Batch Scope</text>
+                  <text x="45" y="111" fill="#888896" fontFamily="monospace" fontSize="8">Sitemaps · CSV seeds · Schema rules</text>
+
+                  <rect x="35" y="157" width="225" height="55" rx="6" fill="url(#activeGrad)" stroke="#C0F0FB" strokeWidth="1" strokeOpacity="0.4" />
+                  <rect x="45" y="165" width="82" height="13" rx="2" fill="#142633" />
+                  <text x="86" y="174.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">FASTAPI SURFACE</text>
+                  <text x="45" y="191" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Web Control Center (Port 7411)</text>
+                  <text x="45" y="203" fill="#888896" fontFamily="monospace" fontSize="8">Live SSE Stream · REST API · Metrics</text>
+
+                  <rect x="35" y="250" width="225" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="45" y="258" width="86" height="13" rx="2" fill="#1C1C24" />
+                  <text x="88" y="267.5" textAnchor="middle" fill="#A1A1AA" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">AGENT RUNTIME</text>
+                  <text x="45" y="284" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Python 3.12 CLI &amp; Daemon</text>
+                  <text x="45" y="296" fill="#888896" fontFamily="monospace" fontSize="8">AsyncIO loop · High-concurrency queues</text>
+                </g>
+
+                {/* ── ZONE 02: CRAWL & RESILIENCE ── */}
+                <g>
+                  <rect x="320" y="65" width="275" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="330" y="73" width="98" height="13" rx="2" fill="#1C1C24" />
+                  <text x="379" y="82.5" textAnchor="middle" fill="#A1A1AA" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">FRONTIER DISCOVERY</text>
+                  <text x="330" y="99" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">Sitemap &amp; Link Graph Explorer</text>
+                  <text x="330" y="111" fill="#888896" fontFamily="monospace" fontSize="8">Recursive BFS · Robots.txt · Canonical audit</text>
+
+                  <rect x="320" y="155" width="115" height="85" rx="6" fill="url(#cardGrad)" stroke="#383844" strokeWidth="1.2" />
+                  <rect x="328" y="163" width="82" height="13" rx="2" fill="#202028" />
+                  <text x="369" y="172.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.2" fontWeight="bold" letterSpacing="0.06em">SMART ROUTER</text>
+                  <text x="377" y="196" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11.5" fontWeight="bold">Dual-Engine</text>
+                  <text x="377" y="210" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11.5" fontWeight="bold">Dispatcher</text>
+                  <text x="377" y="226" textAnchor="middle" fill="#888896" fontFamily="monospace" fontSize="7.5">Auto-escalate</text>
+
+                  <rect x="475" y="146" width="135" height="44" rx="5" fill="#101015" stroke="#2B2B34" strokeWidth="1" />
+                  <text x="485" y="163" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10.5" fontWeight="bold">Fast HTTP Tier</text>
+                  <text x="485" y="176" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5">HTTP/2 · TLS Spoof · ~112ms</text>
+
+                  <rect x="475" y="206" width="135" height="44" rx="5" fill="#101015" stroke="#2B2B34" strokeWidth="1" />
+                  <text x="485" y="223" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10.5" fontWeight="bold">Stealth Chromium</text>
+                  <text x="485" y="236" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5">Playwright · 64 Sessions</text>
+
+                  <rect x="320" y="275" width="290" height="55" rx="6" fill="url(#cardGrad)" stroke="#30303C" strokeWidth="1" />
+                  <rect x="330" y="283" width="94" height="13" rx="2" fill="#202028" />
+                  <text x="377" y="292.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">RESILIENCE SHIELD</text>
+                  <text x="330" y="309" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">WAF &amp; Anti-Bot Evasion Layer</text>
+                  <text x="330" y="321" fill="#888896" fontFamily="monospace" fontSize="8">Cloudflare Turnstile · Fingerprint spoof · Proxies</text>
+                </g>
+
+                {/* ── ZONE 03: INTELLIGENCE & AUDITS ── */}
+                <g>
+                  <rect x="655" y="155" width="130" height="85" rx="6" fill="url(#activeGrad)" stroke="#C0F0FB" strokeWidth="1.2" strokeOpacity="0.5" />
+                  <rect x="665" y="163" width="80" height="13" rx="2" fill="#142633" />
+                  <text x="705" y="172.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.2" fontWeight="bold" letterSpacing="0.06em">DOM ENGINE</text>
+                  <text x="720" y="196" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11.5" fontWeight="bold">Page Intelligence</text>
+                  <text x="720" y="210" textAnchor="middle" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11.5" fontWeight="bold">Core</text>
+                  <text x="720" y="226" textAnchor="middle" fill="#888896" fontFamily="monospace" fontSize="7.5">Semantic AST &amp; MD</text>
+
+                  <rect x="825" y="65" width="125" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="833" y="73" width="68" height="13" rx="2" fill="#1C1C24" />
+                  <text x="867" y="82.5" textAnchor="middle" fill="#A1A1AA" fontFamily="monospace" fontSize="7.2" fontWeight="bold" letterSpacing="0.06em">EXTRACTION</text>
+                  <text x="833" y="99" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10.5" fontWeight="bold">Structured Data</text>
+                  <text x="833" y="111" fill="#888896" fontFamily="monospace" fontSize="7.5">Pydantic Schemas · Profiles</text>
+
+                  <rect x="825" y="160" width="125" height="75" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="833" y="168" width="62" height="13" rx="2" fill="#1C1C24" />
+                  <text x="864" y="177.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.2" fontWeight="bold" letterSpacing="0.06em">AUDIT SUITE</text>
+                  <text x="833" y="196" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">SEO · AEO · GEO</text>
+                  <text x="833" y="210" fill="#888896" fontFamily="monospace" fontSize="7.8">0–100 Engine Scores</text>
+                  <text x="833" y="223" fill="#888896" fontFamily="monospace" fontSize="7.5">AI Citations &amp; Vitals</text>
+
+                  <rect x="825" y="275" width="125" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="833" y="283" width="76" height="13" rx="2" fill="#1C1C24" />
+                  <text x="871" y="292.5" textAnchor="middle" fill="#A1A1AA" fontFamily="monospace" fontSize="7.2" fontWeight="bold" letterSpacing="0.06em">VISUAL ENGINE</text>
+                  <text x="833" y="309" fill="#FFFFFF" fontFamily="sans-serif" fontSize="10.5" fontWeight="bold">Screenshots &amp; PDF</text>
+                  <text x="833" y="321" fill="#888896" fontFamily="monospace" fontSize="7.5">Full-Page Viewports</text>
+                </g>
+
+                {/* ── ZONE 04: EVIDENCE & DELIVERY ── */}
+                <g>
+                  <rect x="990" y="65" width="245" height="60" rx="6" fill="url(#cardGrad)" stroke="#30303C" strokeWidth="1" />
+                  <rect x="1000" y="73" width="94" height="13" rx="2" fill="#1E2028" />
+                  <text x="1047" y="82.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">EVIDENCE VAULT</text>
+                  <text x="1000" y="100" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11.5" fontWeight="bold">DuckDB Provenance Store</text>
+                  <text x="1000" y="113" fill="#888896" fontFamily="monospace" fontSize="8">SHA-256 Hashes · Raw HTML archive · Audit log</text>
+
+                  <rect x="990" y="157" width="245" height="80" rx="6" fill="url(#activeGrad)" stroke="#C0F0FB" strokeWidth="1.4" />
+                  <rect x="1000" y="165" width="92" height="13" rx="2" fill="#142633" />
+                  <text x="1046" y="174.5" textAnchor="middle" fill="#C0F0FB" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">RESEARCH OUTPUT</text>
+                  <text x="1000" y="195" fill="#FFFFFF" fontFamily="sans-serif" fontSize="13" fontWeight="bold">Multi-Format Delivery</text>
+                  <text x="1000" y="210" fill="#C0F0FB" fontFamily="monospace" fontSize="8.5">JSON · JSONL · CSV · XLSX · PDF</text>
+                  <text x="1000" y="225" fill="#888896" fontFamily="monospace" fontSize="8">GrowxLabs Enterprise Intelligence Dossier</text>
+
+                  <rect x="990" y="270" width="245" height="55" rx="6" fill="url(#cardGrad)" stroke="#26262E" strokeWidth="1" />
+                  <rect x="1000" y="278" width="98" height="13" rx="2" fill="#1C1C24" />
+                  <text x="1049" y="287.5" textAnchor="middle" fill="#A1A1AA" fontFamily="monospace" fontSize="7.5" fontWeight="bold" letterSpacing="0.08em">ENTERPRISE INGEST</text>
+                  <text x="1000" y="304" fill="#FFFFFF" fontFamily="sans-serif" fontSize="11" fontWeight="bold">GrowxLabs Lead Pipeline</text>
+                  <text x="1000" y="316" fill="#888896" fontFamily="monospace" fontSize="8">Webhook sync to /api/internal/leads/ingest</text>
+                </g>
+
+                {/* ── BOTTOM RAIL ── */}
+                <line x1="35" y1="445" x2="1235" y2="445" stroke="#222228" strokeWidth="1" />
+                <text x="635" y="435" textAnchor="middle" fill="#71717A" fontFamily="monospace" fontSize="9" fontWeight="bold" letterSpacing="0.22em">
+                  // CORE SUBSYSTEM RUNTIMES &amp; ENTERPRISE PROTOCOLS
+                </text>
+
+                <g fontFamily="monospace" fontSize="9" fill="#A1A1AA">
+                  <rect x="35" y="465" width="220" height="32" rx="4" fill="#0C0C10" stroke="#24242C" />
+                  <text x="145" y="485" textAnchor="middle">PYTHON 3.12 / ASYNCIO RUNTIME</text>
+
+                  <rect x="275" y="465" width="225" height="32" rx="4" fill="#0C0C10" stroke="#24242C" />
+                  <text x="387.5" y="485" textAnchor="middle">PLAYWRIGHT CHROMIUM 64-POOL</text>
+
+                  <rect x="520" y="465" width="220" height="32" rx="4" fill="#0C0C10" stroke="#24242C" />
+                  <text x="630" y="485" textAnchor="middle">LOCAL DUCKDB SQL PERSISTENCE</text>
+
+                  <rect x="760" y="465" width="225" height="32" rx="4" fill="#0C0C10" stroke="#24242C" />
+                  <text x="872.5" y="485" textAnchor="middle">WAF &amp; TURNSTILE RESILIENCE</text>
+
+                  <rect x="1005" y="465" width="230" height="32" rx="4" fill="#0C0C10" stroke="#24242C" />
+                  <text x="1120" y="485" textAnchor="middle">FASTAPI SSE &amp; REST API SUITE</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          {/* 4-Stage Technical Breakdown Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
+            <div className="border border-neutral-800/80 bg-[#0A0A0C] p-6 rounded-xl space-y-3">
+              <span className="font-mono text-xs font-bold text-primary tracking-widest block">
+                01 / INGESTION
+              </span>
+              <h3 className="font-serif text-lg font-bold text-foreground">
+                Dual Control &amp; Scheduling
+              </h3>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                Native FastAPI web surface on port 7411 with real-time SSE streaming alongside a low-overhead Python 3.12 async CLI. Supports single URLs, XML sitemaps, and 100+ domain batch queues.
+              </p>
+            </div>
+
+            <div className="border border-neutral-800/80 bg-[#0A0A0C] p-6 rounded-xl space-y-3">
+              <span className="font-mono text-xs font-bold text-primary tracking-widest block">
+                02 / FETCH &amp; EVASION
+              </span>
+              <h3 className="font-serif text-lg font-bold text-foreground">
+                Smart Dual-Mode Dispatch
+              </h3>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                Sub-150ms HTTP/2 tier with TLS spoofing for high-throughput discovery, escalating autonomously to a 64-session Playwright Chromium pool when Cloudflare, JS gates, or Turnstile challenges are met.
+              </p>
+            </div>
+
+            <div className="border border-neutral-800/80 bg-[#0A0A0C] p-6 rounded-xl space-y-3">
+              <span className="font-mono text-xs font-bold text-primary tracking-widest block">
+                03 / INTELLIGENCE
+              </span>
+              <h3 className="font-serif text-lg font-bold text-foreground">
+                Tri-Engine Audits &amp; DOM AST
+              </h3>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                DOM normalized into semantic Markdown with Pydantic extraction. Concurrently calculates 0–100 scores across SEO, AEO (Answer Engine Optimization), and GEO (Generative search visibility).
+              </p>
+            </div>
+
+            <div className="border border-neutral-800/80 bg-[#0A0A0C] p-6 rounded-xl space-y-3">
+              <span className="font-mono text-xs font-bold text-primary tracking-widest block">
+                04 / STORAGE &amp; SYNC
+              </span>
+              <h3 className="font-serif text-lg font-bold text-foreground">
+                DuckDB Provenance &amp; API Ingest
+              </h3>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                Embedded DuckDB SQL warehouse cryptographically seals raw HTML snapshots with SHA-256 hashes. Delivers clean JSONL, CSV, and PDF briefs, syncing directly with the internal GrowxLabs lead pipeline.
+              </p>
+            </div>
+          </div>
+        </section>
+
 
         {/* ══════════════════════════════════════════════════════════════════
             04 — PLATFORM SURFACES (Playground & API Reference)
