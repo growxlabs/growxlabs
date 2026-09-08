@@ -549,14 +549,25 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
               </button>
             </div>
 
-            {/* Selection Tag Pill */}
-            <span className="text-[9px] font-mono text-[#8e8e93] uppercase bg-[#1f1f21] px-2 py-0.5 rounded border border-[#383838] shrink-0">
-              {isFooterSelected
-                ? "Footer"
-                : selectedElement
-                  ? selectedElement
-                  : `Slide ${activeIndex + 1}`}
-            </span>
+            {/* Selection Tag Pill / Quick Deselect Button */}
+            {selectedElement || isFooterSelected ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectElement(null);
+                  onSelectFooter(false);
+                }}
+                className="text-[9px] font-mono text-[#38bdf8] hover:text-white uppercase bg-[#1f1f21] hover:bg-white/10 px-2 py-0.5 rounded border border-[#383838] hover:border-white/20 shrink-0 flex items-center gap-1.5 cursor-pointer transition-colors group shadow-sm"
+                title="Click to deselect element (or press Escape)"
+              >
+                <span>{isFooterSelected ? "Footer" : selectedElement}</span>
+                <span className="text-[#8e8e93] group-hover:text-white font-bold text-[10px]">✕</span>
+              </button>
+            ) : (
+              <span className="text-[9px] font-mono text-[#8e8e93] uppercase bg-[#1f1f21] px-2 py-0.5 rounded border border-[#383838] shrink-0">
+                Slide {activeIndex + 1}
+              </span>
+            )}
           </div>
         )}
       </div>

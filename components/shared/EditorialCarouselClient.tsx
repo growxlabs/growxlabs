@@ -1955,6 +1955,18 @@ export function EditorialCarouselClient() {
       };
       document.addEventListener("mousemove", handleViewportMouseMove);
       document.addEventListener("mouseup", handleViewportMouseUp);
+    } else if (e.button === 0) {
+      // Primary click on canvas background -> deselect active element/footer
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest("button") &&
+        !target.closest("input") &&
+        !target.closest("a") &&
+        !target.closest(".editor-controls")
+      ) {
+        setSelectedElement(null);
+        setIsFooterSelected(false);
+      }
     }
   };
 
@@ -4370,6 +4382,12 @@ export function EditorialCarouselClient() {
                   {/* Active Artboard Frame */}
                   <div
                     className="editor-canvas bg-white relative select-none overflow-hidden ring-2 ring-[#1687f8] shadow-[0_8px_32px_rgba(0,0,0,0.22)]"
+                    onMouseDown={(e) => {
+                      if (e.button === 0) {
+                        setSelectedElement(null);
+                        setIsFooterSelected(false);
+                      }
+                    }}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.dataTransfer.dropEffect = "copy";
