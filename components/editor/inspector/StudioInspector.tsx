@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   AlignLeft,
   AlignCenter,
@@ -106,6 +106,7 @@ interface StudioInspectorProps {
   onFormatChange: (preset: CanvasPreset) => void;
   onDownloadPng: () => void;
   onDownloadPdf: () => void;
+  onDownloadZip?: () => void;
   onDownloadMp4: () => void;
   onDownloadAllSvg: () => void;
   onClose?: () => void;
@@ -138,6 +139,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   onFormatChange,
   onDownloadPng,
   onDownloadPdf,
+  onDownloadZip,
   onDownloadMp4,
   onDownloadAllSvg,
   onClose,
@@ -203,6 +205,20 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
     }
   };
   const [activeFlexPos, setActiveFlexPos] = useState<[number, number]>([1, 1]); // [row, col] center default
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+    if (showExportMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
 
   useEffect(() => {
     setTempName(projectName || "");
@@ -417,19 +433,93 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
       </div>
 
       {/* ----------------------------------------------------
-          2. ACTION ROW: "Copy link Ctrl + L" & Mode Pill
+          2. ACTION ROW: "Export / Download" & "Share" & Mode Pill
           ---------------------------------------------------- */}
       <div className="px-3 pt-2.5 pb-2 border-b border-[#353535] space-y-2 shrink-0 bg-[#2a2a2a]">
-        {/* Paper Full-Width Action Button */}
-        <button
-          type="button"
-          onClick={handleCopyLink}
-          className="h-[30px] w-full bg-[#373737] hover:bg-[#404040] active:bg-[#323232] text-[#ececec] text-[11px] font-medium rounded-lg flex items-center justify-center gap-1.5 border border-[#48484a]/40 cursor-pointer shadow-sm transition-all select-none"
-          title="Copy Link (Ctrl + L)"
-        >
-          <span>Copy link</span>
-          <span className="text-[10px] text-[#8e8e93] font-mono ml-0.5">Ctrl + L</span>
-        </button>
+        {/* Main Action Buttons */}
+        <div className="flex items-center gap-1.5">
+          <div ref={exportMenuRef} className="relative flex-1">
+            <button
+              type="button"
+              onClick={() => setShowExportMenu((prev) => !prev)}
+              className="h-[30px] w-full bg-[#1687f8] hover:bg-[#1374d6] active:bg-[#0f62b3] text-white text-[11px] font-semibold rounded-lg flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all select-none"
+              title="Download & Export Slides"
+            >
+              <Download size={13} />
+              <span>Download / Export</span>
+              <ChevronDown size={11} className={`transition-transform duration-150 ${showExportMenu ? "rotate-180" : ""}`} />
+            </button>
+
+            {showExportMenu && (
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-[#202022] border border-[#383838] rounded-xl shadow-2xl p-1.5 z-50 text-[11px] space-y-1 divide-y divide-white/5 animate-in fade-in duration-100">
+                <div className="space-y-0.5">
+                  <button
+                    type="button"
+                    onClick={() => { onDownloadPdf(); setShowExportMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-white/10 text-white rounded-lg text-left transition-colors cursor-pointer group"
+                  >
+                    <FileText size={14} className="text-[#1687f8] shrink-0" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-white group-hover:text-blue-400 transition-colors">Export Full PDF ({slidesCount} Slides)</div>
+                      <div className="text-[9px] text-[#8e8e93]">Ready for LinkedIn Document Carousel</div>
+                    </div>
+                  </button>
+
+                  {onDownloadZip && (
+                    <button
+                      type="button"
+                      onClick={() => { onDownloadZip(); setShowExportMenu(false); }}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-white/10 text-white rounded-lg text-left transition-colors cursor-pointer group"
+                    >
+                      <Download size={14} className="text-emerald-400 shrink-0" />
+                      <div className="flex-1">
+                        <div className="font-semibold text-white group-hover:text-emerald-400 transition-colors">Download All as ZIP (PNGs)</div>
+                        <div className="text-[9px] text-[#8e8e93]">All 6 individual slide images</div>
+                      </div>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => { onDownloadPng(); setShowExportMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white/10 text-[#ececec] rounded-lg text-left transition-colors cursor-pointer"
+                  >
+                    <ImageIcon size={13} className="text-purple-400 shrink-0" />
+                    <span>Download Slide {activeIndex + 1} (PNG)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { onDownloadMp4(); setShowExportMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white/10 text-[#ececec] rounded-lg text-left transition-colors cursor-pointer"
+                  >
+                    <Play size={13} className="text-amber-400 shrink-0" />
+                    <span>Render MP4 Video Reel</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { onDownloadAllSvg(); setShowExportMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 hover:bg-white/10 text-[#8e8e93] hover:text-white rounded-lg text-left transition-colors cursor-pointer"
+                  >
+                    <Download size={13} className="shrink-0" />
+                    <span>Export All Vector SVGs</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="h-[30px] px-2.5 bg-[#373737] hover:bg-[#404040] active:bg-[#323232] text-[#ececec] text-[11px] font-medium rounded-lg flex items-center justify-center gap-1 border border-[#48484a]/40 cursor-pointer shadow-sm transition-all select-none shrink-0"
+            title="Copy Link (Ctrl + L)"
+          >
+            <span>Share</span>
+            <span className="text-[10px] text-[#8e8e93] font-mono">⌘L</span>
+          </button>
+        </div>
 
         {/* Secondary Template / Mode Segmented Pill */}
         {onSwitchDocumentKind && (
@@ -1736,9 +1826,20 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 onClick={onDownloadPdf}
                 className="w-full h-8 bg-[#373737] hover:bg-[#404040] border border-[#48484a]/30 text-[#ececec] rounded-lg text-[11px] font-medium transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <FileText size={13} />
+                <FileText size={13} className="text-[#1687f8]" />
                 <span>Export Full PDF ({slidesCount} Slides)</span>
               </button>
+
+              {onDownloadZip && (
+                <button
+                  type="button"
+                  onClick={onDownloadZip}
+                  className="w-full h-8 bg-[#373737] hover:bg-[#404040] border border-[#48484a]/30 text-[#ececec] rounded-lg text-[11px] font-medium transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Download size={13} className="text-emerald-400" />
+                  <span>Download All as ZIP (PNGs)</span>
+                </button>
+              )}
 
               <button
                 type="button"

@@ -3312,6 +3312,48 @@ export function EditorialCarouselClient() {
     }
   };
 
+  const handleDownloadAllSlidesZip = async () => {
+    const zipToast = toast.loading(`Packing all ${slides.length} slides into ZIP...`);
+    try {
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+
+      for (let idx = 0; idx < slides.length; idx++) {
+        const { slide, videoFrameUrl } = await prepareSlideForExport(
+          slides[idx],
+          idx,
+        );
+        const svgStr = buildSvgString(slide, idx, false, videoFrameUrl);
+        const dataUrl = await convertSvgToRaster(svgStr, "png");
+        const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+        zip.file(
+          `${projectName.toLowerCase().replace(/\s+/g, "-")}-slide-${idx + 1}-1080x1350.png`,
+          base64Data,
+          { base64: true }
+        );
+      }
+
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${projectName.toLowerCase().replace(/\s+/g, "-")}-all-slides-png.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported all ${slides.length} slides as ZIP!`, {
+        id: zipToast,
+      });
+    } catch (e: any) {
+      console.error("ZIP generation error:", e);
+      toast.error(`ZIP generation failed: ${e.message || "Unknown error"}`, {
+        id: zipToast,
+      });
+    }
+  };
+
   // ==========================================
   // VIEW RENDER PARTS
   // ==========================================
@@ -4965,6 +5007,7 @@ export function EditorialCarouselClient() {
                 onFormatChange={handleFormatChange}
                 onDownloadPng={() => handleDownloadSlideRaster(activeIndex, "png")}
                 onDownloadPdf={handleDownloadPdf}
+                onDownloadZip={handleDownloadAllSlidesZip}
                 onDownloadMp4={handleDownloadMp4}
                 onDownloadAllSvg={handleDownloadAllSlidesSvg}
                 onClose={() => setShowRightSidebar(false)}
@@ -5012,6 +5055,7 @@ export function EditorialCarouselClient() {
             onFormatChange={handleFormatChange}
             onDownloadPng={() => handleDownloadSlideRaster(activeIndex, "png")}
             onDownloadPdf={handleDownloadPdf}
+            onDownloadZip={handleDownloadAllSlidesZip}
             onDownloadMp4={handleDownloadMp4}
             onDownloadAllSvg={handleDownloadAllSlidesSvg}
             onClose={() => setShowRightSidebar(false)}
