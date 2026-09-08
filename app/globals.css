@@ -252,24 +252,24 @@ body:has(.candidate-portal-theme) {
 /* DARK THEME (DEFAULT) — Marketing / Public pages    */
 /* ═══════════════════════════════════════════════════ */
 :root {
-  --background: #111111;
+  --background: #000000;
   --foreground: #FFFFFF;
-  --card: #1A1A1A;
+  --card: #141414;
   --card-foreground: #FFFFFF;
-  --popover: #1A1A1A;
+  --popover: #141414;
   --popover-foreground: #FFFFFF;
   --primary: #C0F0FB;
-  --primary-foreground: #111111;
-  --secondary: #2A2A2A;
+  --primary-foreground: #000000;
+  --secondary: #1F1F1F;
   --secondary-foreground: #FFFFFF;
-  --muted: #2A2A2A;
+  --muted: #1F1F1F;
   --muted-foreground: #9A9A9A;
   --accent: #C0F0FB;
-  --accent-foreground: #111111;
+  --accent-foreground: #000000;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #2A2A2A;
-  --input: #1A1A1A;
+  --border: #222222;
+  --input: #141414;
   --ring: #C0F0FB;
   --radius: 0.5rem;
 }

@@ -16,7 +16,7 @@ export async function generateMetadata() {
 
 export default function PortfolioPage() {
   return (
-    <>
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <DynamicSchema
         graph={[
           {
@@ -39,7 +39,7 @@ export default function PortfolioPage() {
         tagline="REAL SYSTEMS"
       />
 
-      <div className="w-full px-6 md:px-10 xl:px-16 2xl:px-24 pb-32 border-t border-border/20 pt-12">
+      <div className="w-full bg-black px-6 md:px-10 xl:px-16 2xl:px-24 pb-32 border-t border-white/10 pt-12">
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {projects.map((project, index) => (
@@ -50,6 +50,6 @@ export default function PortfolioPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

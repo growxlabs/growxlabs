@@ -74,7 +74,7 @@ function PixelGrid({ type }: { type: string }) {
         <style>{`
           @keyframes px-pulse {
             0%, 100% { fill: #C0F0FB; opacity: 0.95; }
-            50% { fill: #355CFF; opacity: 0.3; }
+            50% { fill: #C0F0FB; opacity: 0.25; }
           }
           .px-active {
             animation: px-pulse 3s infinite ease-in-out;
@@ -157,7 +157,7 @@ export async function generateMetadata() {
 
 export default function ServicesPage() {
   return (
-    <>
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <DynamicSchema
         graph={[
           {
@@ -186,7 +186,7 @@ export default function ServicesPage() {
         tagline="SOFTWARE & PRODUCT ENGINEERING"
       />
 
-      <div className="pb-12 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-border/20 pt-16">
+      <div className="pb-12 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-white/10 pt-16 bg-black">
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
 
           {/* Services Cards Grid */}
@@ -195,13 +195,13 @@ export default function ServicesPage() {
               {services.map((service, index) => (
                 <div
                   key={service.title}
-                  className="relative p-[1px] transition-all duration-300 hover:scale-[1.01] bg-border hover:bg-[#C0F0FB]/50"
+                  className="relative p-[1px] transition-all duration-300 hover:scale-[1.01] bg-white/10 hover:bg-[#C0F0FB]/60"
                   style={{
                     clipPath: "polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 0 100%)",
                   }}
                 >
                   <div
-                    className="bg-[#1A1A1A] py-6 px-7 sm:px-8 sm:py-9 flex flex-col h-full justify-between min-h-[500px]"
+                    className="bg-[#0A0A0C] py-6 px-7 sm:px-8 sm:py-9 flex flex-col h-full justify-between min-h-[500px]"
                     style={{
                       clipPath: "polygon(0 0, calc(100% - 41px) 0, 100% 41px, 100% 100%, 0 100%)",
                     }}
@@ -217,7 +217,7 @@ export default function ServicesPage() {
 
                     <div>
                       {/* Metadata fields list */}
-                      <div className="flex flex-col gap-4 mt-4 pt-6 border-t border-border/40">
+                      <div className="flex flex-col gap-4 mt-4 pt-6 border-t border-white/10">
                         {[
                           { k: "MISSIONS", v: service.mission },
                           { k: "USE CASES", v: service.useCases },
@@ -225,7 +225,7 @@ export default function ServicesPage() {
                           { k: "DIMENSIONS", v: service.dimensions },
                         ].map((row) => (
                           <div key={row.k} className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#C0F0FB] font-mono">
                               {row.k}
                             </span>
                             <span className="text-sm font-semibold text-foreground leading-normal">
@@ -244,8 +244,7 @@ export default function ServicesPage() {
                           className="w-full block mt-6"
                         >
                           <Button
-                            variant="outline"
-                            className="w-full uppercase font-bold text-[12px] tracking-wider py-5 border-border hover:border-[#C0F0FB]/40 hover:bg-[#C0F0FB] hover:text-black transition-all duration-300"
+                            className="w-full uppercase font-bold text-[12px] tracking-wider py-5 bg-[#C0F0FB] text-black hover:bg-white hover:text-black border-none transition-all duration-300 shadow-md"
                           >
                             {service.buttonText}
                           </Button>
@@ -253,8 +252,7 @@ export default function ServicesPage() {
                       ) : (
                         <Link href={service.buttonHref} className="w-full block mt-6">
                           <Button
-                            variant="outline"
-                            className="w-full uppercase font-bold text-[12px] tracking-wider py-5 border-border hover:border-[#C0F0FB]/40 hover:bg-[#C0F0FB] hover:text-black transition-all duration-300"
+                            className="w-full uppercase font-bold text-[12px] tracking-wider py-5 bg-[#C0F0FB] text-black hover:bg-white hover:text-black border-none transition-all duration-300 shadow-md"
                           >
                             {service.buttonText}
                           </Button>
@@ -268,6 +266,6 @@ export default function ServicesPage() {
           </Reveal>
         </div>
       </div>
-    </>
+    </div>
   );
 }

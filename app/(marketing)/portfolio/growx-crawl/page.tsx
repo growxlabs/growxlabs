@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function GrowXCrawlCaseStudy() {
   return (
-    <div className="bg-[#111111] text-foreground min-h-screen">
+    <div className="bg-black text-foreground min-h-screen">
       {/* ═══ PAGE HERO (Full Viewport Swiss Architectural Cover) ═══ */}
       <PageHero
         title="GrowX Crawl"

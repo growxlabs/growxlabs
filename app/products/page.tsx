@@ -1480,7 +1480,7 @@ function WideEditorialCtaCard() {
 
 export default function ProductsPage() {
   return (
-    <>
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <PageHero
         title="Products"
         viewingText="PRODUCTS"
@@ -1488,7 +1488,7 @@ export default function ProductsPage() {
         tagline="OWN PRODUCTS"
       />
 
-      <div className="w-full bg-background pb-32 pt-8">
+      <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
           
           {/* Stacked Product Showcase Rows as independent floating editorial sheets */}
@@ -1678,6 +1678,6 @@ export default function ProductsPage() {
 
         </div>
       </div>
-    </>
+    </div>
   );
 }

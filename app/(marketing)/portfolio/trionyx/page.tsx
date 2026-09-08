@@ -15,7 +15,7 @@ export const metadata = {
 
 export default function TrionyxCaseStudyPage() {
   return (
-    <div className="w-full bg-[#111111] text-foreground min-h-screen">
+    <div className="w-full bg-black text-foreground min-h-screen">
       {/* ═══ PAGE HERO (Full Viewport Swiss Architectural Cover) ═══ */}
       <PageHero
         title="Trionyx"

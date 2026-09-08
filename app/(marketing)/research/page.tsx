@@ -8,7 +8,7 @@ import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/mar
 
 export default function ResearchPage() {
   return (
-    <>
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <PageHero
         title="Research"
         viewingText="R&D"
@@ -16,7 +16,7 @@ export default function ResearchPage() {
         tagline="OWN LAB SYSTEMS"
       />
 
-      <div className="w-full bg-background px-4 sm:px-6 md:px-8 xl:px-12 pb-24 border-t border-border/20 pt-16">
+      <div className="w-full bg-black px-4 sm:px-6 md:px-8 xl:px-12 pb-24 border-t border-white/10 pt-16">
         <div className="max-w-[1400px] mx-auto">
           {/* Header Block */}
           <div className="text-center mb-16 pt-4 md:pt-8">
@@ -36,7 +36,7 @@ export default function ResearchPage() {
             {/* LABS CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#111111] text-white border border-white/5 rounded-3xl p-10 md:p-14 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#6366F1]/40 hover:bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_60%)] min-h-[560px] md:min-h-[620px]">
+                <div className="relative h-full flex flex-col justify-between bg-[#0A0A0C] text-white border border-white/10 rounded-3xl p-10 md:p-14 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#6366F1]/40 hover:bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.08),transparent_60%)] min-h-[560px] md:min-h-[620px]">
                   {/* Top line with title and circular arrow */}
                   <div className="flex justify-between items-start z-10">
                     <h3 className="text-[clamp(32px,3.8vw,46px)] font-sans font-black tracking-tight leading-[1.05] max-w-[340px]">
@@ -79,7 +79,7 @@ export default function ResearchPage() {
             {/* PORTFOLIO CARD */}
             <AnimatedItem>
               <Link href="/portfolio" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#111111] text-white border border-white/5 rounded-3xl p-10 md:p-14 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#C0F0FB]/40 hover:bg-[radial-gradient(circle_at_top_right,rgba(192,240,251,0.08),transparent_60%)] min-h-[560px] md:min-h-[620px]">
+                <div className="relative h-full flex flex-col justify-between bg-[#0A0A0C] text-white border border-white/10 rounded-3xl p-10 md:p-14 overflow-hidden shadow-2xl transition-[border-color,background-image,box-shadow] duration-500 hover:border-[#C0F0FB]/40 hover:bg-[radial-gradient(circle_at_top_right,rgba(192,240,251,0.08),transparent_60%)] min-h-[560px] md:min-h-[620px]">
                   {/* Top line with title and circular arrow */}
                   <div className="flex justify-between items-start z-10">
                     <h3 className="text-[clamp(32px,3.8vw,46px)] font-sans font-black tracking-tight leading-[1.05] max-w-[340px]">
@@ -122,6 +122,6 @@ export default function ResearchPage() {
           </AnimatedStagger>
         </div>
       </div>
-    </>
+    </div>
   );
 }

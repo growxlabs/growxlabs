@@ -36,14 +36,10 @@ export function Navbar() {
   const navBg = isScrolled
     ? (isLightThemePage
         ? "bg-[#FBF9F5] border-b border-[#E5E2DC] shadow-sm"
-        : (isBlog 
-            ? "bg-black md:bg-black/90 border-b border-white/10 shadow-sm" 
-            : "bg-[#111111] md:bg-[#111111]/90 border-b border-white/10 shadow-sm"))
+        : "bg-black md:bg-black/90 border-b border-white/10 shadow-sm")
     : (isLightThemePage
         ? "bg-[#FBF9F5] border-b border-transparent"
-        : (isBlog
-            ? "bg-black/80 border-b border-transparent"
-            : "bg-[#111111]/80 border-b border-transparent"));
+        : "bg-black/80 border-b border-transparent");
 
   const logoColor1 = isLightThemePage ? "text-[#1A1A1A]" : "text-white";
   const logoColor2 = isLightThemePage ? "text-[#111111]" : (isBlog ? "text-white" : "text-[#C0F0FB]");
