@@ -66,7 +66,7 @@ export const projects: CaseStudy[] = [
     tag: "Internal R&D",
     category: "// INTERNAL R&D",
     description: "A web research tool built to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.",
-    image: "/portfolio/growx-crawl.svg",
+    image: "/portfolio/growx-crawl.png",
     problem: "Deep web research and competitive analysis required multiple disjointed tools for crawling, JavaScript rendering, structured data extraction, and verification.",
     solution: "Built an internal, local-first web research platform combining fast HTTP crawling, Playwright rendering, SEO/AEO/GEO audits, structured company modeling, and verifiable source evidence.",
     tech: ["TypeScript", "Node.js", "Playwright", "DuckDB", "CLI Runtime"],
@@ -78,7 +78,11 @@ export const projects: CaseStudy[] = [
       { label: "Engine", value: "HTTP + Playwright" },
       { label: "Audits", value: "SEO / AEO / GEO" }
     ],
-    gallery: ["/portfolio/growx-crawl.svg"],
+    gallery: [
+      "/portfolio/growx-crawl.png",
+      "/portfolio/growx-crawl-playground.png",
+      "/portfolio/growx-crawl-api.png"
+    ],
     features: [
       { title: "Company Discovery", desc: "Uncovers public profiles, people, key executives, and related domains across target markets." },
       { title: "Dual-Engine Crawling", desc: "High-throughput static HTTP fetching with automated Playwright browser fallback for dynamic JavaScript sites." },

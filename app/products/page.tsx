@@ -66,8 +66,8 @@ const PRODUCTS = [
     name: "GrowX Crawl™",
     label: "WEB INTELLIGENCE & RESEARCH RUNTIME",
     shortName: "GROWX CRAWL",
-    image: "/portfolio/growx-crawl.svg",
-    isSvg: true,
+    image: "/portfolio/growx-crawl.png",
+    isSvg: false,
     taglineLead: "Your local-first web discovery engine that is",
     taglineBold: "verifiable, high-throughput and structured.",
     subtext: "It executes headless JS crawls, extracts entities, and audits search engine visibility.",
@@ -1550,9 +1550,9 @@ export default function ProductsPage() {
                     category="WEB INTELLIGENCE"
                     statement="Public web information turned into structured research."
                     href={product.href}
-                    image="/portfolio/growx-crawl.svg"
-                    imageAlt="GrowX Crawl local research runtime terminal"
-                    imageAspect="1200 / 660"
+                    image="/portfolio/growx-crawl.png"
+                    imageAlt="GrowX Crawl Enterprise Web Intelligence Platform"
+                    imageAspect="1920 / 1080"
                     variant="crawl"
                     tone="light"
                     isExternal={product.isExternal}
