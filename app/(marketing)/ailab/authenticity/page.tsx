@@ -14,7 +14,7 @@ export default function AuthenticityIntelligencePage() {
     <div className="bg-black text-foreground min-h-screen">
       {/* ═══ PAGE HERO ═══ */}
       <PageHero
-        title="Multimodal Deepfake Intelligence"
+        title={"Multimodal Deepfake\nIntelligence"}
         viewingText="DEEPFAKE INTELLIGENCE"
         exploreText="RESEARCH"
         tagline="MACHINE INTELLIGENCE"
