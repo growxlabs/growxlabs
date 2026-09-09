@@ -24,7 +24,20 @@ export function PageHero({
       ? "clamp(4.5rem, 13.5vw, 15.5rem)"
       : charCount <= 9
       ? "clamp(4rem, 11vw, 13.5rem)"
-      : "clamp(3.5rem, 9vw, 11.5rem)";
+      : charCount <= 12
+      ? "clamp(3.5rem, 9vw, 11.5rem)"
+      : charCount <= 18
+      ? "clamp(2.8rem, 6.2vw, 8rem)"
+      : charCount <= 26
+      ? "clamp(2.2rem, 4.6vw, 6rem)"
+      : "clamp(1.75rem, 3.6vw, 4.5rem)";
+
+  const mobileFontSize =
+    charCount <= 12
+      ? "clamp(1.8rem, 6.8vh, 3.4rem)"
+      : charCount <= 22
+      ? "clamp(1.2rem, 4.2vh, 2.2rem)"
+      : "clamp(1rem, 3vh, 1.6rem)";
 
   return (
     <div className={cn("w-full bg-black relative overflow-hidden select-none", className)}>
@@ -65,7 +78,10 @@ export function PageHero({
         </div>
 
         {/* Bottom part: Massive Brand Title touching the bottom */}
-        <div className="w-full flex justify-start items-end select-none pointer-events-none z-0 overflow-visible -ml-2 md:-ml-4 xl:-ml-6 mb-2">
+        <div className={cn(
+          "w-full flex justify-start items-end select-none pointer-events-none z-0 overflow-visible mb-2",
+          charCount <= 12 ? "-ml-2 md:-ml-4 xl:-ml-6" : "ml-0"
+        )}>
           <h1
             className="font-sans font-black select-none tracking-[0.01em] text-foreground leading-[0.85] whitespace-nowrap inline-block origin-bottom"
             style={{ fontSize: desktopFontSize }}
@@ -120,7 +136,7 @@ export function PageHero({
             <h1
               className="font-sans rotate-[-90deg] whitespace-nowrap text-foreground font-black select-none tracking-[0.03em] leading-none"
               style={{
-                fontSize: "clamp(1.8rem, 6.8vh, 3.4rem)",
+                fontSize: mobileFontSize,
               }}
             >
               <FlickerText text={title} />
