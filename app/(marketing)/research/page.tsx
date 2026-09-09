@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { GrowxExternalLink } from "@/components/icons";
 import { PageHero } from "@/components/marketing/PageHero";
 import { AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
 
@@ -17,20 +17,7 @@ export default function ResearchPage() {
       />
 
       <div className="w-full bg-black px-4 sm:px-6 md:px-8 xl:px-12 pb-32 border-t border-white/10 pt-16">
-        <div className="max-w-[1200px] mx-auto space-y-20">
-
-          {/* Section Header */}
-          <div className="space-y-3 max-w-2xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // WHAT WE BUILD
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.1]">
-              Software we use ourselves, and software we build for others.
-            </h2>
-            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed pt-2">
-              Two sides of GrowxLabs — internal tools we rely on daily, and client platforms we ship to production.
-            </p>
-          </div>
+        <div className="max-w-[1200px] mx-auto">
 
           {/* Cards Grid */}
           <AnimatedStagger className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -48,7 +35,7 @@ export default function ResearchPage() {
                           // OUR TOOLS
                         </span>
                         <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-500 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <ArrowUpRight className="h-4 w-4" />
+                          <GrowxExternalLink className="h-4 w-4" />
                         </div>
                       </div>
 
@@ -65,7 +52,7 @@ export default function ResearchPage() {
                     <div className="mt-10 pt-6 border-t border-neutral-800/60 grid grid-cols-2 gap-6">
                       <div>
                         <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Systems</span>
-                        <span className="text-foreground font-bold text-lg">2 Live</span>
+                        <span className="text-foreground font-bold text-lg">3 Live</span>
                       </div>
                       <div>
                         <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Type</span>
@@ -90,7 +77,7 @@ export default function ResearchPage() {
                           // CLIENT WORK
                         </span>
                         <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-500 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <ArrowUpRight className="h-4 w-4" />
+                          <GrowxExternalLink className="h-4 w-4" />
                         </div>
                       </div>
 
