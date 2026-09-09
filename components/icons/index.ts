@@ -16,6 +16,7 @@ export * from "./icons/GrowxArrowRight";
 export * from "./icons/GrowxArrowUp";
 export * from "./icons/GrowxAttachment";
 export * from "./icons/GrowxAudit";
+export * from "./icons/GrowxAuthenticity";
 export * from "./icons/GrowxBoundary";
 export * from "./icons/GrowxBrowser";
 export * from "./icons/GrowxBug";

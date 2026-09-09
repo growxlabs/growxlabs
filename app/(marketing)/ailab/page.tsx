@@ -4,14 +4,15 @@ import React from "react";
 import Link from "next/link";
 import { PageHero } from "@/components/marketing/PageHero";
 import {
+  GrowxAuthenticity,
   GrowxCrawl,
   GrowxTerminal,
   GrowxArrowRight,
 } from "@/components/icons";
-import { Eye } from "lucide-react";
 
 interface LabTool {
   name: string;
+  category: string;
   status: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
   description: string;
@@ -20,22 +21,21 @@ interface LabTool {
   cta: string;
 }
 
-const RESEARCH: LabTool[] = [
+const LAB_SYSTEMS: LabTool[] = [
   {
     name: "Authenticity Intelligence",
+    category: "// APPLIED RESEARCH",
     status: "RESEARCH",
-    icon: Eye,
+    icon: GrowxAuthenticity,
     description:
-      "Deepfake and synthetic media detection built on DINOv2. Classifies any image as Real, AI-Generated, or Deepfake — 96.89% accuracy across 17,978 images.",
-    href: "/ailab",
+      "Multimodal digital authenticity and deepfake detection built on DINOv2 vision representations. Classifies media into Real, Synthetic, and Deepfake with 96.89% accuracy.",
+    href: "/ailab/authenticity",
     isExternal: false,
-    cta: "VIEW RESEARCH",
+    cta: "EXPLORE RESEARCH",
   },
-];
-
-const PLATFORMS_AND_TOOLS: LabTool[] = [
   {
     name: "GrowX Crawl™",
+    category: "// PLATFORMS & TOOLS",
     status: "LIVE",
     icon: GrowxCrawl,
     description:
@@ -44,11 +44,9 @@ const PLATFORMS_AND_TOOLS: LabTool[] = [
     isExternal: false,
     cta: "LEARN MORE",
   },
-];
-
-const HARNESSES: LabTool[] = [
   {
     name: "Pipper™",
+    category: "// HARNESS",
     status: "LIVE",
     icon: GrowxTerminal,
     description:
@@ -62,34 +60,39 @@ const HARNESSES: LabTool[] = [
 function LabCard({ tool }: { tool: LabTool }) {
   const IconComponent = tool.icon;
   const CardInner = (
-    <div className="h-full flex flex-col justify-between p-8 sm:p-10">
-      {/* Top Header: Icon + Status Tag */}
+    <div className="h-full flex flex-col justify-between p-7 sm:p-8">
+      {/* Top Header: Category + Status Tag */}
       <div>
-        <div className="flex items-center justify-between">
-          <div className="w-11 h-11 border border-neutral-700 rounded-lg flex items-center justify-center text-[#C0F0FB]">
-            <IconComponent size={22} />
-          </div>
-          <span className="font-mono text-[11px] font-bold tracking-widest text-[#C0F0FB]/70 uppercase">
+        <div className="flex items-center justify-between pb-6 border-b border-neutral-800/60">
+          <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
+            {tool.category}
+          </span>
+          <span className="font-mono text-[10px] font-bold tracking-widest text-primary/70 uppercase">
             · {tool.status}
           </span>
         </div>
 
-        {/* Product Name */}
-        <h3 className="font-sans font-black text-2xl sm:text-[28px] text-foreground tracking-tight leading-tight mt-8 mb-4">
-          {tool.name}
-        </h3>
+        {/* Icon & Title */}
+        <div className="pt-6 flex items-center gap-3.5">
+          <div className="w-10 h-10 border border-neutral-700/80 rounded-lg flex items-center justify-center text-primary shrink-0">
+            <IconComponent size={20} />
+          </div>
+          <h3 className="font-sans font-black text-xl sm:text-[22px] text-foreground tracking-tight leading-tight">
+            {tool.name}
+          </h3>
+        </div>
 
         {/* Description */}
-        <p className="text-neutral-400 text-sm sm:text-[15px] leading-relaxed font-sans">
+        <p className="text-neutral-400 text-sm leading-relaxed font-sans pt-4">
           {tool.description}
         </p>
       </div>
 
       {/* Bottom Action CTA */}
-      <div className="pt-8 mt-6 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] uppercase tracking-wider">
+      <div className="pt-6 mt-6 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-primary uppercase tracking-wider">
         <span>{tool.cta}</span>
         <GrowxArrowRight
-          size={15}
+          size={14}
           className="transition-transform duration-200 group-hover:translate-x-1"
           aria-hidden="true"
         />
@@ -118,7 +121,7 @@ function LabCard({ tool }: { tool: LabTool }) {
 
 export default function AiLabPage() {
   return (
-    <>
+    <div className="flex flex-col bg-black text-foreground min-h-screen">
       <PageHero
         title="AI Lab"
         viewingText="AI LAB"
@@ -126,68 +129,39 @@ export default function AiLabPage() {
         tagline="MACHINE INTELLIGENCE"
       />
 
-      <div className="w-full bg-background pb-32 pt-8">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-16 sm:space-y-20">
+      <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-12">
 
-          {/* Section Header */}
-          <div className="pt-6 space-y-2 max-w-2xl">
-            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-              Foundation models, fine-tuned models, and applied research in machine intelligence.
+          {/* Section Editorial Header */}
+          <div className="pt-6 space-y-3 max-w-3xl">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+              // ACTIVE LAB SYSTEMS
+            </span>
+            <h2 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
+              Applied research, specialized harnesses, and internal developer platforms.
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed pt-1">
+              Foundation models, fine-tuned models, and applied research in machine intelligence — built and operated inside GrowxLabs.
             </p>
           </div>
-          
-          {/* SECTION 01: APPLIED RESEARCH */}
-          <div>
-            <div className="pb-8">
-              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
-                // APPLIED RESEARCH
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-              {RESEARCH.map((tool) => (
-                <LabCard key={tool.name} tool={tool} />
-              ))}
-            </div>
-          </div>
 
-          {/* SECTION 02: PLATFORMS & TOOLS */}
-          <div>
-            <div className="pb-8">
-              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
-                // PLATFORMS &amp; TOOLS
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-              {PLATFORMS_AND_TOOLS.map((tool) => (
-                <LabCard key={tool.name} tool={tool} />
-              ))}
-            </div>
-          </div>
-
-          {/* SECTION 03: HARNESS */}
-          <div>
-            <div className="pb-8">
-              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
-                // HARNESS
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-              {HARNESSES.map((tool) => (
-                <LabCard key={tool.name} tool={tool} />
-              ))}
-            </div>
+          {/* 3-Card Balanced Grid — Perfect Flow across all 3 Systems */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-8">
+            {LAB_SYSTEMS.map((tool) => (
+              <LabCard key={tool.name} tool={tool} />
+            ))}
           </div>
 
           {/* End of AI Lab Footer */}
-          <div className="mt-20 sm:mt-24 border-t border-white/10 pt-6">
+          <div className="mt-20 border-t border-white/10 pt-6">
             <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
               <span>// End of AI Lab</span>
-              <span>3 Lab Systems · 1 Research Project</span>
+              <span>3 Lab Systems Active · 1 Applied Research</span>
             </div>
           </div>
 
         </div>
       </div>
-    </>
+    </div>
   );
 }
