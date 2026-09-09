@@ -42,7 +42,7 @@ export default function AuthenticityIntelligencePage() {
               // APPLIED RESEARCH
             </span>
             <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal max-w-3xl">
-              A machine intelligence system built to verify whether an image is genuine, synthetic, or manipulated — classifying media into Real, AI-Generated, and Deepfake.
+              A real-time security layer running directly on your device to verify whether the person you are speaking with on video calls is genuinely human.
             </p>
           </div>
 
@@ -84,15 +84,15 @@ export default function AuthenticityIntelligencePage() {
                 // 01 OVERVIEW
               </span>
               <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.12]">
-                Verifying digital authenticity from visual representations.
+                An antivirus for video calls and digital identity.
               </h2>
             </div>
             <div className="lg:col-span-7 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
               <p>
-                Authenticity Intelligence is a deepfake and synthetic media detection system developed inside GrowxLabs. It analyzes image inputs and categorizes each into one of three distinct classes: Real photos, AI-generated images, or manipulated deepfakes.
+                This project is building a real-time security layer—like an antivirus for video calls—that runs directly on your device to verify whether the person you are looking at and speaking with is genuinely human.
               </p>
               <p>
-                Instead of searching for temporary generator artifacts that quickly become obsolete, the system uses foundation vision representations from DINOv2. By evaluating high-dimensional visual structure, it separates authentic camera captures from synthetic creations with 96.89% accuracy across a benchmark of 17,978 images.
+                Instead of simply guessing from pictures, it continuously checks real-world physical rules that AI cannot easily fake, such as whether the face naturally moves with the skull bone, how skin reflects light, and whether spoken words match exact lip movements. Its purpose is to run quietly in the background during video calls, online banking, job interviews, and dating apps, instantly alerting you if someone is using a face swap, cloned voice, or synthetic avatar to impersonate a person.
               </p>
             </div>
           </div>

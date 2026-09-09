@@ -28,7 +28,7 @@ const LAB_SYSTEMS: LabTool[] = [
     status: "RESEARCH",
     icon: GrowxAuthenticity,
     description:
-      "Multimodal digital authenticity and deepfake detection built on DINOv2 vision representations. Classifies media into Real, Synthetic, and Deepfake with 96.89% accuracy.",
+      "Real-time on-device security layer for video calls that verifies whether the person you are speaking with is genuinely human — detecting face swaps, cloned voices, and synthetic avatars.",
     href: "/ailab/authenticity",
     isExternal: false,
     cta: "EXPLORE RESEARCH",
