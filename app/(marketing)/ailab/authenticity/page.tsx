@@ -228,8 +228,8 @@ export default function AuthenticityIntelligencePage() {
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
               Have questions about Multimodal Deepfake Intelligence?
             </h2>
-            <p className="text-muted-foreground text-base">
-              Connect with GrowxLabs to learn more about our machine intelligence research and models.
+            <p className="text-muted-foreground text-base leading-relaxed">
+              Reach out to test our models, review live benchmarks, or integrate real-time call verification into your product.
             </p>
           </div>
 
