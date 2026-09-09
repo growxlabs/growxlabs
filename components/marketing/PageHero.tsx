@@ -33,6 +33,8 @@ export function PageHero({
     ? "clamp(4rem, 11vw, 13.5rem)"
     : title.length <= 12
     ? "clamp(3.5rem, 9vw, 11.5rem)"
+    : title.length <= 15
+    ? "clamp(3.2rem, 7.8vw, 10rem)"
     : title.length <= 18
     ? "clamp(2.8rem, 6.2vw, 8rem)"
     : title.length <= 26
@@ -44,6 +46,8 @@ export function PageHero({
   const mobileFontSize =
     mobileCharCount <= 12
       ? "clamp(1.8rem, 6.8vh, 3.4rem)"
+      : mobileCharCount <= 16
+      ? "clamp(1.4rem, 5vh, 2.6rem)"
       : mobileCharCount <= 22
       ? "clamp(1.2rem, 4.2vh, 2.2rem)"
       : mobileCharCount <= 36

@@ -4,7 +4,7 @@ import { Link } from "@/navigation";
 import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata = {
-  title: "Multimodal Deepfake Intelligence — Real-Time Detection | GrowxLabs",
+  title: "Deepfake Model — Real-Time Detection | GrowxLabs",
   description:
     "A machine intelligence system built to detect synthetic media and deepfakes, classifying images into Real, AI-Generated, and Deepfake.",
 };
@@ -14,8 +14,8 @@ export default function AuthenticityIntelligencePage() {
     <div className="bg-black text-foreground min-h-screen">
       {/* ═══ PAGE HERO ═══ */}
       <PageHero
-        title={"Multimodal Deepfake\nIntelligence"}
-        viewingText="DEEPFAKE INTELLIGENCE"
+        title="Deepfake Model"
+        viewingText="DEEPFAKE MODEL"
         exploreText="RESEARCH"
         tagline="MACHINE INTELLIGENCE"
       />
@@ -27,7 +27,7 @@ export default function AuthenticityIntelligencePage() {
           className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-white transition-colors group"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-          <span>AI LAB / MULTIMODAL DEEPFAKE INTELLIGENCE</span>
+          <span>AI LAB / DEEPFAKE MODEL</span>
         </Link>
       </div>
 
@@ -226,7 +226,7 @@ export default function AuthenticityIntelligencePage() {
         <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Have questions about Multimodal Deepfake Intelligence?
+              Have questions about Deepfake Model?
             </h2>
             <p className="text-muted-foreground text-base leading-relaxed">
               Reach out to test our models, review live benchmarks, or integrate real-time call verification into your product.
