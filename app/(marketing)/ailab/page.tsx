@@ -8,6 +8,7 @@ import {
   GrowxTerminal,
   GrowxArrowRight,
 } from "@/components/icons";
+import { Eye } from "lucide-react";
 
 interface LabTool {
   name: string;
@@ -18,6 +19,19 @@ interface LabTool {
   isExternal: boolean;
   cta: string;
 }
+
+const RESEARCH: LabTool[] = [
+  {
+    name: "Authenticity Intelligence",
+    status: "RESEARCH",
+    icon: Eye,
+    description:
+      "Deepfake and synthetic media detection built on DINOv2. Classifies any image as Real, AI-Generated, or Deepfake — 96.89% accuracy across 17,978 images.",
+    href: "/ailab",
+    isExternal: false,
+    cta: "VIEW RESEARCH",
+  },
+];
 
 const PLATFORMS_AND_TOOLS: LabTool[] = [
   {
@@ -109,15 +123,36 @@ export default function AiLabPage() {
         title="AI Lab"
         viewingText="AI LAB"
         exploreText="R&D"
-        tagline="OWN LAB SYSTEMS"
+        tagline="MACHINE INTELLIGENCE"
       />
 
       <div className="w-full bg-background pb-32 pt-8">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-16 sm:space-y-20">
+
+          {/* Section Header */}
+          <div className="pt-6 space-y-2 max-w-2xl">
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              Foundation models, fine-tuned models, and applied research in machine intelligence.
+            </p>
+          </div>
           
-          {/* SECTION 01: PLATFORMS & TOOLS */}
+          {/* SECTION 01: APPLIED RESEARCH */}
           <div>
-            <div className="pt-6 pb-8">
+            <div className="pb-8">
+              <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
+                // APPLIED RESEARCH
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+              {RESEARCH.map((tool) => (
+                <LabCard key={tool.name} tool={tool} />
+              ))}
+            </div>
+          </div>
+
+          {/* SECTION 02: PLATFORMS & TOOLS */}
+          <div>
+            <div className="pb-8">
               <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
                 // PLATFORMS &amp; TOOLS
               </span>
@@ -129,9 +164,9 @@ export default function AiLabPage() {
             </div>
           </div>
 
-          {/* SECTION 02: HARNESS */}
+          {/* SECTION 03: HARNESS */}
           <div>
-            <div className="pt-6 pb-8">
+            <div className="pb-8">
               <span className="text-xs sm:text-[13px] font-bold uppercase tracking-[0.2em] text-primary font-mono block">
                 // HARNESS
               </span>
@@ -147,7 +182,7 @@ export default function AiLabPage() {
           <div className="mt-20 sm:mt-24 border-t border-white/10 pt-6">
             <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
               <span>// End of AI Lab</span>
-              <span>2 Lab Systems Active</span>
+              <span>3 Lab Systems · 1 Research Project</span>
             </div>
           </div>
 
