@@ -57,7 +57,7 @@ export default function ResearchPage() {
                       </h3>
 
                       <p className="text-neutral-400 text-sm sm:text-[15px] leading-relaxed">
-                        Internal platforms and tools we built for our own work — web research, coding agents, and automation systems we use every day.
+                        Foundation models, fine-tuned models, and applied research in machine intelligence.
                       </p>
                     </div>
 
