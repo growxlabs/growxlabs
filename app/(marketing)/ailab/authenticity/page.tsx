@@ -1,13 +1,12 @@
 import { ArrowLeft } from "lucide-react";
-import { GrowxArrowRight, GrowxAuthenticity } from "@/components/icons";
+import { GrowxArrowRight } from "@/components/icons";
 import { Link } from "@/navigation";
 import { PageHero } from "@/components/marketing/PageHero";
-import { AIReadActions } from "@/components/marketing/AIReadActions";
 
 export const metadata = {
-  title: "Authenticity Intelligence — DINOv2 Deepfake Detection | GrowxLabs AI Lab",
+  title: "Authenticity Intelligence — Deepfake Detection | GrowxLabs",
   description:
-    "A multi-tier machine intelligence system for multimodal digital authenticity and deepfake detection built on self-supervised DINOv2 vision representations.",
+    "A machine intelligence system built to detect synthetic media and deepfakes, classifying images into Real, AI-Generated, and Deepfake.",
 };
 
 export default function AuthenticityIntelligencePage() {
@@ -18,7 +17,7 @@ export default function AuthenticityIntelligencePage() {
         title="Authenticity Intelligence"
         viewingText="AUTHENTICITY"
         exploreText="RESEARCH"
-        tagline="DINOV2 VISION"
+        tagline="MACHINE INTELLIGENCE"
       />
 
       {/* Top Breadcrumb & Navigation */}
@@ -35,27 +34,26 @@ export default function AuthenticityIntelligencePage() {
       <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 sm:py-12 space-y-24 md:space-y-32">
         
         {/* ══════════════════════════════════════════════════════════════════
-            01 — HERO METADATA & PARAMETERS
+            HERO PARAMETERS STRIP (Matching GrowX Crawl)
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="space-y-10">
+        <section className="space-y-8">
           <div className="space-y-4 max-w-4xl">
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // APPLIED RESEARCH · MACHINE INTELLIGENCE
+              // APPLIED RESEARCH
             </span>
             <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal max-w-3xl">
-              A multi-tier machine intelligence system for multimodal digital authenticity and deepfake detection — classifying media into Real, Synthetic, and Deepfake using self-supervised foundation representations.
+              A machine intelligence system built to verify whether an image is genuine, synthetic, or manipulated — classifying media into Real, AI-Generated, and Deepfake.
             </p>
           </div>
 
-          {/* Metadata Parameters Strip */}
           <div className="border-t border-neutral-800 pt-6 flex flex-wrap items-center gap-8 sm:gap-14 font-mono text-xs tracking-wider">
             <div>
-              <span className="text-muted-foreground/60 block text-[10px] uppercase">BACKBONE</span>
-              <span className="text-foreground font-bold uppercase">DINOv2-base (86M)</span>
+              <span className="text-muted-foreground/60 block text-[10px] uppercase">PROJECT</span>
+              <span className="text-foreground font-bold uppercase">Deepfake Detection</span>
             </div>
             <div>
-              <span className="text-muted-foreground/60 block text-[10px] uppercase">LATENT SPACE</span>
-              <span className="text-foreground font-bold uppercase">768-D CLS Token</span>
+              <span className="text-muted-foreground/60 block text-[10px] uppercase">BACKBONE</span>
+              <span className="text-foreground font-bold uppercase">DINOv2 (86M)</span>
             </div>
             <div>
               <span className="text-muted-foreground/60 block text-[10px] uppercase">ACCURACY</span>
@@ -77,7 +75,7 @@ export default function AuthenticityIntelligencePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            02 — OVERVIEW (2-Column Editorial Layout)
+            01 — OVERVIEW (Exact GrowX Crawl 2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
@@ -86,22 +84,22 @@ export default function AuthenticityIntelligencePage() {
                 // 01 OVERVIEW
               </span>
               <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.12]">
-                Detecting synthetic manipulation from representations.
+                Verifying digital authenticity from visual representations.
               </h2>
             </div>
             <div className="lg:col-span-7 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
               <p>
-                Traditional deepfake detectors overfit to specific generation artifacts — subtle blur, pixel grids, or frequency signatures of particular GANs or diffusion models. When a new generator appears, these detectors fail.
+                Authenticity Intelligence is a deepfake and synthetic media detection system developed inside GrowxLabs. It analyzes image inputs and categorizes each into one of three distinct classes: Real photos, AI-generated images, or manipulated deepfakes.
               </p>
               <p>
-                Our system takes a representation-first approach. We freeze Meta&apos;s self-supervised DINOv2 vision transformer (86M parameters) to extract general visual structure into a 768-dimensional embedding space. A minimalist linear head (only 2,307 trainable parameters) maps these embeddings into three distinct classes: <span className="text-foreground font-medium">Real</span>, <span className="text-foreground font-medium">AI-Generated</span>, and <span className="text-foreground font-medium">Deepfake</span> — reaching 96.89% accuracy while keeping representations general and resilient to unseen generators.
+                Instead of searching for temporary generator artifacts that quickly become obsolete, the system uses foundation vision representations from DINOv2. By evaluating high-dimensional visual structure, it separates authentic camera captures from synthetic creations with 96.89% accuracy across a benchmark of 17,978 images.
               </p>
             </div>
           </div>
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            03 — SPECIFICATIONS TABLE
+            02 — SPECIFICATIONS (Exact GrowX Crawl Table Design)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16 space-y-8">
           <div className="space-y-3">
@@ -109,7 +107,7 @@ export default function AuthenticityIntelligencePage() {
               // 02 SPECIFICATIONS
             </span>
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Technical Parameters
+              Technical Specifications
             </h2>
           </div>
 
@@ -118,28 +116,28 @@ export default function AuthenticityIntelligencePage() {
               <thead className="bg-[#111114]">
                 <tr>
                   <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">Parameter</th>
-                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 text-right">Specification</th>
+                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 text-right">Detail</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-800/60 bg-[#0A0A0D] text-sm">
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Backbone Architecture</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">facebook/dinov2-base (86M ViT, Frozen)</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Vision Model</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">DINOv2 Vision Transformer (86M parameters)</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Latent Representation</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">768-D CLS Token</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Latent Vector</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">768-D Feature Embedding</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Classification Head</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">Linear(768 → 3), 2,307 parameters</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Input Resolution</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">224 × 224 pixels</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Target Classes</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Artificial (0), Deepfake (1), Real (2)</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Detection Classes</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">Real, AI-Generated, Deepfake (3 Classes)</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Evaluation Accuracy</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Benchmark Accuracy</td>
                   <td className="px-6 py-4 text-primary font-bold text-right font-mono">96.89%</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
@@ -147,24 +145,20 @@ export default function AuthenticityIntelligencePage() {
                   <td className="px-6 py-4 text-primary font-bold text-right font-mono">0.9688</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Real False Positive Rate (FPR)</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">0.048</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Real False Positive Rate</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">0.048 (under 5%)</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Benchmark Dataset</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">17,978 Images (224×224 normalized)</td>
+                  <td className="px-6 py-4 text-foreground font-medium">Evaluation Dataset</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">17,978 verified images</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Dimensionality Reduction</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">UMAP-3D &amp; PCA-3D Real-Time Projection</td>
+                  <td className="px-6 py-4 text-foreground font-medium">3D Dimensional Projection</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">UMAP-3D &amp; PCA-3D real-time coordinate mapping</td>
                 </tr>
                 <tr className="hover:bg-[#111116] transition-colors">
                   <td className="px-6 py-4 text-foreground font-medium">Observatory Workstation</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">React + Three.js / R3F + Zustand</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Public Foundation Story</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">Next.js + Three.js + GSAP ScrollTrigger</td>
+                  <td className="px-6 py-4 text-neutral-400 text-right">3D coordinate inspection &amp; cluster analysis</td>
                 </tr>
               </tbody>
             </table>
@@ -172,202 +166,86 @@ export default function AuthenticityIntelligencePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            04 — SYSTEM ARCHITECTURE
+            03 — FEATURES (Matching GrowX Crawl Quality)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16 space-y-8">
           <div className="space-y-3">
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 03 SYSTEM ARCHITECTURE
+              // 03 CAPABILITIES
             </span>
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Representation Pipeline
+              Core Capabilities
             </h2>
-            <p className="text-muted-foreground text-sm max-w-2xl font-mono">
-              From raw media inputs to frozen latent vectors, classification logits, and 3D coordinate space.
-            </p>
           </div>
 
-          {/* Architecture Blueprint Card */}
-          <div className="w-full bg-[#0A0A0D] border border-neutral-800 rounded-2xl p-6 sm:p-10">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              
-              {/* STEP 1 */}
-              <div className="p-6 bg-[#0E0E12] border border-neutral-800/80 rounded-xl space-y-3">
-                <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                  01 // INPUT
-                </span>
-                <h4 className="text-foreground font-bold text-base">Media Ingestion</h4>
-                <p className="text-neutral-500 text-xs leading-relaxed">
-                  224×224 normalized image frames. Preprocessed with standard ImageNet normalization.
-                </p>
-                <div className="pt-2">
-                  <span className="font-mono text-[10px] text-neutral-600 uppercase">Shape: [3, 224, 224]</span>
-                </div>
-              </div>
-
-              {/* STEP 2 */}
-              <div className="p-6 bg-[#0E0E12] border border-neutral-800/80 rounded-xl space-y-3">
-                <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                  02 // BACKBONE
-                </span>
-                <h4 className="text-foreground font-bold text-base">Frozen DINOv2</h4>
-                <p className="text-neutral-500 text-xs leading-relaxed">
-                  86M parameter Vision Transformer (ViT-Base). Extracts 768-D CLS token representation without backprop.
-                </p>
-                <div className="pt-2">
-                  <span className="font-mono text-[10px] text-neutral-600 uppercase">Frozen Weights</span>
-                </div>
-              </div>
-
-              {/* STEP 3 */}
-              <div className="p-6 bg-[#0E0E12] border border-neutral-800/80 rounded-xl space-y-3">
-                <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                  03 // HEAD &amp; PROJECTION
-                </span>
-                <h4 className="text-foreground font-bold text-base">Classification &amp; UMAP</h4>
-                <p className="text-neutral-500 text-xs leading-relaxed">
-                  Linear head (768 → 3) outputs class probabilities. Parallel UMAP-3D/PCA maps to 3D coordinate space.
-                </p>
-                <div className="pt-2">
-                  <span className="font-mono text-[10px] text-neutral-600 uppercase">2,307 Trainable Params</span>
-                </div>
-              </div>
-
-              {/* STEP 4 */}
-              <div className="p-6 bg-[#0E0E12] border border-neutral-800/80 rounded-xl space-y-3">
-                <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                  04 // OUTPUTS
-                </span>
-                <h4 className="text-foreground font-bold text-base">Two Surfaces</h4>
-                <p className="text-neutral-500 text-xs leading-relaxed">
-                  Internal 3D Research Observatory for cluster analysis + Public Foundation Story cinematic narrative.
-                </p>
-                <div className="pt-2">
-                  <span className="font-mono text-[10px] text-primary uppercase">Real · Artificial · Deepfake</span>
-                </div>
-              </div>
-
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-neutral-800/60 flex flex-wrap items-center justify-between text-xs font-mono text-neutral-500 gap-4">
-              <span>INPUT → FROZEN TRANSFORMER → 768-D LATENT SPACE → 3-CLASS DECISION</span>
-              <span className="text-primary">FROZEN REPRESENTATION SPACE · NO BACKPROP ON BACKBONE</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            05 — THE TWO SURFACES
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16 space-y-12">
-          <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 04 PLATFORM SURFACES
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Two Operational Surfaces
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-2xl font-mono">
-              Scientific exploration internally, cinematic communication publicly.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* SURFACE 1: RESEARCH OBSERVATORY */}
-            <div className="border border-neutral-800 bg-[#0A0A0D] rounded-2xl p-8 sm:p-10 space-y-6">
-              <div className="space-y-2">
-                <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase block">
-                  Internal Scientific Workstation
-                </span>
-                <h3 className="font-serif font-black text-2xl text-foreground tracking-tight">
-                  DINOv2 Research Observatory
-                </h3>
-              </div>
+            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
+              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
+                01 // CLASSIFICATION
+              </span>
+              <h3 className="text-foreground font-bold text-xl">3-Class Detection</h3>
               <p className="text-neutral-400 text-sm leading-relaxed">
-                An internal 3D analytical workstation built with React, Three.js, and Zustand for inspecting high-dimensional latent space behavior across training runs.
+                Accurately distinguishes between genuine camera captures, synthetically generated images, and modified face-swaps or deepfakes.
               </p>
-              <div className="space-y-3 pt-2 font-mono text-xs text-neutral-400">
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>3D Manifold Point Cloud:</strong> 900 anchor embeddings rendered via GPU InstancedMesh with class color coding.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Cluster Diagnostics:</strong> Real-time centroid tracking, cluster spread variance, and pairwise distance matrices.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Topological Modes:</strong> Density scoring (kNN k=7) and cross-class boundary overlap analysis.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Embedded CLI Terminal:</strong> Interactive command line for focus, filter, inspect, and projection control.</span>
-                </div>
-              </div>
             </div>
 
-            {/* SURFACE 2: FOUNDATION STORY */}
-            <div className="border border-neutral-800 bg-[#0A0A0D] rounded-2xl p-8 sm:p-10 space-y-6">
-              <div className="space-y-2">
-                <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase block">
-                  Public Cinematic Narrative
-                </span>
-                <h3 className="font-serif font-black text-2xl text-foreground tracking-tight">
-                  Foundation Story Platform
-                </h3>
-              </div>
+            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
+              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
+                02 // VISUALIZATION
+              </span>
+              <h3 className="text-foreground font-bold text-xl">3D Cluster Analysis</h3>
               <p className="text-neutral-400 text-sm leading-relaxed">
-                A public-facing 3D scroll-driven narrative that visualizes how multiple isolated authenticity signals converge into a unified intelligence foundation.
+                Projects image embeddings into an interactive 3D point cloud, revealing clear separation between authentic and synthetic media groups.
               </p>
-              <div className="space-y-3 pt-2 font-mono text-xs text-neutral-400">
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>10-Stage Scroll Choreography:</strong> Natural scroll progress binding GSAP ScrollTrigger to camera spline waypoints.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Custom GLSL Shaders:</strong> Hardware-accelerated vertex noise, drift, and spherical alpha falloff shaders.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Signal Field Convergence:</strong> Modality clusters representing facial landmarks, audio spectrum, optical flow, and physiology.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <span className="text-primary font-bold">·</span>
-                  <span><strong>Anomaly Wavefront:</strong> Dynamic cross-modal anomaly injection showing real-time confidence resolution.</span>
-                </div>
-              </div>
+            </div>
+
+            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
+              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
+                03 // VERIFICATION
+              </span>
+              <h3 className="text-foreground font-bold text-xl">Nearest-Neighbor Evidence</h3>
+              <p className="text-neutral-400 text-sm leading-relaxed">
+                Pairs every decision with the closest visual matches in the training dataset to provide clear, inspectable reference evidence.
+              </p>
+            </div>
+
+            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
+              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
+                04 // PRESENTATION
+              </span>
+              <h3 className="text-foreground font-bold text-xl">3D Narrative Experience</h3>
+              <p className="text-neutral-400 text-sm leading-relaxed">
+                A public interactive experience showing how multiple detection signals combine into unified authenticity intelligence.
+              </p>
             </div>
 
           </div>
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            06 — CLOSING CTA
+            04 — CLOSING CTA (Exact GrowX Crawl Closing Pattern)
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div className="space-y-1">
-              <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
-                GrowxLabs Machine Intelligence Lab
-              </span>
-              <p className="text-foreground font-bold text-lg">
-                Interested in our machine intelligence research or representation models?
-              </p>
-            </div>
+        <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+          <div className="space-y-2 max-w-xl">
+            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
+              Have questions about Authenticity Intelligence?
+            </h2>
+            <p className="text-muted-foreground text-base">
+              Connect with GrowxLabs to learn more about our machine intelligence research and models.
+            </p>
+          </div>
+
+          <div className="shrink-0">
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 bg-[#C0F0FB] text-black px-6 py-3.5 rounded-lg font-mono text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors shrink-0"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-all shadow-md group"
             >
-              <span>Get In Touch</span>
-              <GrowxArrowRight size={14} />
+              <span>Contact GrowxLabs</span>
+              <GrowxArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </section>
-
-        {/* AI Read Actions Component */}
-        <AIReadActions />
 
       </main>
     </div>
