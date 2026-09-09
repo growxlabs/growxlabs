@@ -141,7 +141,7 @@ export default function AiLabPage() {
               Applied research, specialized harnesses, and internal developer platforms.
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed pt-1">
-              Foundation models, fine-tuned models, and applied research in machine intelligence — built and operated inside GrowxLabs.
+              Foundation models, fine-tuned models, and applied research in machine intelligence.
             </p>
           </div>
 
