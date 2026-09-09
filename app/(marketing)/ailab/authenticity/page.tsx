@@ -4,7 +4,7 @@ import { Link } from "@/navigation";
 import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata = {
-  title: "Authenticity Intelligence — Deepfake Detection | GrowxLabs",
+  title: "Multimodal Deepfake Intelligence — Real-Time Detection | GrowxLabs",
   description:
     "A machine intelligence system built to detect synthetic media and deepfakes, classifying images into Real, AI-Generated, and Deepfake.",
 };
@@ -14,8 +14,8 @@ export default function AuthenticityIntelligencePage() {
     <div className="bg-black text-foreground min-h-screen">
       {/* ═══ PAGE HERO ═══ */}
       <PageHero
-        title="Authenticity Intelligence"
-        viewingText="AUTHENTICITY"
+        title="Multimodal Deepfake Intelligence"
+        viewingText="DEEPFAKE INTELLIGENCE"
         exploreText="RESEARCH"
         tagline="MACHINE INTELLIGENCE"
       />
@@ -27,7 +27,7 @@ export default function AuthenticityIntelligencePage() {
           className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-white transition-colors group"
         >
           <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-          <span>AI LAB / AUTHENTICITY INTELLIGENCE</span>
+          <span>AI LAB / MULTIMODAL DEEPFAKE INTELLIGENCE</span>
         </Link>
       </div>
 
@@ -226,7 +226,7 @@ export default function AuthenticityIntelligencePage() {
         <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Have questions about Authenticity Intelligence?
+              Have questions about Multimodal Deepfake Intelligence?
             </h2>
             <p className="text-muted-foreground text-base">
               Connect with GrowxLabs to learn more about our machine intelligence research and models.

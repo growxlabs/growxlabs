@@ -23,7 +23,7 @@ interface LabTool {
 
 const LAB_SYSTEMS: LabTool[] = [
   {
-    name: "Authenticity Intelligence",
+    name: "Multimodal Deepfake Intelligence",
     category: "// APPLIED RESEARCH",
     status: "RESEARCH",
     icon: GrowxAuthenticity,
