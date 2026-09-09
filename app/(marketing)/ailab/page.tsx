@@ -25,7 +25,7 @@ const PLATFORMS_AND_TOOLS: LabTool[] = [
     status: "LIVE",
     icon: GrowxCrawl,
     description:
-      "Local-first web research and discovery engine built to crawl complex websites, execute headless JS rendering, extract structured entities, and anchor findings to verifiable DOM evidence.",
+      "Web research platform that crawls websites, extracts company information, scores search visibility, and delivers clean reports — all running locally on your machine.",
     href: "/portfolio/growx-crawl",
     isExternal: false,
     cta: "LEARN MORE",
@@ -38,7 +38,7 @@ const HARNESSES: LabTool[] = [
     status: "LIVE",
     icon: GrowxTerminal,
     description:
-      "Desktop workspace for running and visualizing autonomous coding agents working in parallel with AST compilation verification, live diff tracking, and sandbox rollbacks.",
+      "Desktop workspace for running multiple coding agents side by side — track changes in real time, compare outputs, and roll back safely.",
     href: "/products",
     isExternal: false,
     cta: "LEARN MORE",
@@ -52,27 +52,27 @@ function LabCard({ tool }: { tool: LabTool }) {
       {/* Top Header: Icon + Status Tag */}
       <div>
         <div className="flex items-center justify-between">
-          <div className="w-11 h-11 border border-black/20 flex items-center justify-center text-black">
+          <div className="w-11 h-11 border border-neutral-700 rounded-lg flex items-center justify-center text-[#C0F0FB]">
             <IconComponent size={22} />
           </div>
-          <span className="font-mono text-[11px] font-bold tracking-widest text-black/60 uppercase">
+          <span className="font-mono text-[11px] font-bold tracking-widest text-[#C0F0FB]/70 uppercase">
             · {tool.status}
           </span>
         </div>
 
         {/* Product Name */}
-        <h3 className="font-sans font-black text-2xl sm:text-[28px] text-black tracking-tight leading-tight mt-8 mb-4">
+        <h3 className="font-sans font-black text-2xl sm:text-[28px] text-foreground tracking-tight leading-tight mt-8 mb-4">
           {tool.name}
         </h3>
 
         {/* Description */}
-        <p className="text-black/80 text-sm sm:text-[15px] leading-relaxed font-sans font-medium">
+        <p className="text-neutral-400 text-sm sm:text-[15px] leading-relaxed font-sans">
           {tool.description}
         </p>
       </div>
 
       {/* Bottom Action CTA */}
-      <div className="pt-8 mt-6 border-t border-black/15 flex items-center gap-2 font-mono text-xs font-bold text-black uppercase tracking-wider">
+      <div className="pt-8 mt-6 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] uppercase tracking-wider">
         <span>{tool.cta}</span>
         <GrowxArrowRight
           size={15}
@@ -88,14 +88,14 @@ function LabCard({ tool }: { tool: LabTool }) {
       href={tool.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="block h-full border border-black/15 bg-[#C0F0FB] text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer group"
+      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] rounded-xl overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </a>
   ) : (
     <Link
       href={tool.href}
-      className="block h-full border border-black/15 bg-[#C0F0FB] text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer group"
+      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] rounded-xl overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </Link>
