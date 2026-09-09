@@ -34,7 +34,7 @@ export default function AuthenticityIntelligencePage() {
       <main className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 sm:py-12 space-y-24 md:space-y-32">
         
         {/* ══════════════════════════════════════════════════════════════════
-            HERO PARAMETERS STRIP (Matching GrowX Crawl)
+            HERO PARAMETERS STRIP
         ══════════════════════════════════════════════════════════════════ */}
         <section className="space-y-8">
           <div className="space-y-4 max-w-4xl">
@@ -75,7 +75,7 @@ export default function AuthenticityIntelligencePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            01 — OVERVIEW (Exact GrowX Crawl 2-Column Editorial Layout)
+            01 — OVERVIEW (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
@@ -99,7 +99,7 @@ export default function AuthenticityIntelligencePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            02 — SPECIFICATIONS (Exact GrowX Crawl Table Design)
+            02 — SPECIFICATIONS (Clean Editorial Table)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16 space-y-8">
           <div className="space-y-3">
@@ -166,65 +166,62 @@ export default function AuthenticityIntelligencePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            03 — FEATURES (Matching GrowX Crawl Quality)
+            03 — FEATURES (Clean Border-Divided Columns — No Boxed Cards)
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16 space-y-8">
+        <section className="border-t border-neutral-800 pt-16 space-y-12">
           <div className="space-y-3">
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 03 CAPABILITIES
+              // 03 FEATURES
             </span>
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
               Core Capabilities
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
-              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                01 // CLASSIFICATION
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 divide-y md:divide-y-0 md:divide-x divide-neutral-800/80">
+            {/* Feature 1 */}
+            <div className="space-y-3 md:pr-8">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-primary block">
+                01 / DETECTION
               </span>
-              <h3 className="text-foreground font-bold text-xl">3-Class Detection</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">
-                Accurately distinguishes between genuine camera captures, synthetically generated images, and modified face-swaps or deepfakes.
+              <h3 className="font-serif font-bold text-2xl text-foreground">
+                3-Class Verification
+              </h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Accurately separates authentic camera captures from fully synthetic AI creations and targeted face-swaps or deepfakes.
               </p>
             </div>
 
-            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
-              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                02 // VISUALIZATION
+            {/* Feature 2 */}
+            <div className="space-y-3 pt-8 md:pt-0 md:px-8">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-primary block">
+                02 / VISUALIZATION
               </span>
-              <h3 className="text-foreground font-bold text-xl">3D Cluster Analysis</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">
-                Projects image embeddings into an interactive 3D point cloud, revealing clear separation between authentic and synthetic media groups.
+              <h3 className="font-serif font-bold text-2xl text-foreground">
+                3D Embedding Manifold
+              </h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Maps high-dimensional representations into 3D coordinate space, revealing clear spatial separation between authentic and synthetic clusters.
               </p>
             </div>
 
-            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
-              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                03 // VERIFICATION
+            {/* Feature 3 */}
+            <div className="space-y-3 pt-8 md:pt-0 md:pl-8">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-primary block">
+                03 / EVIDENCE
               </span>
-              <h3 className="text-foreground font-bold text-xl">Nearest-Neighbor Evidence</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">
-                Pairs every decision with the closest visual matches in the training dataset to provide clear, inspectable reference evidence.
+              <h3 className="font-serif font-bold text-2xl text-foreground">
+                Nearest-Neighbor Proof
+              </h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Pairs every classification outcome with the closest matching images from training benchmarks to ground decisions in verifiable visual evidence.
               </p>
             </div>
-
-            <div className="p-7 sm:p-8 bg-[#0A0A0D] border border-neutral-800 rounded-xl space-y-3">
-              <span className="font-mono text-[10px] font-bold text-primary tracking-widest uppercase block">
-                04 // PRESENTATION
-              </span>
-              <h3 className="text-foreground font-bold text-xl">3D Narrative Experience</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">
-                A public interactive experience showing how multiple detection signals combine into unified authenticity intelligence.
-              </p>
-            </div>
-
           </div>
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            04 — CLOSING CTA (Exact GrowX Crawl Closing Pattern)
+            04 — CLOSING CTA
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
