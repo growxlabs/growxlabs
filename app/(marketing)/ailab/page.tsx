@@ -12,6 +12,7 @@ import {
 
 interface LabTool {
   name: string;
+  kicker: string;
   category: string;
   status: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
@@ -24,6 +25,7 @@ interface LabTool {
 const LAB_SYSTEMS: LabTool[] = [
   {
     name: "GrowX Deepfake™",
+    kicker: "// MODELS",
     category: "",
     status: "RESEARCH",
     icon: GrowxAuthenticity,
@@ -35,7 +37,8 @@ const LAB_SYSTEMS: LabTool[] = [
   },
   {
     name: "GrowX Crawl™",
-    category: "// PLATFORMS & TOOLS",
+    kicker: "// PLATFORMS & TOOLS",
+    category: "",
     status: "LIVE",
     icon: GrowxCrawl,
     description:
@@ -46,7 +49,8 @@ const LAB_SYSTEMS: LabTool[] = [
   },
   {
     name: "Pipper™",
-    category: "// HARNESS",
+    kicker: "// HARNESS",
+    category: "",
     status: "LIVE",
     icon: GrowxTerminal,
     description:
@@ -136,19 +140,7 @@ export default function AiLabPage() {
       <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-12">
 
-          {/* Section Editorial Header */}
-          <div className="pt-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
-              // MODELS
-            </span>
-            <div className="max-w-xl">
-              <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
-                We research and develop new AI models, methods, and systems in-house.
-              </h2>
-            </div>
-          </div>
-
-          {/* Cards Stacked One by One in original size with standard border-white/10 divider */}
+          {/* Cards Stacked One by One with individual section headers and standard border-white/10 dividers */}
           <div className="flex flex-col">
             {LAB_SYSTEMS.map((tool, index) => (
               <React.Fragment key={tool.name}>
@@ -157,6 +149,21 @@ export default function AiLabPage() {
                     <div className="w-full border-t border-white/10" />
                   </div>
                 )}
+
+                {/* Section Header */}
+                <div className={`${index === 0 ? "pt-6" : "pt-2"} pb-8 flex flex-col md:flex-row md:items-start justify-between gap-6`}>
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                    {tool.kicker}
+                  </span>
+                  {index === 0 && (
+                    <div className="max-w-xl">
+                      <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                        We research and develop new AI models, methods, and systems in-house.
+                      </h2>
+                    </div>
+                  )}
+                </div>
+
                 <div className="w-full max-w-[440px]">
                   <LabCard tool={tool} />
                 </div>
