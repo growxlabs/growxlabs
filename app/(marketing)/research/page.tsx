@@ -9,11 +9,12 @@ import { AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSe
 
 const AILAB_SLIDES = [
   {
-    src: "/images/ailab/deepfake-features.png",
-    alt: "GrowX Deepfake — Multimodal Real-Time Verification",
-    title: "GrowX Deepfake™",
-    tag: "// 01 MODELS",
-    desc: "Real-time on-device verification & 3D manifold cluster analysis",
+    src: "/images/ailab/deepfake-architecture.png",
+    alt: "GrowX Deepfake — Neural Architecture & Pipeline",
+    title: "GrowX Deepfake™ Architecture",
+    tag: "// 01 ARCHITECTURE",
+    desc: "DINOv2 ViT backbone, 768-D latent manifold & 3-class verification head",
+    fit: "contain",
   },
   {
     src: "/images/ailab/crawl-playground.png",
@@ -21,6 +22,7 @@ const AILAB_SLIDES = [
     title: "GrowX Crawl™",
     tag: "// 02 PLATFORMS",
     desc: "Interactive scraping, live scoring & research engine",
+    fit: "cover",
   },
   {
     src: "/portfolio/growx-crawl-api.png",
@@ -28,6 +30,7 @@ const AILAB_SLIDES = [
     title: "GrowX Crawl API",
     tag: "// 03 API SUITE",
     desc: "Enterprise endpoints, parameter schemas & cURL integration",
+    fit: "cover",
   },
   {
     src: "/images/ailab/pipper-harness.png",
@@ -35,6 +38,7 @@ const AILAB_SLIDES = [
     title: "Pipper™",
     tag: "// 04 HARNESS",
     desc: "Desktop workspace for parallel AI agent execution & diffing",
+    fit: "cover",
   },
 ];
 
@@ -46,7 +50,7 @@ function AiLabWindowCarousel() {
     if (isPaused) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % AILAB_SLIDES.length);
-    }, 3500);
+    }, 4000);
     return () => clearInterval(interval);
   }, [isPaused]);
 
@@ -81,59 +85,69 @@ function AiLabWindowCarousel() {
       </div>
 
       {/* Window Body: Horizontal Moving Slider */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+      <div className="relative aspect-[16/11] w-full overflow-hidden bg-[#05070E]">
         {/* Sliding Track */}
         <div
           className="flex h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {AILAB_SLIDES.map((slide, idx) => (
-            <div key={slide.src} className="relative w-full h-full shrink-0">
-              <Image
-                src={slide.src}
-                alt={slide.alt}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover object-top"
-                priority={idx === 0}
-              />
+            <div key={slide.src} className="relative w-full h-full shrink-0 flex flex-col bg-[#05070E]">
+              {/* Image Area */}
+              <div className="relative flex-1 w-full overflow-hidden">
+                <Image
+                  src={slide.src}
+                  alt={slide.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className={
+                    slide.fit === "contain"
+                      ? "object-contain object-center p-2.5"
+                      : "object-cover object-top"
+                  }
+                  priority={idx === 0}
+                />
+              </div>
 
-              {/* Bottom Caption Overlay */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent pt-8 pb-3 px-4 sm:px-5 flex items-end justify-between gap-4">
-                <div className="space-y-0.5">
-                  <span className="font-mono text-[10px] font-bold text-[#C0F0FB] tracking-widest uppercase block">
-                    {slide.tag}
-                  </span>
-                  <p className="font-sans font-bold text-sm sm:text-base text-foreground tracking-tight">
-                    {slide.title}
-                  </p>
-                  <p className="text-[11px] sm:text-xs text-neutral-400 hidden sm:block">
+              {/* Bottom Caption Bar */}
+              <div className="h-14 sm:h-16 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
+                <div className="space-y-0.5 overflow-hidden">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[9px] sm:text-[10px] font-bold text-[#C0F0FB] tracking-widest uppercase">
+                      {slide.tag}
+                    </span>
+                    <span className="text-neutral-600 text-xs hidden sm:inline">·</span>
+                    <p className="font-sans font-bold text-xs sm:text-sm text-foreground tracking-tight truncate">
+                      {slide.title}
+                    </p>
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] text-neutral-400 truncate hidden sm:block">
                     {slide.desc}
                   </p>
                 </div>
+
+                {/* Slide Progress Dots */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {AILAB_SLIDES.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setCurrentIndex(i);
+                      }}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === currentIndex
+                          ? "w-4 sm:w-5 bg-[#C0F0FB]"
+                          : "w-1.5 bg-white/20 hover:bg-white/40"
+                      }`}
+                      aria-label={`Go to slide ${i + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Slide Progress Dots (Floating on bottom right) */}
-        <div className="absolute bottom-3 right-4 sm:right-5 z-20 flex items-center gap-1.5">
-          {AILAB_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setCurrentIndex(i);
-              }}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? "w-5 bg-[#C0F0FB]"
-                  : "w-1.5 bg-white/30 hover:bg-white/50"
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
           ))}
         </div>
       </div>
@@ -169,59 +183,69 @@ function RoboticsLabWindow() {
       </div>
 
       {/* Window Body: Embodied AI & Robotics Visualization Canvas */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#050508] flex items-center justify-center p-6">
-        {/* Background Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(192,240,251,0.2) 1px, transparent 0)`,
-            backgroundSize: "24px 24px",
-          }}
-        />
+      <div className="relative aspect-[16/11] w-full overflow-hidden bg-[#050508] flex flex-col justify-between">
+        {/* Radar and Telemetry Area */}
+        <div className="relative flex-1 w-full flex items-center justify-center p-6">
+          {/* Background Grid Pattern */}
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(192,240,251,0.2) 1px, transparent 0)`,
+              backgroundSize: "24px 24px",
+            }}
+          />
 
-        {/* Center Radar / Kinematic Sensor Animation */}
-        <div className="relative z-10 flex flex-col items-center text-center space-y-4 max-w-sm">
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
-            {/* Pulsing Concentric Rings */}
-            <div className="absolute inset-0 rounded-full border border-[#C0F0FB]/20 animate-ping opacity-40 duration-1000" />
-            <div className="absolute inset-2 rounded-full border border-[#C0F0FB]/30" />
-            <div className="absolute inset-6 rounded-full border border-dashed border-[#C0F0FB]/40 animate-spin duration-700" />
+          {/* Center Radar / Kinematic Sensor Animation */}
+          <div className="relative z-10 flex flex-col items-center text-center space-y-3 max-w-sm">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
+              {/* Pulsing Concentric Rings */}
+              <div className="absolute inset-0 rounded-full border border-[#C0F0FB]/20 animate-ping opacity-40 duration-1000" />
+              <div className="absolute inset-2 rounded-full border border-[#C0F0FB]/30" />
+              <div className="absolute inset-5 rounded-full border border-dashed border-[#C0F0FB]/40 animate-spin duration-700" />
 
-            {/* Center Reticle / Core */}
-            <div className="w-8 h-8 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB] flex items-center justify-center">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#C0F0FB] animate-pulse" />
+              {/* Center Reticle / Core */}
+              <div className="w-7 h-7 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB] flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-[#C0F0FB] animate-pulse" />
+              </div>
+
+              {/* Crosshairs */}
+              <span className="absolute w-full h-[1px] bg-neutral-800" />
+              <span className="absolute h-full w-[1px] bg-neutral-800" />
             </div>
 
-            {/* Crosshairs */}
-            <span className="absolute w-full h-[1px] bg-neutral-800" />
-            <span className="absolute h-full w-[1px] bg-neutral-800" />
+            <div className="space-y-1">
+              <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase block">
+                // EMBODIED INTELLIGENCE
+              </span>
+              <h4 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight">
+                Physical AI & Spatial Systems
+              </h4>
+              <p className="font-mono text-[10px] text-neutral-500">
+                Hardware simulation · Neural controllers · Teleoperation
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase block">
-              // EMBODIED INTELLIGENCE
-            </span>
-            <h4 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight">
-              Physical AI & Spatial Systems
-            </h4>
-            <p className="font-mono text-[10px] text-neutral-500">
-              Hardware simulation · Neural controllers · Teleoperation
-            </p>
+          {/* Corner Telemetry Readouts */}
+          <div className="absolute top-3 left-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
+            POS: [37.7749, -122.4194]
+          </div>
+          <div className="absolute top-3 right-4 font-mono text-[9px] text-[#C0F0FB]/70 uppercase tracking-widest hidden sm:block">
+            CALIBRATED
           </div>
         </div>
 
-        {/* Corner Telemetry Readouts */}
-        <div className="absolute top-3 left-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
-          POS: [37.7749, -122.4194]
-        </div>
-        <div className="absolute top-3 right-4 font-mono text-[9px] text-[#C0F0FB]/70 uppercase tracking-widest hidden sm:block">
-          CALIBRATED
-        </div>
-        <div className="absolute bottom-3 left-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
-          SYS: KINEMATICS_CORE_V1
-        </div>
-        <div className="absolute bottom-3 right-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
-          RATE: 120HZ
+        {/* Bottom Status Bar */}
+        <div className="h-14 sm:h-16 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 font-mono text-[10px] text-neutral-400 select-none">
+          <div className="flex items-center gap-2">
+            <span className="text-[#C0F0FB] font-bold">// STATUS</span>
+            <span>·</span>
+            <span className="text-neutral-300">KINEMATICS_CORE_V1 ACTIVE</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-neutral-500">SAMPLING:</span>
+            <span className="text-emerald-400 font-bold">120HZ LOW-LATENCY</span>
+          </div>
         </div>
       </div>
     </div>

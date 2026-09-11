@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { GrowxArrowRight } from "@/components/icons";
 import { Link } from "@/navigation";
 import { PageHero } from "@/components/marketing/PageHero";
+import Image from "next/image";
 
 export const metadata = {
   title: "GrowX Deepfake — Multimodal Real-Time Detection | GrowxLabs",
@@ -158,12 +159,59 @@ export default function GrowXDeepfakePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            03 — FEATURES (Clean Border-Divided Columns — No Boxed Cards)
+            03 — ARCHITECTURE (System Architecture Schematic)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16 space-y-8">
+          <div className="space-y-3">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+              // 03 ARCHITECTURE
+            </span>
+            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
+              System Architecture Schematic
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-2xl font-normal">
+              An end-to-end multi-stage neural pipeline from live biometric ingestion to 768-D latent projection, 3D manifold learning, and real-time 3-class probabilistic verification.
+            </p>
+          </div>
+
+          <div className="rounded-xl sm:rounded-2xl border border-neutral-800/80 bg-[#07070A] overflow-hidden shadow-2xl">
+            {/* Window Header */}
+            <div className="h-10 px-4 bg-[#0E0E14] border-b border-neutral-800/80 flex items-center justify-between select-none">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/80 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/80 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]/80 inline-block" />
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300">
+                <span className="text-neutral-500">growx/</span>
+                <span className="text-foreground font-semibold">deepfake-architecture</span>
+              </div>
+              <div className="font-mono text-[10px] text-neutral-400">
+                <span className="text-primary font-bold">v2.1 SCHEMATIC</span>
+              </div>
+            </div>
+
+            {/* Architecture Diagram */}
+            <div className="relative aspect-[16/9] w-full bg-[#04060C]">
+              <Image
+                src="/images/ailab/deepfake-architecture.png"
+                alt="GrowX Deepfake AI Detection Platform — End-to-End System Architecture Schematic"
+                fill
+                sizes="(max-width: 1200px) 100vw, 1200px"
+                className="object-contain p-2 sm:p-4"
+                priority
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            04 — FEATURES (Clean Border-Divided Columns — No Boxed Cards)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16 space-y-12">
           <div className="space-y-3">
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 03 FEATURES
+              // 04 FEATURES
             </span>
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
               Core Capabilities
@@ -213,7 +261,7 @@ export default function GrowXDeepfakePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            04 — CLOSING CTA
+            05 — CLOSING CTA
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div className="space-y-2 max-w-xl">
