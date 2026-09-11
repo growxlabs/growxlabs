@@ -9,9 +9,10 @@ import { SectionR } from "@/components/marketing/SectionR";
 import { SectionO } from "@/components/marketing/SectionO";
 import { SectionW } from "@/components/marketing/SectionW";
 import { SectionX } from "@/components/marketing/SectionX";
+import { PracticeAreasSection } from "@/components/marketing/PracticeAreasSection";
 import { ValuePropositions } from "@/components/marketing/ValuePropositions";
 import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
-import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
+import { AnimatedSection } from "@/components/marketing/AnimatedSection";
 import Script from "next/script";
 import { ArrowUpRight } from "@/components/icons";
 
@@ -112,83 +113,7 @@ export default function Home() {
 
 
       {/* ═══ PRACTICE AREAS & DIVISIONS ═══ */}
-      <section className="w-full py-24 px-6 md:px-10 xl:px-16 2xl:px-24 bg-black border-t border-white/10">
-        <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
-          <AnimatedSection className="text-center mb-16">
-            <h2 className="text-[clamp(32px,4vw,48px)] font-sans font-bold text-white tracking-tight">
-              Client Solutions & Proprietary Labs
-            </h2>
-          </AnimatedSection>
-          
-          <AnimatedStagger className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl xl:max-w-7xl mx-auto">
-            {/* PORTFOLIO CARD */}
-            <AnimatedItem>
-              <Link href="/portfolio" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#0c0c0e] text-white border border-white/10 rounded-[24px] p-10 md:p-12 lg:p-14 overflow-hidden shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-white/20 hover:bg-[#101014] min-h-[460px] md:min-h-[500px]">
-                  {/* Top Bar: Eyebrow + Title + Arrow */}
-                  <div className="flex justify-between items-start z-10 gap-6">
-                    <div>
-                      <span className="font-mono text-xs tracking-[0.2em] text-white/45 uppercase block mb-3">
-                        [ 01 / CLIENT ENGAGEMENTS ]
-                      </span>
-                      <h3 className="text-2xl sm:text-3xl md:text-[32px] lg:text-[36px] font-sans font-bold tracking-tight leading-tight text-white">
-                        Production Software & AI Systems
-                      </h3>
-                    </div>
-                    <div className="w-12 h-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      <ArrowUpRight className="h-5 w-5" />
-                    </div>
-                  </div>
-
-                  {/* Bottom Bar: Meta & Description */}
-                  <div className="z-10 mt-auto pt-20">
-                    <div className="flex justify-between items-center pb-3 mb-4 font-mono text-xs tracking-[0.18em] text-white/40 uppercase border-b border-white/10">
-                      <span>[ CASE STUDIES ]</span>
-                      <span className="text-white/60 group-hover:text-white transition-colors">VIEW WORK →</span>
-                    </div>
-                    <p className="text-white/70 text-base md:text-[17px] leading-relaxed font-sans max-w-xl">
-                      Custom software architectures, autonomous AI workflows, and secure integrations engineered with senior-developer velocity.
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </AnimatedItem>
-
-            {/* LABS CARD */}
-            <AnimatedItem>
-              <Link href="/ailab" className="group block h-full">
-                <div className="relative h-full flex flex-col justify-between bg-[#0c0c0e] text-white border border-white/10 rounded-[24px] p-10 md:p-12 lg:p-14 overflow-hidden shadow-[0_16px_40px_-12px_rgba(0,0,0,0.8)] transition-all duration-300 hover:border-white/20 hover:bg-[#101014] min-h-[460px] md:min-h-[500px]">
-                  {/* Top Bar: Eyebrow + Title + Arrow */}
-                  <div className="flex justify-between items-start z-10 gap-6">
-                    <div>
-                      <span className="font-mono text-xs tracking-[0.2em] text-white/45 uppercase block mb-3">
-                        [ 02 / RESEARCH & VENTURES ]
-                      </span>
-                      <h3 className="text-2xl sm:text-3xl md:text-[32px] lg:text-[36px] font-sans font-bold tracking-tight leading-tight text-white">
-                        Proprietary AI Labs & Products
-                      </h3>
-                    </div>
-                    <div className="w-12 h-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      <ArrowUpRight className="h-5 w-5" />
-                    </div>
-                  </div>
-
-                  {/* Bottom Bar: Meta & Description */}
-                  <div className="z-10 mt-auto pt-20">
-                    <div className="flex justify-between items-center pb-3 mb-4 font-mono text-xs tracking-[0.18em] text-white/40 uppercase border-b border-white/10">
-                      <span>[ STUDIO LABS ]</span>
-                      <span className="text-white/60 group-hover:text-white transition-colors">EXPLORE LAB →</span>
-                    </div>
-                    <p className="text-white/70 text-base md:text-[17px] leading-relaxed font-sans max-w-xl">
-                      Test and use proprietary AI SaaS platforms, experimental research tools, and open-source models incubated by our studio.
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </AnimatedItem>
-          </AnimatedStagger>
-        </div>
-      </section>
+      <PracticeAreasSection />
 
       {/* ═══ FAQ — Accordion (360labs.dev Swiss-editorial layout) ═══ */}
       <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-black border-t border-white/10">
