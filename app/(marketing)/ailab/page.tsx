@@ -133,13 +133,15 @@ export default function AiLabPage() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-12">
 
           {/* Section Editorial Header */}
-          <div className="pt-6 space-y-3 max-w-3xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+          <div className="pt-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
               // ACTIVE LAB SYSTEMS
             </span>
-            <h2 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
-              We research and develop new AI models, methods, and systems in-house.
-            </h2>
+            <div className="max-w-2xl">
+              <h2 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
+                We research and develop new AI models, methods, and systems in-house.
+              </h2>
+            </div>
           </div>
 
           {/* Cards Stacked One by One in original size */}
