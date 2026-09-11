@@ -1479,6 +1479,12 @@ function WideEditorialCtaCard() {
 }
 
 export default function ProductsPage() {
+  const recruitProduct = PRODUCTS.find((p) => p.name === "RecruitAI™") || PRODUCTS[0];
+  const resumeProduct = PRODUCTS.find((p) => p.name === "ResumeForgeAI™") || PRODUCTS[2];
+  const universalProduct = PRODUCTS.find((p) => p.name === "UniversalAI™") || PRODUCTS[3];
+  const pipperProduct = PRODUCTS.find((p) => p.name === "Pipper™") || PRODUCTS[1];
+  const crawlProduct = PRODUCTS.find((p) => p.name === "GrowX Crawl™") || PRODUCTS[4];
+
   return (
     <div className="flex flex-col bg-black text-foreground min-h-screen">
       <PageHero
@@ -1489,190 +1495,169 @@ export default function ProductsPage() {
       />
 
       <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-12">
           
-          {/* Stacked Product Showcase Rows as independent floating editorial sheets */}
-          <div className="space-y-16 sm:space-y-20 md:space-y-24">
-            {PRODUCTS.map((product) => {
-              if (product.name === "RecruitAI™") {
-                return (
-                  <div
-                    key={product.name}
-                    className="grid w-full max-w-[1268px] grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start xl:gap-7"
-                  >
-                    <RecruitAIArtworkCard href={product.href} />
-                    <RecruitAIIntelligenceCard />
-                  </div>
-                );
-              }
+          {/* ══════════════════════════════════════════════════════════════════
+              01 — EDUCATION (RecruitAI + ResumeForgeAI)
+          ══════════════════════════════════════════════════════════════════ */}
+          <div>
+            {/* Section Header */}
+            <div className="pt-6 pb-8 sm:pb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                // EDUCATION
+              </span>
+              <div className="max-w-xl">
+                <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                  Autonomous platforms for talent intelligence, hiring, and career engineering.
+                </h2>
+              </div>
+            </div>
 
-              if (product.name === "ResumeForgeAI™") {
-                return (
-                  <ProductCard
-                    key={product.name}
-                    name="ResumeForgeAI"
-                    category="AI-NATIVE CAREER PLATFORM"
-                    statement="Build, refine and adapt your career profile with intelligence."
-                    href={product.href}
-                    image="/images/products/resumeforgeai.png"
-                    imageAlt="ResumeForgeAI career platform interface"
-                    imageAspect="16 / 9"
-                    variant="resume"
-                    tone="light"
-                    isExternal={product.isExternal}
-                  />
-                );
-              }
+            {/* Products inside Education */}
+            <div className="space-y-16 sm:space-y-20 md:space-y-24">
+              {/* RecruitAI */}
+              <div className="grid w-full max-w-[1268px] grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:items-start xl:gap-7">
+                <RecruitAIArtworkCard href={recruitProduct.href} />
+                <RecruitAIIntelligenceCard />
+              </div>
 
-              if (product.name === "Pipper™") {
-                return (
-                  <ProductCard
-                    key={product.name}
-                    name="Pipper"
-                    category={product.label}
-                    statement={product.subtext}
-                    href={product.href}
-                    image={product.image}
-                    imageAlt="Pipper desktop workspace interface"
-                    imageAspect="1024 / 659"
-                    variant="pipper"
-                    tone="dark"
-                    isExternal={product.isExternal}
-                  />
-                );
-              }
-
-              if (product.name === "GrowX Crawl™") {
-                return (
-                  <ProductCard
-                    key={product.name}
-                    name="GrowX Crawl"
-                    category="WEB INTELLIGENCE"
-                    statement="Public web information turned into structured research."
-                    href={product.href}
-                    image="/portfolio/growx-crawl.png"
-                    imageAlt="GrowX Crawl Enterprise Web Intelligence Platform"
-                    imageAspect="1920 / 1080"
-                    variant="crawl"
-                    tone="light"
-                    isExternal={product.isExternal}
-                  />
-                );
-              }
-
-              if (product.name === "UniversalAI™") {
-                return (
-                  <ProductCard
-                    key={product.name}
-                    name="UniversalAI"
-                    category={product.label}
-                    statement={product.subtext}
-                    href={product.href}
-                    image={product.image}
-                    imageAlt="UniversalAI model routing interface"
-                    imageAspect="1024 / 682"
-                    variant="universal"
-                    tone="dark"
-                    isExternal={product.isExternal}
-                  />
-                );
-              }
-
-              const LeftVisual = product.image ? (
-                <div className="w-full bg-black border border-black min-h-[300px] sm:min-h-[340px] md:min-h-[380px] h-full relative overflow-hidden flex items-center justify-center">
-                  {product.isSvg ? (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  ) : (
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover object-center"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      priority
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="w-full bg-black border border-black p-8 sm:p-10 md:p-12 min-h-[300px] sm:min-h-[340px] md:min-h-[380px] flex flex-col justify-between text-center">
-                  {/* Top Tag */}
-                  <span className="font-mono text-[9.5px] sm:text-[10px] tracking-[0.25em] text-white/50 uppercase block">
-                    {product.label}
-                  </span>
-
-                  {/* Giant Product Title */}
-                  <h4 className="font-sans font-black text-4xl sm:text-5xl md:text-6xl tracking-tight text-white my-6">
-                    {product.shortName}
-                  </h4>
-
-                  {/* Bottom Philosophy & Subtitle */}
-                  <div className="space-y-2">
-                    <p className="text-xs sm:text-[13px] text-white/80 font-sans">
-                      {product.taglineLead}{" "}
-                      <span className="font-bold text-[#C0F0FB]">
-                        {product.taglineBold}
-                      </span>
-                    </p>
-                    <p className="text-[10.5px] sm:text-xs text-white/40 font-sans">
-                      {product.subtext}
-                    </p>
-                  </div>
-                </div>
-              );
-
-              const PanelInner = (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-center">
-                  {/* LEFT SIDE: Visual Artwork / Image (Flat inside panel) */}
-                  <div className="lg:col-span-6 w-full h-full">
-                    {LeftVisual}
-                  </div>
-
-                  {/* RIGHT SIDE: Product Name + Editorial Description */}
-                  <div className="lg:col-span-6 space-y-5">
-                    <h2 className="font-sans font-black text-3xl sm:text-4xl md:text-[40px] text-black tracking-tight leading-tight">
-                      {product.name}
-                    </h2>
-
-                    <p className="text-black/80 text-sm sm:text-base md:text-[16.5px] leading-relaxed font-sans font-medium">
-                      {product.description}
-                    </p>
-                  </div>
-                </div>
-              );
-
-              return product.isExternal ? (
-                <a
-                  key={product.name}
-                  href={product.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block border border-black/15 bg-[#C0F0FB] p-6 sm:p-8 md:p-10 lg:p-12 text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer"
-                >
-                  {PanelInner}
-                </a>
-              ) : (
-                <Link
-                  key={product.name}
-                  href={product.href}
-                  className="block border border-black/15 bg-[#C0F0FB] p-6 sm:p-8 md:p-10 lg:p-12 text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] relative transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform cursor-pointer"
-                >
-                  {PanelInner}
-                </Link>
-              );
-            })}
+              {/* ResumeForgeAI */}
+              <ProductCard
+                name="ResumeForgeAI"
+                category="AI-NATIVE CAREER PLATFORM"
+                statement="Build, refine and adapt your career profile with intelligence."
+                href={resumeProduct.href}
+                image="/images/products/resumeforgeai.png"
+                imageAlt="ResumeForgeAI career platform interface"
+                imageAspect="16 / 9"
+                variant="resume"
+                tone="light"
+                isExternal={resumeProduct.isExternal}
+              />
+            </div>
           </div>
 
+          {/* Section Divider */}
+          <div className="py-8 sm:py-12">
+            <div className="w-full border-t border-white/10" />
+          </div>
+
+          {/* ══════════════════════════════════════════════════════════════════
+              02 — MULTI CHAT MODEL (UniversalAI)
+          ══════════════════════════════════════════════════════════════════ */}
+          <div>
+            {/* Section Header */}
+            <div className="pt-2 pb-8 sm:pb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                // MULTI CHAT MODEL
+              </span>
+              <div className="max-w-xl">
+                <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                  Unified multi-model switchboard routing across Claude, GPT-5, and Gemini with sub-15ms latency.
+                </h2>
+              </div>
+            </div>
+
+            {/* UniversalAI Card */}
+            <ProductCard
+              name="UniversalAI"
+              category={universalProduct.label}
+              statement={universalProduct.subtext}
+              href={universalProduct.href}
+              image={universalProduct.image}
+              imageAlt="UniversalAI model routing interface"
+              imageAspect="1024 / 682"
+              variant="universal"
+              tone="dark"
+              isExternal={universalProduct.isExternal}
+            />
+          </div>
+
+          {/* Section Divider */}
+          <div className="py-8 sm:py-12">
+            <div className="w-full border-t border-white/10" />
+          </div>
+
+          {/* ══════════════════════════════════════════════════════════════════
+              03 — HARNESS (Pipper)
+          ══════════════════════════════════════════════════════════════════ */}
+          <div>
+            {/* Section Header */}
+            <div className="pt-2 pb-8 sm:pb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                // HARNESS
+              </span>
+              <div className="max-w-xl">
+                <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                  Desktop workspace for orchestrating parallel autonomous coding agents with live diffs.
+                </h2>
+              </div>
+            </div>
+
+            {/* Pipper Card */}
+            <ProductCard
+              name="Pipper"
+              category={pipperProduct.label}
+              statement={pipperProduct.subtext}
+              href={pipperProduct.href}
+              image={pipperProduct.image}
+              imageAlt="Pipper desktop workspace interface"
+              imageAspect="1024 / 659"
+              variant="pipper"
+              tone="dark"
+              isExternal={pipperProduct.isExternal}
+            />
+          </div>
+
+          {/* Section Divider */}
+          <div className="py-8 sm:py-12">
+            <div className="w-full border-t border-white/10" />
+          </div>
+
+          {/* ══════════════════════════════════════════════════════════════════
+              04 — TOOLS (GrowX Crawl)
+          ══════════════════════════════════════════════════════════════════ */}
+          <div>
+            {/* Section Header */}
+            <div className="pt-2 pb-8 sm:pb-10 flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                // TOOLS
+              </span>
+              <div className="max-w-xl">
+                <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                  Local-first web research platform for deep extraction, indexing, and verifiable audit reports.
+                </h2>
+              </div>
+            </div>
+
+            {/* GrowX Crawl Card */}
+            <ProductCard
+              name="GrowX Crawl"
+              category="WEB INTELLIGENCE"
+              statement="Public web information turned into structured research."
+              href={crawlProduct.href}
+              image="/portfolio/growx-crawl.png"
+              imageAlt="GrowX Crawl Enterprise Web Intelligence Platform"
+              imageAspect="1920 / 1080"
+              variant="crawl"
+              tone="light"
+              isExternal={crawlProduct.isExternal}
+            />
+          </div>
+
+          {/* Section Divider */}
+          <div className="py-8 sm:py-12">
+            <div className="w-full border-t border-white/10" />
+          </div>
+
+          {/* Global CTA */}
           <WideEditorialCtaCard />
 
           {/* End of Products Separator & Count */}
           <div className="mt-20 sm:mt-24 border-t border-white/10 pt-6">
             <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
               <span>{"// End of Products"}</span>
-              <span>{PRODUCTS.length} Products</span>
+              <span>5 Products Active · 4 Dedicated Categories</span>
             </div>
           </div>
 
