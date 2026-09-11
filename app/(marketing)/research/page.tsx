@@ -25,7 +25,7 @@ export default function ResearchPage() {
             {/* LABS CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
-                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
+                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
 
                   {/* Card Top */}
                   <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
@@ -67,7 +67,7 @@ export default function ResearchPage() {
             {/* PORTFOLIO CARD */}
             <AnimatedItem>
               <Link href="/portfolio" className="group block h-full">
-                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
+                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
 
                   {/* Card Top */}
                   <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">

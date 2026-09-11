@@ -23,7 +23,7 @@ export function ProjectCard({ slug, title, description, image, tag, category, su
 
   return (
     <div className="group h-full relative">
-      <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 rounded-xl overflow-hidden transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
+      <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
         
         {/* Image Preview */}
         <Link

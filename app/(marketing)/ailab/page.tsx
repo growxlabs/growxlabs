@@ -105,14 +105,14 @@ function LabCard({ tool }: { tool: LabTool }) {
       href={tool.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] rounded-xl overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </a>
   ) : (
     <Link
       href={tool.href}
-      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] rounded-xl overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </Link>
