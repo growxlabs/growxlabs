@@ -4,7 +4,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { CookieConsent } from "@/components/layout/CookieConsent";
-import { WhatsAppWidget } from "@/components/shared/WhatsAppWidget";
+
 import { Toaster } from "sonner";
 import Script from "next/script";
 import { PHProvider } from "@/components/providers/PostHogProvider";
@@ -220,8 +220,6 @@ export default async function RootLayout({
                 </ConditionalLayout>
 
                 <CookieConsent />
-
-                <WhatsAppWidget />
 
                 <Toaster
                   position="top-right"
