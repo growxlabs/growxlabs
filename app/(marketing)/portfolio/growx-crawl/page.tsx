@@ -10,6 +10,28 @@ export const metadata = {
   description: "A web research tool built inside GrowxLabs to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.",
 };
 
+interface CapabilityItem {
+  capability: string;
+  detail: string;
+  isHighlight?: boolean;
+}
+
+const CRAWL_CAPABILITIES: CapabilityItem[] = [
+  { capability: "Single Website Crawl", detail: "Up to 100+ pages per site" },
+  { capability: "Batch Research", detail: "100+ websites in one run" },
+  { capability: "Page Discovery", detail: "Sitemaps, internal links, robots.txt" },
+  { capability: "Content Extraction", detail: "Company info, contacts, key data" },
+  { capability: "Dynamic Websites", detail: "Full browser rendering when needed" },
+  { capability: "SEO Score", detail: "0 – 100", isHighlight: true },
+  { capability: "AEO Score", detail: "0 – 100", isHighlight: true },
+  { capability: "GEO Score", detail: "0 – 100", isHighlight: true },
+  { capability: "Screenshots", detail: "Full-page captures of every site" },
+  { capability: "PDF Export", detail: "Save any page as a PDF" },
+  { capability: "Reports", detail: "JSON, CSV, Excel, PDF" },
+  { capability: "Web Dashboard", detail: "Visual interface for all tasks" },
+  { capability: "Runs On", detail: "Your machine — no cloud needed", isHighlight: true },
+];
+
 export default function GrowXCrawlCaseStudy() {
   return (
     <div className="bg-black text-foreground min-h-screen">
@@ -100,86 +122,62 @@ export default function GrowXCrawlCaseStudy() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            02 — WHAT IT DOES
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16 space-y-8">
-          <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
-              // 02 CAPABILITIES
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              What It Does
-            </h2>
-          </div>
-
-          <div className="border border-neutral-800 rounded-2xl overflow-hidden">
-            <table className="w-full text-left divide-y divide-neutral-800">
-              <thead className="bg-[#111114]">
-                <tr>
-                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">Capability</th>
-                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 text-right">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800/60 bg-[#0A0A0D] text-sm">
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Single Website Crawl</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Up to 100+ pages per site</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Batch Research</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">100+ websites in one run</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Page Discovery</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Sitemaps, internal links, robots.txt</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Content Extraction</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Company info, contacts, key data</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Dynamic Websites</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Full browser rendering when needed</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">SEO Score</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right">0 – 100</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">AEO Score</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right">0 – 100</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">GEO Score</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right">0 – 100</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Screenshots</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Full-page captures of every site</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">PDF Export</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Save any page as a PDF</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Reports</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">JSON, CSV, Excel, PDF</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Web Dashboard</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Visual interface for all tasks</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Runs On</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right">Your machine — no cloud needed</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-
+        {/* ══════════════════════════════════════════════════════════════════
+
+            02 — WHAT IT DOES
+
+        ══════════════════════════════════════════════════════════════════ */}
+
+        <section className="border-t border-neutral-800 pt-16 space-y-8">
+
+          <div className="space-y-3">
+
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+
+              // 02 CAPABILITIES
+
+            </span>
+
+            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
+
+              What It Does
+
+            </h2>
+
+          </div>
+
+
+
+          <div className="border-y border-neutral-800 divide-y divide-neutral-800/80">
+            <div className="py-3.5 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+              <span>Capability</span>
+              <span className="text-right">Detail</span>
+            </div>
+            {CRAWL_CAPABILITIES.map((item) => (
+              <div
+                key={item.capability}
+                className="py-4 sm:py-4.5 flex items-center justify-between gap-4 transition-colors hover:bg-white/[0.02]"
+              >
+                <span className="text-foreground font-medium text-sm sm:text-base">
+                  {item.capability}
+                </span>
+                <span
+                  className={`text-sm sm:text-base text-right ${
+                    item.isHighlight ? "text-primary font-bold" : "text-neutral-400"
+                  }`}
+                >
+                  {item.detail}
+                </span>
+              </div>
+            ))}
+          </div>
+
+        </section>
+
+
+
+
+
 
         {/* ══════════════════════════════════════════════════════════════════
         {/* ══════════════════════════════════════════════════════════════════

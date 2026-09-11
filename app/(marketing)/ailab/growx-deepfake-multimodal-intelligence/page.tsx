@@ -10,57 +10,22 @@ export const metadata = {
 };
 
 interface TechSpec {
-  label: string;
-  value: string;
-  detail?: string;
-  isFullWidth?: boolean;
+  parameter: string;
+  detail: string;
+  isHighlight?: boolean;
 }
 
 const TECH_SPECS: TechSpec[] = [
-  {
-    label: "VISION MODEL",
-    value: "DINOv2",
-    detail: "86M parameters",
-  },
-  {
-    label: "DETECTION CLASSES",
-    value: "3 Classes",
-    detail: "Real · AI-Generated · Deepfake",
-  },
-  {
-    label: "INPUT RESOLUTION",
-    value: "224 × 224",
-    detail: "pixels",
-  },
-  {
-    label: "FEATURE EMBEDDING",
-    value: "768-D",
-    detail: "Feature embedding",
-  },
-  {
-    label: "BENCHMARK ACCURACY",
-    value: "96.89%",
-  },
-  {
-    label: "MACRO F1 SCORE",
-    value: "0.9688",
-  },
-  {
-    label: "FALSE POSITIVE RATE",
-    value: "4.8%",
-    detail: "under 5%",
-  },
-  {
-    label: "EVALUATION DATASET",
-    value: "17,978",
-    detail: "verified images",
-  },
-  {
-    label: "3D FEATURE PROJECTION",
-    value: "UMAP-3D + PCA-3D",
-    detail: "Real-time coordinate mapping",
-    isFullWidth: true,
-  },
+  { parameter: "Vision Model", detail: "DINOv2 Vision Transformer (86M parameters)" },
+  { parameter: "Latent Vector", detail: "768-D Feature Embedding" },
+  { parameter: "Input Resolution", detail: "224 × 224 pixels" },
+  { parameter: "Detection Classes", detail: "Real, AI-Generated, Deepfake (3 Classes)" },
+  { parameter: "Benchmark Accuracy", detail: "96.89%", isHighlight: true },
+  { parameter: "Macro F1 Score", detail: "0.9688", isHighlight: true },
+  { parameter: "Real False Positive Rate", detail: "0.048 (under 5%)" },
+  { parameter: "Evaluation Dataset", detail: "17,978 verified images" },
+  { parameter: "3D Dimensional Projection", detail: "UMAP-3D & PCA-3D real-time coordinate mapping" },
+  { parameter: "Observatory Workstation", detail: "3D coordinate inspection & cluster analysis" },
 ];
 
 export default function GrowXDeepfakePage() {
@@ -167,27 +132,26 @@ export default function GrowXDeepfakePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="border-y border-neutral-800 divide-y divide-neutral-800/80">
+            <div className="py-3.5 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+              <span>Parameter</span>
+              <span className="text-right">Detail</span>
+            </div>
             {TECH_SPECS.map((spec) => (
               <div
-                key={spec.label}
-                className={`border border-neutral-800/80 bg-[#0A0A0D] p-6 sm:p-7 flex flex-col justify-between space-y-4 transition-colors hover:border-neutral-700/80 ${
-                  spec.isFullWidth ? "md:col-span-2" : ""
-                }`}
+                key={spec.parameter}
+                className="py-4 sm:py-4.5 flex items-center justify-between gap-4 transition-colors hover:bg-white/[0.02]"
               >
-                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 block">
-                  {spec.label}
+                <span className="text-foreground font-medium text-sm sm:text-base">
+                  {spec.parameter}
                 </span>
-                <div className="space-y-1">
-                  <div className="font-sans font-bold text-2xl sm:text-3xl text-foreground tracking-tight">
-                    {spec.value}
-                  </div>
-                  {spec.detail && (
-                    <p className="text-xs sm:text-sm text-neutral-400 font-sans">
-                      {spec.detail}
-                    </p>
-                  )}
-                </div>
+                <span
+                  className={`text-sm sm:text-base text-right ${
+                    spec.isHighlight ? "text-primary font-bold font-mono" : "text-neutral-400"
+                  }`}
+                >
+                  {spec.detail}
+                </span>
               </div>
             ))}
           </div>

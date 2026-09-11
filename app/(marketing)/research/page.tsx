@@ -1,10 +1,232 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { GrowxExternalLink } from "@/components/icons";
 import { PageHero } from "@/components/marketing/PageHero";
 import { AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
+
+const AILAB_SLIDES = [
+  {
+    src: "/images/ailab/deepfake-features.png",
+    alt: "GrowX Deepfake — Multimodal Real-Time Verification",
+    title: "GrowX Deepfake™",
+    tag: "// 01 MODELS",
+    desc: "Real-time on-device verification & 3D manifold cluster analysis",
+  },
+  {
+    src: "/images/ailab/crawl-playground.png",
+    alt: "GrowX Crawl — Extraction Playground",
+    title: "GrowX Crawl™",
+    tag: "// 02 PLATFORMS",
+    desc: "Interactive scraping, live scoring & research engine",
+  },
+  {
+    src: "/portfolio/growx-crawl-api.png",
+    alt: "GrowX Crawl — RESTful API Specification Suite",
+    title: "GrowX Crawl API",
+    tag: "// 03 API SUITE",
+    desc: "Enterprise endpoints, parameter schemas & cURL integration",
+  },
+  {
+    src: "/images/ailab/pipper-harness.png",
+    alt: "Pipper — Multi-Agent Workspace",
+    title: "Pipper™",
+    tag: "// 04 HARNESS",
+    desc: "Desktop workspace for parallel AI agent execution & diffing",
+  },
+];
+
+function AiLabWindowCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % AILAB_SLIDES.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  return (
+    <div
+      className="mt-8 sm:mt-10 rounded-xl sm:rounded-2xl border border-neutral-800/80 bg-[#07070A] overflow-hidden shadow-2xl transition-all duration-300 group-hover:border-neutral-700/80"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Window Title Bar */}
+      <div className="h-10 px-4 bg-[#0E0E14] border-b border-neutral-800/80 flex items-center justify-between select-none">
+        {/* Window Traffic Dots */}
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]/80 inline-block" />
+        </div>
+
+        {/* Address Bar: growx/ailab */}
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300 tracking-wide shadow-inner">
+          <span className="text-neutral-500">growx/</span>
+          <span className="text-foreground font-semibold">ailab</span>
+        </div>
+
+        {/* Live Indicator */}
+        <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="hidden sm:inline tracking-wider uppercase text-[10px] text-neutral-400 font-bold">
+            LIVE
+          </span>
+        </div>
+      </div>
+
+      {/* Window Body: Horizontal Moving Slider */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black">
+        {/* Sliding Track */}
+        <div
+          className="flex h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {AILAB_SLIDES.map((slide, idx) => (
+            <div key={slide.src} className="relative w-full h-full shrink-0">
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-top"
+                priority={idx === 0}
+              />
+
+              {/* Bottom Caption Overlay */}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent pt-8 pb-3 px-4 sm:px-5 flex items-end justify-between gap-4">
+                <div className="space-y-0.5">
+                  <span className="font-mono text-[10px] font-bold text-[#C0F0FB] tracking-widest uppercase block">
+                    {slide.tag}
+                  </span>
+                  <p className="font-sans font-bold text-sm sm:text-base text-foreground tracking-tight">
+                    {slide.title}
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-neutral-400 hidden sm:block">
+                    {slide.desc}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Slide Progress Dots (Floating on bottom right) */}
+        <div className="absolute bottom-3 right-4 sm:right-5 z-20 flex items-center gap-1.5">
+          {AILAB_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentIndex(i);
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === currentIndex
+                  ? "w-5 bg-[#C0F0FB]"
+                  : "w-1.5 bg-white/30 hover:bg-white/50"
+              }`}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RoboticsLabWindow() {
+  return (
+    <div className="mt-8 sm:mt-10 rounded-xl sm:rounded-2xl border border-neutral-800/80 bg-[#07070A] overflow-hidden shadow-2xl transition-all duration-300 group-hover:border-neutral-700/80">
+      {/* Window Title Bar */}
+      <div className="h-10 px-4 bg-[#0E0E14] border-b border-neutral-800/80 flex items-center justify-between select-none">
+        {/* Window Traffic Dots */}
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]/80 inline-block" />
+        </div>
+
+        {/* Address Bar: growx/robotics */}
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300 tracking-wide shadow-inner">
+          <span className="text-neutral-500">growx/</span>
+          <span className="text-foreground font-semibold">robotics</span>
+        </div>
+
+        {/* Status Indicator */}
+        <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] animate-pulse" />
+          <span className="hidden sm:inline tracking-wider uppercase text-[10px] text-[#C0F0FB] font-bold">
+            ACTIVE R&D
+          </span>
+        </div>
+      </div>
+
+      {/* Window Body: Embodied AI & Robotics Visualization Canvas */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#050508] flex items-center justify-center p-6">
+        {/* Background Grid Pattern */}
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(192,240,251,0.2) 1px, transparent 0)`,
+            backgroundSize: "24px 24px",
+          }}
+        />
+
+        {/* Center Radar / Kinematic Sensor Animation */}
+        <div className="relative z-10 flex flex-col items-center text-center space-y-4 max-w-sm">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+            {/* Pulsing Concentric Rings */}
+            <div className="absolute inset-0 rounded-full border border-[#C0F0FB]/20 animate-ping opacity-40 duration-1000" />
+            <div className="absolute inset-2 rounded-full border border-[#C0F0FB]/30" />
+            <div className="absolute inset-6 rounded-full border border-dashed border-[#C0F0FB]/40 animate-spin duration-700" />
+
+            {/* Center Reticle / Core */}
+            <div className="w-8 h-8 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB] flex items-center justify-center">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#C0F0FB] animate-pulse" />
+            </div>
+
+            {/* Crosshairs */}
+            <span className="absolute w-full h-[1px] bg-neutral-800" />
+            <span className="absolute h-full w-[1px] bg-neutral-800" />
+          </div>
+
+          <div className="space-y-1">
+            <span className="font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase block">
+              // EMBODIED INTELLIGENCE
+            </span>
+            <h4 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight">
+              Physical AI & Spatial Systems
+            </h4>
+            <p className="font-mono text-[10px] text-neutral-500">
+              Hardware simulation · Neural controllers · Teleoperation
+            </p>
+          </div>
+        </div>
+
+        {/* Corner Telemetry Readouts */}
+        <div className="absolute top-3 left-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
+          POS: [37.7749, -122.4194]
+        </div>
+        <div className="absolute top-3 right-4 font-mono text-[9px] text-[#C0F0FB]/70 uppercase tracking-widest hidden sm:block">
+          CALIBRATED
+        </div>
+        <div className="absolute bottom-3 left-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
+          SYS: KINEMATICS_CORE_V1
+        </div>
+        <div className="absolute bottom-3 right-4 font-mono text-[9px] text-neutral-500 uppercase tracking-widest hidden sm:block">
+          RATE: 120HZ
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ResearchPage() {
   return (
@@ -22,14 +244,14 @@ export default function ResearchPage() {
           {/* Cards Grid */}
           <AnimatedStagger className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12">
 
-            {/* LABS CARD */}
+            {/* AI LAB CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
                 <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
-                  {/* Card Top */}
-                  <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
-                    <div className="space-y-6 lg:space-y-8">
+                  {/* Card Content */}
+                  <div className="p-8 sm:p-10 lg:p-12 flex-1 flex flex-col justify-between">
+                    <div className="space-y-4 sm:space-y-6">
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
                           AI Lab
@@ -43,6 +265,9 @@ export default function ResearchPage() {
                         We research and develop new AI models, methods, and systems in-house.
                       </p>
                     </div>
+
+                    {/* Window Frame with Moving Screenshots */}
+                    <AiLabWindowCarousel />
                   </div>
                 </div>
               </Link>
@@ -53,9 +278,9 @@ export default function ResearchPage() {
               <div className="group block h-full cursor-pointer">
                 <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
-                  {/* Card Top */}
-                  <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
-                    <div className="space-y-6 lg:space-y-8">
+                  {/* Card Content */}
+                  <div className="p-8 sm:p-10 lg:p-12 flex-1 flex flex-col justify-between">
+                    <div className="space-y-4 sm:space-y-6">
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
                           Robotics Lab
@@ -69,6 +294,9 @@ export default function ResearchPage() {
                         Autonomous systems, embodied intelligence, and physical AI platforms bridging software models with real-world robotics.
                       </p>
                     </div>
+
+                    {/* Window Frame with Embodied AI Telemetry */}
+                    <RoboticsLabWindow />
                   </div>
                 </div>
               </div>
