@@ -137,8 +137,8 @@ export default function AiLabPage() {
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
               // ACTIVE LAB SYSTEMS
             </span>
-            <div className="max-w-2xl">
-              <h2 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
+            <div className="max-w-xl">
+              <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
                 We research and develop new AI models, methods, and systems in-house.
               </h2>
             </div>
