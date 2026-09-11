@@ -148,10 +148,19 @@ export default function AiLabPage() {
             </div>
           </div>
 
-          {/* Cards Stacked One by One in original size */}
-          <div className="flex flex-col gap-8 max-w-[440px]">
-            {LAB_SYSTEMS.map((tool) => (
-              <LabCard key={tool.name} tool={tool} />
+          {/* Cards Stacked One by One in original size with standard border-white/10 divider */}
+          <div className="flex flex-col">
+            {LAB_SYSTEMS.map((tool, index) => (
+              <React.Fragment key={tool.name}>
+                {index > 0 && (
+                  <div className="py-10 sm:py-12">
+                    <div className="w-full border-t border-white/10" />
+                  </div>
+                )}
+                <div className="w-full max-w-[440px]">
+                  <LabCard tool={tool} />
+                </div>
+              </React.Fragment>
             ))}
           </div>
 
