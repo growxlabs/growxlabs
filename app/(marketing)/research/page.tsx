@@ -25,7 +25,7 @@ export default function ResearchPage() {
             {/* LABS CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
-                <div className="h-full min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
+                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
@@ -47,18 +47,6 @@ export default function ResearchPage() {
                         Foundation models, fine-tuned models, and applied research in machine intelligence.
                       </p>
                     </div>
-
-                    {/* Stats Row */}
-                    <div className="mt-12 lg:mt-16 pt-8 border-t border-neutral-800/80 grid grid-cols-2 gap-8">
-                      <div>
-                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Systems</span>
-                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">3 Live</span>
-                      </div>
-                      <div>
-                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Type</span>
-                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">Internal R&D</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </Link>
@@ -67,7 +55,7 @@ export default function ResearchPage() {
             {/* PORTFOLIO CARD */}
             <AnimatedItem>
               <Link href="/portfolio" className="group block h-full">
-                <div className="h-full min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
+                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
@@ -88,18 +76,6 @@ export default function ResearchPage() {
                       <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
                         Custom software and platforms built for real clients — from distributor management systems to enterprise web applications.
                       </p>
-                    </div>
-
-                    {/* Stats Row */}
-                    <div className="mt-12 lg:mt-16 pt-8 border-t border-neutral-800/80 grid grid-cols-2 gap-8">
-                      <div>
-                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Projects</span>
-                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">2 Shipped</span>
-                      </div>
-                      <div>
-                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Type</span>
-                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">Client Work</span>
-                      </div>
                     </div>
                   </div>
                 </div>
