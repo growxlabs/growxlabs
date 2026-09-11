@@ -16,47 +16,47 @@ export default function ResearchPage() {
         tagline="LABS & PORTFOLIO"
       />
 
-      <div className="w-full bg-black px-4 sm:px-6 md:px-8 xl:px-12 pb-32 border-t border-white/10 pt-16">
-        <div className="max-w-[1200px] mx-auto">
+      <div className="w-full bg-black px-6 md:px-10 xl:px-16 2xl:px-24 pb-36 border-t border-white/10 pt-16">
+        <div className="max-w-7xl xl:max-w-[1536px] 2xl:max-w-[1680px] mx-auto">
 
           {/* Cards Grid */}
-          <AnimatedStagger className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <AnimatedStagger className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12">
 
             {/* LABS CARD */}
             <AnimatedItem>
               <Link href="/ailab" className="group block h-full">
-                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
+                <div className="h-full min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
                   {/* Card Top */}
-                  <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
-                    <div className="space-y-6">
+                  <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
+                    <div className="space-y-6 lg:space-y-8">
                       <div className="flex items-start justify-between">
-                        <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase">
+                        <span className="font-mono text-xs sm:text-[13px] font-bold tracking-[0.25em] text-[#C0F0FB] uppercase">
                           // OUR TOOLS
                         </span>
-                        <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-500 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <GrowxExternalLink className="h-4 w-4" />
+                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
+                          <GrowxExternalLink className="h-5 w-5" />
                         </div>
                       </div>
 
-                      <h3 className="font-serif font-black text-2xl sm:text-3xl text-foreground tracking-tight leading-tight">
+                      <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
                         AI Lab
                       </h3>
 
-                      <p className="text-neutral-400 text-sm sm:text-[15px] leading-relaxed">
+                      <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
                         Foundation models, fine-tuned models, and applied research in machine intelligence.
                       </p>
                     </div>
 
                     {/* Stats Row */}
-                    <div className="mt-10 pt-6 border-t border-neutral-800/60 grid grid-cols-2 gap-6">
+                    <div className="mt-12 lg:mt-16 pt-8 border-t border-neutral-800/80 grid grid-cols-2 gap-8">
                       <div>
-                        <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Systems</span>
-                        <span className="text-foreground font-bold text-lg">3 Live</span>
+                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Systems</span>
+                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">3 Live</span>
                       </div>
                       <div>
-                        <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Type</span>
-                        <span className="text-foreground font-bold text-lg">Internal R&D</span>
+                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Type</span>
+                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">Internal R&D</span>
                       </div>
                     </div>
                   </div>
@@ -67,38 +67,38 @@ export default function ResearchPage() {
             {/* PORTFOLIO CARD */}
             <AnimatedItem>
               <Link href="/portfolio" className="group block h-full">
-                <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)]">
+                <div className="h-full min-h-[480px] sm:min-h-[520px] lg:min-h-[560px] flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
 
                   {/* Card Top */}
-                  <div className="p-8 sm:p-10 flex-1 flex flex-col justify-between">
-                    <div className="space-y-6">
+                  <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
+                    <div className="space-y-6 lg:space-y-8">
                       <div className="flex items-start justify-between">
-                        <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase">
+                        <span className="font-mono text-xs sm:text-[13px] font-bold tracking-[0.25em] text-[#C0F0FB] uppercase">
                           // CLIENT WORK
                         </span>
-                        <div className="w-10 h-10 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-500 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <GrowxExternalLink className="h-4 w-4" />
+                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
+                          <GrowxExternalLink className="h-5 w-5" />
                         </div>
                       </div>
 
-                      <h3 className="font-serif font-black text-2xl sm:text-3xl text-foreground tracking-tight leading-tight">
+                      <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
                         Portfolio
                       </h3>
 
-                      <p className="text-neutral-400 text-sm sm:text-[15px] leading-relaxed">
+                      <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
                         Custom software and platforms built for real clients — from distributor management systems to enterprise web applications.
                       </p>
                     </div>
 
                     {/* Stats Row */}
-                    <div className="mt-10 pt-6 border-t border-neutral-800/60 grid grid-cols-2 gap-6">
+                    <div className="mt-12 lg:mt-16 pt-8 border-t border-neutral-800/80 grid grid-cols-2 gap-8">
                       <div>
-                        <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Projects</span>
-                        <span className="text-foreground font-bold text-lg">2 Shipped</span>
+                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Projects</span>
+                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">2 Shipped</span>
                       </div>
                       <div>
-                        <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-wider block mb-1">Type</span>
-                        <span className="text-foreground font-bold text-lg">Client Work</span>
+                        <span className="font-mono text-xs sm:text-sm text-neutral-400 uppercase tracking-wider block mb-1.5">Type</span>
+                        <span className="text-foreground font-bold text-xl sm:text-2xl lg:text-3xl">Client Work</span>
                       </div>
                     </div>
                   </div>
