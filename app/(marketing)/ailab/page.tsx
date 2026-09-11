@@ -138,11 +138,8 @@ export default function AiLabPage() {
               // ACTIVE LAB SYSTEMS
             </span>
             <h2 className="font-serif font-black text-2xl sm:text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
-              Applied research, specialized harnesses, and internal developer platforms.
+              We research and develop new AI models, methods, and systems in-house.
             </h2>
-            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed pt-1">
-              Foundation models, fine-tuned models, and applied research in machine intelligence.
-            </p>
           </div>
 
           {/* 3-Card Balanced Grid — Perfect Flow across all 3 Systems */}

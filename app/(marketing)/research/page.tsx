@@ -40,7 +40,7 @@ export default function ResearchPage() {
                       </div>
 
                       <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
-                        Foundation models, fine-tuned models, and applied research in machine intelligence.
+                        We research and develop new AI models, methods, and systems in-house.
                       </p>
                     </div>
                   </div>
