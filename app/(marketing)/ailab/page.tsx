@@ -24,7 +24,7 @@ interface LabTool {
 const LAB_SYSTEMS: LabTool[] = [
   {
     name: "GrowX Deepfake™",
-    category: "// APPLIED RESEARCH",
+    category: "",
     status: "RESEARCH",
     icon: GrowxAuthenticity,
     description:
@@ -64,11 +64,15 @@ function LabCard({ tool }: { tool: LabTool }) {
       {/* Top Header: Category + Status Tag */}
       <div>
         <div className="flex items-center justify-between pb-6 border-b border-neutral-800/60">
-          <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
-            {tool.category}
-          </span>
+          {tool.category ? (
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
+              {tool.category}
+            </span>
+          ) : (
+            <span />
+          )}
           <span className="font-mono text-[10px] font-bold tracking-widest text-primary/70 uppercase">
-            · {tool.status}
+            {tool.category ? `· ${tool.status}` : tool.status}
           </span>
         </div>
 
@@ -135,7 +139,7 @@ export default function AiLabPage() {
           {/* Section Editorial Header */}
           <div className="pt-6 flex flex-col md:flex-row md:items-start justify-between gap-6">
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
-              // ACTIVE LAB SYSTEMS
+              // MODELS
             </span>
             <div className="max-w-xl">
               <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
