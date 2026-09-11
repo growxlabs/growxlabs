@@ -9,6 +9,60 @@ export const metadata = {
     "A machine intelligence system built to detect synthetic media and deepfakes, classifying images into Real, AI-Generated, and Deepfake.",
 };
 
+interface TechSpec {
+  label: string;
+  value: string;
+  detail?: string;
+  isFullWidth?: boolean;
+}
+
+const TECH_SPECS: TechSpec[] = [
+  {
+    label: "VISION MODEL",
+    value: "DINOv2",
+    detail: "86M parameters",
+  },
+  {
+    label: "DETECTION CLASSES",
+    value: "3 Classes",
+    detail: "Real · AI-Generated · Deepfake",
+  },
+  {
+    label: "INPUT RESOLUTION",
+    value: "224 × 224",
+    detail: "pixels",
+  },
+  {
+    label: "FEATURE EMBEDDING",
+    value: "768-D",
+    detail: "Feature embedding",
+  },
+  {
+    label: "BENCHMARK ACCURACY",
+    value: "96.89%",
+  },
+  {
+    label: "MACRO F1 SCORE",
+    value: "0.9688",
+  },
+  {
+    label: "FALSE POSITIVE RATE",
+    value: "4.8%",
+    detail: "under 5%",
+  },
+  {
+    label: "EVALUATION DATASET",
+    value: "17,978",
+    detail: "verified images",
+  },
+  {
+    label: "3D FEATURE PROJECTION",
+    value: "UMAP-3D + PCA-3D",
+    detail: "Real-time coordinate mapping",
+    isFullWidth: true,
+  },
+];
+
 export default function GrowXDeepfakePage() {
   return (
     <div className="bg-black text-foreground min-h-screen">
@@ -37,13 +91,15 @@ export default function GrowXDeepfakePage() {
             HERO PARAMETERS STRIP
         ══════════════════════════════════════════════════════════════════ */}
         <section className="space-y-8">
-          <div className="space-y-4 max-w-4xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
               // APPLIED RESEARCH
             </span>
-            <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal max-w-3xl">
-              A real-time security layer running directly on your device to verify whether the person you are speaking with on video calls is genuinely human.
-            </p>
+            <div className="max-w-xl">
+              <p className="text-muted-foreground text-base sm:text-lg md:text-xl leading-relaxed font-normal">
+                A real-time security layer running directly on your device to verify whether the person you are speaking with on video calls is genuinely human.
+              </p>
+            </div>
           </div>
 
           <div className="border-t border-neutral-800 pt-6 flex flex-wrap items-center gap-8 sm:gap-14 font-mono text-xs tracking-wider">
@@ -111,57 +167,29 @@ export default function GrowXDeepfakePage() {
             </h2>
           </div>
 
-          <div className="border border-neutral-800 rounded-2xl overflow-hidden">
-            <table className="w-full text-left divide-y divide-neutral-800">
-              <thead className="bg-[#111114]">
-                <tr>
-                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">Parameter</th>
-                  <th className="px-6 py-4 font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 text-right">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800/60 bg-[#0A0A0D] text-sm">
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Vision Model</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">DINOv2 Vision Transformer (86M parameters)</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Latent Vector</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">768-D Feature Embedding</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Input Resolution</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">224 × 224 pixels</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Detection Classes</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">Real, AI-Generated, Deepfake (3 Classes)</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Benchmark Accuracy</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right font-mono">96.89%</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Macro F1 Score</td>
-                  <td className="px-6 py-4 text-primary font-bold text-right font-mono">0.9688</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Real False Positive Rate</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right font-mono text-xs">0.048 (under 5%)</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Evaluation Dataset</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">17,978 verified images</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">3D Dimensional Projection</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">UMAP-3D &amp; PCA-3D real-time coordinate mapping</td>
-                </tr>
-                <tr className="hover:bg-[#111116] transition-colors">
-                  <td className="px-6 py-4 text-foreground font-medium">Observatory Workstation</td>
-                  <td className="px-6 py-4 text-neutral-400 text-right">3D coordinate inspection &amp; cluster analysis</td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {TECH_SPECS.map((spec) => (
+              <div
+                key={spec.label}
+                className={`border border-neutral-800/80 bg-[#0A0A0D] p-6 sm:p-7 flex flex-col justify-between space-y-4 transition-colors hover:border-neutral-700/80 ${
+                  spec.isFullWidth ? "md:col-span-2" : ""
+                }`}
+              >
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500 block">
+                  {spec.label}
+                </span>
+                <div className="space-y-1">
+                  <div className="font-sans font-bold text-2xl sm:text-3xl text-foreground tracking-tight">
+                    {spec.value}
+                  </div>
+                  {spec.detail && (
+                    <p className="text-xs sm:text-sm text-neutral-400 font-sans">
+                      {spec.detail}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
