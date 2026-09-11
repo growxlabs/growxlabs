@@ -30,15 +30,14 @@ export default function ResearchPage() {
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
                     <div className="space-y-6 lg:space-y-8">
-                      <div className="flex items-start justify-end">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
+                          AI Lab
+                        </h3>
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <GrowxExternalLink className="h-5 w-5" />
                         </div>
                       </div>
-
-                      <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
-                        AI Lab
-                      </h3>
 
                       <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
                         Foundation models, fine-tuned models, and applied research in machine intelligence.
@@ -57,15 +56,14 @@ export default function ResearchPage() {
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
                     <div className="space-y-6 lg:space-y-8">
-                      <div className="flex items-start justify-end">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
+                          Robotics Lab
+                        </h3>
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <GrowxExternalLink className="h-5 w-5" />
                         </div>
                       </div>
-
-                      <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-5xl text-foreground tracking-tight leading-tight">
-                        Robotics Lab
-                      </h3>
 
                       <p className="text-neutral-400 text-base sm:text-lg lg:text-xl leading-relaxed max-w-xl">
                         Autonomous systems, embodied intelligence, and physical AI platforms bridging software models with real-world robotics.
