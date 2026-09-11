@@ -60,7 +60,7 @@ const LAB_SYSTEMS: LabTool[] = [
 function LabCard({ tool }: { tool: LabTool }) {
   const IconComponent = tool.icon;
   const CardInner = (
-    <div className="h-full flex flex-col justify-between p-7 sm:p-8">
+    <div className="h-full min-h-[390px] sm:min-h-[410px] flex flex-col justify-between p-8 sm:p-9">
       {/* Top Header: Category + Status Tag */}
       <div>
         <div className="flex items-center justify-between pb-6 border-b border-neutral-800/60">
@@ -89,7 +89,7 @@ function LabCard({ tool }: { tool: LabTool }) {
       </div>
 
       {/* Bottom Action CTA */}
-      <div className="pt-6 mt-6 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-primary uppercase tracking-wider">
+      <div className="pt-6 mt-8 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-primary uppercase tracking-wider">
         <span>{tool.cta}</span>
         <GrowxArrowRight
           size={14}
@@ -105,14 +105,14 @@ function LabCard({ tool }: { tool: LabTool }) {
       href={tool.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className="block w-full max-w-[440px] border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </a>
   ) : (
     <Link
       href={tool.href}
-      className="block h-full border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className="block w-full max-w-[440px] border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
     >
       {CardInner}
     </Link>
@@ -125,8 +125,8 @@ export default function AiLabPage() {
       <PageHero
         title="AI Lab"
         viewingText="AI LAB"
-        exploreText="R&D"
-        tagline="MACHINE INTELLIGENCE"
+        exploreText="SYSTEMS"
+        tagline="MODELS & RESEARCH"
       />
 
       <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
@@ -142,8 +142,8 @@ export default function AiLabPage() {
             </h2>
           </div>
 
-          {/* 3-Card Balanced Grid — Perfect Flow across all 3 Systems */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-8">
+          {/* Cards Stacked One by One in original size */}
+          <div className="flex flex-col gap-8 max-w-[440px]">
             {LAB_SYSTEMS.map((tool) => (
               <LabCard key={tool.name} tool={tool} />
             ))}
