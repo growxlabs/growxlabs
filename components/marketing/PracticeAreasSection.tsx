@@ -310,11 +310,11 @@ export function PracticeAreasSection() {
                     {/* Eyebrow + Header + Action */}
                     <div>
                       <span className="font-mono text-xs tracking-[0.2em] text-[#C0F0FB] uppercase block mb-3 font-bold">
-                        [ 01 / CLIENT PORTFOLIO ]
+                        [ 01 / CLIENT SOLUTIONS ]
                       </span>
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-[42px] text-foreground tracking-tight leading-tight">
-                          Production Software & AI Systems
+                          Portfolio
                         </h3>
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <ArrowUpRight className="h-5 w-5" />
@@ -353,7 +353,7 @@ export function PracticeAreasSection() {
                       </span>
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-[42px] text-foreground tracking-tight leading-tight">
-                          AI Lab & Robotics
+                          Research
                         </h3>
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <ArrowUpRight className="h-5 w-5" />
