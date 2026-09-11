@@ -30,10 +30,7 @@ export default function ResearchPage() {
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
                     <div className="space-y-6 lg:space-y-8">
-                      <div className="flex items-start justify-between">
-                        <span className="font-mono text-xs sm:text-[13px] font-bold tracking-[0.25em] text-[#C0F0FB] uppercase">
-                          // OUR TOOLS
-                        </span>
+                      <div className="flex items-start justify-end">
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <GrowxExternalLink className="h-5 w-5" />
                         </div>
@@ -60,10 +57,7 @@ export default function ResearchPage() {
                   {/* Card Top */}
                   <div className="p-10 sm:p-12 lg:p-14 xl:p-16 flex-1 flex flex-col justify-between">
                     <div className="space-y-6 lg:space-y-8">
-                      <div className="flex items-start justify-between">
-                        <span className="font-mono text-xs sm:text-[13px] font-bold tracking-[0.25em] text-[#C0F0FB] uppercase">
-                          // PHYSICAL AI
-                        </span>
+                      <div className="flex items-start justify-end">
                         <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
                           <GrowxExternalLink className="h-5 w-5" />
                         </div>
