@@ -1,6 +1,5 @@
-import { ProjectCard } from "@/components/ui/ProjectCard";
+import { PortfolioFilterGrid } from "@/components/marketing/PortfolioFilterGrid";
 import { projects } from "@/lib/data/projects";
-import { Reveal } from "@/components/marketing/Reveal";
 import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 import { PageHero } from "@/components/marketing/PageHero";
 
@@ -41,13 +40,7 @@ export default function PortfolioPage() {
 
       <div className="w-full bg-black px-6 md:px-10 xl:px-16 2xl:px-24 pb-32 border-t border-white/10 pt-12">
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            {projects.map((project, index) => (
-              <Reveal key={project.title} delay={index * 0.08}>
-                <ProjectCard {...project} />
-              </Reveal>
-            ))}
-          </div>
+          <PortfolioFilterGrid projects={projects} />
         </div>
       </div>
     </div>
