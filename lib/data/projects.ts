@@ -63,8 +63,9 @@ export const projects: CaseStudy[] = [
   {
     slug: "growx-crawl",
     title: "GrowX Crawl",
-    tag: "Internal R&D",
-    category: "// INTERNAL R&D",
+    subtitle: "Enterprise Web Intelligence Runtime",
+    tag: "Platform and Tools",
+    category: "// PLATFORM AND TOOLS",
     description: "A web research tool built to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.",
     image: "/portfolio/growx-crawl.png",
     problem: "Deep web research and competitive analysis required multiple disjointed tools for crawling, JavaScript rendering, structured data extraction, and verification.",

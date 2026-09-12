@@ -13,23 +13,18 @@ interface PortfolioFilterGridProps {
 export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
   const [activeFilter, setActiveFilter] = useState<"all" | "software">("all");
 
-  const filteredProjects = useMemo(() => {
-    if (activeFilter === "all") return projects;
-    if (activeFilter === "software") {
-      return projects.filter((p) => {
-        const text = `${p.title} ${p.category} ${p.tag} ${p.subtitle || ""}`.toLowerCase();
-        return (
-          p.slug === "trionyx" ||
-          text.includes("software") ||
-          (text.includes("platform") && !text.includes("r&d"))
-        );
-      });
-    }
-    return projects;
-  }, [activeFilter, projects]);
+  const trionyxProject = useMemo(
+    () => projects.find((p) => p.slug === "trionyx"),
+    [projects]
+  );
+
+  const crawlProject = useMemo(
+    () => projects.find((p) => p.slug === "growx-crawl"),
+    [projects]
+  );
 
   return (
-    <div className="space-y-8 md:space-y-10">
+    <div className="space-y-12 sm:space-y-16">
       {/* Filter Tabs / Buttons */}
       <div className="flex flex-wrap items-center gap-3 select-none">
         <button
@@ -71,13 +66,54 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
         </button>
       </div>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-        {filteredProjects.map((project, index) => (
-          <Reveal key={project.slug} delay={index * 0.08}>
-            <ProjectCard {...project} />
-          </Reveal>
-        ))}
+      {/* Vertical Stack: TRIONYX (Distribution Platform) -> Middle Border -> GrowX Crawl (Platform and Tools) */}
+      <div className="space-y-16 sm:space-y-20">
+        {/* Section 1: Distribution Platform (TRIONYX) */}
+        {trionyxProject && (
+          <div className="space-y-6 sm:space-y-8">
+            <div className="flex items-center justify-between pb-4 border-b border-white/15">
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-[#C0F0FB]" />
+                <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+                  Distribution Platform
+                </h2>
+              </div>
+              <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 01 ]</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
+              <Reveal delay={0.08}>
+                <ProjectCard {...trionyxProject} />
+              </Reveal>
+            </div>
+          </div>
+        )}
+
+        {/* Middle Border Separator */}
+        {trionyxProject && crawlProject && (
+          <div className="w-full border-t border-white/10" />
+        )}
+
+        {/* Section 2: Platform and Tools (GrowX Crawl) */}
+        {crawlProject && (
+          <div className="space-y-6 sm:space-y-8">
+            <div className="flex items-center justify-between pb-4 border-b border-white/15">
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-[#C0F0FB]" />
+                <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+                  Platform and Tools
+                </h2>
+              </div>
+              <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 02 ]</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
+              <Reveal delay={0.08}>
+                <ProjectCard {...crawlProject} />
+              </Reveal>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

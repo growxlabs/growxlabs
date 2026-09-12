@@ -48,9 +48,11 @@ export function ProjectCard({ slug, title, description, image, tag, category, su
         <div className="p-6 md:p-7 flex flex-col flex-1 justify-between space-y-4">
           <div className="space-y-3">
             {displayCategory && (
-              <span className="font-mono text-[10px] font-bold text-[#C0F0FB] tracking-[0.2em] uppercase block">
-                {displayCategory}
-              </span>
+              <div className="pb-3 border-b border-neutral-800/80">
+                <span className="font-mono text-[10px] font-bold text-[#C0F0FB] tracking-[0.2em] uppercase block">
+                  {displayCategory}
+                </span>
+              </div>
             )}
             <Link href={`/portfolio/${slug}`} className="block">
               <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight leading-tight">
