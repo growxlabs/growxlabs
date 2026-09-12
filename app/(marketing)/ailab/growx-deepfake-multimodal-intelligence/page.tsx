@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { GrowxArrowRight } from "@/components/icons";
 import { Link } from "@/navigation";
 import { PageHero } from "@/components/marketing/PageHero";
+import { DeepfakeArchitectureDiagram } from "@/components/ailab/DeepfakeArchitectureDiagram";
 import Image from "next/image";
 
 export const metadata = {
@@ -191,16 +192,9 @@ export default function GrowXDeepfakePage() {
               </div>
             </div>
 
-            {/* Architecture Diagram */}
-            <div className="relative aspect-[16/9] w-full bg-[#04060C]">
-              <Image
-                src="/images/ailab/deepfake-architecture.png"
-                alt="GrowX Deepfake AI Detection Platform — End-to-End System Architecture Schematic"
-                fill
-                sizes="(max-width: 1200px) 100vw, 1200px"
-                className="object-contain p-2 sm:p-4"
-                priority
-              />
+            {/* Architecture Diagram — Pure Code SVG & Neural Pipeline */}
+            <div className="relative min-h-[460px] md:min-h-[520px] w-full bg-[#05060A]">
+              <DeepfakeArchitectureDiagram className="w-full h-full" />
             </div>
           </div>
         </section>

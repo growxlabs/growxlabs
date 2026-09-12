@@ -5,30 +5,23 @@ import Image from "next/image";
 import { Link } from "@/navigation";
 import { ArrowUpRight } from "@/components/icons";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
+import { DeepfakeSimpleCardDiagram } from "@/components/ailab/DeepfakeSimpleCardDiagram";
 
 const PORTFOLIO_SLIDES = [
+  {
+    src: "/portfolio/trionyx-dashboard.png",
+    alt: "TRIONYX — Distributor Management Platform",
+    title: "TRIONYX™",
+    tag: "// 01 CLIENT PLATFORM",
+    desc: "Distributor operations, enquiries, inventory and sales in one platform",
+    fit: "cover",
+  },
   {
     src: "/portfolio/growx-crawl.png",
     alt: "GrowX Crawl — Enterprise Web Intelligence Runtime",
     title: "GrowX Crawl™",
-    tag: "// 01 WEB RUNTIME",
+    tag: "// 02 ENTERPRISE SOFTWARE",
     desc: "Local-first web intelligence & enterprise extraction runtime",
-    fit: "cover",
-  },
-  {
-    src: "/portfolio/growx-crawl-api.png",
-    alt: "GrowX Crawl API — Developer Integration Suite",
-    title: "GrowX Crawl API Suite",
-    tag: "// 02 API SUITE",
-    desc: "Production RESTful endpoints, schemas & cURL integration",
-    fit: "cover",
-  },
-  {
-    src: "/images/ailab/crawl-playground.png",
-    alt: "GrowX Crawl — Extraction Testing Sandbox",
-    title: "Extraction Testing Sandbox",
-    tag: "// 03 PLAYGROUND",
-    desc: "Interactive scraping, live scoring & entity extraction",
     fit: "cover",
   },
 ];
@@ -41,6 +34,7 @@ const LABS_SLIDES = [
     tag: "// 01 AI LAB · MODELS",
     desc: "DINOv2 ViT backbone, 768-D latent manifold & 3-class verification head",
     fit: "contain",
+    isComponent: true,
   },
   {
     src: "/images/robotics/humanoid-embodied-ai.jpg",
@@ -231,18 +225,22 @@ function LabsWindowCarousel() {
           {LABS_SLIDES.map((slide, idx) => (
             <div key={slide.src} className="relative w-full h-full shrink-0 flex flex-col bg-[#05070E]">
               <div className="relative flex-1 w-full overflow-hidden">
-                <Image
-                  src={slide.src}
-                  alt={slide.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className={
-                    slide.fit === "contain"
-                      ? "object-contain object-center p-2.5"
-                      : "object-cover object-top"
-                  }
-                  priority={idx === 0}
-                />
+                {slide.isComponent ? (
+                  <DeepfakeSimpleCardDiagram className="w-full h-full" />
+                ) : (
+                  <Image
+                    src={slide.src}
+                    alt={slide.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className={
+                      slide.fit === "contain"
+                        ? "object-contain object-center p-2.5"
+                        : "object-cover object-top"
+                    }
+                    priority={idx === 0}
+                  />
+                )}
               </div>
 
               {/* Bottom Caption Bar */}

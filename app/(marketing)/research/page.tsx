@@ -6,6 +6,7 @@ import Image from "next/image";
 import { GrowxExternalLink } from "@/components/icons";
 import { PageHero } from "@/components/marketing/PageHero";
 import { AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
+import { DeepfakeSimpleCardDiagram } from "@/components/ailab/DeepfakeSimpleCardDiagram";
 
 const AILAB_SLIDES = [
   {
@@ -15,6 +16,7 @@ const AILAB_SLIDES = [
     tag: "// 01 ARCHITECTURE",
     desc: "DINOv2 ViT backbone, 768-D latent manifold & 3-class verification head",
     fit: "contain",
+    isComponent: true,
   },
   {
     src: "/images/ailab/crawl-playground.png",
@@ -112,18 +114,22 @@ function AiLabWindowCarousel() {
             <div key={slide.src} className="relative w-full h-full shrink-0 flex flex-col bg-[#05070E]">
               {/* Image Area */}
               <div className="relative flex-1 w-full overflow-hidden">
-                <Image
-                  src={slide.src}
-                  alt={slide.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className={
-                    slide.fit === "contain"
-                      ? "object-contain object-center p-2.5"
-                      : "object-cover object-top"
-                  }
-                  priority={idx === 0}
-                />
+                {slide.isComponent ? (
+                  <DeepfakeSimpleCardDiagram className="w-full h-full" />
+                ) : (
+                  <Image
+                    src={slide.src}
+                    alt={slide.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className={
+                      slide.fit === "contain"
+                        ? "object-contain object-center p-2.5"
+                        : "object-cover object-top"
+                    }
+                    priority={idx === 0}
+                  />
+                )}
               </div>
 
               {/* Bottom Caption Bar */}
