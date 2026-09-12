@@ -12,16 +12,12 @@ const PORTFOLIO_SLIDES = [
     src: "/portfolio/trionyx-dashboard.png",
     alt: "TRIONYX — Distributor Management Platform",
     title: "TRIONYX™",
-    tag: "// 01 CLIENT PLATFORM",
-    desc: "Distributor operations, enquiries, inventory and sales in one platform",
     fit: "cover",
   },
   {
     src: "/portfolio/growx-crawl.png",
     alt: "GrowX Crawl — Enterprise Web Intelligence Runtime",
     title: "GrowX Crawl™",
-    tag: "// 02 ENTERPRISE SOFTWARE",
-    desc: "Local-first web intelligence & enterprise extraction runtime",
     fit: "cover",
   },
 ];
@@ -31,8 +27,6 @@ const LABS_SLIDES = [
     src: "/images/ailab/deepfake-architecture.png",
     alt: "GrowX Deepfake — Neural System Architecture",
     title: "GrowX Deepfake™ Architecture",
-    tag: "// 01 AI LAB · MODELS",
-    desc: "DINOv2 ViT backbone, 768-D latent manifold & 3-class verification head",
     fit: "contain",
     isComponent: true,
   },
@@ -40,32 +34,24 @@ const LABS_SLIDES = [
     src: "/images/robotics/humanoid-embodied-ai.jpg",
     alt: "GrowX Robotics — Humanoid Embodied Intelligence & Kinematics",
     title: "Embodied Humanoid AI",
-    tag: "// 02 ROBOTICS · KINEMATICS",
-    desc: "Autonomous spatial perception, neural control & physical actuation",
     fit: "cover",
   },
   {
     src: "/images/robotics/autonomous-manipulation.jpg",
     alt: "GrowX Robotics — Autonomous Precision Manipulation",
     title: "Autonomous Manipulation",
-    tag: "// 03 ROBOTICS · MANIPULATION",
-    desc: "Sub-millimeter multi-axis robotic control & dynamic tool calibration",
     fit: "cover",
   },
   {
     src: "/images/products/recruitai.png",
     alt: "RecruitAI — Autonomous Talent Acquisition",
     title: "RecruitAI™",
-    tag: "// 04 AI LAB · TALENT AI",
-    desc: "Autonomous technical screening & candidate proof-of-work",
     fit: "cover",
   },
   {
     src: "/images/products/pipper.png",
     alt: "Pipper — Desktop Agent Workspace",
     title: "Pipper™",
-    tag: "// 05 AI LAB · HARNESS",
-    desc: "Desktop workspace for parallel AI agent execution & diffing",
     fit: "cover",
   },
 ];
@@ -132,22 +118,11 @@ function PortfolioWindowCarousel() {
                 />
               </div>
 
-              {/* Bottom Caption Bar */}
-              <div className="h-14 sm:h-16 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
-                <div className="space-y-0.5 overflow-hidden">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[9px] sm:text-[10px] font-bold text-[#C0F0FB] tracking-widest uppercase">
-                      {slide.tag}
-                    </span>
-                    <span className="text-neutral-600 text-xs hidden sm:inline">·</span>
-                    <p className="font-sans font-bold text-xs sm:text-sm text-foreground tracking-tight truncate">
-                      {slide.title}
-                    </p>
-                  </div>
-                  <p className="text-[10px] sm:text-[11px] text-neutral-400 truncate hidden sm:block">
-                    {slide.desc}
-                  </p>
-                </div>
+              {/* Bottom Bar */}
+              <div className="h-11 sm:h-12 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
+                <p className="font-sans font-semibold text-xs sm:text-sm text-foreground tracking-tight truncate">
+                  {slide.title}
+                </p>
 
                 <div className="flex items-center gap-1.5 shrink-0">
                   {PORTFOLIO_SLIDES.map((_, i) => (
@@ -243,22 +218,11 @@ function LabsWindowCarousel() {
                 )}
               </div>
 
-              {/* Bottom Caption Bar */}
-              <div className="h-14 sm:h-16 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
-                <div className="space-y-0.5 overflow-hidden">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-[9px] sm:text-[10px] font-bold text-[#C0F0FB] tracking-widest uppercase">
-                      {slide.tag}
-                    </span>
-                    <span className="text-neutral-600 text-xs hidden sm:inline">·</span>
-                    <p className="font-sans font-bold text-xs sm:text-sm text-foreground tracking-tight truncate">
-                      {slide.title}
-                    </p>
-                  </div>
-                  <p className="text-[10px] sm:text-[11px] text-neutral-400 truncate hidden sm:block">
-                    {slide.desc}
-                  </p>
-                </div>
+              {/* Bottom Bar */}
+              <div className="h-11 sm:h-12 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
+                <p className="font-sans font-semibold text-xs sm:text-sm text-foreground tracking-tight truncate">
+                  {slide.title}
+                </p>
 
                 <div className="flex items-center gap-1.5 shrink-0">
                   {LABS_SLIDES.map((_, i) => (
