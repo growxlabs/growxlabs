@@ -115,6 +115,16 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           </div>
         )}
       </div>
+
+      {/* Bottom End of Portfolio Meta Bar */}
+      <div className="pt-10 sm:pt-14 mt-16 sm:mt-20 border-t border-white/15 flex items-center justify-between font-mono text-xs sm:text-sm tracking-[0.18em] uppercase select-none">
+        <span className="text-neutral-500 font-bold">
+          //End of Portfolio
+        </span>
+        <span className="text-[#C0F0FB] font-bold">
+          15 projects
+        </span>
+      </div>
     </div>
   );
 }
