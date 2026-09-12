@@ -84,7 +84,7 @@ function PortfolioWindowCarousel() {
 
         <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300 tracking-wide shadow-inner">
           <span className="text-neutral-500">growx/</span>
-          <span className="text-foreground font-semibold">portfolio</span>
+          <span className="text-foreground font-semibold">client</span>
         </div>
 
         <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
