@@ -102,49 +102,41 @@ function PortfolioWindowCarousel() {
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {PORTFOLIO_SLIDES.map((slide, idx) => (
-            <div key={slide.src} className="relative w-full h-full shrink-0 flex flex-col bg-[#05070E]">
-              <div className="relative flex-1 w-full overflow-hidden">
-                <Image
-                  src={slide.src}
-                  alt={slide.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className={
-                    slide.fit === "contain"
-                      ? "object-contain object-center p-2.5"
-                      : "object-cover object-top"
-                  }
-                  priority={idx === 0}
-                />
-              </div>
-
-              {/* Bottom Bar */}
-              <div className="h-11 sm:h-12 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
-                <p className="font-sans font-semibold text-xs sm:text-sm text-foreground tracking-tight truncate">
-                  {slide.title}
-                </p>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {PORTFOLIO_SLIDES.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setCurrentIndex(i);
-                      }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        i === currentIndex
-                          ? "w-4 sm:w-5 bg-[#C0F0FB]"
-                          : "w-1.5 bg-white/20 hover:bg-white/40"
-                      }`}
-                      aria-label={`Portfolio slide ${i + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
+            <div key={slide.src} className="relative w-full h-full shrink-0 bg-[#05070E]">
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className={
+                  slide.fit === "contain"
+                    ? "object-contain object-center p-2.5"
+                    : "object-cover object-top"
+                }
+                priority={idx === 0}
+              />
             </div>
+          ))}
+        </div>
+
+        {/* Floating Slide Indicator Dots */}
+        <div className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 shadow-lg select-none">
+          {PORTFOLIO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentIndex(i);
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === currentIndex
+                  ? "w-4 sm:w-5 bg-[#C0F0FB]"
+                  : "w-1.5 bg-white/30 hover:bg-white/60"
+              }`}
+              aria-label={`Portfolio slide ${i + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -198,53 +190,45 @@ function LabsWindowCarousel() {
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {LABS_SLIDES.map((slide, idx) => (
-            <div key={slide.src} className="relative w-full h-full shrink-0 flex flex-col bg-[#05070E]">
-              <div className="relative flex-1 w-full overflow-hidden">
-                {slide.isComponent ? (
-                  <DeepfakeSimpleCardDiagram className="w-full h-full" />
-                ) : (
-                  <Image
-                    src={slide.src}
-                    alt={slide.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className={
-                      slide.fit === "contain"
-                        ? "object-contain object-center p-2.5"
-                        : "object-cover object-top"
-                    }
-                    priority={idx === 0}
-                  />
-                )}
-              </div>
-
-              {/* Bottom Bar */}
-              <div className="h-11 sm:h-12 shrink-0 bg-[#0A0D17]/95 border-t border-neutral-800/80 px-4 sm:px-5 flex items-center justify-between gap-4 select-none">
-                <p className="font-sans font-semibold text-xs sm:text-sm text-foreground tracking-tight truncate">
-                  {slide.title}
-                </p>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {LABS_SLIDES.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setCurrentIndex(i);
-                      }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        i === currentIndex
-                          ? "w-4 sm:w-5 bg-[#C0F0FB]"
-                          : "w-1.5 bg-white/20 hover:bg-white/40"
-                      }`}
-                      aria-label={`Labs slide ${i + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
+            <div key={slide.src} className="relative w-full h-full shrink-0 bg-[#05070E]">
+              {slide.isComponent ? (
+                <DeepfakeSimpleCardDiagram className="w-full h-full" />
+              ) : (
+                <Image
+                  src={slide.src}
+                  alt={slide.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className={
+                    slide.fit === "contain"
+                      ? "object-contain object-center p-2.5"
+                      : "object-cover object-top"
+                  }
+                  priority={idx === 0}
+                />
+              )}
             </div>
+          ))}
+        </div>
+
+        {/* Floating Slide Indicator Dots */}
+        <div className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 shadow-lg select-none">
+          {LABS_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentIndex(i);
+              }}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === currentIndex
+                  ? "w-4 sm:w-5 bg-[#C0F0FB]"
+                  : "w-1.5 bg-white/30 hover:bg-white/60"
+              }`}
+              aria-label={`Labs slide ${i + 1}`}
+            />
           ))}
         </div>
       </div>
