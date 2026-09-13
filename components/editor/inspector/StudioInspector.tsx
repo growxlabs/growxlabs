@@ -112,8 +112,8 @@ interface StudioInspectorProps {
   onClose?: () => void;
   projectName?: string;
   onUpdateProjectName?: (name: string) => void;
-  documentKind?: "editorial" | "product";
-  onSwitchDocumentKind?: (kind: "editorial" | "product") => void;
+  documentKind?: "editorial" | "product" | "heritage";
+  onSwitchDocumentKind?: (kind: "editorial" | "product" | "heritage") => void;
   onUndo?: () => void;
   onRedo?: () => void;
   canUndo?: boolean;
@@ -546,6 +546,17 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 }`}
               >
                 Product
+              </button>
+              <button
+                type="button"
+                onClick={() => onSwitchDocumentKind("heritage")}
+                className={`flex-1 h-5 text-[9px] font-medium tracking-wide rounded transition-all flex items-center justify-center cursor-pointer ${
+                  documentKind === "heritage"
+                    ? "bg-[#3a3a3c] text-[#d4af37] shadow-sm font-semibold"
+                    : "text-[#8e8e93] hover:text-[#d4af37]"
+                }`}
+              >
+                Heritage
               </button>
             </div>
 

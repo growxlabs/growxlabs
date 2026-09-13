@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Link } from "@/navigation";
-import { ArrowUpRight } from "@/components/icons";
+import { ArrowRight } from "lucide-react";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/marketing/AnimatedSection";
 import { DeepfakeSimpleCardDiagram } from "@/components/ailab/DeepfakeSimpleCardDiagram";
 
@@ -77,22 +77,16 @@ function PortfolioWindowCarousel() {
       {/* Window Title Bar */}
       <div className="h-10 px-4 bg-[#0E0E14] border-b border-neutral-800/80 flex items-center justify-between select-none">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/80 inline-block" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/80 inline-block" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] inline-block" />
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300 tracking-wide shadow-inner">
-          <span className="text-neutral-500">growx/</span>
-          <span className="text-foreground font-semibold">client</span>
+        <div className="font-mono text-[11px] sm:text-xs text-neutral-400 tracking-wider uppercase font-semibold">
+          GROWX / CLIENTS
         </div>
 
-        <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="hidden sm:inline tracking-wider uppercase text-[10px] text-neutral-400 font-bold">
-            DEPLOYED
-          </span>
-        </div>
+        <div className="w-12" />
       </div>
 
       {/* Window Body: Horizontal Moving Slider */}
@@ -165,22 +159,16 @@ function LabsWindowCarousel() {
       {/* Window Title Bar */}
       <div className="h-10 px-4 bg-[#0E0E14] border-b border-neutral-800/80 flex items-center justify-between select-none">
         <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]/80 inline-block" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]/80 inline-block" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]/80 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] inline-block" />
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/60 border border-white/10 font-mono text-[11px] sm:text-xs text-neutral-300 tracking-wide shadow-inner">
-          <span className="text-neutral-500">growx/</span>
-          <span className="text-foreground font-semibold">research</span>
+        <div className="font-mono text-[11px] sm:text-xs text-neutral-400 tracking-wider uppercase font-semibold">
+          GROWX / RESEARCH
         </div>
 
-        <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] animate-pulse" />
-          <span className="hidden sm:inline tracking-wider uppercase text-[10px] text-[#C0F0FB] font-bold">
-            LIVE R&D
-          </span>
-        </div>
+        <div className="w-12" />
       </div>
 
       {/* Window Body: Horizontal Moving Slider */}
@@ -249,78 +237,66 @@ export function PracticeAreasSection() {
         <AnimatedStagger className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 xl:gap-12">
           {/* PORTFOLIO CARD */}
           <AnimatedItem>
-            <Link href="/portfolio" className="group block h-full">
-              <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
-                <div className="p-8 sm:p-10 lg:p-12 flex-1 flex flex-col justify-between">
-                  <div className="space-y-4 sm:space-y-6">
-                    {/* Eyebrow + Header + Action */}
-                    <div>
-                      <span className="font-mono text-xs tracking-[0.2em] text-[#C0F0FB] uppercase block mb-3 font-bold">
-                        [ 01 / CLIENT SOLUTIONS ]
-                      </span>
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-[42px] text-foreground tracking-tight leading-tight">
-                          Portfolio
-                        </h3>
-                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <ArrowUpRight className="h-5 w-5" />
-                        </div>
-                      </div>
+            <Link href="/portfolio" className="group block h-full select-none">
+              <div className="h-full flex flex-col justify-between bg-[#0A0A0D] border border-neutral-800/80 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-neutral-600 hover:shadow-[0_0_50px_rgba(255,255,255,0.06)] p-8 sm:p-10 lg:p-12">
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Eyebrow Badge (360Labs Pill Style) */}
+                  <div>
+                    <span className="inline-flex items-center px-3 py-1 rounded-md border border-neutral-700/80 bg-neutral-900/60 font-mono text-[11px] sm:text-xs tracking-[0.14em] text-neutral-300 uppercase font-semibold">
+                      CLIENT PORTFOLIO
+                    </span>
+                  </div>
+
+                  {/* Title + Circular Arrow Button */}
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[44px] text-white tracking-tight leading-tight">
+                      Portfolio
+                    </h3>
+                    <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700/80 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0">
+                      <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </div>
-
-                    <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
-                      Custom software architectures, autonomous AI workflows, and secure integrations engineered with senior-developer velocity.
-                    </p>
                   </div>
 
-                  {/* Window Frame with Moving Portfolio Screenshots */}
-                  <PortfolioWindowCarousel />
-
-                  {/* Bottom Meta Bar */}
-                  <div className="flex justify-between items-center pb-1 pt-6 mt-6 font-mono text-xs tracking-[0.18em] text-neutral-400 uppercase border-t border-neutral-800/80">
-                    <span>[ CASE STUDIES ]</span>
-                    <span className="text-[#C0F0FB] group-hover:text-white transition-colors font-bold">VIEW WORK →</span>
-                  </div>
+                  <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
+                    Custom software architectures, autonomous AI workflows, and secure integrations engineered with senior-developer velocity.
+                  </p>
                 </div>
+
+                {/* Window Frame with Moving Portfolio Screenshots */}
+                <PortfolioWindowCarousel />
               </div>
             </Link>
           </AnimatedItem>
 
           {/* LABS CARD */}
           <AnimatedItem>
-            <Link href="/research" className="group block h-full">
-              <div className="h-full flex flex-col bg-[#0A0A0D] border border-neutral-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_50px_rgba(192,240,251,0.08)]">
-                <div className="p-8 sm:p-10 lg:p-12 flex-1 flex flex-col justify-between">
-                  <div className="space-y-4 sm:space-y-6">
-                    {/* Eyebrow + Header + Action */}
-                    <div>
-                      <span className="font-mono text-xs tracking-[0.2em] text-[#C0F0FB] uppercase block mb-3 font-bold">
-                        [ 02 / AI LAB & ROBOTICS ]
-                      </span>
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="font-serif font-black text-3xl sm:text-4xl lg:text-[42px] text-foreground tracking-tight leading-tight">
-                          Research
-                        </h3>
-                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-[#C0F0FB] group-hover:text-black group-hover:border-[#C0F0FB] shrink-0">
-                          <ArrowUpRight className="h-5 w-5" />
-                        </div>
-                      </div>
+            <Link href="/research" className="group block h-full select-none">
+              <div className="h-full flex flex-col justify-between bg-[#0A0A0D] border border-neutral-800/80 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-neutral-600 hover:shadow-[0_0_50px_rgba(255,255,255,0.06)] p-8 sm:p-10 lg:p-12">
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Eyebrow Badge (360Labs Pill Style) */}
+                  <div>
+                    <span className="inline-flex items-center px-3 py-1 rounded-md border border-neutral-700/80 bg-neutral-900/60 font-mono text-[11px] sm:text-xs tracking-[0.14em] text-neutral-300 uppercase font-semibold">
+                      AI &amp; ROBOTICS LAB
+                    </span>
+                  </div>
+
+                  {/* Title + Circular Arrow Button */}
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[44px] text-white tracking-tight leading-tight">
+                      Research
+                    </h3>
+                    <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-neutral-700/80 flex items-center justify-center text-neutral-400 transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white shrink-0">
+                      <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </div>
-
-                    <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
-                      In-house neural research, autonomous AI platforms, and embodied humanoid robotics engineered from first principles.
-                    </p>
                   </div>
 
-                  {/* Window Frame with Moving Labs & Products Screenshots */}
-                  <LabsWindowCarousel />
-
-                  {/* Bottom Meta Bar */}
-                  <div className="flex justify-between items-center pb-1 pt-6 mt-6 font-mono text-xs tracking-[0.18em] text-neutral-400 uppercase border-t border-neutral-800/80">
-                    <span>[ RESEARCH & LABS ]</span>
-                    <span className="text-[#C0F0FB] group-hover:text-white transition-colors font-bold">EXPLORE RESEARCH →</span>
-                  </div>
+                  <p className="text-neutral-400 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
+                    Explore our AI research, experiments, and open-source tools built at the frontier of intelligence.
+                  </p>
                 </div>
+
+                {/* Window Frame with Moving Labs & Products Screenshots */}
+                <LabsWindowCarousel />
               </div>
             </Link>
           </AnimatedItem>

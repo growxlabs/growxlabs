@@ -598,6 +598,165 @@ const PRODUCT_LAUNCH_DECK = (): Slide[] => [
   }),
 ];
 
+const HERITAGE_DARK = "#0a0908";
+const HERITAGE_GOLD = "#d4af37";
+const HERITAGE_WHITE = "#faf5ec";
+const HERITAGE_MUTED = "#a39b8e";
+const HERITAGE_BORDER = "rgba(212, 175, 55, 0.32)";
+const HERITAGE_IMAGE = "/images/festival/ganesh-chaturthi.jpg";
+
+const HERITAGE_FESTIVAL_SLIDE = (
+  index: number,
+  content: {
+    eyebrow: string;
+    headline: string;
+    body?: string;
+    image?: boolean;
+    quote?: { text: string; author: string };
+    cta?: { text: string; link: string };
+  },
+): Slide => {
+  const slide = DEFAULT_SLIDE(index);
+  return {
+    ...slide,
+    backgroundColor: HERITAGE_DARK,
+    category: {
+      ...slide.category,
+      text: content.eyebrow,
+      x: 74,
+      y: 110,
+      width: 932,
+      height: 32,
+      align: "center",
+      fontSize: 15,
+      letterSpacing: 4,
+      color: HERITAGE_GOLD,
+      fontWeight: "800",
+    },
+    headline: {
+      ...slide.headline,
+      text: content.headline,
+      x: 74,
+      y: 165,
+      width: 932,
+      height: 240,
+      align: "center",
+      fontFamily: "'Playfair Display', Georgia, serif",
+      fontSize: index === 0 ? 76 : 68,
+      lineHeight: 1.06,
+      letterSpacing: -1.8,
+      fontWeight: "700",
+      color: HERITAGE_WHITE,
+      maxLines: 3,
+    },
+    body: {
+      ...slide.body,
+      text: content.body || "",
+      x: 130,
+      y: 430,
+      width: 820,
+      height: 140,
+      align: "center",
+      fontSize: 24,
+      lineHeight: 1.48,
+      color: HERITAGE_MUTED,
+      fontWeight: "400",
+      maxLines: 4,
+      visible: !!content.body && !content.quote,
+    },
+    featuredImage: {
+      ...slide.featuredImage,
+      mediaUrl: content.image === false ? "" : HERITAGE_IMAGE,
+      x: 74,
+      y: content.quote ? 620 : 590,
+      width: 932,
+      height: content.quote ? 580 : 610,
+      visible: content.image !== false,
+      objectFit: "cover",
+      borderRadius: 28,
+      borderWidth: 1,
+      borderColor: HERITAGE_BORDER,
+      shadowEnabled: true,
+    },
+    bullets: { ...slide.bullets, visible: false },
+    quote: {
+      ...slide.quote,
+      text: content.quote?.text || "",
+      author: content.quote?.author || "",
+      x: 94,
+      y: 420,
+      width: 892,
+      height: 170,
+      visible: !!content.quote,
+      backgroundColor: "#141210",
+      borderColor: HERITAGE_BORDER,
+      borderWidth: 1,
+      color: HERITAGE_WHITE,
+      fontFamily: "'Playfair Display', Georgia, serif",
+      fontSize: 26,
+      lineHeight: 1.4,
+      authorColor: HERITAGE_GOLD,
+      authorFontSize: 16,
+      borderRadius: 20,
+      padding: 28,
+    },
+    cta: {
+      ...slide.cta,
+      text: content.cta?.text || "GROWXLABS.TECH",
+      link: content.cta?.link || "https://growxlabs.tech",
+      backgroundColor: "#1c1813",
+      textColor: HERITAGE_GOLD,
+      borderRadius: 12,
+      x: 380,
+      y: 1140,
+      width: 320,
+      height: 52,
+      visible: !!content.cta,
+      fontSize: 14,
+      letterSpacing: 2,
+      fontWeight: "700",
+    },
+    logo: { ...slide.logo, visible: false },
+    divider: { ...slide.divider, visible: false },
+    author: { ...slide.author, visible: false },
+    footer: {
+      ...slide.footer,
+      brandName: "GROWXLABS",
+      color: "#7d7467",
+      dividerEnabled: false,
+      pageNumberEnabled: true,
+    },
+  };
+};
+
+const HERITAGE_FESTIVAL_DECK = (): Slide[] => [
+  HERITAGE_FESTIVAL_SLIDE(0, {
+    eyebrow: "॥ ॐ गं गणपतये नमः ॥  •  AARAMBH",
+    headline: "Before We Build,<br/>We Seek Wisdom.",
+    body: "This Ganesh Chaturthi, we pause to honor the remover of obstacles — the timeless symbol of intellect, clarity, and the sacred courage to begin anew.",
+    image: true,
+  }),
+  HERITAGE_FESTIVAL_SLIDE(1, {
+    eyebrow: "॥ BUDDHI & SIDDHI  •  THE PHILOSOPHY ॥",
+    headline: "Obstacles Are Not Walls.<br/>They Are The Blueprint.",
+    quote: {
+      text: "“Every great creation begins at the intersection of deep humility, sharp intellect, and fearless execution.”",
+      author: "GrowxLabs Editorial  •  Autumn 2026",
+    },
+    image: true,
+  }),
+  HERITAGE_FESTIVAL_SLIDE(2, {
+    eyebrow: "॥ SHUBH GANESH CHATURTHI ॥",
+    headline: "May Your Journey Be Blessed<br/>With Vision & Auspicious Momentum.",
+    body: "To our clients, engineering partners, and creators worldwide — wishing you and your families a joyous, prosperous Ganesh Chaturthi.",
+    image: true,
+    cta: {
+      text: "GROWXLABS.TECH",
+      link: "https://growxlabs.tech",
+    },
+  }),
+];
+
 // ==========================================
 // TEMPLATE PRESETS
 // ==========================================
@@ -726,6 +885,57 @@ const TEMPLATE_PRESETS = [
       bullets: { ...slide.bullets, visible: false },
       quote: { ...slide.quote, visible: false },
       cta: { ...slide.cta, visible: false },
+    }),
+  },
+  {
+    id: "festival-heritage",
+    name: "Sacred Heritage",
+    category: "Festive",
+    setup: (slide: Slide): Slide => ({
+      ...slide,
+      backgroundColor: HERITAGE_DARK,
+      category: {
+        ...slide.category,
+        text: "॥ ॐ गं गणपतये नमः ॥  •  AARAMBH",
+        color: HERITAGE_GOLD,
+        fontSize: 15,
+        letterSpacing: 4,
+        align: "center",
+        visible: true,
+      },
+      headline: {
+        ...slide.headline,
+        text: "Before We Build, We Seek Wisdom.",
+        fontFamily: "'Playfair Display', Georgia, serif",
+        fontSize: 72,
+        color: HERITAGE_WHITE,
+        align: "center",
+        visible: true,
+      },
+      featuredImage: {
+        ...slide.featuredImage,
+        mediaUrl: HERITAGE_IMAGE,
+        visible: true,
+        borderColor: HERITAGE_BORDER,
+        borderRadius: 24,
+      },
+      body: {
+        ...slide.body,
+        text: "This Ganesh Chaturthi, we pause to honor the remover of obstacles — the timeless symbol of intellect, clarity, and the sacred courage to begin anew.",
+        color: HERITAGE_MUTED,
+        align: "center",
+        visible: true,
+      },
+      bullets: { ...slide.bullets, visible: false },
+      quote: { ...slide.quote, visible: false },
+      cta: { ...slide.cta, visible: false },
+      author: { ...slide.author, visible: false },
+      divider: { ...slide.divider, visible: false },
+      footer: {
+        ...slide.footer,
+        brandName: "GROWXLABS",
+        color: "#7d7467",
+      },
     }),
   },
 ];
@@ -1161,7 +1371,7 @@ export function EditorialCarouselClient() {
 
   // App states
   const [projectName, setProjectName] = useState("GrowXLabs Editorial Post");
-  const [documentKind, setDocumentKind] = useState<"editorial" | "product">(
+  const [documentKind, setDocumentKind] = useState<"editorial" | "product" | "heritage">(
     "editorial",
   );
   const activeSlide = slides[activeIndex] || DEFAULT_SLIDE(0);
@@ -1318,12 +1528,22 @@ export function EditorialCarouselClient() {
     }
   };
 
-  const handleCreateNewProject = async (kind: "editorial" | "product" = "editorial") => {
+  const handleCreateNewProject = async (kind: "editorial" | "product" | "heritage" = "editorial") => {
     try {
       setCloudSaveStatus("saving");
-      const initialSlides = kind === "product" ? PRODUCT_LAUNCH_DECK() : [DEFAULT_SLIDE(0)];
-      const initialName = kind === "product" ? "ResumeForgeAI Product Launch" : "GrowXLabs Editorial Post";
-      const initialMode = kind === "product" ? "free" : "fixed";
+      const initialSlides =
+        kind === "heritage"
+          ? HERITAGE_FESTIVAL_DECK()
+          : kind === "product"
+          ? PRODUCT_LAUNCH_DECK()
+          : [DEFAULT_SLIDE(0)];
+      const initialName =
+        kind === "heritage"
+          ? "Ganesh Chaturthi — GrowxLabs Heritage Editorial"
+          : kind === "product"
+          ? "ResumeForgeAI Product Launch"
+          : "GrowXLabs Editorial Post";
+      const initialMode = kind === "editorial" ? "fixed" : "free";
 
       const res = await fetch("/api/v1/editor/documents", {
         method: "POST",
@@ -1501,8 +1721,20 @@ export function EditorialCarouselClient() {
     };
   }, [slides, activeFormat, projectName, documentKind, editorMode, isInitialHydrated]);
 
-  const switchDocumentKind = (kind: "editorial" | "product") => {
+  const switchDocumentKind = (kind: "editorial" | "product" | "heritage") => {
     if (kind === documentKind) return;
+    if (kind === "heritage") {
+      const heritageDeck = HERITAGE_FESTIVAL_DECK();
+      setDocumentKind("heritage");
+      setProjectName("Ganesh Chaturthi — GrowxLabs Heritage Editorial");
+      setEditorMode("free");
+      setSlides(heritageDeck);
+      setActiveIndex(0);
+      setSelectedElement(null);
+      saveHistory(heritageDeck);
+      toast.success("Heritage Festival deck loaded — 3 luxury slides");
+      return;
+    }
     if (kind === "product") {
       const launchDeck = PRODUCT_LAUNCH_DECK();
       setDocumentKind("product");
@@ -2077,7 +2309,14 @@ export function EditorialCarouselClient() {
 
   const addSlide = () => {
     const nextSlide =
-      documentKind === "product"
+      documentKind === "heritage"
+        ? HERITAGE_FESTIVAL_SLIDE(slides.length, {
+            eyebrow: "॥ SHREE GANESHAY NAMAH ॥",
+            headline: "Shape The Next Chapter With Wisdom.",
+            body: "Continue your editorial narrative with clarity, vision, and auspicious momentum.",
+            image: true,
+          })
+        : documentKind === "product"
         ? PRODUCT_LAUNCH_SLIDE(slides.length, {
             eyebrow: "PRODUCT STORY",
             headline: "Add the next chapter of your launch story.",
