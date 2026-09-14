@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import { projects } from "@/lib/data/projects";
 import Image from "next/image";
 import { ArrowLeft, CheckCircle2, Cpu, FileText, Play, Server } from "lucide-react";
+import { GrowxArrowRight } from "@/components/icons";
 import { Link } from "@/navigation";
 import { Button } from "@/components/ui/Button";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 
 export async function generateStaticParams() {
@@ -414,11 +416,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     </div>
                     
                     {project.link && (
-                      <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                        <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                          Live Case Study &rarr;
-                        </Button>
-                      </a>
+                      <LiquidButton
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="cyan"
+                        size="sm"
+                        icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                        iconPosition="right"
+                      >
+                        Live Case Study
+                      </LiquidButton>
                     )}
                   </div>
                 </div>
@@ -687,35 +695,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </div>
             </section>
 
-            {/* Redesigned Agency CTA */}
-            <section className="mt-32">
-              <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-                <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 space-y-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                    Let's build together
-                  </span>
-                  
-                  <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                    Need a similar <span className="text-[#C0F0FB]">orchestration platform?</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                CLOSING (360Labs Reference Style)
+            ══════════════════════════════════════════════════════════════════ */}
+            <section className="pt-16 pb-12 space-y-20">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div>
+                  <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                    Interested<br />in {project.title}?
                   </h2>
-                  
-                  <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                    We design, build, and deploy custom engineering pipelines and AI products tailored to scale your company's operational capacity.
-                  </p>
-                  
-                  <div className="pt-4">
-                    <Link href="/contact">
-                      <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                        Book Strategy Call
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
+
+                <div className="flex flex-col items-start lg:items-end gap-5">
+                  <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                    Let&apos;s discuss how this can work for you.
+                  </p>
+                  <LiquidButton
+                    href="/contact"
+                    variant="white"
+                    size="lg"
+                    icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                    iconPosition="right"
+                  >
+                    Get in Touch
+                  </LiquidButton>
+                </div>
+              </div>
+
+              {/* Bottom Meta Bar (360labs reference) */}
+              <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+                <span>// END OF CASE STUDY</span>
+                <span>{project.title.toUpperCase()}</span>
               </div>
             </section>
 
@@ -846,11 +856,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     </div>
                     
                     {project.link && (
-                      <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                        <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                          Live Case Study &rarr;
-                        </Button>
-                      </a>
+                      <LiquidButton
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="cyan"
+                        size="sm"
+                        icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                        iconPosition="right"
+                      >
+                        Live Case Study
+                      </LiquidButton>
                     )}
                   </div>
                 </div>
@@ -1135,35 +1151,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </div>
             </section>
 
-            {/* Redesigned Agency CTA */}
-            <section className="mt-32">
-              <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-                <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 space-y-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                    Let's build together
-                  </span>
-                  
-                  <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                    Need a similar <span className="text-[#C0F0FB]">career ecosystem?</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                CLOSING (360Labs Reference Style)
+            ══════════════════════════════════════════════════════════════════ */}
+            <section className="pt-16 pb-12 space-y-20">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div>
+                  <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                    Interested<br />in {project.title}?
                   </h2>
-                  
-                  <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                    We design, build, and deploy custom engineering pipelines and AI products tailored to scale your company's operational capacity.
-                  </p>
-                  
-                  <div className="pt-4">
-                    <Link href="/contact">
-                      <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                        Book Strategy Call
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
+
+                <div className="flex flex-col items-start lg:items-end gap-5">
+                  <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                    Let&apos;s discuss how this can work for you.
+                  </p>
+                  <LiquidButton
+                    href="/contact"
+                    variant="white"
+                    size="lg"
+                    icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                    iconPosition="right"
+                  >
+                    Get in Touch
+                  </LiquidButton>
+                </div>
+              </div>
+
+              {/* Bottom Meta Bar (360labs reference) */}
+              <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+                <span>// END OF CASE STUDY</span>
+                <span>{project.title.toUpperCase()}</span>
               </div>
             </section>
 
@@ -1241,11 +1259,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                      <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                        Live Case Study &rarr;
-                      </Button>
-                    </a>
+                    <LiquidButton
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="cyan"
+                      size="sm"
+                      icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                      iconPosition="right"
+                    >
+                      Live Case Study
+                    </LiquidButton>
                   )}
                 </div>
               </div>
@@ -1510,35 +1534,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </div>
             </section>
 
-            {/* Redesigned Agency CTA */}
-            <section className="mt-32">
-              <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-                <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 space-y-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                    Let's build together
-                  </span>
-                  
-                  <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                    Need a similar <span className="text-[#C0F0FB]">automation platform?</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                CLOSING (360Labs Reference Style)
+            ══════════════════════════════════════════════════════════════════ */}
+            <section className="pt-16 pb-12 space-y-20">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div>
+                  <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                    Interested<br />in {project.title}?
                   </h2>
-                  
-                  <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                    We design, build, and deploy custom engineering pipelines and AI products tailored to scale your company's operational capacity.
-                  </p>
-                  
-                  <div className="pt-4">
-                    <Link href="/contact">
-                      <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                        Book Strategy Call
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
+
+                <div className="flex flex-col items-start lg:items-end gap-5">
+                  <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                    Let&apos;s discuss how this can work for you.
+                  </p>
+                  <LiquidButton
+                    href="/contact"
+                    variant="white"
+                    size="lg"
+                    icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                    iconPosition="right"
+                  >
+                    Get in Touch
+                  </LiquidButton>
+                </div>
+              </div>
+
+              {/* Bottom Meta Bar (360labs reference) */}
+              <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+                <span>// END OF CASE STUDY</span>
+                <span>{project.title.toUpperCase()}</span>
               </div>
             </section>
 
@@ -1616,11 +1642,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     </div>
                     
                     {project.link && (
-                      <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                        <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                          Live Site &rarr;
-                        </Button>
-                      </a>
+                      <LiquidButton
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="cyan"
+                        size="sm"
+                        icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                        iconPosition="right"
+                      >
+                        Live Site
+                      </LiquidButton>
                     )}
                   </div>
                 </div>
@@ -1832,35 +1864,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </div>
             </section>
  
-            {/* Redesigned Agency CTA */}
-            <section className="mt-32">
-              <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-                <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 space-y-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                    Let's build together
-                  </span>
-                  
-                  <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                    Need a similar <span className="text-[#C0F0FB]">developer harness?</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                CLOSING (360Labs Reference Style)
+            ══════════════════════════════════════════════════════════════════ */}
+            <section className="pt-16 pb-12 space-y-20">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div>
+                  <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                    Interested<br />in {project.title}?
                   </h2>
-                  
-                  <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                    We design, build, and deploy custom developer workflows, terminal CLI wrappers, and custom desktop platforms.
-                  </p>
-                  
-                  <div className="pt-4">
-                    <Link href="/contact">
-                      <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                        Book Strategy Call
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
+
+                <div className="flex flex-col items-start lg:items-end gap-5">
+                  <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                    Let&apos;s discuss how this can work for you.
+                  </p>
+                  <LiquidButton
+                    href="/contact"
+                    variant="white"
+                    size="lg"
+                    icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                    iconPosition="right"
+                  >
+                    Get in Touch
+                  </LiquidButton>
+                </div>
+              </div>
+
+              {/* Bottom Meta Bar (360labs reference) */}
+              <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+                <span>// END OF CASE STUDY</span>
+                <span>{project.title.toUpperCase()}</span>
               </div>
             </section>
  
@@ -1938,11 +1972,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     </div>
                     
                     {project.link && (
-                      <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                        <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                          Live Case Study &rarr;
-                        </Button>
-                      </a>
+                      <LiquidButton
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="cyan"
+                        size="sm"
+                        icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                        iconPosition="right"
+                      >
+                        Live Case Study
+                      </LiquidButton>
                     )}
                   </div>
                 </div>
@@ -2157,35 +2197,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               </div>
             </section>
 
-            {/* Redesigned Agency CTA */}
-            <section className="mt-32">
-              <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-                <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 space-y-6">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                    Let's build together
-                  </span>
-                  
-                  <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                    Need a similar <span className="text-[#C0F0FB]">multi-agent network?</span>
+            {/* ══════════════════════════════════════════════════════════════════
+                CLOSING (360Labs Reference Style)
+            ══════════════════════════════════════════════════════════════════ */}
+            <section className="pt-16 pb-12 space-y-20">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div>
+                  <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                    Interested<br />in {project.title}?
                   </h2>
-                  
-                  <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                    We design, build, and deploy custom engineering pipelines and AI products tailored to scale your company's operational capacity.
-                  </p>
-                  
-                  <div className="pt-4">
-                    <Link href="/contact">
-                      <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                        Book Strategy Call
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
+
+                <div className="flex flex-col items-start lg:items-end gap-5">
+                  <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                    Let&apos;s discuss how this can work for you.
+                  </p>
+                  <LiquidButton
+                    href="/contact"
+                    variant="white"
+                    size="lg"
+                    icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                    iconPosition="right"
+                  >
+                    Get in Touch
+                  </LiquidButton>
+                </div>
+              </div>
+
+              {/* Bottom Meta Bar (360labs reference) */}
+              <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+                <span>// END OF CASE STUDY</span>
+                <span>{project.title.toUpperCase()}</span>
               </div>
             </section>
 
@@ -2278,11 +2320,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   {project.link && (
-                    <a href={project.link} target="_blank" rel="noopener noreferrer" className="inline-block">
-                      <Button className="h-9 px-5 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 text-xs font-bold uppercase tracking-wider rounded-full cursor-pointer">
-                        Live Case Study &rarr;
-                      </Button>
-                    </a>
+                    <LiquidButton
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant="cyan"
+                      size="sm"
+                      icon={<GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />}
+                      iconPosition="right"
+                    >
+                      Live Case Study
+                    </LiquidButton>
                   )}
                 </div>
               </div>
@@ -2440,37 +2488,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             </div>
           </section>
 
-          {/* Redesigned Agency CTA */}
-          <section className="mt-32">
-            <div className="bg-[#080808] border border-white/[0.05] hover:border-white/[0.12] transition-all duration-500 rounded-[32px] p-12 md:p-20 text-center relative overflow-hidden group">
-              {/* Subtle background grid pattern */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
-              
-              <div className="absolute -top-40 left-1/4 w-[300px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
-              <div className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] bg-pink-600/10 blur-[100px] rounded-full pointer-events-none" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-              
-              <div className="relative z-10 space-y-6">
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block font-mono">
-                  Let's build together
-                </span>
-                
-                <h2 className="text-3xl md:text-5xl font-extrabold font-sans text-white tracking-tight max-w-3xl mx-auto leading-tight">
-                  Need a similar <span className="text-[#C0F0FB]">automation platform?</span>
+          {/* ══════════════════════════════════════════════════════════════════
+              CLOSING (360Labs Reference Style)
+          ══════════════════════════════════════════════════════════════════ */}
+          <section className="pt-16 pb-12 space-y-20">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div>
+                <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                  Interested<br />in {project.title}?
                 </h2>
-                
-                <p className="text-zinc-400 text-sm md:text-base max-w-xl mx-auto font-light leading-relaxed">
-                  We design, build, and deploy custom engineering pipelines and AI products tailored to scale your company's operational capacity.
-                </p>
-                
-                <div className="pt-4">
-                  <Link href="/contact">
-                    <Button className="h-12 px-8 bg-white text-black hover:bg-zinc-200 font-bold tracking-tight text-xs rounded-full shadow-lg shadow-white/5 cursor-pointer">
-                      Book Strategy Call
-                    </Button>
-                  </Link>
-                </div>
               </div>
+
+              <div className="flex flex-col items-start lg:items-end gap-5">
+                <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                  Let&apos;s discuss how this can work for you.
+                </p>
+                <LiquidButton
+                  href="/contact"
+                  variant="white"
+                  size="lg"
+                  icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                  iconPosition="right"
+                >
+                  Get in Touch
+                </LiquidButton>
+              </div>
+            </div>
+
+            {/* Bottom Meta Bar (360labs reference) */}
+            <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+              <span>// END OF CASE STUDY</span>
+              <span>{project.title.toUpperCase()}</span>
             </div>
           </section>
 

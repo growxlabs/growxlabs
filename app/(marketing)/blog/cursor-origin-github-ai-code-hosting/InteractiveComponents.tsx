@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Check, GitBranch, Play, ArrowRight, Activity, Terminal, CheckCircle2 } from "lucide-react";
 import { Link } from "@/navigation";
 import { cn } from "@/lib/utils";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 
 export function AIReadLinks({ title }: { title: string }) {
   const articleUrl = "https://growxlabs.tech/blog/cursor-origin-github-ai-code-hosting";
@@ -411,13 +412,15 @@ export function AgentCTA() {
       </div>
 
       <div className="shrink-0">
-        <Link
+        <LiquidButton
           href="/blog"
-          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-all shadow-md group"
+          variant="white"
+          size="default"
+          icon={<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
+          iconPosition="right"
         >
-          <span>Browse more articles</span>
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </Link>
+          Browse more articles
+        </LiquidButton>
       </div>
     </section>
   );

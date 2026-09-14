@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { GrowxArrowRight } from "@/components/icons";
 import { Link } from "@/navigation";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import { PageHero } from "@/components/marketing/PageHero";
 import { DeepfakeArchitectureDiagram } from "@/components/ailab/DeepfakeArchitectureDiagram";
 import Image from "next/image";
@@ -255,26 +256,36 @@ export default function GrowXDeepfakePage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            05 — CLOSING CTA
+            05 — CLOSING (360Labs Reference Style: Interested in GrowX Deepfake?)
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div className="space-y-2 max-w-xl">
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Have questions about GrowX Deepfake?
-            </h2>
-            <p className="text-muted-foreground text-base leading-relaxed">
-              Reach out to test our models, review live benchmarks, or integrate real-time call verification into your product.
-            </p>
+        <section className="pt-16 pb-12 space-y-20">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div>
+              <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                Interested<br />in GrowX Deepfake?
+              </h2>
+            </div>
+
+            <div className="flex flex-col items-start lg:items-end gap-5">
+              <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                Let&apos;s discuss how this can work for you.
+              </p>
+              <LiquidButton
+                href="/contact"
+                variant="white"
+                size="lg"
+                icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                iconPosition="right"
+              >
+                Get in Touch
+              </LiquidButton>
+            </div>
           </div>
 
-          <div className="shrink-0">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-all shadow-md group"
-            >
-              <span>Contact GrowxLabs</span>
-              <GrowxArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </Link>
+          {/* Bottom Meta Bar */}
+          <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+            <span>// END OF CASE STUDY</span>
+            <span>GROWX DEEPFAKE</span>
           </div>
         </section>
 

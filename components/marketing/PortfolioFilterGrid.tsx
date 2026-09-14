@@ -31,7 +31,7 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("all")}
           className={cn(
-            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "all"
               ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
               : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
@@ -50,7 +50,7 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("software")}
           className={cn(
-            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-full font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "software"
               ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
               : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
