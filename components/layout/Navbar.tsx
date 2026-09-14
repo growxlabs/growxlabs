@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GrowxMenu, X } from "@/components/icons";
+import { GrowxMenu, X, GrowxMail } from "@/components/icons";
+import { Phone, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, LiquidButton } from "@/components/ui/Button";
 import { usePathname } from "@/navigation-client";
@@ -186,7 +187,7 @@ export function Navbar() {
           )}
         >
           {/* Top Section */}
-          <div className="flex flex-col">
+          <div className="flex flex-col flex-1 overflow-y-auto min-h-0">
             {/* Close Button */}
             <div className="flex justify-between items-center mb-6 px-6">
               <button
@@ -283,22 +284,40 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Bottom Section */}
-          <div className="border-t border-dashed border-neutral-800 flex flex-col mt-auto pt-4">
+          {/* Bottom Section: Careers + Direct Contact Details */}
+          <div className={cn(
+            "border-t border-dashed flex flex-col mt-auto pt-3 shrink-0",
+            isLightThemePage ? "border-[#111111]/15" : "border-neutral-800"
+          )}>
+            {/* Careers Link */}
             {(() => {
               const resolvedHref = getAbsoluteUrl("/careers");
               const isExternal = resolvedHref.startsWith("http") && isMounted;
+              const linkContent = (
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-xs font-semibold uppercase tracking-wider">Careers</span>
+                  <span className={cn(
+                    "text-[10px] font-mono px-1.5 py-0.5 rounded border border-dashed tracking-normal",
+                    isLightThemePage 
+                      ? "text-[#111111]/60 border-[#111111]/20 bg-black/[0.02]" 
+                      : "text-neutral-400 border-neutral-700 bg-white/[0.02]"
+                  )}>
+                    WE&apos;RE HIRING
+                  </span>
+                </div>
+              );
+
               if (isExternal) {
                 return (
                   <a
                     href={resolvedHref}
-                     className={cn(
-                       "text-xs transition-colors text-left block w-full px-6 py-2.5 border-b border-dashed",
-                       isLightThemePage ? "text-[#65625D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]" : "text-neutral-500 hover:text-neutral-300 border-neutral-800 hover:bg-white/[0.02]"
-                     )}
+                    className={cn(
+                      "transition-colors text-left block w-full px-6 py-2.5 border-b border-dashed",
+                      isLightThemePage ? "text-[#34312D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]" : "text-neutral-300 hover:text-white border-neutral-800 hover:bg-white/[0.02]"
+                    )}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Careers
+                    {linkContent}
                   </a>
                 );
               }
@@ -306,16 +325,67 @@ export function Navbar() {
                 <Link
                   href="/careers"
                   className={cn(
-                    "text-xs transition-colors text-left block w-full px-6 py-2.5 border-b border-dashed",
-                    isLightThemePage ? "text-[#65625D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]" : "text-neutral-500 hover:text-neutral-300 border-neutral-800 hover:bg-white/[0.02]"
+                    "transition-colors text-left block w-full px-6 py-2.5 border-b border-dashed",
+                    isLightThemePage ? "text-[#34312D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]" : "text-neutral-300 hover:text-white border-neutral-800 hover:bg-white/[0.02]"
                   )}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Careers
+                  {linkContent}
                 </Link>
               );
             })()}
-            {/* Removed Advertise with us link */}
+
+            {/* Contact Details Section */}
+            <div className="flex flex-col">
+              {/* Contact Email */}
+              <a
+                href="mailto:sai@growxlabs.tech"
+                className={cn(
+                  "group flex items-center gap-3 w-full px-6 py-2.5 border-b border-dashed transition-colors text-left",
+                  isLightThemePage
+                    ? "text-[#65625D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]"
+                    : "text-neutral-400 hover:text-white border-neutral-800 hover:bg-white/[0.02]"
+                )}
+                title="Email us directly"
+              >
+                <GrowxMail size={14} className={cn("shrink-0 transition-colors", isLightThemePage ? "text-[#8E8B85] group-hover:text-[#111111]" : "text-neutral-500 group-hover:text-[#C0F0FB]")} />
+                <span className="text-xs font-mono tracking-tight truncate">sai@growxlabs.tech</span>
+              </a>
+
+              {/* Mobile No & WhatsApp */}
+              <div
+                className={cn(
+                  "flex items-center justify-between w-full px-6 py-2.5 transition-colors text-left",
+                  isLightThemePage
+                    ? "text-[#65625D] hover:text-[#111111] hover:bg-black/[0.03]"
+                    : "text-neutral-400 hover:text-white hover:bg-white/[0.02]"
+                )}
+              >
+                <a
+                  href="tel:+918790907144"
+                  className="group flex items-center gap-3 truncate flex-1"
+                  title="Call directly"
+                >
+                  <Phone size={13} className={cn("shrink-0 transition-colors", isLightThemePage ? "text-[#8E8B85] group-hover:text-[#111111]" : "text-neutral-500 group-hover:text-emerald-400")} />
+                  <span className="text-xs font-mono tracking-tight group-hover:text-white transition-colors">+91 87909 07144</span>
+                </a>
+                <a
+                  href="https://wa.me/918790907144"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors shrink-0 ml-2 border flex items-center gap-1",
+                    isLightThemePage
+                      ? "text-emerald-700 border-emerald-300/60 bg-emerald-50 hover:bg-emerald-100"
+                      : "text-emerald-400 border-emerald-500/30 bg-emerald-950/40 hover:bg-emerald-900/50"
+                  )}
+                  title="Chat on WhatsApp"
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  <span>WA</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
