@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { GrowxArrowRight } from "@/components/icons";
 import Image from "next/image";
 import { Link } from "@/navigation";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import { PageHero } from "@/components/marketing/PageHero";
 import { AIReadActions } from "@/components/marketing/AIReadActions";
 
@@ -515,13 +516,15 @@ export default function GrowXCrawlCaseStudy() {
               <p className="text-neutral-400 text-sm sm:text-base font-sans">
                 Let&apos;s discuss how this can work for you.
               </p>
-              <Link
+              <LiquidButton
                 href="/contact"
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 border border-neutral-700 hover:border-white text-white hover:bg-white hover:text-black font-mono text-xs uppercase tracking-widest transition-all group"
+                variant="white"
+                size="lg"
+                icon={<GrowxArrowRight size={15} className="transition-transform group-hover:translate-x-1" />}
+                iconPosition="right"
               >
-                <span>GET IN TOUCH</span>
-                <GrowxArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-              </Link>
+                Get in Touch
+              </LiquidButton>
             </div>
           </div>
 
