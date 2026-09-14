@@ -59,7 +59,7 @@ export function AIReadActions({
 
   return (
     <div
-      className={`w-full border-t border-b border-neutral-800/80 py-4 my-8 text-xs transition-all ${className}`}
+      className={`w-full border-t border-neutral-800/80 py-4 my-8 text-xs transition-all ${className}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 flex-wrap">

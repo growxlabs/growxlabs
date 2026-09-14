@@ -501,26 +501,34 @@ export default function GrowXCrawlCaseStudy() {
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════
-            05 — CLOSING (Minimalist Call to Action)
+            05 — CLOSING (360Labs Reference Style)
         ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-20 pb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div className="space-y-2 max-w-xl">
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Have something you want us to build?
-            </h2>
-            <p className="text-muted-foreground text-base">
-              GrowXLabs designs, architects, and ships custom digital platforms and software systems.
-            </p>
+        <section className="pt-16 pb-12 space-y-20">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            <div>
+              <h2 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.05]">
+                Interested<br />in GrowX Crawl?
+              </h2>
+            </div>
+
+            <div className="flex flex-col items-start lg:items-end gap-5">
+              <p className="text-neutral-400 text-sm sm:text-base font-sans">
+                Let&apos;s discuss how this can work for you.
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 border border-neutral-700 hover:border-white text-white hover:bg-white hover:text-black font-mono text-xs uppercase tracking-widest transition-all group"
+              >
+                <span>GET IN TOUCH</span>
+                <GrowxArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
 
-          <div className="shrink-0">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-all shadow-md group"
-            >
-              <span>Contact GrowxLabs</span>
-              <GrowxArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </Link>
+          {/* Bottom Meta Bar (360labs reference) */}
+          <div className="flex justify-between items-center text-[11px] font-mono tracking-[0.2em] text-neutral-500 uppercase select-none pt-8">
+            <span>// END OF CASE STUDY</span>
+            <span>GROWX CRAWL</span>
           </div>
         </section>
 
