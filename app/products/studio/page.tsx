@@ -55,7 +55,7 @@ const PRODUCTS = [
   },
   {
     name: "GrowX Deepfake™",
-    image: "/images/ailab/deepfake-architecture.png",
+    image: "/images/products/deepfake.png",
     description:
       "Enterprise multimodal intelligence engine detecting AI deepfakes across live video calls, synthetic audio streams, and manipulated identity media with sub-50ms inference latency.",
     href: "/ailab/growx-deepfake-multimodal-intelligence",
