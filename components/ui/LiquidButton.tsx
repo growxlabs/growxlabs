@@ -16,6 +16,7 @@ export interface LiquidButtonProps {
   iconPosition?: "left" | "right";
   target?: string;
   rel?: string;
+  disabled?: boolean;
 }
 
 export function LiquidButton({
@@ -30,6 +31,7 @@ export function LiquidButton({
   iconPosition = "left",
   target,
   rel,
+  disabled = false,
 }: LiquidButtonProps) {
   const sizeClasses = {
     sm: "h-7 sm:h-8 px-3 sm:px-4 text-[11px] sm:text-xs",
@@ -114,8 +116,12 @@ export function LiquidButton({
   return (
     <button
       type={type}
-      onClick={onClick}
-      className="inline-block bg-transparent border-0 p-0 cursor-pointer"
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      className={cn(
+        "inline-block bg-transparent border-0 p-0",
+        disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : "cursor-pointer"
+      )}
     >
       {innerContent}
     </button>
