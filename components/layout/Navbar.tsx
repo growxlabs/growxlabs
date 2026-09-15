@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GrowxMenu, X, GrowxMail } from "@/components/icons";
-import { Phone, MessageCircle } from "lucide-react";
+import { GrowxMenu, X } from "@/components/icons";
+
 import { cn } from "@/lib/utils";
 import { Button, LiquidButton } from "@/components/ui/Button";
 import { usePathname } from "@/navigation-client";
@@ -341,14 +341,13 @@ export function Navbar() {
               <a
                 href="mailto:sai@growxlabs.tech"
                 className={cn(
-                  "group flex items-center gap-3 w-full px-6 py-2.5 border-b border-dashed transition-colors text-left",
+                  "group flex items-center w-full px-6 py-2.5 border-b border-dashed transition-colors text-left",
                   isLightThemePage
                     ? "text-[#65625D] hover:text-[#111111] border-[#111111]/15 hover:bg-black/[0.03]"
                     : "text-neutral-400 hover:text-white border-neutral-800 hover:bg-white/[0.02]"
                 )}
                 title="Email us directly"
               >
-                <GrowxMail size={14} className={cn("shrink-0 transition-colors", isLightThemePage ? "text-[#8E8B85] group-hover:text-[#111111]" : "text-neutral-500 group-hover:text-[#C0F0FB]")} />
                 <span className="text-xs font-mono tracking-tight truncate">sai@growxlabs.tech</span>
               </a>
 
@@ -363,10 +362,9 @@ export function Navbar() {
               >
                 <a
                   href="tel:+918790907144"
-                  className="group flex items-center gap-3 truncate flex-1"
+                  className="group flex items-center truncate flex-1"
                   title="Call directly"
                 >
-                  <Phone size={13} className={cn("shrink-0 transition-colors", isLightThemePage ? "text-[#8E8B85] group-hover:text-[#111111]" : "text-neutral-500 group-hover:text-emerald-400")} />
                   <span className="text-xs font-mono tracking-tight group-hover:text-white transition-colors">+91 87909 07144</span>
                 </a>
                 <a
@@ -374,14 +372,13 @@ export function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    "text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors shrink-0 ml-2 border flex items-center gap-1",
+                    "text-[10px] font-mono px-1.5 py-0.5 rounded transition-colors shrink-0 ml-2 border flex items-center",
                     isLightThemePage
                       ? "text-emerald-700 border-emerald-300/60 bg-emerald-50 hover:bg-emerald-100"
                       : "text-emerald-400 border-emerald-500/30 bg-emerald-950/40 hover:bg-emerald-900/50"
                   )}
                   title="Chat on WhatsApp"
                 >
-                  <MessageCircle className="w-3 h-3" />
                   <span>WA</span>
                 </a>
               </div>
