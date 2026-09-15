@@ -50,6 +50,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isEmployeeWorkspace = isEmployeeWorkspaceRoute(normalizedPath);
   
   const isCheckoutPage = normalizedPath.includes("/checkout");
+  const isContactPage = normalizedPath === "/contact" || normalizedPath.startsWith("/contact");
   
   // Document-mode routes supply their own formal header and footer.
   if (isActivation) {
@@ -66,7 +67,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-grow">
         {children}
       </main>
-      {!isCheckoutPage && <Footer />}
+      {!isCheckoutPage && !isContactPage && <Footer />}
     </>
   );
 }

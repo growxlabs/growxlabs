@@ -7,6 +7,7 @@ interface PageHeroProps {
   title: string;          // e.g. "Services", "Portfolio", "Products", "Courses", "Blog", "About", "Contact"
   viewingText: string;    // e.g. "SERVICES", "PORTFOLIO", etc.
   exploreText?: string;   // e.g. "WHAT WE DO", etc.
+  exploreHref?: string;   // e.g. "#discovery"
   tagline?: string;       // e.g. "AI ENGINEERING", etc.
   className?: string;
 }
@@ -15,6 +16,7 @@ export function PageHero({
   title,
   viewingText,
   exploreText = "EXPLORE",
+  exploreHref,
   tagline = "SYSTEMS & LAB",
   className,
 }: PageHeroProps) {
@@ -75,11 +77,22 @@ export function PageHero({
               NOW<br />
               ENTERING <span className="text-foreground font-bold">{viewingText}</span>
             </div>
-            <div>
-              SCROLL<br />
-              TO<br />
-              {exploreText}
-            </div>
+            {exploreHref ? (
+              <a
+                href={exploreHref}
+                className="hover:text-foreground transition-colors cursor-pointer block select-none"
+              >
+                SCROLL<br />
+                TO<br />
+                {exploreText}
+              </a>
+            ) : (
+              <div>
+                SCROLL<br />
+                TO<br />
+                {exploreText}
+              </div>
+            )}
             <div className="text-foreground font-bold">
               AI-NATIVE<br />
               PRODUCT STUDIO &<br />
@@ -129,11 +142,22 @@ export function PageHero({
                 NOW<br />
                 ENTERING <span className="text-foreground font-bold">{viewingText}</span>
               </div>
-              <div>
-                SCROLL<br />
-                TO<br />
-                {exploreText}
-              </div>
+              {exploreHref ? (
+                <a
+                  href={exploreHref}
+                  className="hover:text-foreground transition-colors cursor-pointer block select-none"
+                >
+                  SCROLL<br />
+                  TO<br />
+                  {exploreText}
+                </a>
+              ) : (
+                <div>
+                  SCROLL<br />
+                  TO<br />
+                  {exploreText}
+                </div>
+              )}
               <div className="w-5 h-[1px] bg-border" />
               <div className="text-foreground font-bold">
                 AI-NATIVE<br />

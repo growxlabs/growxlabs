@@ -64,13 +64,13 @@ export function DiscoveryBookingForm() {
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Focus current input on step change
+  // Focus current input on step change without jumping page
   useEffect(() => {
-    if (!isBooked) {
+    if (!isBooked && currentStep > 0) {
       if (STEPS[currentStep].key === "message") {
-        textareaRef.current?.focus();
+        textareaRef.current?.focus({ preventScroll: true });
       } else {
-        inputRef.current?.focus();
+        inputRef.current?.focus({ preventScroll: true });
       }
     }
   }, [currentStep, isBooked]);
