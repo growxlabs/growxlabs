@@ -15,7 +15,7 @@ import { GrowxArrowRight } from "@/components/icons";
 const PRODUCTS = [
   {
     name: "RecruitAI™",
-    image: "/portfolio/recruitai.png",
+    image: "/images/products/recruitai.png",
     description:
       "An end-to-end recruitment intelligence platform that automates technical candidate screening, scorecard evaluation, and applicant communication. It matches applicant portfolios against customized engineering rubrics with verifiable proof of work, enabling hiring teams to identify top engineering talent in minutes.",
     href: "https://recruitaitech.in?utm_source=growxlabswebsite",
