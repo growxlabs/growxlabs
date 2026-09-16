@@ -561,11 +561,6 @@ export default function LeadsAdminPage() {
                 <Button onClick={() => setShowImportLead(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-semibold rounded-lg shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                   <Upload size={12} className="shrink-0" /> Import CSV
                 </Button>
-                <Link href="/admin/leads/scrape" className="shrink-0">
-                  <Button className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-semibold rounded-lg shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
-                    <Zap size={12} className="text-[var(--primary)] fill-[var(--primary)] shrink-0" /> Hunt Leads
-                  </Button>
-                </Link>
                 <Button onClick={() => setShowAddLead(true)} className="h-8 px-3 bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer">
                   <Plus size={12} className="shrink-0" /> Add Lead
                 </Button>
