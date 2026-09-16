@@ -31,10 +31,18 @@ export async function POST(request: Request) {
 - **Project Brief / Notes:** ${message?.trim() || "No additional notes"}
 `.trim();
 
+    const orgId =
+      process.env.DEFAULT_ORGANISATION_ID ||
+      process.env.NEXT_PUBLIC_DEFAULT_ORGANISATION_ID ||
+      "8e7d6c54-68f1-4d19-9bf5-c20fe6c37721";
+
     const leadPayload = {
+      organisation_id: orgId,
       name: name.trim(),
+      contact_name: name.trim(),
       business_name: company?.trim() || name.trim(),
       email: email.trim(),
+      normalized_email: email.trim().toLowerCase(),
       notes: bookingNotes,
       message: bookingNotes,
       status: "new",
@@ -45,7 +53,8 @@ export async function POST(request: Request) {
     if (supabaseAdmin) {
       const { error: dbError } = await supabaseAdmin.from("leads").insert([leadPayload]);
       if (dbError) {
-        console.warn("Could not save to Supabase leads table:", dbError);
+        console.error("Could not save to Supabase leads table:", dbError);
+        throw new Error(dbError.message || "Failed to save booking to database.");
       }
     }
 
