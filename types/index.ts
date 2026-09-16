@@ -15,6 +15,7 @@ export interface Lead {
   outreach_channel?: 'email' | 'whatsapp' | 'linkedin';
   follow_up_date?: string;
   notes?: string;
+  message?: string;
   assigned_to?: string;
   assigned_to_member?: {
     name: string;

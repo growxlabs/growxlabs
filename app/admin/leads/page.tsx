@@ -752,9 +752,19 @@ export default function LeadsAdminPage() {
                         />
                       </td>
                       <td className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                        <div className="truncate" title={lead.business_name}>
-                          {lead.business_name}
+                        <div className="truncate flex items-center gap-1.5" title={lead.business_name}>
+                          <span>{lead.business_name}</span>
+                          {lead.source === "Book a Discovery Call" && (
+                            <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-mono font-normal uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                              Discovery Call
+                            </span>
+                          )}
                         </div>
+                        {lead.name && lead.name !== lead.business_name && (
+                          <div className="text-[11px] text-[var(--text-muted)] font-normal truncate">
+                            {lead.name}
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <StatusChip status={lead.status} />
@@ -881,7 +891,9 @@ export default function LeadsAdminPage() {
                     <h2 className="text-sm font-bold text-[var(--text-primary)] leading-none truncate max-w-[280px]" title={selectedLead.business_name}>
                       {selectedLead.business_name}
                     </h2>
-                    <p className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mt-1">Lead Intelligence Profile</p>
+                    <p className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mt-1">
+                      {selectedLead.source ? `Source: ${selectedLead.source}` : "Lead Intelligence Profile"}
+                    </p>
                   </div>
                 </div>
                 <button 
@@ -1025,11 +1037,15 @@ export default function LeadsAdminPage() {
                   </div>
                 </div>
 
-                {/* Section 4: Notes */}
+                {/* Section 4: Notes / Booking Brief */}
                 <div className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm space-y-2">
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border-subtle)] pb-2">Notes</p>
-                  <p className="text-xs text-[var(--text-secondary)] italic leading-relaxed pt-1">
-                    {selectedLead.notes ? selectedLead.notes.replace(/\[Source:.*\]/, "").replace(/\[Created By:.*\]/, "").trim() : "No custom notes recorded for this pipeline lead."}
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border-subtle)] pb-2">
+                    {selectedLead.source === "Book a Discovery Call" ? "📅 Discovery Call Booking Details" : "Notes & Brief"}
+                  </p>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed pt-1 whitespace-pre-line font-mono">
+                    {(selectedLead.notes || selectedLead.message)
+                      ? (selectedLead.notes || selectedLead.message)?.replace(/\[Source:.*\]/, "").replace(/\[Created By:.*\]/, "").trim()
+                      : "No custom notes recorded for this pipeline lead."}
                   </p>
                 </div>
 

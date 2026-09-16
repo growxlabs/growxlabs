@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function POST(request: Request) {
@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       name: name.trim(),
       business_name: company?.trim() || name.trim(),
       email: email.trim(),
+      notes: bookingNotes,
       message: bookingNotes,
       status: "new",
       source: "Book a Discovery Call",
