@@ -31,18 +31,12 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("all")}
           className={cn(
-            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "all"
               ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
               : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
           )}
         >
-          <span
-            className={cn(
-              "w-1.5 h-1.5 rounded-full transition-colors",
-              activeFilter === "all" ? "bg-black" : "bg-neutral-600 group-hover:bg-neutral-400"
-            )}
-          />
           <span>Show All</span>
         </button>
 
@@ -50,18 +44,12 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("software")}
           className={cn(
-            "group flex items-center gap-2.5 px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "software"
               ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
               : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
           )}
         >
-          <span
-            className={cn(
-              "w-1.5 h-1.5 rounded-full transition-colors",
-              activeFilter === "software" ? "bg-black" : "bg-neutral-600 group-hover:bg-neutral-400"
-            )}
-          />
           <span>Software</span>
         </button>
       </div>
@@ -72,12 +60,9 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
         {trionyxProject && (
           <div className="space-y-6 sm:space-y-8">
             <div className="flex items-center justify-between pb-4 border-b border-white/15">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-[#C0F0FB]" />
-                <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
-                  Distribution Platform
-                </h2>
-              </div>
+              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+                Distribution Platform
+              </h2>
               <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 01 ]</span>
             </div>
 
@@ -98,12 +83,9 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
         {crawlProject && (
           <div className="space-y-6 sm:space-y-8">
             <div className="flex items-center justify-between pb-4 border-b border-white/15">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-[#C0F0FB]" />
-                <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
-                  Platform and Tools
-                </h2>
-              </div>
+              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+                Platform and Tools
+              </h2>
               <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 02 ]</span>
             </div>
 
