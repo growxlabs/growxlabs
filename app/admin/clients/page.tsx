@@ -469,10 +469,10 @@ function ClientCard({
         </div>
       </div>
 
-      {/* ── Commercial Telemetry Matrix (Equalized Borders & Slots) ── */}
-      <div className="mx-4 mt-3 mb-0 grid grid-cols-3 divide-x divide-[var(--border-subtle,#e2e8f0)] rounded-md border border-[var(--border-subtle,#e2e8f0)] bg-[var(--background,#f8fafc)]">
+      {/* ── Commercial Telemetry Matrix (Clean Borderless Enterprise Layout) ── */}
+      <div className="mx-4 my-2.5 grid grid-cols-3 gap-2 px-3 py-2.5 rounded-lg bg-[var(--background,#f8fafc)]">
         {/* Col 1: Agreement */}
-        <div className="min-w-0 px-2.5 py-2 flex flex-col justify-between h-[66px]">
+        <div className="min-w-0 flex flex-col justify-between h-[62px]">
           <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--text-muted,#94a3b8)] truncate leading-none">
             Agreement
           </div>
@@ -491,7 +491,7 @@ function ClientCard({
         </div>
 
         {/* Col 2: Onboarding */}
-        <div className="min-w-0 px-2.5 py-2 flex flex-col justify-between h-[66px]">
+        <div className="min-w-0 flex flex-col justify-between h-[62px]">
           <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--text-muted,#94a3b8)] truncate leading-none">
             Onboarding
           </div>
@@ -525,7 +525,7 @@ function ClientCard({
         </div>
 
         {/* Col 3: Revenue */}
-        <div className="min-w-0 px-2.5 py-2 flex flex-col justify-between h-[66px]">
+        <div className="min-w-0 flex flex-col justify-between h-[62px]">
           <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--text-muted,#94a3b8)] truncate leading-none">
             Billed
           </div>
@@ -547,7 +547,7 @@ function ClientCard({
       </div>
 
       {/* ── Action Footer ── */}
-      <div className="mt-auto px-4 py-2.5 flex items-center justify-between gap-2 border-t border-[var(--border-subtle,#e2e8f0)]">
+      <div className="mt-auto px-4 pb-3 pt-1 flex items-center justify-between gap-2">
         <button
           onClick={onViewProfile}
           className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0075de] hover:text-[#005bab] transition-colors"
