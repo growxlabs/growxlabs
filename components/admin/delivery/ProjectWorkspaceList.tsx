@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Sparkles } from "lucide-react";
+import { IconPlus, IconSparkle } from "@/components/admin/GrowXIcons";
 
 type Workspace = {
   id: string;
@@ -72,7 +72,7 @@ export function ProjectWorkspaceList() {
       {availableProjects.length > 0 && (
         <div className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/20 p-4 space-y-3">
           <div className="flex items-center gap-2 text-xs font-bold text-blue-900 dark:text-blue-300 uppercase tracking-wider">
-            <Sparkles size={14} className="text-[#0075de]" />
+            <IconSparkle size={14} className="text-[#0075de]" />
             <span>Ready for Workspace Activation ({availableProjects.length})</span>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -95,7 +95,7 @@ export function ProjectWorkspaceList() {
                   disabled={activate.isPending}
                   className="shrink-0 px-3 py-1.5 rounded-md bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Plus size={13} />
+                  <IconPlus size={13} />
                   <span>{activate.isPending ? "Activating…" : "1-Click Activate"}</span>
                 </button>
               </div>

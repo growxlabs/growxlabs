@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, CheckCircle2, Clock, Plus } from "lucide-react";
+import { IconAlertCircle, IconChevronRight, IconPlus } from "@/components/admin/GrowXIcons";
+import { MilestoneDetailDrawer } from "./MilestoneDetailDrawer";
 
 const request = async (url: string, body?: Record<string, unknown>) => {
   const response = await fetch(
@@ -20,6 +21,7 @@ export function ProjectWorkspaceDetail({ projectId }: { projectId: string }) {
   const qc = useQueryClient();
   const [milestone, setMilestone] = useState("");
   const [task, setTask] = useState("");
+  const [selectedMilestoneId, setSelectedMilestoneId] = useState<string | null>(null);
 
   const milestones = useQuery({
     queryKey: ["admin", "milestones", projectId],
@@ -80,14 +82,14 @@ export function ProjectWorkspaceDetail({ projectId }: { projectId: string }) {
             disabled={addMilestone.isPending || !milestone.trim()}
             className="shrink-0 rounded-md bg-[#164d75] hover:bg-[#113a58] px-4 text-xs font-semibold text-white disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus size={14} />
+            <IconPlus size={14} />
             <span>{addMilestone.isPending ? "Adding…" : "Add"}</span>
           </button>
         </form>
 
         {addMilestone.error && (
           <div role="alert" className="p-3 text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 rounded-md flex items-start gap-2">
-            <AlertCircle size={14} className="shrink-0 mt-0.5 text-red-500" />
+            <IconAlertCircle size={14} className="shrink-0 mt-0.5 text-red-500" />
             <div>
               <p className="font-semibold">Unable to add milestone</p>
               <p className="mt-0.5 text-[11px] opacity-90">{addMilestone.error.message}</p>
@@ -97,17 +99,60 @@ export function ProjectWorkspaceDetail({ projectId }: { projectId: string }) {
 
         <div className="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
           {(milestones.data?.milestones || []).map(
-            (item: { id: string; milestone_number: string; name: string; status: string }) => (
-              <div className="py-3 flex items-start justify-between gap-3" key={item.id}>
-                <div>
-                  <p className="text-[10px] font-mono font-bold text-slate-500">{item.milestone_number}</p>
-                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{item.name}</p>
+            (item: {
+              id: string;
+              milestone_number: string;
+              name: string;
+              status: string;
+              planned_completion?: string | null;
+              owner?: { name: string } | null;
+              tasks_count?: number;
+            }) => {
+              const statusColors =
+                item.status === "in_progress"
+                  ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50"
+                  : item.status === "completed"
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50"
+                  : item.status === "blocked"
+                  ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50"
+                  : "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300";
+
+              return (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedMilestoneId(item.id)}
+                  onKeyDown={(e) => e.key === "Enter" && setSelectedMilestoneId(item.id)}
+                  className="py-3 px-2 rounded-lg flex items-start justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
+                  key={item.id}
+                  title="Click to open Milestone Execution View"
+                >
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[10px] font-mono font-bold text-slate-500">{item.milestone_number}</p>
+                      {item.planned_completion && (
+                        <span className="text-[10px] text-slate-400">Due {item.planned_completion.slice(0, 10)}</span>
+                      )}
+                    </div>
+                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#164d75] dark:group-hover:text-blue-400 transition-colors">
+                      {item.name}
+                    </p>
+                    <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                      {item.owner && <span>Owner: {item.owner.name}</span>}
+                      {item.tasks_count !== undefined && item.tasks_count > 0 && (
+                        <span>{item.tasks_count} {item.tasks_count === 1 ? "task" : "tasks"}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`shrink-0 px-2 py-0.5 text-[10px] font-semibold rounded capitalize ${statusColors}`}>
+                      {item.status.replaceAll("_", " ")}
+                    </span>
+                    <IconChevronRight size={14} className="text-slate-400 group-hover:translate-x-0.5 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-all" />
+                  </div>
                 </div>
-                <span className="shrink-0 px-2 py-0.5 text-[10px] font-semibold rounded bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 capitalize">
-                  {item.status.replaceAll("_", " ")}
-                </span>
-              </div>
-            )
+              );
+            }
           )}
           {!milestones.data?.milestones?.length && !milestones.isPending && (
             <p className="py-6 text-center text-xs text-slate-400">No milestones created yet.</p>
@@ -137,14 +182,14 @@ export function ProjectWorkspaceDetail({ projectId }: { projectId: string }) {
             disabled={addTask.isPending || !task.trim()}
             className="shrink-0 rounded-md bg-[#164d75] hover:bg-[#113a58] px-4 text-xs font-semibold text-white disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus size={14} />
+            <IconPlus size={14} />
             <span>{addTask.isPending ? "Adding…" : "Add"}</span>
           </button>
         </form>
 
         {addTask.error && (
           <div role="alert" className="p-3 text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 rounded-md flex items-start gap-2">
-            <AlertCircle size={14} className="shrink-0 mt-0.5 text-red-500" />
+            <IconAlertCircle size={14} className="shrink-0 mt-0.5 text-red-500" />
             <div>
               <p className="font-semibold">Unable to add task</p>
               <p className="mt-0.5 text-[11px] opacity-90">{addTask.error.message}</p>
@@ -171,6 +216,15 @@ export function ProjectWorkspaceDetail({ projectId }: { projectId: string }) {
           )}
         </div>
       </section>
+
+      {/* ── Milestone Execution Detail Drawer ── */}
+      {selectedMilestoneId && (
+        <MilestoneDetailDrawer
+          milestoneId={selectedMilestoneId}
+          projectId={projectId}
+          onClose={() => setSelectedMilestoneId(null)}
+        />
+      )}
     </div>
   );
 }
