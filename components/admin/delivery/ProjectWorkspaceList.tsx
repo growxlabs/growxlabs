@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FolderPlus, Sparkles } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 
 type Workspace = {
   id: string;
@@ -95,7 +95,7 @@ export function ProjectWorkspaceList() {
                   disabled={activate.isPending}
                   className="shrink-0 px-3 py-1.5 rounded-md bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <FolderPlus size={13} />
+                  <Plus size={13} />
                   <span>{activate.isPending ? "Activating…" : "1-Click Activate"}</span>
                 </button>
               </div>
