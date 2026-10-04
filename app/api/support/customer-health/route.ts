@@ -76,13 +76,39 @@ export async function GET() {
       customer_onboarding(*)
     `);
 
-    if (!customers || customers.length === 0) {
-      return NextResponse.json({ customerHealth: MOCK_CUSTOMERS_HEALTH });
-    }
+    const rawList = (!customers || customers.length === 0) ? MOCK_CUSTOMERS_HEALTH : customers;
+    const formatted = rawList.map((c: any) => ({
+      id: c.id,
+      name: c.customer_name || c.name || "Customer Account",
+      company_name: c.company_name || c.name,
+      arr: c.contract_value || c.arr || 35000,
+      health_score: c.health_score ?? (c.customer_health?.[0]?.health_score ?? 85),
+      nps: c.nps ?? 68,
+      churn_risk: c.churn_risk ?? (c.customer_health?.[0]?.churn_risk ?? "Low"),
+      renewal_date: c.renewal_date || "2026-12-31",
+      renewal_stage: c.renewal_stage || "Active"
+    }));
 
-    return NextResponse.json({ customerHealth: customers });
+    return NextResponse.json({
+      customerHealth: formatted,
+      customers: formatted
+    });
   } catch (error) {
-    return NextResponse.json({ customerHealth: MOCK_CUSTOMERS_HEALTH });
+    const formatted = MOCK_CUSTOMERS_HEALTH.map((c: any) => ({
+      id: c.id,
+      name: c.customer_name,
+      company_name: c.company_name,
+      arr: c.contract_value,
+      health_score: c.health_score,
+      nps: 72,
+      churn_risk: c.churn_risk,
+      renewal_date: c.renewal_date,
+      renewal_stage: c.renewal_stage
+    }));
+    return NextResponse.json({
+      customerHealth: formatted,
+      customers: formatted
+    });
   }
 }
 

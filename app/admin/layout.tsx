@@ -8,6 +8,7 @@ import { Loader2, ShieldAlert, ArrowLeft, LogOut, ExternalLink, ChevronRight } f
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { AdminOperationsDock } from "@/components/admin/AdminOperationsDock";
+import { SettingsModalProvider } from "@/components/providers/SettingsModalProvider";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -291,45 +292,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className={cn(
-      !isCommandCenterWorkspace && !isEditorialStudio && "notion-theme",
-      isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
-      "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
-    )}>
-      {/* PERSISTENT SIDEBAR */}
-      {!isCommandCenter && !isEditorialStudio && <div className="print:hidden">
-        <AdminNav
-          isCollapsed={isCollapsed}
-          onToggle={() => setIsCollapsed(!isCollapsed)}
-          isMobileOpen={isMobileOpen}
-          onMobileToggle={() => setIsMobileOpen(!isMobileOpen)}
-        />
-      </div>}
-      
-      {/* SCROLLABLE MAIN CONTENT AREA */}
-      <main className={cn(
-        "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
-        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : isEditorialStudio ? "bg-[#0e0f12]" : "bg-[var(--background)]",
-        // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
-        (isCommandCenter || isEditorialStudio)
-          ? "md:ml-0 md:w-full"
-          : isCollapsed
-          ? "md:ml-20 md:w-[calc(100vw-5rem)] lg:flex-none"
-          : "md:ml-[260px] md:w-[calc(100vw-260px)] lg:flex-none",
-        // Mobile: no margin, add top padding for the mobile top bar
-        (isCommandCenter || isEditorialStudio) ? "ml-0 pt-0" : "ml-0 pt-14 md:pt-0"
+    <SettingsModalProvider>
+      <div className={cn(
+        !isCommandCenterWorkspace && !isEditorialStudio && "notion-theme",
+        isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
+        "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
       )}>
-         {/* Internal Spacing — responsive padding */}
-         <div className={cn(
-           "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
-           isEditorialStudio || isCommandCenterWorkspace
-             ? "h-[calc(100vh-3.5rem)] md:h-screen max-w-none overflow-hidden"
-             : "p-4 sm:p-6 md:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
-         )}>
-            {children}
-         </div>
-      </main>
-      {!isCommandCenterWorkspace && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
-    </div>
+        {/* PERSISTENT SIDEBAR */}
+        {!isCommandCenter && !isEditorialStudio && <div className="print:hidden">
+          <AdminNav
+            isCollapsed={isCollapsed}
+            onToggle={() => setIsCollapsed(!isCollapsed)}
+            isMobileOpen={isMobileOpen}
+            onMobileToggle={() => setIsMobileOpen(!isMobileOpen)}
+          />
+        </div>}
+        
+        {/* SCROLLABLE MAIN CONTENT AREA */}
+        <main className={cn(
+          "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
+          isCommandCenterWorkspace ? "bg-[#1f1e1d]" : isEditorialStudio ? "bg-[#0e0f12]" : "bg-[var(--background)]",
+          // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
+          (isCommandCenter || isEditorialStudio)
+            ? "md:ml-0 md:w-full"
+            : isCollapsed
+            ? "md:ml-20 md:w-[calc(100vw-5rem)] lg:flex-none"
+            : "md:ml-[260px] md:w-[calc(100vw-260px)] lg:flex-none",
+          // Mobile: no margin, add top padding for the mobile top bar
+          (isCommandCenter || isEditorialStudio) ? "ml-0 pt-0" : "ml-0 pt-14 md:pt-0"
+        )}>
+           {/* Internal Spacing — responsive padding */}
+           <div className={cn(
+             "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
+             isEditorialStudio || isCommandCenterWorkspace
+               ? "h-[calc(100vh-3.5rem)] md:h-screen max-w-none overflow-hidden"
+               : "p-4 sm:p-6 md:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
+           )}>
+              {children}
+           </div>
+        </main>
+        {!isCommandCenterWorkspace && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
+      </div>
+    </SettingsModalProvider>
   );
 }

@@ -21,7 +21,7 @@ const COMMAND_ITEMS: CommandItem[] = [
   { id: "c6", name: "Marketing Campaigns & Funnels", workspace: "Marketing", href: "/admin/marketing", icon: Megaphone },
   { id: "c7", name: "Customer Support Desk & SLAs", workspace: "Support", href: "/admin/support", icon: LifeBuoy },
   { id: "c8", name: "Analytics Executive Dashboards", workspace: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { id: "c9", name: "AI Platform & Copilot Studio", workspace: "AI Platform", href: "/admin/ai-platform", icon: Cpu },
+  { id: "c9", name: "AI Command Center & Agent Studio", workspace: "Command Center", href: "/admin/command-center", icon: Cpu },
   { id: "c10", name: "Administration & Security Setup", workspace: "Administration", href: "/admin/settings", icon: Settings }
 ];
 

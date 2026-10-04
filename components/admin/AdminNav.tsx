@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { NavigationFlyout } from "@/components/admin/NavigationFlyout";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { AccentColorPicker } from "@/components/admin/AccentColorPicker";
+import { useSettingsModal } from "@/components/providers/SettingsModalProvider";
 import {
   GrowXLogo,
   IconOverview,
@@ -196,14 +198,6 @@ const NAV_GROUPS: NavGroup[] = [
     items: [{ name: "Support Hub", href: "/admin/support", icon: IconSupport }],
   },
   {
-    id: "ai",
-    title: "Intelligent Tools",
-    icon: IconAI,
-    items: [
-      { name: "Intelligent Workspace", href: "/admin/ai-platform", icon: IconAI },
-    ],
-  },
-  {
     id: "academy",
     title: "Learning & Commerce",
     icon: IconAcademy,
@@ -256,6 +250,7 @@ export function AdminNav({
   const isCrmAgent = role === "crm_agent";
   const allowedPaths = (session?.user as any)?.allowed_paths || [];
   const { theme, setTheme } = useTheme();
+  const { openSettings } = useSettingsModal();
 
   const [mounted, setMounted] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -443,6 +438,38 @@ export function AdminNav({
       pathname === item.href ||
       (item.href !== "/admin" && pathname.startsWith(`${item.href}/`));
     const Icon = item.icon;
+
+    if (item.href === "/admin/settings") {
+      return (
+        <button
+          key={`${item.href}-${item.name}`}
+          type="button"
+          title={isCollapsed && !isMobile ? item.name : ""}
+          onClick={() => {
+            closeDesktopFlyout(false);
+            if (isMobileOpen) onMobileToggle();
+            openSettings();
+          }}
+          className={cn(
+            "w-full flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer text-left",
+            "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-neutral-900/60",
+            isCollapsed && !isMobile && "lg:justify-center lg:px-0",
+            isFlyout && "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-neutral-800/80"
+          )}
+        >
+          <Icon
+            size={14}
+            className={cn(
+              "shrink-0 transition-colors text-slate-400 dark:text-neutral-500 group-hover:text-slate-700 dark:group-hover:text-neutral-300",
+              (!isCollapsed || isMobile) && "mr-2.5"
+            )}
+          />
+          {(!isCollapsed || isMobile) && (
+            <span className="truncate">{item.name}</span>
+          )}
+        </button>
+      );
+    }
 
     return (
       <Link
@@ -710,35 +737,17 @@ export function AdminNav({
               isCollapsed && !isMobile ? "left-2 w-56" : "left-2 right-2"
             )}
           >
-            {/* Theme Toggle Pill */}
-            <div className="p-1 bg-slate-100 dark:bg-neutral-950 rounded-xl flex items-center gap-0.5">
-              {(["light", "dark", "system"] as const).map((t) => {
-                const isActive = (theme || "system") === t;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => {
-                      setTheme(t);
-                      updateThemeClass(t);
-                    }}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 py-1 rounded-lg text-[10px] font-semibold capitalize transition-all cursor-pointer",
-                      isActive
-                        ? "bg-white text-slate-900 dark:bg-neutral-800 dark:text-white shadow-xs font-bold"
-                        : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white"
-                    )}
-                  >
-                    {t === "light" && <IconSun size={11} />}
-                    {t === "dark" && <IconMoon size={11} />}
-                    {t === "system" && <IconMonitor size={11} />}
-                    <span>{t}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="h-[1px] bg-slate-100 dark:bg-neutral-800 my-1" />
+            {/* Settings Modal Button */}
+            <button
+              onClick={() => {
+                setShowProfileMenu(false);
+                openSettings();
+              }}
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[var(--primary)] hover:bg-slate-50 dark:hover:bg-neutral-800/80 transition-all text-left text-[11.5px] font-medium cursor-pointer"
+            >
+              <IconSettings size={13} className="text-slate-400 dark:text-neutral-500" />
+              <span>Settings</span>
+            </button>
 
             {/* Change Password Button */}
             <button

@@ -5,16 +5,16 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "@/components/icons";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring,#0075de)] disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer",
   {
     variants: {
       variant: {
-        default: "bg-[#0075de] text-white hover:bg-[#005bab] active:bg-[#004a8f] shadow-sm",
+        default: "bg-[var(--primary,#0075de)] text-[var(--primary-foreground,#ffffff)] hover:bg-[var(--primary-hover,#005bab)] active:opacity-90 shadow-sm",
         destructive: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
         outline: "border border-[var(--border-subtle)] bg-[var(--card)] text-[var(--text-primary)] hover:bg-[var(--surface-2)] shadow-sm",
         secondary: "bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--surface-1)] border border-[var(--border-subtle)]",
         ghost: "text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]",
-        link: "text-[#0075de] underline-offset-4 hover:underline",
+        link: "text-[var(--primary,#0075de)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",

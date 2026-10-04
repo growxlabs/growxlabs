@@ -11,7 +11,7 @@ export interface Lead {
   google_rating?: number;
   reviews_count?: number;
   lead_score: number;
-  status: 'new' | 'qualified' | 'outreach' | 'enriching' | 'enriched' | 'contacted' | 'following_up' | 'warm' | 'cold' | 'client' | 'closed';
+  status: 'new' | 'qualified' | 'outreach' | 'enriching' | 'enriched' | 'contacted' | 'following_up' | 'warm' | 'cold' | 'client' | 'closed' | 'engaged' | 'disqualified';
   outreach_channel?: 'email' | 'whatsapp' | 'linkedin';
   follow_up_date?: string;
   notes?: string;

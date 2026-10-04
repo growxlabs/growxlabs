@@ -2,6 +2,7 @@ import React from "react";
 import { GlobalBackground } from "@/components/layout/GlobalBackground";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { AccentColorProvider } from "@/components/providers/AccentColorProvider";
 import { ConditionalLayout } from "@/components/layout/ConditionalLayout";
 import { CookieConsent } from "@/components/layout/CookieConsent";
 
@@ -198,6 +199,18 @@ export default async function RootLayout({
             </Script>
           </>
         )}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var accent = localStorage.getItem('growx-accent-color') || 'blue';
+                  document.documentElement.setAttribute('data-accent', accent);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
 
       <body
@@ -213,19 +226,21 @@ export default async function RootLayout({
                 enableSystem={true}
                 disableTransitionOnChange
               >
-                <GlobalBackground />
+                <AccentColorProvider>
+                  <GlobalBackground />
 
-                <ConditionalLayout>
-                  {children}
-                </ConditionalLayout>
+                  <ConditionalLayout>
+                    {children}
+                  </ConditionalLayout>
 
-                <CookieConsent />
+                  <CookieConsent />
 
-                <Toaster
-                  position="top-right"
-                  expand={false}
-                  richColors
-                />
+                  <Toaster
+                    position="top-right"
+                    expand={false}
+                    richColors
+                  />
+                </AccentColorProvider>
               </ThemeProvider>
             </QueryProvider>
           </AuthProvider>

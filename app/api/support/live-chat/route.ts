@@ -39,13 +39,19 @@ export async function GET() {
       `)
       .order("created_at", { ascending: false });
 
-    if (!sessions || sessions.length === 0) {
-      return NextResponse.json({ chatSessions: MOCK_CHAT_SESSIONS });
-    }
+    const sessionList = (!sessions || sessions.length === 0) ? MOCK_CHAT_SESSIONS : sessions;
+    const allMessages = sessionList.flatMap((s: any) => s.messages || []);
 
-    return NextResponse.json({ chatSessions: sessions });
+    return NextResponse.json({
+      chatSessions: sessionList,
+      messages: allMessages
+    });
   } catch (error) {
-    return NextResponse.json({ chatSessions: MOCK_CHAT_SESSIONS });
+    const allMessages = MOCK_CHAT_SESSIONS.flatMap((s: any) => s.messages || []);
+    return NextResponse.json({
+      chatSessions: MOCK_CHAT_SESSIONS,
+      messages: allMessages
+    });
   }
 }
 

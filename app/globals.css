@@ -434,6 +434,185 @@ html.dark .notion-theme,
   --inspector-border-strong: rgba(255, 255, 255, 0.11);
 }
 
+/* ═══════════════════════════════════════════════════════════════ */
+/* CHATGPT ACCENT COLOR PRESETS (Admin & Notion Workspace)         */
+/* ═══════════════════════════════════════════════════════════════ */
+
+/* Default Blue */
+[data-accent="blue"],
+[data-accent="default"],
+:root:not([data-accent]) {
+  --primary: #0075de;
+  --primary-hover: #005bab;
+  --primary-foreground: #ffffff;
+  --accent: #0075de;
+  --accent-soft: rgba(0, 117, 222, 0.12);
+  --accent-border: rgba(0, 117, 222, 0.25);
+  --ring: #0075de;
+  --border-hover: #0075de;
+  --brand: #1687f8;
+}
+
+/* Green (ChatGPT Emerald) */
+[data-accent="green"],
+[data-accent="green"] .notion-theme,
+.notion-theme[data-accent="green"] {
+  --primary: #10b981 !important;
+  --primary-hover: #059669 !important;
+  --primary-foreground: #ffffff !important;
+  --accent: #10b981 !important;
+  --accent-soft: rgba(16, 185, 129, 0.14) !important;
+  --accent-border: rgba(16, 185, 129, 0.28) !important;
+  --ring: #10b981 !important;
+  --border-hover: #10b981 !important;
+  --brand: #10b981 !important;
+}
+
+/* Yellow (Warm Amber) */
+[data-accent="yellow"],
+[data-accent="yellow"] .notion-theme,
+.notion-theme[data-accent="yellow"] {
+  --primary: #f59e0b !important;
+  --primary-hover: #d97706 !important;
+  --primary-foreground: #000000 !important;
+  --accent: #f59e0b !important;
+  --accent-soft: rgba(245, 158, 11, 0.16) !important;
+  --accent-border: rgba(245, 158, 11, 0.3) !important;
+  --ring: #f59e0b !important;
+  --border-hover: #f59e0b !important;
+  --brand: #f59e0b !important;
+}
+
+/* Pink (Rose) */
+[data-accent="pink"],
+[data-accent="pink"] .notion-theme,
+.notion-theme[data-accent="pink"] {
+  --primary: #ec4899 !important;
+  --primary-hover: #db2777 !important;
+  --primary-foreground: #ffffff !important;
+  --accent: #ec4899 !important;
+  --accent-soft: rgba(236, 72, 153, 0.14) !important;
+  --accent-border: rgba(236, 72, 153, 0.28) !important;
+  --ring: #ec4899 !important;
+  --border-hover: #ec4899 !important;
+  --brand: #ec4899 !important;
+}
+
+/* Orange (Tangerine) */
+[data-accent="orange"],
+[data-accent="orange"] .notion-theme,
+.notion-theme[data-accent="orange"] {
+  --primary: #f97316 !important;
+  --primary-hover: #ea580c !important;
+  --primary-foreground: #ffffff !important;
+  --accent: #f97316 !important;
+  --accent-soft: rgba(249, 115, 22, 0.14) !important;
+  --accent-border: rgba(249, 115, 22, 0.28) !important;
+  --ring: #f97316 !important;
+  --border-hover: #f97316 !important;
+  --brand: #f97316 !important;
+}
+
+/* Purple (Electric Violet) */
+[data-accent="purple"],
+[data-accent="purple"] .notion-theme,
+.notion-theme[data-accent="purple"] {
+  --primary: #8b5cf6 !important;
+  --primary-hover: #7c3aed !important;
+  --primary-foreground: #ffffff !important;
+  --accent: #8b5cf6 !important;
+  --accent-soft: rgba(139, 92, 246, 0.14) !important;
+  --accent-border: rgba(139, 92, 246, 0.28) !important;
+  --ring: #8b5cf6 !important;
+  --border-hover: #8b5cf6 !important;
+  --brand: #8b5cf6 !important;
+}
+
+/* White / Monochrome (Light Mode: Black, Dark Mode: White) */
+[data-accent="white"],
+[data-accent="white"] .notion-theme,
+.notion-theme[data-accent="white"] {
+  --primary: #18181b !important;
+  --primary-hover: #27272a !important;
+  --primary-foreground: #ffffff !important;
+  --accent: #18181b !important;
+  --accent-soft: rgba(0, 0, 0, 0.08) !important;
+  --accent-border: rgba(0, 0, 0, 0.2) !important;
+  --ring: #18181b !important;
+  --border-hover: #18181b !important;
+  --brand: #18181b !important;
+}
+
+html.dark[data-accent="white"],
+html.dark[data-accent="white"] .notion-theme,
+.dark[data-accent="white"],
+.dark[data-accent="white"] .notion-theme,
+html.dark .notion-theme[data-accent="white"],
+.dark .notion-theme[data-accent="white"] {
+  --primary: #ffffff !important;
+  --primary-hover: #e4e4e7 !important;
+  --primary-foreground: #000000 !important;
+  --accent: #ffffff !important;
+  --accent-soft: rgba(255, 255, 255, 0.15) !important;
+  --accent-border: rgba(255, 255, 255, 0.3) !important;
+  --ring: #ffffff !important;
+  --border-hover: #ffffff !important;
+  --brand: #ffffff !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* HARDCODED CLASS OVERRIDES FOR NON-DEFAULT ACCENTS               */
+/* ═══════════════════════════════════════════════════════════════ */
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .bg-\[\#0075de\],
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) button.bg-\[\#0075de\],
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) a.bg-\[\#0075de\] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:bg-\[\#005bab\]:hover,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:bg-\[\#0075de\]\/90:hover,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:bg-blue-600:hover,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:bg-blue-700:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .text-\[\#0075de\],
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) span.text-\[\#0075de\],
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .dark\:text-blue-400 {
+  color: var(--primary) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:text-\[\#0075de\]:hover,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .dark\:hover\:text-blue-400:hover {
+  color: var(--primary-hover) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .border-\[\#0075de\],
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:border-\[\#0075de\]\/30:hover,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .hover\:border-\[\#0075de\]\/40:hover {
+  border-color: var(--primary) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .bg-\[\#0075de\]\/10,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .bg-\[\#0075de\]\/15,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .bg-\[\#0075de\]\/5,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .dark\:bg-blue-500\/15,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .dark\:bg-blue-500\/20 {
+  background-color: var(--accent-soft) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .border-\[\#0075de\]\/10,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .border-\[\#0075de\]\/20,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .border-\[\#0075de\]\/30 {
+  border-color: var(--accent-border) !important;
+}
+
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .focus\:border-\[\#0075de\]:focus,
+[data-accent]:not([data-accent="blue"]):not([data-accent="default"]) .focus\:border-\[\#0075de\]\/40:focus {
+  border-color: var(--primary) !important;
+}
+
 /* Notion Specific Layout Overrides */
 .notion-theme {
   color: var(--text-primary) !important;

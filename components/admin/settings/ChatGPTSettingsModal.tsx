@@ -1,75 +1,58 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useAccentColor, type AccentColor } from "@/components/providers/AccentColorProvider";
 import { Button } from "@/components/ui/Button";
 import {
   Settings, ShieldCheck, Users, Lock, KeyRound, Database,
-  Search, Check, ChevronDown, Sparkles, Activity, FileText,
-  Shield, Globe, RefreshCw
+  Search, X, Check, ChevronDown, Sparkles,
+  Activity, Bell, Globe, ArrowRight, ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
-export default function SettingsAdminPage() {
+interface ChatGPTSettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  defaultTab?: string;
+}
+
+export function ChatGPTSettingsModal({
+  isOpen,
+  onClose,
+  defaultTab = "general",
+}: ChatGPTSettingsModalProps) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { accentColor, setAccentColor, accentOptions } = useAccentColor();
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(defaultTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [compactNav, setCompactNav] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   // Dropdown states
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isAccentOpen, setIsAccentOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
 
-  // Platform Data
-  const [users, setUsers] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
-  const [securityEvents, setSecurityEvents] = useState<any[]>([]);
-
   const themeRef = useRef<HTMLDivElement>(null);
   const accentRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const currentTheme = resolvedTheme || theme || "dark";
   const selectedAccent =
     accentOptions.find((opt) => opt.id === accentColor) || accentOptions[0];
 
+  // Close on Escape or click outside
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [uRes, mRes, sRes] = await Promise.all([
-        fetch("/api/admin-setup/users").catch(() => null),
-        fetch("/api/admin-setup/dashboard").catch(() => null),
-        fetch("/api/admin-setup/security").catch(() => null),
-      ]);
-      if (uRes?.ok) {
-        const d = await uRes.json();
-        setUsers(d.users || []);
-      }
-      if (mRes?.ok) {
-        const d = await mRes.json();
-        setMetrics(d);
-      }
-      if (sRes?.ok) {
-        const d = await sRes.json();
-        setSecurityEvents(d.securityEvents || []);
-      }
-    } catch (e) {
-      // Non-blocking
-    } finally {
-      setLoading(false);
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
     }
-  };
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
@@ -86,6 +69,8 @@ export default function SettingsAdminPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (!isOpen) return null;
+
   const getSwatchColor = (opt: (typeof accentOptions)[0]) => {
     if (opt.id === "white") {
       return currentTheme === "dark" ? "#ffffff" : "#18181b";
@@ -95,11 +80,10 @@ export default function SettingsAdminPage() {
 
   const TABS = [
     { id: "general", label: "General", icon: Settings },
-    { id: "security", label: "Security & Access", icon: ShieldCheck },
-    { id: "users", label: "Team & Directory", icon: Users },
+    { id: "security", label: "Security & Login", icon: ShieldCheck },
+    { id: "users", label: "Team & Access", icon: Users },
     { id: "integrations", label: "API & Integrations", icon: KeyRound },
     { id: "storage", label: "Data & Storage", icon: Database },
-    { id: "telemetry", label: "System Telemetry", icon: Activity },
   ];
 
   const filteredTabs = TABS.filter((t) =>
@@ -107,24 +91,30 @@ export default function SettingsAdminPage() {
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-2 sm:py-6 px-2 sm:px-4">
-      {/* ═══ CHATGPT-STYLE SETTINGS MODAL CONTAINER ═══ */}
-      <div className="w-full min-h-[560px] bg-[#171717] border border-[#2e2e33] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden text-zinc-100">
-        
-        {/* ─── LEFT SIDEBAR ─── */}
-        <div className="w-full md:w-60 bg-[#121212] border-b md:border-b-0 md:border-r border-[#262626] p-3.5 flex flex-col shrink-0">
-          {/* Header */}
+    <div className="fixed inset-0 z-[300] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+      <div
+        ref={modalRef}
+        className="w-full max-w-3xl h-[580px] bg-[#171717] border border-[#2e2e33] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden text-zinc-100 relative"
+      >
+        {/* ═══ LEFT SIDEBAR (ChatGPT Style) ═══ */}
+        <div className="w-full md:w-60 bg-[#121212] border-b md:border-b-0 md:border-r border-[#262626] p-3 flex flex-col shrink-0">
+          {/* Top Bar with Close Button */}
           <div className="flex items-center justify-between mb-3 px-1">
-            <span className="text-xs font-bold text-white tracking-tight">
-              Settings
-            </span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase">
-              Admin OS
+            <button
+              onClick={onClose}
+              type="button"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-[#212121] transition-all cursor-pointer"
+              title="Close Settings (Esc)"
+            >
+              <X size={16} />
+            </button>
+            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+              GrowX Settings
             </span>
           </div>
 
-          {/* Search Box */}
-          <div className="relative mb-3">
+          {/* Search Input */}
+          <div className="relative mb-2">
             <Search
               size={13}
               className="absolute left-3 top-2.5 text-zinc-500 pointer-events-none"
@@ -138,8 +128,8 @@ export default function SettingsAdminPage() {
             />
           </div>
 
-          {/* Navigation Category List */}
-          <nav className="space-y-0.5 flex-1 overflow-y-auto custom-scrollbar">
+          {/* Nav Tab Items */}
+          <nav className="space-y-0.5 flex-1 overflow-y-auto custom-scrollbar pt-1">
             {filteredTabs.map((tab) => {
               const isActive = activeTab === tab.id;
               const Icon = tab.icon;
@@ -148,7 +138,7 @@ export default function SettingsAdminPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
+                    "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer",
                     isActive
                       ? "bg-[#212121] text-white font-semibold"
                       : "text-zinc-400 hover:text-zinc-200 hover:bg-[#1a1a1a]"
@@ -161,44 +151,36 @@ export default function SettingsAdminPage() {
             })}
           </nav>
 
-          {/* Bottom Refresh */}
-          <div className="pt-2 mt-auto border-t border-[#262626] flex items-center justify-between px-1">
+          {/* Footer Clearance */}
+          <div className="pt-2 mt-auto border-t border-[#262626] px-1">
             <span className="text-[10px] text-zinc-500 font-medium">
-              v2.4 Enterprise
+              Enterprise OS v2.4 • Admin Clear
             </span>
-            <button
-              onClick={() => {
-                fetchData();
-                toast.success("Synchronized platform status.");
-              }}
-              className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-[#212121] transition-all cursor-pointer"
-              title="Refresh Settings"
-            >
-              <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            </button>
           </div>
         </div>
 
-        {/* ─── RIGHT CONTENT AREA (ChatGPT 1-Line Rows) ─── */}
+        {/* ═══ RIGHT CONTENT AREA (ChatGPT Style 1-Line Rows) ═══ */}
         <div className="flex-1 flex flex-col bg-[#171717] overflow-hidden">
-          {/* Header */}
+          {/* Content Header */}
           <div className="px-6 pt-5 pb-3 border-b border-[#262626] flex items-center justify-between shrink-0">
             <h2 className="text-base font-bold text-white capitalize">
               {TABS.find((t) => t.id === activeTab)?.label || "Settings"}
             </h2>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-medium text-zinc-400">Online</span>
-            </div>
+            <button
+              onClick={onClose}
+              type="button"
+              className="md:hidden p-1 text-zinc-400 hover:text-white"
+            >
+              <X size={16} />
+            </button>
           </div>
 
           {/* Tab Body */}
-          <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-4">
-            
-            {/* ═══ 1. GENERAL TAB (EXACT CHATGPT MATCH) ═══ */}
+          <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5">
+            {/* 1. GENERAL TAB (EXACT CHATGPT MATCH) */}
             {activeTab === "general" && (
               <div className="space-y-4">
-                {/* MFA Security Banner (Matching ChatGPT) */}
+                {/* Optional MFA Banner (like ChatGPT) */}
                 <div className="p-4 rounded-xl bg-[#212121] border border-[#2a2a2a] flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-[#2a2a2a] text-zinc-200 shrink-0">
@@ -207,12 +189,11 @@ export default function SettingsAdminPage() {
                     <div>
                       <h4 className="text-xs font-bold text-white">Secure your account</h4>
                       <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">
-                        Add multi-factor authentication (MFA) to help protect your administrative workspace.
+                        Add multi-factor authentication (MFA) to help protect your administrative credentials.
                       </p>
                     </div>
                   </div>
                   <Button
-                    onClick={() => setActiveTab("security")}
                     variant="outline"
                     className="h-7 text-[11px] px-3 font-semibold border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 rounded-lg shrink-0"
                   >
@@ -263,7 +244,7 @@ export default function SettingsAdminPage() {
                     </div>
                   </div>
 
-                  {/* Row 2: Accent color (EXACT CHATGPT MATCH) */}
+                  {/* Row 2: Accent Color (EXACT CHATGPT MATCH) */}
                   <div className="py-3 flex items-center justify-between">
                     <span className="text-xs font-medium text-zinc-200">
                       Accent color
@@ -356,7 +337,7 @@ export default function SettingsAdminPage() {
                     </div>
                   </div>
 
-                  {/* Row 4: Compact Navigation */}
+                  {/* Row 4: Compact Mode Toggle */}
                   <div className="py-3 flex items-center justify-between">
                     <div>
                       <div className="text-xs font-medium text-zinc-200">
@@ -409,79 +390,77 @@ export default function SettingsAdminPage() {
               </div>
             )}
 
-            {/* ═══ 2. SECURITY & ACCESS TAB ═══ */}
+            {/* 2. SECURITY TAB */}
             {activeTab === "security" && (
-              <div className="space-y-4">
-                <div className="divide-y divide-[#262626] border-t border-b border-[#262626]">
-                  <div className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-medium text-white">Two-Factor Authentication</div>
-                      <p className="text-[11px] text-zinc-500">Require an authenticator app when logging in.</p>
-                    </div>
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-                      Enabled
-                    </span>
+              <div className="space-y-3 divide-y divide-[#262626]">
+                <div className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-medium text-white">Two-Factor Authentication</div>
+                    <p className="text-[11px] text-zinc-500">Enforced for all admin sessions.</p>
                   </div>
-                  <div className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-medium text-white">Database Row-Level Security (RLS)</div>
-                      <p className="text-[11px] text-zinc-500">PostgreSQL tenant policies enforced.</p>
-                    </div>
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-                      Protected
-                    </span>
+                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                    Enabled
+                  </span>
+                </div>
+                <div className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-medium text-white">Database Row-Level Security</div>
+                    <p className="text-[11px] text-zinc-500">PostgreSQL policies verified.</p>
                   </div>
-                  <div className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-medium text-white">Current Session</div>
-                      <p className="text-[11px] text-zinc-500">Windows • Chrome • Active Now</p>
-                    </div>
-                    <span className="text-xs font-medium text-zinc-400">
-                      Online
-                    </span>
+                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                    Protected
+                  </span>
+                </div>
+                <div className="py-2.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-medium text-white">Active Session</div>
+                    <p className="text-[11px] text-zinc-500">Windows • Chrome • Current session</p>
                   </div>
+                  <span className="text-xs font-medium text-zinc-400">
+                    Online now
+                  </span>
                 </div>
               </div>
             )}
 
-            {/* ═══ 3. TEAM & DIRECTORY TAB ═══ */}
+            {/* 3. TEAM TAB */}
             {activeTab === "users" && (
               <div className="space-y-2">
                 <p className="text-xs text-zinc-400 mb-2">
-                  Administrative team members with platform clearance.
+                  Administrative team members with access to GrowXLabs.
                 </p>
-                {(users.length > 0 ? users : [
-                  { full_name: "GrowX Admin", email: "admin@growxlabs.tech", role: "Super Admin" },
-                  { full_name: "Varshith", email: "varshith@growxlabs.tech", role: "Founder / Executive" },
-                  { full_name: "Engineering Agent", email: "agent@growxlabs.tech", role: "Co-Admin" },
-                ]).slice(0, 6).map((u, i) => (
+                {[
+                  { name: "GrowX Admin", email: "admin@growxlabs.tech", role: "Super Admin" },
+                  { name: "Varshith", email: "varshith@growxlabs.tech", role: "Founder / Executive" },
+                  { name: "Engineering Agent", email: "agent@growxlabs.tech", role: "Co-Admin" },
+                ].map((u, i) => (
                   <div
                     key={i}
                     className="p-2.5 rounded-xl bg-[#212121] border border-[#2a2a2a] flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center text-[10px] font-bold">
-                        {(u.full_name || u.name || "GX").substring(0, 2).toUpperCase()}
+                        {u.name.substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-white">{u.full_name || u.name}</div>
+                        <div className="text-xs font-bold text-white">{u.name}</div>
                         <div className="text-[10px] text-zinc-400">{u.email}</div>
                       </div>
                     </div>
                     <span className="text-[10px] font-semibold text-zinc-300 bg-[#2b2b2b] px-2 py-0.5 rounded-md">
-                      {u.role || "Admin"}
+                      {u.role}
                     </span>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* ═══ 4. API & INTEGRATIONS TAB ═══ */}
+            {/* 4. INTEGRATIONS TAB */}
             {activeTab === "integrations" && (
               <div className="space-y-2">
                 {[
                   { name: "Supabase PostgreSQL", desc: "Primary relational store", status: "Connected" },
-                  { name: "Google Gemini 1.5 API", desc: "AI model gateway", status: "Active" },
+                  { name: "Google Gemini 1.5 API", desc: "Model gateway & intelligence", status: "Active" },
                   { name: "NextAuth Authentication", desc: "JWT session encryption", status: "Enforced" },
                 ].map((item, i) => (
                   <div
@@ -500,13 +479,13 @@ export default function SettingsAdminPage() {
               </div>
             )}
 
-            {/* ═══ 5. DATA & STORAGE TAB ═══ */}
+            {/* 5. STORAGE TAB */}
             {activeTab === "storage" && (
               <div className="space-y-3">
                 <div className="p-3 rounded-xl bg-[#212121] border border-[#2a2a2a] flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">Browser Preferences &amp; Cache</div>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">Theme and accent selection stored locally.</p>
+                    <div className="text-xs font-bold text-white">Local Cache &amp; Preferences</div>
+                    <p className="text-[11px] text-zinc-400 mt-0.5">Stored in browser localStorage</p>
                   </div>
                   <Button
                     onClick={() => {
@@ -516,58 +495,11 @@ export default function SettingsAdminPage() {
                     variant="outline"
                     className="h-7 text-[11px] px-2.5 border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white"
                   >
-                    Reset Preferences
+                    Reset Cache
                   </Button>
                 </div>
               </div>
             )}
-
-            {/* ═══ 6. SYSTEM TELEMETRY TAB ═══ */}
-            {activeTab === "telemetry" && (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                  <div className="p-3 rounded-xl bg-[#212121] border border-[#2a2a2a] text-center">
-                    <p className="text-[10px] font-bold uppercase text-zinc-500">Users</p>
-                    <p className="text-lg font-black text-white mt-0.5">{metrics?.totalUsers ?? users.length}</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-[#212121] border border-[#2a2a2a] text-center">
-                    <p className="text-[10px] font-bold uppercase text-zinc-500">Security</p>
-                    <p className="text-lg font-black text-emerald-400 mt-0.5">Protected</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-[#212121] border border-[#2a2a2a] text-center">
-                    <p className="text-[10px] font-bold uppercase text-zinc-500">Health</p>
-                    <p className="text-lg font-black text-white mt-0.5">99.98%</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-[#212121] border border-[#2a2a2a] text-center">
-                    <p className="text-[10px] font-bold uppercase text-zinc-500">Audit Logs</p>
-                    <p className="text-lg font-black text-white mt-0.5">{securityEvents.length || 18}</p>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-[#212121] border border-[#2a2a2a] space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                    Live Infrastructure Matrix
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {[
-                      { name: "PostgreSQL Database", latency: "18ms" },
-                      { name: "Auth & RBAC Service", latency: "12ms" },
-                      { name: "Gemini 1.5 AI Gateway", latency: "45ms" },
-                      { name: "Cloud Asset Storage", latency: "22ms" },
-                    ].map((s, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-[#1a1a1a] text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          <span className="text-zinc-300 font-medium">{s.name}</span>
-                        </div>
-                        <span className="font-mono text-[10px] text-zinc-500">{s.latency}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
           </div>
         </div>
       </div>
