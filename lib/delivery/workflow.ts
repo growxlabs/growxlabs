@@ -13,10 +13,14 @@ export function deliveryError(error: unknown) { return Response.json({ error: er
 async function activity(projectId: string, entityType: string, entityId: string | null, actorId: string, eventType: string, metadata: Record<string, unknown> = {}) { const { error } = await supabaseAdmin.from("project_delivery_activity").insert({ project_id: projectId, entity_type: entityType, entity_id: entityId, actor_id: actorId, event_type: eventType, metadata }); if (error) throw new Error(error.message); }
 
 export async function activateWorkspace(projectId: string, userId: string) {
-  const { data: project } = await supabaseAdmin.from("consulting_projects").select("*").eq("id", projectId).maybeSingle();
+  const trimmed = projectId.trim();
+  const query = trimmed.toUpperCase().startsWith("GXL-PRJ")
+    ? supabaseAdmin.from("consulting_projects").select("*").eq("project_number", trimmed).maybeSingle()
+    : supabaseAdmin.from("consulting_projects").select("*").eq("id", trimmed).maybeSingle();
+  const { data: project } = await query;
   if (!project) throw new ConsultingHttpError(404, "Project not found.");
   if (project.status !== "active") throw new ConsultingHttpError(409, "Project must be active after verified payment and kickoff.");
-  const { data: existing } = await supabaseAdmin.from("project_workspaces").select("*").eq("project_id", projectId).maybeSingle(); if (existing) return existing;
+  const { data: existing } = await supabaseAdmin.from("project_workspaces").select("*").eq("project_id", project.id).maybeSingle(); if (existing) return existing;
   const { data: workspace, error } = await supabaseAdmin.from("project_workspaces").insert({ project_id: project.id, client_id: project.client_id, company_id: project.company_id, scope_id: project.scope_id, agreement_id: project.agreement_id, status: "planning", created_by: userId, summary: { projectNumber: project.project_number } }).select("*").single(); if (error) throw new Error(error.message);
   await activity(workspace.id, "workspace", workspace.id, userId, "workspace_activated", { projectNumber: project.project_number }); return workspace;
 }
