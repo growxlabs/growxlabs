@@ -61,7 +61,7 @@ export function ProjectWorkspaceList() {
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (projectId.trim()) activate.mutate();
+    if (projectId.trim()) activate.mutate(projectId.trim());
   };
 
   const availableProjects = query.data?.availableProjects || [];
