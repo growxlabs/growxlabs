@@ -358,7 +358,11 @@ function signatureFromRow(row: JsonRecord): ContractorSignature {
 }
 
 async function getAgreement(id: string): Promise<JsonRecord> {
-  const result = await supabaseAdmin.from("contractor_agreements").select("*").eq("id", id).maybeSingle();
+  const trimmed = id.trim();
+  const query = trimmed.toUpperCase().startsWith("GXL-ICA")
+    ? supabaseAdmin.from("contractor_agreements").select("*").eq("agreement_number", trimmed).maybeSingle()
+    : supabaseAdmin.from("contractor_agreements").select("*").eq("id", trimmed).maybeSingle();
+  const result = await query;
   if (result.error) throw new Error(result.error.message);
   if (!result.data) return fail(404, "CONTRACTOR_AGREEMENT_NOT_FOUND", "Contractor agreement not found.");
   return result.data as JsonRecord;
@@ -427,9 +431,9 @@ export async function getAdminContractorAgreement(id: string) {
   const agreement = await getAgreement(id);
   const version = await currentVersion(agreement);
   const [payments, signatures, activityRows] = await Promise.all([
-    supabaseAdmin.from("contractor_agreement_payments").select("id,milestone_key,amount,status,payment_method,payment_reference,approved_at,paid_at,notes,created_at,updated_at").eq("agreement_id", id).order("milestone_key", { ascending: true }),
-    supabaseAdmin.from("contractor_agreement_signatures").select("id,party,full_legal_name,role_or_capacity,email,phone,address,pan_or_tax_id,signature,consent_to_electronic_execution,signed_at,audit_metadata,created_at").eq("agreement_id", id).order("signed_at", { ascending: true }),
-    supabaseAdmin.from("commercial_document_activity").select("id,event_type,actor_type,metadata,created_at,agreement_version_id").eq("document_type", "contractor_agreement").eq("document_id", id).order("created_at", { ascending: false }),
+    supabaseAdmin.from("contractor_agreement_payments").select("id,milestone_key,amount,status,payment_method,payment_reference,approved_at,paid_at,notes,created_at,updated_at").eq("agreement_id", agreement.id).order("milestone_key", { ascending: true }),
+    supabaseAdmin.from("contractor_agreement_signatures").select("id,party,full_legal_name,role_or_capacity,email,phone,address,pan_or_tax_id,signature,consent_to_electronic_execution,signed_at,audit_metadata,created_at").eq("agreement_id", agreement.id).order("signed_at", { ascending: true }),
+    supabaseAdmin.from("commercial_document_activity").select("id,event_type,actor_type,metadata,created_at,agreement_version_id").eq("document_type", "contractor_agreement").eq("document_id", agreement.id).order("created_at", { ascending: false }),
   ]);
   for (const result of [payments, signatures, activityRows]) if (result.error) throw new Error(result.error.message);
   return { agreement: { id: agreement.id, agreementNumber: agreement.agreement_number, status: agreement.status, version: agreement.version, agreementDate: agreement.agreement_date, effectiveDate: agreement.effective_date, contractorName: agreement.contractor_full_legal_name, contractorEmail: agreement.contractor_email, projectName: agreement.project_name, projectRole: CONTRACTOR_ROLE, totalFee: CONTRACTOR_TOTAL_FEE, paymentMethod: "UPI", pdfStatus: agreement.pdf_status, pdfGeneratedAt: agreement.pdf_generated_at, sentAt: agreement.sent_at, viewedAt: agreement.viewed_at, contractorSignedAt: agreement.contractor_signed_at, countersignedAt: agreement.countersigned_at, handoverConfirmedAt: agreement.handover_confirmed_at, completedAt: agreement.completed_at, terminatedAt: agreement.terminated_at }, snapshot: version.snapshot as ContractorAgreementSnapshot, version: { id: version.id, version: version.version, contentHash: version.content_hash }, payments: payments.data || [], signatures: signatures.data || [], activity: activityRows.data || [] };
