@@ -4,14 +4,16 @@ import { EnterprisePmService } from "@/services/enterprise-pm";
 
 export async function GET(request: Request) {
   try {
-    const { data: projects, error } = await supabaseAdmin
+    const { data: rawProjects, error } = await supabaseAdmin
       .from("projects")
-      .select("*, company:companies(name), project_manager:team_members(name)")
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
+    const projects = (rawProjects || []).map((p: any) => EnterprisePmService.formatProject(p));
     return NextResponse.json({ projects });
   } catch (error: any) {
+    console.error("GET /api/pm/projects error:", error);
     return NextResponse.json({ error: error.message || "Failed to fetch projects" }, { status: 500 });
   }
 }
@@ -24,6 +26,7 @@ export async function POST(request: Request) {
     const project = await EnterprisePmService.promoteDealToProject(deal_id);
     return NextResponse.json({ project }, { status: 201 });
   } catch (error: any) {
+    console.error("POST /api/pm/projects error:", error);
     return NextResponse.json({ error: error.message || "Failed to promote CRM deal to Project" }, { status: 400 });
   }
 }

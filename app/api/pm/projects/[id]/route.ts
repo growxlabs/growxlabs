@@ -7,9 +7,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const dashboard = await EnterprisePmService.getProjectDashboard(id);
-    return NextResponse.json(dashboard);
+    if (!id) {
+      return NextResponse.json({ error: "Missing project id" }, { status: 400 });
+    }
+
+    const data = await EnterprisePmService.getProjectDashboard(id);
+    return NextResponse.json(data);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch project dashboard" }, { status: 500 });
+    console.error("GET /api/pm/projects/[id] error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch project dashboard" },
+      { status: 500 }
+    );
   }
 }

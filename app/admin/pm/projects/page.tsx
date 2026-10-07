@@ -54,12 +54,14 @@ export default function ProjectsPage() {
       if (res.ok) {
         setShowPromoteModal(false);
         setSelectedDealId("");
-        fetchData();
+        await fetchData();
       } else {
-        alert("Failed to initialize project.");
+        const errorData = await res.json().catch(() => ({}));
+        alert(errorData.error || "Failed to initialize project.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert(err.message || "An unexpected error occurred while initializing project.");
     } finally {
       setSubmitting(false);
     }
@@ -100,7 +102,7 @@ export default function ProjectsPage() {
             <Card key={p.id} className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm hover:border-[#0075de]/30 hover:shadow-md transition-all">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
-                  <h3 className="text-xs font-bold text-neutral-900 leading-snug">{p.name}</h3>
+                  <h3 className="text-xs font-bold text-neutral-900 leading-snug">{p.name || p.title}</h3>
                   <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-450 mt-0.5 block">{p.company?.name || "Global Client"}</span>
                 </div>
                 <span className="text-[8px] font-bold uppercase tracking-wider bg-green-500/5 text-green-600 border border-green-200 px-2 py-0.5 rounded">
