@@ -63,49 +63,54 @@ export default async function AdminDashboard() {
   const primaryClient = clients?.[0] || { name: "Trionyx India Private Limited" };
   const primaryInvoice = invoices?.[0];
 
-  const executiveVitals = [
+  // Executive pipeline trajectory flow data
+  const pipelineFlow = [
     {
-      label: "Deal Pipeline",
+      stage: "1. Pipeline & Inbound",
       value: totalPipelineValue > 0 ? `₹${totalPipelineValue.toLocaleString("en-IN")}` : "₹4,50,000",
-      subtitle: `${activeDealsCount > 0 ? activeDealsCount : 4} active deals • ${totalLeads} leads`,
-      icon: TrendingUp,
-      status: "In Pipeline",
-      accent: "blue",
-      href: "/admin/crm"
+      status: `${activeDealsCount > 0 ? activeDealsCount : 4} Active Deals`,
+      meta: `${totalLeads} qualified leads database`,
+      href: "/admin/crm",
+      color: "from-blue-500/20 to-blue-600/5",
+      border: "border-blue-500/30",
+      text: "text-blue-500 dark:text-blue-400"
     },
     {
-      label: "Commercial Contracts",
+      stage: "2. Executed Contracts",
       value: activeProposal?.commercial_totals?.grand_total 
         ? `₹${Number(activeProposal.commercial_totals.grand_total).toLocaleString("en-IN")}`
         : "₹1,00,000",
-      subtitle: activeProposal?.proposal_number ? `${activeProposal.proposal_number} accepted` : "1 active agreement",
-      icon: FileText,
-      status: "Signed & Active",
-      accent: "green",
-      href: "/admin/proposals"
+      status: activeProposal?.proposal_number || "GXL-MSA-2026-000001",
+      meta: "13 Production Deliverables",
+      href: "/admin/proposals",
+      color: "from-emerald-500/20 to-emerald-600/5",
+      border: "border-emerald-500/30",
+      text: "text-emerald-500 dark:text-emerald-400"
     },
     {
-      label: "Invoicing & Billing",
+      stage: "3. Cashflow Realized",
       value: totalInvoiced > 0 ? `₹${totalInvoiced.toLocaleString("en-IN")}` : "₹50,000",
-      subtitle: primaryInvoice?.invoice_number ? `${primaryInvoice.invoice_number} approved` : "GXL-INV-2026-000001",
-      icon: Receipt,
-      status: primaryInvoice?.status === "approved" ? "Approved" : "Billed",
-      accent: "amber",
-      href: "/admin/invoices"
+      status: "50% Billed to Date",
+      meta: primaryInvoice?.invoice_number ? `${primaryInvoice.invoice_number} Approved` : "GXL-INV-2026-000001",
+      href: "/admin/invoices",
+      color: "from-amber-500/20 to-amber-600/5",
+      border: "border-amber-500/30",
+      text: "text-amber-500 dark:text-amber-400"
     },
     {
-      label: "Client Accounts & Team",
-      value: `${totalClients > 0 ? totalClients : 1} Client • ${teamCount || 5} Team`,
-      subtitle: primaryClient?.name || "Trionyx India Private Limited",
-      icon: Building2,
-      status: "Operational",
-      accent: "purple",
-      href: "/admin/clients"
+      stage: "4. Delivery & Operations",
+      value: `${teamCount || 5} Engineers`,
+      status: "1 Active Client",
+      meta: primaryClient?.name || "Trionyx India Private Limited",
+      href: "/admin/pm/projects",
+      color: "from-purple-500/20 to-purple-600/5",
+      border: "border-purple-500/30",
+      text: "text-purple-500 dark:text-purple-400"
     }
   ];
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 pb-12">
       {/* Header with Executive Context and Quick Actions */}
       <Reveal y={-10}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--border-subtle)] dark:border-neutral-800">
@@ -114,7 +119,7 @@ export default async function AdminDashboard() {
               Executive Overview
             </h1>
             <p className="text-sm text-[var(--text-secondary)] dark:text-neutral-400">
-              Real-time business performance, client engagements, and operations across GrowX Labs.
+              Real-time commercial velocity, client engagements, and operational pulse across GrowX Labs.
             </p>
           </div>
           
@@ -141,46 +146,47 @@ export default async function AdminDashboard() {
         </div>
       </Reveal>
 
-      {/* Top 4 Executive Vitals */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {executiveVitals.map((vital, i) => {
-          const accentStyle = {
-            blue: "text-[#0075de] dark:text-blue-400 bg-[#0075de]/10 border-[#0075de]/20",
-            green: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-            amber: "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
-            purple: "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
-          }[vital.accent]!;
+      {/* Connected Business Trajectory Ribbon (Replaces disconnected KPI cards) */}
+      <Reveal>
+        <div className="rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-5 sm:p-6 shadow-xs">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-[var(--border-subtle)] dark:border-neutral-800/80">
+            <div className="flex items-center gap-2">
+              <div className="p-1 rounded-md bg-[#0075de]/10 text-[#0075de] dark:text-blue-400">
+                <TrendingUp size={14} />
+              </div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
+                End-to-End Commercial & Operational Velocity
+              </h3>
+            </div>
+            <span className="text-[11px] font-mono font-medium text-[var(--text-tertiary)] dark:text-neutral-400">
+              Q4 FY2026 Live Pipeline
+            </span>
+          </div>
 
-          return (
-            <Reveal key={i} delay={i * 0.04}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {pipelineFlow.map((step, idx) => (
               <Link
-                href={vital.href}
-                className="group block p-5 rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 hover:border-[#0075de]/40 dark:hover:border-neutral-700 transition-all shadow-xs hover:shadow-sm"
+                key={idx}
+                href={step.href}
+                className="group relative p-4 rounded-xl bg-slate-50/70 dark:bg-neutral-800/40 border border-slate-200/80 dark:border-neutral-800 hover:border-[#0075de]/40 dark:hover:border-neutral-700 transition-all"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={cn("p-2 rounded-lg border", accentStyle)}>
-                    <vital.icon size={18} />
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-neutral-800 text-[var(--text-secondary)] dark:text-neutral-400 border border-slate-200 dark:border-neutral-700">
-                    {vital.status}
+                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider mb-2">
+                  <span className="text-[var(--text-muted)] dark:text-neutral-400">{step.stage}</span>
+                  <span className={cn("text-[10px] px-2 py-0.5 rounded-full bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 font-semibold", step.text)}>
+                    {step.status}
                   </span>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400 mb-1">
-                    {vital.label}
-                  </p>
-                  <h3 className="text-2xl font-bold text-[var(--text-primary)] dark:text-white tracking-tight mb-1">
-                    {vital.value}
-                  </h3>
-                  <p className="text-xs text-[var(--text-tertiary)] dark:text-neutral-400 truncate">
-                    {vital.subtitle}
-                  </p>
-                </div>
+                <h4 className="text-2xl font-bold text-[var(--text-primary)] dark:text-white tracking-tight mb-1 group-hover:text-[#0075de] transition-colors">
+                  {step.value}
+                </h4>
+                <p className="text-xs text-[var(--text-tertiary)] dark:text-neutral-400 truncate">
+                  {step.meta}
+                </p>
               </Link>
-            </Reveal>
-          );
-        })}
-      </div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
 
       {/* Main Content Grid: Active Client Focus (Left) & Real-time Operations (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -188,21 +194,24 @@ export default async function AdminDashboard() {
         {/* Left 2 Columns: Commercial Account & Pipeline Execution */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Active Enterprise Account Highlight */}
+          {/* Active Enterprise Account Dossier */}
           <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-6 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-[var(--border-subtle)] dark:border-neutral-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-base shadow-sm">
+            <div className="rounded-2xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-6 sm:p-7 shadow-xs space-y-6">
+              
+              {/* Client Profile Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--border-subtle)] dark:border-neutral-800">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white flex items-center justify-center font-bold text-lg shadow-sm">
                     T
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-[var(--text-primary)] dark:text-white">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <h3 className="text-lg font-bold text-[var(--text-primary)] dark:text-white tracking-tight">
                         Trionyx India Private Limited
                       </h3>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider">
-                        <CheckCircle size={10} /> Active Client
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        Active Client
                       </span>
                     </div>
                     <p className="text-xs text-[var(--text-secondary)] dark:text-neutral-400">
@@ -211,168 +220,108 @@ export default async function AdminDashboard() {
                   </div>
                 </div>
 
-                <Link
-                  href="/admin/clients"
-                  className="self-start sm:self-auto text-xs font-semibold text-[#0075de] dark:text-blue-400 hover:underline inline-flex items-center gap-1"
-                >
-                  <span>View Account Details</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              </div>
-
-              {/* Engagement Deliverable Milestones - Dark/Light mode unified */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                    Agreement Execution
-                  </p>
-                  <p className="text-sm font-semibold text-[var(--text-primary)] dark:text-white">
-                    GXL-MSA-2026-000001
-                  </p>
-                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                    Fully signed & binding
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                    Approved Scope
-                  </p>
-                  <p className="text-sm font-semibold text-[var(--text-primary)] dark:text-white">
-                    ₹1,00,000 Engagement
-                  </p>
-                  <p className="text-[11px] text-[var(--text-secondary)] dark:text-neutral-300 font-medium">
-                    13 Production Deliverables
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                    Advance Invoice
-                  </p>
-                  <p className="text-sm font-semibold text-[var(--text-primary)] dark:text-white">
-                    GXL-INV-2026-000001
-                  </p>
-                  <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
-                    ₹50,000 Milestone Approved
-                  </p>
+                <div className="flex items-center gap-2.5">
+                  <Link
+                    href="/admin/pm/projects"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#0075de] hover:bg-[#0075de]/90 text-white transition-colors"
+                  >
+                    <span>Delivery Board</span>
+                    <ArrowUpRight size={13} />
+                  </Link>
+                  <Link
+                    href="/admin/clients"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] dark:border-neutral-800 text-[var(--text-primary)] dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
+                  >
+                    <span>Account Details</span>
+                  </Link>
                 </div>
               </div>
 
-              {/* Delivery Scope Items Preview */}
-              <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] dark:border-neutral-800">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400 mb-3">
-                  Scope Focus Areas Under Delivery
-                </p>
-                <div className="flex flex-wrap gap-2">
+              {/* Engagement Trajectory Dual Track */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Track A: Scope & Milestones */}
+                <div className="p-5 rounded-xl bg-slate-50/80 dark:bg-neutral-800/40 border border-slate-200/80 dark:border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="text-[var(--text-muted)] dark:text-neutral-400 uppercase tracking-wider text-[10px]">
+                      Delivery Milestones
+                    </span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                      65% Completed
+                    </span>
+                  </div>
+                  <div>
+                    <h5 className="text-base font-bold text-[var(--text-primary)] dark:text-white">
+                      ₹1,00,000 Commercial Scope
+                    </h5>
+                    <p className="text-xs text-[var(--text-secondary)] dark:text-neutral-400 mt-0.5">
+                      13 Production Deliverables • Milestone 1 in Review
+                    </p>
+                  </div>
+                  <div className="w-full h-2 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#0075de] rounded-full w-[65%]" />
+                  </div>
+                </div>
+
+                {/* Track B: Billing Realization */}
+                <div className="p-5 rounded-xl bg-slate-50/80 dark:bg-neutral-800/40 border border-slate-200/80 dark:border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="text-[var(--text-muted)] dark:text-neutral-400 uppercase tracking-wider text-[10px]">
+                      Financial Realization
+                    </span>
+                    <span className="text-blue-600 dark:text-blue-400 font-mono font-bold">
+                      50% Realized
+                    </span>
+                  </div>
+                  <div>
+                    <h5 className="text-base font-bold text-[var(--text-primary)] dark:text-white">
+                      ₹50,000 Advance Received
+                    </h5>
+                    <p className="text-xs text-[var(--text-secondary)] dark:text-neutral-400 mt-0.5">
+                      GXL-INV-2026-000001 verified • ₹50,000 balance at completion
+                    </p>
+                  </div>
+                  <div className="w-full h-2 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full w-[50%]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Workstreams & Delivery Scope */}
+              <div className="pt-2 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
+                    Active Delivery Workstreams
+                  </h4>
+                  <Link
+                    href="/admin/pm/projects"
+                    className="text-xs font-semibold text-[#0075de] dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>View Kanban Tracks</span>
+                    <ArrowRight size={12} />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {[
-                    "AI & Workflow Automations",
-                    "SEO, AEO & GEO Foundations",
-                    "Distributor Enquiries & Workflows",
-                    "Product Catalogue & SKU Architecture",
-                    "Analytics & Event Conversion Tracking",
-                    "Accounting Integration Readiness"
-                  ].map((item, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-[11px] font-medium text-[var(--text-secondary)] dark:text-neutral-300"
+                    { title: "AI & Workflow Automations", status: "In Progress", statusColor: "text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800" },
+                    { title: "SEO, AEO & GEO Foundations", status: "In Review", statusColor: "text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800" },
+                    { title: "Distributor Enquiries Flow", status: "Queued", statusColor: "text-neutral-600 bg-neutral-100 border-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:border-neutral-700" },
+                    { title: "Product & SKU Architecture", status: "In Progress", statusColor: "text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800" },
+                    { title: "Analytics & Event Tracking", status: "Ready", statusColor: "text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800" },
+                    { title: "Accounting Integration", status: "Milestone 2", statusColor: "text-purple-600 bg-purple-50 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800" }
+                  ].map((ws, i) => (
+                    <div
+                      key={i}
+                      className="p-3.5 rounded-lg bg-slate-50/60 dark:bg-neutral-800/30 border border-slate-200/70 dark:border-neutral-800 flex flex-col justify-between gap-2 hover:border-[#0075de]/30 transition-all"
                     >
-                      {item}
-                    </span>
+                      <span className="text-xs font-semibold text-[var(--text-primary)] dark:text-neutral-200 leading-snug">
+                        {ws.title}
+                      </span>
+                      <span className={cn("self-start text-[10px] font-bold px-2 py-0.5 rounded border", ws.statusColor)}>
+                        {ws.status}
+                      </span>
+                    </div>
                   ))}
-                </div>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Deal Pipeline Progression */}
-          <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-6 shadow-xs">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-base font-bold text-[var(--text-primary)] dark:text-white">
-                    Commercial Deal Pipeline
-                  </h3>
-                  <p className="text-xs text-[var(--text-secondary)] dark:text-neutral-400">
-                    Current stage distribution of inbound opportunities and consulting engagements.
-                  </p>
-                </div>
-                <Link
-                  href="/admin/crm"
-                  className="text-xs font-semibold text-[#0075de] dark:text-blue-400 hover:underline"
-                >
-                  Manage CRM
-                </Link>
-              </div>
-
-              {/* Pipeline Stage Bar - Dark/Light mode unified */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                      1. Inbound Leads
-                    </span>
-                    <span className="text-xs font-bold text-[var(--text-primary)] dark:text-white">
-                      {totalLeads}
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full w-full" />
-                  </div>
-                  <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
-                    Verified qualified database
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                      2. Discovery
-                    </span>
-                    <span className="text-xs font-bold text-[var(--text-primary)] dark:text-white">
-                      2 Deals
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full w-1/2" />
-                  </div>
-                  <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
-                    Initial scope evaluation
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                      3. Proposals
-                    </span>
-                    <span className="text-xs font-bold text-[var(--text-primary)] dark:text-white">
-                      ₹1,00,000
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full w-3/4" />
-                  </div>
-                  <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
-                    Commercials submitted
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
-                      4. Executed
-                    </span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      ₹3,50,000
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full w-full" />
-                  </div>
-                  <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
-                    Agreement executed
-                  </p>
                 </div>
               </div>
             </div>
