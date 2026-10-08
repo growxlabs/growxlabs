@@ -104,13 +104,18 @@ export default function ProjectDetailsPage({ params }: PageProps) {
 
   const { project, milestones, tasks, bugs, documents, activityLogs } = data;
 
-  const NAV_ITEMS = [
+  const NAV_ITEMS: {
+    id: "board" | "milestones" | "bugs" | "documents" | "activity";
+    label: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    count?: number;
+  }[] = [
     { id: "board", label: "Task Board", icon: IconCheckSquare, count: tasks?.length },
     { id: "milestones", label: "Milestones", icon: IconCalendar, count: milestones?.length },
     { id: "bugs", label: "Issues", icon: IconBug, count: bugs?.length },
     { id: "documents", label: "Documents", icon: IconFileText, count: documents?.length },
-    { id: "activity", label: "Activity", icon: IconZap }
-  ] as const;
+    { id: "activity", label: "Activity", icon: IconZap, count: activityLogs?.length }
+  ];
 
   return (
     <div className="space-y-5">

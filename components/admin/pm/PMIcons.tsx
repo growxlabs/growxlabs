@@ -157,7 +157,8 @@ export function IconPriority({
 }) {
   if (priority === "CRITICAL") {
     return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-red-600 ${className || ""}`} title="Critical (P0)">
+      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-red-600 ${className || ""}`}>
+        <title>Critical (P0)</title>
         <rect x="2" y="2" width="12" height="12" rx="2" fill="currentColor" fillOpacity="0.15" />
         <path d="M8 4.5v4M8 10.5h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       </svg>
@@ -166,7 +167,8 @@ export function IconPriority({
 
   if (priority === "HIGH") {
     return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-amber-500 ${className || ""}`} title="High Priority">
+      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-amber-500 ${className || ""}`}>
+        <title>High Priority</title>
         <rect x="2" y="10" width="2.5" height="4" rx="0.75" />
         <rect x="6.75" y="7" width="2.5" height="7" rx="0.75" />
         <rect x="11.5" y="3" width="2.5" height="11" rx="0.75" />
@@ -176,7 +178,8 @@ export function IconPriority({
 
   if (priority === "MEDIUM") {
     return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-blue-500 ${className || ""}`} title="Medium Priority">
+      <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-blue-500 ${className || ""}`}>
+        <title>Medium Priority</title>
         <rect x="2" y="10" width="2.5" height="4" rx="0.75" />
         <rect x="6.75" y="7" width="2.5" height="7" rx="0.75" />
         <rect x="11.5" y="3" width="2.5" height="11" rx="0.75" fillOpacity="0.25" />
@@ -186,7 +189,8 @@ export function IconPriority({
 
   // LOW
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-slate-400 ${className || ""}`} title="Low Priority">
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={`text-slate-400 ${className || ""}`}>
+      <title>Low Priority</title>
       <rect x="2" y="10" width="2.5" height="4" rx="0.75" />
       <rect x="6.75" y="7" width="2.5" height="7" rx="0.75" fillOpacity="0.25" />
       <rect x="11.5" y="3" width="2.5" height="11" rx="0.75" fillOpacity="0.25" />
