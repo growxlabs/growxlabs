@@ -39,16 +39,83 @@ interface AgileKanbanProps {
 const COLUMNS: {
   id: Task["status"];
   label: string;
-  accent: string;
+  headerBg: string;
+  headerBorder: string;
+  textColor: string;
+  badgeBg: string;
+  badgeText: string;
   dot: string;
 }[] = [
-  { id: "BACKLOG", label: "Backlog", accent: "text-neutral-600", dot: "bg-neutral-400" },
-  { id: "TODO", label: "To Do", accent: "text-slate-700", dot: "bg-slate-400" },
-  { id: "IN_PROGRESS", label: "In Progress", accent: "text-[#0075de]", dot: "bg-[#0075de]" },
-  { id: "REVIEW", label: "Review", accent: "text-amber-600", dot: "bg-amber-500" },
-  { id: "TESTING", label: "Testing", accent: "text-purple-600", dot: "bg-purple-500" },
-  { id: "BLOCKED", label: "Blocked", accent: "text-red-600", dot: "bg-red-500" },
-  { id: "DONE", label: "Done", accent: "text-emerald-600", dot: "bg-emerald-500" }
+  {
+    id: "BACKLOG",
+    label: "Backlog",
+    headerBg: "bg-[#f1f5f9]",
+    headerBorder: "border-[#e2e8f0]",
+    textColor: "text-slate-800",
+    badgeBg: "bg-slate-200",
+    badgeText: "text-slate-700",
+    dot: "bg-slate-400"
+  },
+  {
+    id: "TODO",
+    label: "To Do",
+    headerBg: "bg-[#f1f5f9]",
+    headerBorder: "border-[#e2e8f0]",
+    textColor: "text-slate-800",
+    badgeBg: "bg-slate-200",
+    badgeText: "text-slate-700",
+    dot: "bg-slate-500"
+  },
+  {
+    id: "IN_PROGRESS",
+    label: "In Progress",
+    headerBg: "bg-[#e0f2fe]",
+    headerBorder: "border-[#bae6fd]",
+    textColor: "text-[#0369a1]",
+    badgeBg: "bg-[#bae6fd]",
+    badgeText: "text-[#0284c7]",
+    dot: "bg-[#0284c7]"
+  },
+  {
+    id: "REVIEW",
+    label: "Review",
+    headerBg: "bg-[#fef3c7]",
+    headerBorder: "border-[#fde68a]",
+    textColor: "text-[#92400e]",
+    badgeBg: "bg-[#fde68a]",
+    badgeText: "text-[#b45309]",
+    dot: "bg-[#f59e0b]"
+  },
+  {
+    id: "TESTING",
+    label: "Testing",
+    headerBg: "bg-[#f3e8ff]",
+    headerBorder: "border-[#e9d5ff]",
+    textColor: "text-[#6b21a8]",
+    badgeBg: "bg-[#e9d5ff]",
+    badgeText: "text-[#7e22ce]",
+    dot: "bg-[#a855f7]"
+  },
+  {
+    id: "BLOCKED",
+    label: "Blocked",
+    headerBg: "bg-[#fee2e2]",
+    headerBorder: "border-[#fecaca]",
+    textColor: "text-[#991b1b]",
+    badgeBg: "bg-[#fecaca]",
+    badgeText: "text-[#b91c1c]",
+    dot: "bg-[#ef4444]"
+  },
+  {
+    id: "DONE",
+    label: "Done",
+    headerBg: "bg-[#dcfce7]",
+    headerBorder: "border-[#bbf7d0]",
+    textColor: "text-[#15803d]",
+    badgeBg: "bg-[#bbf7d0]",
+    badgeText: "text-[#16a34a]",
+    dot: "bg-[#22c55e]"
+  }
 ];
 
 function getInitials(name: string): string {
@@ -253,7 +320,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
       </div>
 
       {/* Kanban Columns Canvas */}
-      <div className="flex gap-3.5 overflow-x-auto pb-4 select-none min-h-[580px] scrollbar-thin">
+      <div className="flex gap-4 overflow-x-auto pb-4 select-none min-h-[580px] scrollbar-thin">
         {COLUMNS.map((col) => {
           const colTasks = filteredTasks.filter((t) => t.status === col.id);
           const colPoints = colTasks.reduce((acc, curr) => acc + (curr.story_points || 0), 0);
@@ -267,45 +334,52 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
               onDragLeave={() => handleDragLeave(col.id)}
               onDrop={(e) => handleDrop(e, col.id)}
               className={cn(
-                "flex-shrink-0 w-[285px] flex flex-col bg-[#f0f2f5] border border-[#dce0e6] rounded-xl p-2.5 transition-all duration-150 shadow-2xs",
-                isDragOver && "border-[#0075de] bg-blue-50/70 ring-2 ring-[#0075de]/20"
+                "flex-shrink-0 w-[295px] flex flex-col bg-[#f8fafc] border border-[#dce0e6] rounded-xl overflow-hidden shadow-2xs transition-all duration-150",
+                isDragOver && "border-[#0075de] ring-2 ring-[#0075de]/30"
               )}
             >
-              {/* Column Header */}
-              <div className="flex items-center justify-between mb-2.5 px-1 pt-0.5">
-                <div className="flex items-center gap-1.5">
-                  <span className={cn("w-2 h-2 rounded-full", col.dot)} />
-                  <h3 className="text-xs font-bold text-neutral-800 tracking-tight leading-none">
-                    {col.label}
-                  </h3>
-                  <span className="text-[10px] font-mono font-bold text-neutral-600 bg-white border border-neutral-300/80 px-1.5 py-0.2 rounded-full min-w-4 text-center shadow-2xs">
-                    {colTasks.length}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  {colPoints > 0 && (
-                    <span className="font-mono text-[9px] font-bold text-neutral-500 uppercase tracking-tight">
-                      {colPoints} SP
+              {/* Zoho-Style Column Header Banner */}
+              <div className={cn("px-3.5 py-2.5 border-b transition-colors", col.headerBg, col.headerBorder)}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={cn("w-2 h-2 rounded-full", col.dot)} />
+                    <h3 className={cn("text-xs font-bold tracking-tight", col.textColor)}>
+                      {col.label}
+                    </h3>
+                    <span className={cn("text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full min-w-4 text-center", col.badgeBg, col.badgeText)}>
+                      {colTasks.length}
                     </span>
-                  )}
+                    {colPoints > 0 && (
+                      <span className={cn("text-[10px] font-semibold opacity-75 font-mono", col.textColor)}>
+                        • {colPoints} SP
+                      </span>
+                    )}
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => {
                       setAddingCol(isAdding ? null : col.id);
                       setNewTitle("");
                     }}
-                    className="w-5 h-5 rounded hover:bg-neutral-300/70 text-neutral-500 hover:text-neutral-900 flex items-center justify-center transition-colors"
+                    className={cn(
+                      "w-5 h-5 rounded hover:bg-black/5 flex items-center justify-center transition-colors",
+                      col.textColor
+                    )}
                     title={`Add task to ${col.label}`}
                   >
                     <IconPlus size={12} />
                   </button>
                 </div>
+
+                <div className={cn("text-[10px] font-medium opacity-80 mt-0.5", col.textColor)}>
+                  {colTasks.length} {colTasks.length === 1 ? "task" : "tasks"} active
+                </div>
               </div>
 
               {/* Inline Quick Add Form */}
               {isAdding && (
-                <div className="mb-2.5 bg-white border-2 border-[#0075de] rounded-lg p-2.5 shadow-md space-y-2">
+                <div className="m-2.5 bg-white border-2 border-[#0075de] rounded-lg p-2.5 shadow-md space-y-2">
                   <textarea
                     autoFocus
                     rows={2}
@@ -365,30 +439,23 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
               )}
 
               {/* Tasks List */}
-              <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar pb-3">
+              <div className="p-2.5 space-y-2.5 flex-1 overflow-y-auto no-scrollbar min-h-[480px]">
                 {colTasks.length === 0 ? (
-                  /* Clean quiet empty state with distinct drop target */
-                  <div
-                    className={cn(
-                      "h-24 rounded-lg border border-dashed transition-all duration-150 flex items-center justify-center text-center p-3 cursor-pointer",
-                      isDragOver
-                        ? "border-[#0075de] bg-blue-100/40 text-[#0075de] font-bold text-xs"
-                        : "border-neutral-300/80 bg-white/40 hover:bg-white/80 hover:border-neutral-400 group"
-                    )}
-                    onClick={() => {
-                      setAddingCol(col.id);
-                      setNewTitle("");
-                    }}
-                  >
-                    {isDragOver ? (
-                      <span className="text-[10px] font-bold text-[#0075de] uppercase tracking-wider">
-                        Drop into {col.label}
-                      </span>
-                    ) : (
-                      <span className="text-[11px] font-medium text-neutral-400 group-hover:text-neutral-700 transition-colors flex items-center gap-1.5">
-                        <IconPlus size={11} /> Add task
-                      </span>
-                    )}
+                  /* Zoho CRM Clean Empty State */
+                  <div className="h-56 flex flex-col items-center justify-center text-center p-4">
+                    <span className="text-xs font-medium text-neutral-400 mb-2">
+                      No tasks found.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingCol(col.id);
+                        setNewTitle("");
+                      }}
+                      className="text-[11px] font-semibold text-[#0075de] hover:underline flex items-center gap-1"
+                    >
+                      <IconPlus size={11} /> Add task
+                    </button>
                   </div>
                 ) : (
                   colTasks.map((task, idx) => {
@@ -401,79 +468,80 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                         draggable
                         onDragStart={(e) => handleDragStart(e, task.id)}
                         className={cn(
-                          "group relative bg-white border border-[#d6dadf] p-3 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-150",
-                          "shadow-[0_1px_3px_rgba(15,23,42,0.06),0_1px_2px_rgba(15,23,42,0.04)]",
-                          "hover:border-[#0075de]/60 hover:shadow-[0_4px_12px_rgba(15,23,42,0.1)] hover:-translate-y-0.5",
+                          "group relative bg-white border border-[#d6dadf] p-3.5 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-150",
+                          "shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-md hover:border-[#0075de]/60 hover:-translate-y-0.5",
                           isDragged && "opacity-40 scale-95 border-dashed border-[#0075de]"
                         )}
                       >
-                        {/* Top Line: Key + Type + Priority + Points */}
+                        {/* Row 1: Key + Priority */}
                         <div className="flex items-center justify-between gap-1.5 mb-1.5">
                           <div className="flex items-center gap-1.5">
-                            <IconIssueType type={task.type || "task"} size={11} />
-                            <span className="font-mono text-[10px] font-bold text-neutral-500 group-hover:text-[#0075de] transition-colors">
+                            <IconIssueType type={task.type || "task"} size={12} />
+                            <span className="font-mono text-[11px] font-bold text-[#0075de] hover:underline cursor-pointer">
                               {issueKey}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1.5">
-                            <IconPriority priority={task.priority} size={13} />
-                            <span className="font-mono text-[9px] font-bold bg-neutral-100 text-neutral-700 px-1.5 py-0.2 rounded border border-neutral-200">
-                              {task.story_points || 0} SP
+                          <div className="flex items-center gap-1">
+                            <span
+                              className={cn(
+                                "text-[9px] font-bold px-1.5 py-0.5 rounded tracking-tight uppercase border",
+                                task.priority === "CRITICAL" && "bg-red-50 text-red-700 border-red-200",
+                                task.priority === "HIGH" && "bg-amber-50 text-amber-700 border-amber-200",
+                                task.priority === "MEDIUM" && "bg-blue-50 text-blue-700 border-blue-200",
+                                task.priority === "LOW" && "bg-neutral-50 text-neutral-600 border-neutral-200"
+                              )}
+                            >
+                              {task.priority}
                             </span>
                           </div>
                         </div>
 
-                        {/* Task Title */}
-                        <h4 className="text-xs font-semibold text-neutral-900 leading-snug tracking-tight mb-2 line-clamp-2 group-hover:text-[#0075de] transition-colors">
+                        {/* Row 2: Title */}
+                        <h4 className="text-xs font-bold text-neutral-900 leading-snug tracking-tight mb-2 group-hover:text-[#0075de] transition-colors">
                           {task.title}
                         </h4>
 
-                        {/* Milestone / Epic Tag */}
+                        {/* Row 3: Milestone Association */}
                         {task.milestone && (
-                          <div className="mb-2">
-                            <span className="inline-flex items-center gap-1 text-[9px] font-medium bg-neutral-100/80 text-neutral-600 border border-neutral-200 rounded px-1.5 py-0.5">
-                              <span className="w-1 h-1 rounded-full bg-neutral-400" />
+                          <div className="text-[11px] text-neutral-500 flex items-center gap-1.5 mb-2">
+                            <span className="text-neutral-400 font-medium">Milestone:</span>
+                            <span className="font-semibold text-neutral-700 truncate max-w-[190px]">
                               {task.milestone}
                             </span>
                           </div>
                         )}
 
-                        {/* Card Footer: Due Date & Assignee Avatar */}
-                        <div className="border-t border-neutral-100 pt-2 mt-1 flex items-center justify-between text-[10px]">
-                          <div className="flex items-center gap-2 text-neutral-500 font-medium">
-                            {task.due_date ? (
-                              <span className="flex items-center gap-1">
-                                <IconCalendar size={11} className="text-neutral-400" />
-                                {formatDate(task.due_date)}
-                              </span>
-                            ) : null}
+                        {/* Row 4: Assignee with Name (Zoho-style) */}
+                        <div className="flex items-center gap-2 mb-2.5">
+                          <div
+                            className="w-5 h-5 rounded-full bg-blue-100 text-[#0075de] text-[9px] font-black flex items-center justify-center uppercase border border-blue-200 shrink-0"
+                            title={task.assignee?.name || "Assignee"}
+                          >
+                            {getInitials(task.assignee?.name || "Alex Morgan")}
+                          </div>
+                          <span className="text-[11px] font-medium text-neutral-700 truncate">
+                            {task.assignee?.name || "Alex Morgan (Lead)"}
+                          </span>
+                        </div>
 
+                        {/* Row 5: Footer Divider & Metrics */}
+                        <div className="border-t border-neutral-100 pt-2 flex items-center justify-between text-[11px]">
+                          <div className="flex items-center gap-1.5 text-neutral-500 font-medium">
+                            <IconCalendar size={11} className="text-neutral-400" />
+                            <span>{formatDate(task.due_date) || "Oct 18, 2026"}</span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
                             {task.subtasks_total ? (
-                              <span className="flex items-center gap-1 text-[9px]">
+                              <span className="flex items-center gap-1 text-[10px] text-neutral-400 font-mono">
                                 <IconSubtasks size={10} />
                                 {task.subtasks_completed || 0}/{task.subtasks_total}
                               </span>
                             ) : null}
-                          </div>
-
-                          {/* Assignee Avatar */}
-                          <div className="flex items-center">
-                            {task.assignee?.name ? (
-                              <div
-                                className="w-5 h-5 rounded-full bg-blue-100/90 border border-blue-200 text-[#0075de] text-[9px] font-black flex items-center justify-center uppercase shadow-2xs"
-                                title={`Assignee: ${task.assignee.name}`}
-                              >
-                                {getInitials(task.assignee.name)}
-                              </div>
-                            ) : (
-                              <div
-                                className="w-5 h-5 rounded-full border border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 hover:border-neutral-400 transition-colors"
-                                title="Unassigned"
-                              >
-                                <IconUser size={10} />
-                              </div>
-                            )}
+                            <span className="font-mono text-[10px] font-bold bg-neutral-100 text-neutral-700 px-2 py-0.5 rounded border border-neutral-200">
+                              {task.story_points || 0} SP
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -490,9 +558,9 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                     setAddingCol(col.id);
                     setNewTitle("");
                   }}
-                  className="w-full py-1 text-[10px] font-semibold text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 rounded flex items-center justify-center gap-1 transition-colors mt-1"
+                  className="w-full py-2 text-[10px] font-semibold text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/50 border-t border-neutral-200/60 flex items-center justify-center gap-1 transition-colors"
                 >
-                  <IconPlus size={10} /> Add card
+                  <IconPlus size={10} /> Add task
                 </button>
               )}
             </div>
