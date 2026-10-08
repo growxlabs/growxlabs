@@ -690,34 +690,39 @@ export default function InvoicesPage() {
       {/* ============================================================ */}
       <AnimatePresence>
         {showGenerator && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print">
+          <div
+            onClick={(e) => { if (e.target === e.currentTarget) setShowGenerator(false); }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/70 backdrop-blur-sm no-print overscroll-contain"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 10 }}
-              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[var(--card)] border border-[var(--border-subtle)] rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6"
+              className="flex flex-col w-full max-w-3xl max-h-[90vh] bg-[var(--card)] border border-[var(--border-subtle)] rounded-2xl shadow-2xl overflow-hidden"
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+              {/* Modal Header — Fixed at top */}
+              <div className="shrink-0 flex items-center justify-between border-b border-[var(--border-subtle)] px-6 py-4.5 bg-[var(--card)] z-10">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-lg bg-[#0075de]/10 text-[#0075de] border border-[#0075de]/20">
+                  <div className="p-2 rounded-lg bg-[#0075de]/10 text-[#0075de] border border-[#0075de]/20 shrink-0">
                     <FileText size={18} />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-[var(--text-primary)]">New Client Invoice</h2>
+                    <h2 className="text-lg font-bold text-[var(--text-primary)] leading-tight">New Client Invoice</h2>
                     <p className="text-xs text-[var(--text-secondary)]">Create an itemized billing invoice for client settlement.</p>
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowGenerator(false)}
-                  className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
+                  aria-label="Close"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Form Content */}
-              <div className="space-y-6 text-xs">
+              {/* Form Content — Smoothly scrollable body */}
+              <div className="flex-1 overflow-y-auto overscroll-contain custom-scrollbar p-6 sm:p-8 space-y-6 text-xs">
                 {/* Section 1: Client & Invoice Metadata */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
@@ -944,28 +949,39 @@ export default function InvoicesPage() {
                 </div>
               </div>
 
-              {/* Modal Footer Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border-subtle)]">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowGenerator(false)}
-                  className="text-xs font-semibold"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  disabled={submitting}
-                  onClick={handleSubmit}
-                  className="bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold px-5 flex items-center gap-2"
-                >
-                  {submitting ? (
-                    <><Loader2 size={14} className="animate-spin" /> Saving...</>
-                  ) : (
-                    <><Check size={14} /> Generate & Save Invoice</>
-                  )}
-                </Button>
+              {/* Modal Footer Actions — Fixed at bottom with Live Balances */}
+              <div className="shrink-0 flex items-center justify-between px-6 py-4 border-t border-[var(--border-subtle)] bg-[var(--surface-1)]/70 backdrop-blur-sm z-10">
+                <div className="text-xs font-semibold text-[var(--text-secondary)] hidden sm:block">
+                  <span>Grand Total: </span>
+                  <span className="font-mono font-bold text-[var(--text-primary)]">{currency.symbol}{total.toLocaleString("en-IN")}</span>
+                  <span className="mx-2 text-[var(--text-muted)]">•</span>
+                  <span>Balance Due: </span>
+                  <span className="font-mono font-bold text-[#0075de]">{currency.symbol}{balanceDue.toLocaleString("en-IN")}</span>
+                </div>
+                <div className="flex items-center gap-2.5 ml-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowGenerator(false)}
+                    className="text-xs font-semibold cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={handleSubmit}
+                    className="bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold px-5 flex items-center gap-2 cursor-pointer shadow-xs"
+                  >
+                    {submitting ? (
+                      <><Loader2 size={14} className="animate-spin" /> Saving...</>
+                    ) : (
+                      <><Check size={14} /> Generate & Save Invoice</>
+                    )}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -977,12 +993,15 @@ export default function InvoicesPage() {
       {/* ============================================================ */}
       <AnimatePresence>
         {previewInvoice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div
+            onClick={(e) => { if (e.target === e.currentTarget) setPreviewInvoice(null); }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md overscroll-contain no-print"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-white text-neutral-900 rounded-2xl shadow-2xl p-8 sm:p-12 space-y-8 relative print-container"
+              className="w-full max-w-2xl max-h-[92vh] overflow-y-auto overscroll-contain custom-scrollbar bg-white text-neutral-900 rounded-2xl shadow-2xl p-6 sm:p-10 space-y-8 relative print-container"
             >
               {/* Close & Print Buttons */}
               <div className="flex items-center justify-between border-b pb-4 no-print">
