@@ -105,9 +105,9 @@ export class EnterprisePmService {
         { id: "s1", name: "Sprint 1 — Discovery & Inception", goal: "Complete requirements baseline", status: "ACTIVE", start_date: startDate }
       ],
       tasks: [
-        { id: "t1", title: "Architecture Blueprint Review", description: "Review and approve architecture specifications", priority: "HIGH", status: "TODO", story_points: 3 },
-        { id: "t2", title: "Repository Setup & CI/CD", description: "Initialize repository and automated pipelines", priority: "MEDIUM", status: "IN_PROGRESS", story_points: 2 },
-        { id: "t3", title: "Client Kickoff Meeting", description: "Align stakeholders on sprint timelines and milestones", priority: "CRITICAL", status: "DONE", story_points: 1 }
+        { id: "t1", key: "TRX-01", type: "story", milestone: "Discovery & Arch", title: "Architecture Blueprint Review", description: "Review and approve architecture specifications", priority: "HIGH", status: "TODO", story_points: 3 },
+        { id: "t2", key: "TRX-02", type: "task", milestone: "DevOps & Core", title: "Repository Setup & CI/CD", description: "Initialize repository and automated pipelines", priority: "MEDIUM", status: "IN_PROGRESS", story_points: 2 },
+        { id: "t3", key: "TRX-03", type: "task", milestone: "Client Handshake", title: "Client Kickoff Meeting", description: "Align stakeholders on sprint timelines and milestones", priority: "CRITICAL", status: "DONE", story_points: 1 }
       ],
       bugs: [],
       documents: [
@@ -176,6 +176,13 @@ export class EnterprisePmService {
 
     const formattedProject = this.formatProject(projectRow, meta);
 
+    const tasks = (meta.tasks || []).map((t: any, idx: number) => ({
+      ...t,
+      key: t.key || `TRX-${String(idx + 1).padStart(2, "0")}`,
+      type: t.type || "task",
+      milestone: t.milestone || "Discovery & Arch"
+    }));
+
     return {
       project: formattedProject,
       members: meta.members || [
@@ -184,7 +191,7 @@ export class EnterprisePmService {
       milestones: meta.milestones || [],
       epics: meta.epics || [],
       sprints: meta.sprints || [],
-      tasks: meta.tasks || [],
+      tasks,
       bugs: meta.bugs || [],
       documents: meta.documents || [],
       activityLogs: meta.activityLogs || [
