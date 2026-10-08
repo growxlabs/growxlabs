@@ -108,7 +108,7 @@ export default async function AdminDashboard() {
     <div className="space-y-8 pb-12">
       {/* Header with Executive Context and Quick Actions */}
       <Reveal y={-10}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--border-subtle)] dark:border-neutral-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--border-subtle)] dark:border-[#262626]">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-white tracking-tight">
               Executive Overview
@@ -132,7 +132,7 @@ export default async function AdminDashboard() {
             </Link>
             <Link
               href="/admin/crm"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 text-[var(--text-primary)] dark:text-neutral-200 hover:bg-[var(--surface-hover)] dark:hover:bg-neutral-800 transition-all text-xs font-semibold shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] text-[var(--text-primary)] dark:text-neutral-200 hover:bg-[var(--surface-hover)] dark:hover:bg-[#171717] transition-all text-xs font-semibold shadow-xs"
             >
               <span>CRM Pipeline</span>
               <ArrowRight size={12} />
@@ -155,13 +155,13 @@ export default async function AdminDashboard() {
             <Reveal key={i} delay={i * 0.04}>
               <Link
                 href={vital.href}
-                className="group block p-5 rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 hover:border-[#0075de]/40 dark:hover:border-neutral-700 transition-all shadow-xs hover:shadow-sm"
+                className="group block p-5 rounded-xl bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] hover:border-[#0075de]/40 dark:hover:border-[#262626] dark:hover:bg-[#171717] transition-all shadow-xs hover:shadow-sm"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className={cn("p-2 rounded-lg border", accentStyle)}>
                     <vital.icon size={18} />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-neutral-800 text-[var(--text-secondary)] dark:text-neutral-400 border border-slate-200 dark:border-neutral-700">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#121212] text-[var(--text-secondary)] dark:text-neutral-400 border border-slate-200 dark:border-[#262626]">
                     {vital.status}
                   </span>
                 </div>
@@ -190,8 +190,8 @@ export default async function AdminDashboard() {
           
           {/* Active Enterprise Account Highlight */}
           <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-6 shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-[var(--border-subtle)] dark:border-neutral-800">
+            <div className="rounded-xl bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] p-6 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-[var(--border-subtle)] dark:border-[#262626]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-bold text-base shadow-sm">
                     T
@@ -222,7 +222,7 @@ export default async function AdminDashboard() {
 
               {/* Engagement Deliverable Milestones - Dark/Light mode unified */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
+                <div className="p-4 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] space-y-1.5 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                     Agreement Execution
                   </p>
@@ -234,7 +234,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
+                <div className="p-4 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] space-y-1.5 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                     Approved Scope
                   </p>
@@ -246,7 +246,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 space-y-1.5 transition-colors">
+                <div className="p-4 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] space-y-1.5 transition-colors">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                     Advance Invoice
                   </p>
@@ -260,7 +260,7 @@ export default async function AdminDashboard() {
               </div>
 
               {/* Delivery Scope Items Preview */}
-              <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] dark:border-neutral-800">
+              <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] dark:border-[#262626]">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400 mb-3">
                   Scope Focus Areas Under Delivery
                 </p>
@@ -275,7 +275,7 @@ export default async function AdminDashboard() {
                   ].map((item, idx) => (
                     <span 
                       key={idx}
-                      className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 text-[11px] font-medium text-[var(--text-secondary)] dark:text-neutral-300"
+                      className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-[#1B1B1B] border border-slate-200 dark:border-[#262626] text-[11px] font-medium text-[var(--text-secondary)] dark:text-neutral-300"
                     >
                       {item}
                     </span>
@@ -287,7 +287,7 @@ export default async function AdminDashboard() {
 
           {/* Deal Pipeline Progression */}
           <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-6 shadow-xs">
+            <div className="rounded-xl bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] p-6 shadow-xs">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] dark:text-white">
@@ -307,7 +307,7 @@ export default async function AdminDashboard() {
 
               {/* Pipeline Stage Bar - Dark/Light mode unified */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
+                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                       1. Inbound Leads
@@ -316,7 +316,7 @@ export default async function AdminDashboard() {
                       {totalLeads}
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-[#1B1B1B] rounded-full overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full w-full" />
                   </div>
                   <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
@@ -324,7 +324,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
+                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                       2. Discovery
@@ -333,7 +333,7 @@ export default async function AdminDashboard() {
                       2 Deals
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-[#1B1B1B] rounded-full overflow-hidden">
                     <div className="h-full bg-indigo-500 rounded-full w-1/2" />
                   </div>
                   <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
@@ -341,7 +341,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
+                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                       3. Proposals
@@ -350,7 +350,7 @@ export default async function AdminDashboard() {
                       ₹1,00,000
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-[#1B1B1B] rounded-full overflow-hidden">
                     <div className="h-full bg-amber-500 rounded-full w-3/4" />
                   </div>
                   <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
@@ -358,7 +358,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80">
+                <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                       4. Executed
@@ -367,7 +367,7 @@ export default async function AdminDashboard() {
                       ₹3,50,000
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-[#1B1B1B] rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-500 rounded-full w-full" />
                   </div>
                   <p className="text-[10px] text-[var(--text-tertiary)] dark:text-neutral-400 mt-2">
@@ -384,7 +384,7 @@ export default async function AdminDashboard() {
           
           {/* Live Operations Feed */}
           <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-5 shadow-xs flex flex-col h-full">
+            <div className="rounded-xl bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] p-5 shadow-xs flex flex-col h-full">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 rounded-md bg-[#0075de]/10 text-[#0075de] dark:text-blue-400">
@@ -416,7 +416,7 @@ export default async function AdminDashboard() {
                     return (
                       <div 
                         key={evt.id || idx}
-                        className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-neutral-800/60 transition-all border border-transparent hover:border-slate-200/60 dark:hover:border-neutral-700/60"
+                        className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-[#171717] transition-all border border-transparent hover:border-slate-200/60 dark:hover:border-[#262626]"
                       >
                         <div className={cn(
                           "w-2 h-2 mt-1.5 rounded-full shrink-0",
@@ -445,10 +445,10 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] dark:border-neutral-800">
+              <div className="mt-5 pt-4 border-t border-[var(--border-subtle)] dark:border-[#262626]">
                 <Link
                   href="/admin/audit-logs"
-                  className="w-full block py-2 text-center rounded-lg bg-slate-50 dark:bg-neutral-800/80 border border-slate-200 dark:border-neutral-700 text-[11px] font-semibold text-[var(--text-secondary)] dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 transition-all"
+                  className="w-full block py-2 text-center rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] text-[11px] font-semibold text-[var(--text-secondary)] dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-[#171717] transition-all"
                 >
                   View Complete Audit Trail
                 </Link>
@@ -458,7 +458,7 @@ export default async function AdminDashboard() {
 
           {/* Department Pulse Quick Glance - Dark/Light mode unified */}
           <Reveal>
-            <div className="rounded-xl bg-[var(--card)] dark:bg-neutral-900 border border-[var(--border-subtle)] dark:border-neutral-800 p-5 shadow-xs space-y-4">
+            <div className="rounded-xl bg-[var(--card)] dark:bg-[#101010] border border-[var(--border-subtle)] dark:border-[#262626] p-5 shadow-xs space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400">
                 Department Pulse
               </h3>
@@ -466,7 +466,7 @@ export default async function AdminDashboard() {
               <div className="space-y-2.5">
                 <Link
                   href="/admin/solution-architectures"
-                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-all"
+                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] hover:bg-slate-100 dark:hover:bg-[#171717] transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <Layers size={15} className="text-blue-500" />
@@ -484,7 +484,7 @@ export default async function AdminDashboard() {
 
                 <Link
                   href="/admin/people"
-                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-all"
+                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] hover:bg-slate-100 dark:hover:bg-[#171717] transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <Users size={15} className="text-purple-500" />
@@ -502,7 +502,7 @@ export default async function AdminDashboard() {
 
                 <Link
                   href="/admin/academy"
-                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-neutral-800/70 border border-slate-200 dark:border-neutral-700/80 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-all"
+                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] hover:bg-slate-100 dark:hover:bg-[#171717] transition-all"
                 >
                   <div className="flex items-center gap-2.5">
                     <Compass size={15} className="text-emerald-500" />

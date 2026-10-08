@@ -452,9 +452,9 @@ export function AdminNav({
           }}
           className={cn(
             "w-full flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer text-left",
-            "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-neutral-900/60",
+            "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-[#171717]",
             isCollapsed && !isMobile && "lg:justify-center lg:px-0",
-            isFlyout && "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-neutral-800/80"
+            isFlyout && "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-[#171717]"
           )}
         >
           <Icon
@@ -485,10 +485,10 @@ export function AdminNav({
           "flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer",
           isActive
             ? "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold"
-            : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-neutral-900/60",
+            : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-[#171717]",
           isCollapsed && !isMobile && "lg:justify-center lg:px-0",
           isFlyout &&
-            "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-neutral-800/80",
+            "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-[#171717]",
           isFlyout && isActive && "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/20 dark:text-blue-400"
         )}
       >
@@ -534,7 +534,7 @@ export function AdminNav({
     .toUpperCase();
 
   const renderNavContent = (isMobile = false) => (
-    <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-neutral-950 text-slate-800 dark:text-neutral-200 border-r border-slate-200/80 dark:border-neutral-900">
+    <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-[#0A0A0A] text-slate-800 dark:text-neutral-200 border-r border-slate-200/80 dark:border-[#262626]">
       {/* Sidebar Header */}
       <div
         className={cn(
@@ -564,7 +564,7 @@ export function AdminNav({
         {!isMobile && !isCollapsed && (
           <button
             onClick={onToggle}
-            className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-900 flex items-center justify-center transition-all cursor-pointer"
+            className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#171717] flex items-center justify-center transition-all cursor-pointer"
             title="Collapse sidebar"
             aria-label="Collapse sidebar"
           >
@@ -576,7 +576,7 @@ export function AdminNav({
         {isMobile && (
           <button
             onClick={onMobileToggle}
-            className="h-8 w-8 rounded-xl bg-slate-100/80 dark:bg-neutral-900 border border-slate-200/60 dark:border-neutral-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer"
+            className="h-8 w-8 rounded-xl bg-slate-100/80 dark:bg-[#1B1B1B] border border-slate-200/60 dark:border-[#262626] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white transition-all cursor-pointer"
             aria-label="Close menu"
           >
             <IconClose size={14} />
@@ -613,13 +613,13 @@ export function AdminNav({
                 aria-expanded={isMobile ? isOpen : isFlyoutOpen}
                 aria-controls={`admin-nav-${group.id}`}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-xl font-medium text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-neutral-900/60 transition-all cursor-pointer select-none",
+                  "w-full flex items-center justify-between rounded-xl font-medium text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-[#171717] transition-all cursor-pointer select-none",
                   isMobile
                     ? "h-9 px-2.5 text-[11.5px]"
                     : "h-9 px-3 text-[12px]",
                   hasActiveItem &&
                     !isMobile &&
-                    "bg-slate-100/80 text-slate-900 dark:bg-neutral-900/80 dark:text-white font-semibold",
+                    "bg-slate-100/80 text-slate-900 dark:bg-[#1D1D1D] dark:text-white font-semibold",
                   isFlyoutOpen &&
                     !isMobile &&
                     "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold shadow-xs",
@@ -683,9 +683,9 @@ export function AdminNav({
         <div
           onClick={() => setShowProfileMenu(!showProfileMenu)}
           className={cn(
-            "flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-white dark:hover:bg-neutral-900 border border-transparent hover:border-slate-200/80 dark:hover:border-neutral-800 transition-all cursor-pointer select-none",
+            "flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#171717] border border-transparent hover:border-slate-200/80 dark:hover:border-[#262626] transition-all cursor-pointer select-none",
             isCollapsed && !isMobile ? "justify-center" : "",
-            showProfileMenu && "bg-white dark:bg-neutral-900 border-slate-200/80 dark:border-neutral-800 shadow-xs"
+            showProfileMenu && "bg-white dark:bg-[#1D1D1D] border-slate-200/80 dark:border-[#262626] shadow-xs"
           )}
           title={isCollapsed && !isMobile ? userName : ""}
         >
@@ -733,7 +733,7 @@ export function AdminNav({
         {showProfileMenu && (
           <div
             className={cn(
-              "absolute bottom-[calc(100%+8px)] z-[150] rounded-2xl border border-slate-200/90 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl p-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-150 space-y-2",
+              "absolute bottom-[calc(100%+8px)] z-[150] rounded-2xl border border-slate-200/90 dark:border-[#262626] bg-white/95 dark:bg-[#202020]/95 backdrop-blur-xl p-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-150 space-y-2",
               isCollapsed && !isMobile ? "left-2 w-56" : "left-2 right-2"
             )}
           >
@@ -743,7 +743,7 @@ export function AdminNav({
                 setShowProfileMenu(false);
                 openSettings();
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[var(--primary)] hover:bg-slate-50 dark:hover:bg-neutral-800/80 transition-all text-left text-[11.5px] font-medium cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[var(--primary)] hover:bg-slate-50 dark:hover:bg-[#171717] transition-all text-left text-[11.5px] font-medium cursor-pointer"
             >
               <IconSettings size={13} className="text-slate-400 dark:text-neutral-500" />
               <span>Settings</span>
@@ -760,7 +760,7 @@ export function AdminNav({
                 setConfirmPw("");
                 setShowPwModal(true);
               }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[#0075de] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-neutral-800/80 transition-all text-left text-[11.5px] font-medium cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-[#0075de] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-[#171717] transition-all text-left text-[11.5px] font-medium cursor-pointer"
             >
               <IconKey size={13} className="text-slate-400 dark:text-neutral-500" />
               <span>Change Password</span>
@@ -783,7 +783,7 @@ export function AdminNav({
   return (
     <>
       {/* ═══ MOBILE TOP NAVBAR ═══ */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-[100] h-14 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-neutral-900 flex items-center justify-between px-4">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-[100] h-14 bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-[#262626] flex items-center justify-between px-4">
         <div className="flex items-center gap-2.5">
           <GrowXLogo size={24} className="shrink-0" />
           <div className="flex flex-col">
@@ -798,7 +798,7 @@ export function AdminNav({
 
         <button
           onClick={onMobileToggle}
-          className="h-8.5 w-8.5 rounded-xl bg-slate-100/80 dark:bg-neutral-900 border border-slate-200/80 dark:border-neutral-800 flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:bg-slate-200/60 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+          className="h-8.5 w-8.5 rounded-xl bg-slate-100/80 dark:bg-[#1B1B1B] border border-slate-200/80 dark:border-[#262626] flex items-center justify-center text-slate-700 dark:text-neutral-200 hover:bg-slate-200/60 dark:hover:bg-[#171717] transition-all cursor-pointer"
           aria-label="Toggle navigation menu"
         >
           {isMobileOpen ? <IconClose size={15} /> : <IconMenu size={15} />}
@@ -827,7 +827,7 @@ export function AdminNav({
       <aside
         id="admin-sidebar-container"
         className={cn(
-          "hidden md:flex h-screen bg-white dark:bg-neutral-950 flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-slate-200/80 dark:border-neutral-900",
+          "hidden md:flex h-screen bg-white dark:bg-[#0A0A0A] flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-slate-200/80 dark:border-[#262626]",
           isCollapsed ? "w-20" : "w-[260px]",
         )}
       >
@@ -837,7 +837,7 @@ export function AdminNav({
         {isCollapsed && (
           <button
             onClick={onToggle}
-            className="absolute top-4.5 -right-3 h-6 w-6 rounded-full bg-white dark:bg-neutral-900 text-slate-400 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-white flex items-center justify-center border border-slate-200 dark:border-neutral-800 z-[120] shadow-xs hover:shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="absolute top-4.5 -right-3 h-6 w-6 rounded-full bg-white dark:bg-[#1B1B1B] text-slate-400 hover:text-slate-800 dark:text-neutral-400 dark:hover:text-white flex items-center justify-center border border-slate-200 dark:border-[#262626] z-[120] shadow-xs hover:shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
             title="Expand sidebar"
             aria-label="Expand sidebar"
           >
@@ -879,7 +879,7 @@ export function AdminNav({
       {/* ═══ CHANGE PASSWORD MODAL ═══ */}
       {showPwModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[300] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white dark:bg-[#202020] border border-slate-200 dark:border-[#262626] rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
             <button
               onClick={() => setShowPwModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-neutral-200 transition-colors cursor-pointer"
@@ -887,7 +887,7 @@ export function AdminNav({
               <IconClose size={15} />
             </button>
 
-            <div className="flex items-center gap-3 border-b border-slate-100 dark:border-neutral-900 pb-4">
+            <div className="flex items-center gap-3 border-b border-slate-100 dark:border-[#262626] pb-4">
               <div className="p-2 bg-[#0075de]/10 text-[#0075de] dark:text-blue-400 rounded-xl">
                 <IconKey size={18} />
               </div>
@@ -926,7 +926,7 @@ export function AdminNav({
                       value={currentPw}
                       onChange={(e) => setCurrentPw(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
+                      className="w-full h-9 px-3 bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
                     />
                     <button
                       type="button"
@@ -948,7 +948,7 @@ export function AdminNav({
                       value={newPw}
                       onChange={(e) => setNewPw(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
+                      className="w-full h-9 px-3 bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40 pr-10"
                     />
                     <button
                       type="button"
@@ -969,7 +969,7 @@ export function AdminNav({
                     value={confirmPw}
                     onChange={(e) => setConfirmPw(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full h-9 px-3 bg-slate-50 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40"
+                    className="w-full h-9 px-3 bg-slate-50 dark:bg-[#121212] border border-slate-200 dark:border-[#262626] rounded-xl text-sm text-slate-900 dark:text-white focus:outline-none focus:border-[#0075de]/40"
                   />
                 </div>
 
@@ -977,7 +977,7 @@ export function AdminNav({
                   <button
                     type="button"
                     onClick={() => setShowPwModal(false)}
-                    className="flex-1 h-9 border border-slate-200 dark:border-neutral-800 rounded-xl text-xs font-semibold text-slate-500 dark:text-neutral-400 hover:bg-slate-50 dark:hover:bg-neutral-900 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+                    className="flex-1 h-9 border border-slate-200 dark:border-[#262626] rounded-xl text-xs font-semibold text-slate-500 dark:text-neutral-400 hover:bg-slate-50 dark:hover:bg-[#171717] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
                   >
                     Cancel
                   </button>

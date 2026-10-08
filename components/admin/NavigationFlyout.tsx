@@ -101,8 +101,8 @@ export function NavigationFlyout({
       aria-label={`${title} navigation`}
       className={cn(
         "fixed z-[999] flex flex-col overflow-hidden",
-        "rounded-2xl border border-slate-200/80 dark:border-neutral-800",
-        "bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl",
+        "rounded-2xl border border-slate-200/80 dark:border-[#262626]",
+        "bg-white/95 dark:bg-[#202020]/95 backdrop-blur-xl",
         "text-slate-900 dark:text-neutral-100",
         "shadow-[0_20px_45px_-10px_rgba(15,23,42,0.12)] dark:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.6)]",
         "transition-all duration-150 ease-out",
@@ -116,7 +116,7 @@ export function NavigationFlyout({
       }}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-slate-100 dark:border-neutral-800/80 px-4 py-3 shrink-0 bg-slate-50/50 dark:bg-neutral-950/30">
+      <div className="flex items-center gap-3 border-b border-slate-100 dark:border-[#262626] px-4 py-3 shrink-0 bg-slate-50/50 dark:bg-[#101010]/50">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#0075de]/20 bg-[#0075de]/10 text-[#0075de] dark:border-blue-500/25 dark:bg-blue-500/10 dark:text-blue-400 shrink-0 shadow-xs">
           <ModuleIcon size={16} />
         </div>
@@ -125,7 +125,7 @@ export function NavigationFlyout({
             <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white truncate">
               {title}
             </h2>
-            <span className="px-1.5 py-0.2 text-[9px] font-semibold rounded-md bg-slate-100 dark:bg-neutral-800 text-slate-500 dark:text-neutral-400">
+            <span className="px-1.5 py-0.2 text-[9px] font-semibold rounded-md bg-slate-100 dark:bg-[#1B1B1B] text-slate-500 dark:text-neutral-400">
               {items.length}
             </span>
           </div>
@@ -133,7 +133,7 @@ export function NavigationFlyout({
         <button
           type="button"
           onClick={() => onClose(true)}
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors focus-visible:outline-none cursor-pointer"
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-[#171717] transition-colors focus-visible:outline-none cursor-pointer"
           aria-label="Close menu"
         >
           <IconClose size={13} />
@@ -155,8 +155,8 @@ export function NavigationFlyout({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                "w-full h-8 pl-8 pr-3 bg-slate-50 dark:bg-neutral-950/50",
-                "border border-slate-200/80 dark:border-neutral-800",
+                "w-full h-8 pl-8 pr-3 bg-slate-50 dark:bg-[#121212]",
+                "border border-slate-200/80 dark:border-[#262626]",
                 "rounded-xl text-[11.5px] focus:outline-none focus:border-[#0075de]/40",
                 "focus:ring-1 focus:ring-[#0075de]/30 text-slate-900 dark:text-neutral-100",
                 "placeholder-slate-400 dark:placeholder-neutral-500 transition-all"

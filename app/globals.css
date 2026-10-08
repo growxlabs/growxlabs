@@ -252,24 +252,24 @@ body:has(.candidate-portal-theme) {
 /* DARK THEME (DEFAULT) — Marketing / Public pages    */
 /* ═══════════════════════════════════════════════════ */
 :root {
-  --background: #000000;
+  --background: #070707;
   --foreground: #FFFFFF;
-  --card: #141414;
+  --card: #101010;
   --card-foreground: #FFFFFF;
-  --popover: #141414;
+  --popover: #202020;
   --popover-foreground: #FFFFFF;
   --primary: #C0F0FB;
   --primary-foreground: #000000;
-  --secondary: #1F1F1F;
+  --secondary: #171717;
   --secondary-foreground: #FFFFFF;
-  --muted: #1F1F1F;
+  --muted: #121212;
   --muted-foreground: #9A9A9A;
   --accent: #C0F0FB;
   --accent-foreground: #000000;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #222222;
-  --input: #141414;
+  --border: #262626;
+  --input: #121212;
   --ring: #C0F0FB;
   --radius: 0.5rem;
 }
@@ -386,32 +386,35 @@ html.light .notion-theme {
 /* ═══════════════════════════════════════════════════ */
 /* VERCEL DARK THEME — Dashboard Dark Mode Override    */
 /* ═══════════════════════════════════════════════════ */
+html.dark,
+.dark,
 html.dark .notion-theme,
 .dark .notion-theme,
 .dark.notion-theme {
-  --background: #080808;
+  --background: #070707;
   --foreground: #ffffff;
-  --card: #0e0e0e;
+  --card: #101010;
   --card-foreground: #ffffff;
-  --popover: #0e0e0e;
+  --popover: #202020;
   --popover-foreground: #ffffff;
   --primary: #0075de;
   --primary-foreground: #ffffff;
-  --secondary: #1a1a1a;
+  --secondary: #171717;
   --secondary-foreground: #ededed;
-  --muted: #141414;
+  --muted: #121212;
   --muted-foreground: #a0a0a0;
   --accent: #0075de;
   --accent-foreground: #ffffff;
   --destructive: #f43f5e;
   --destructive-foreground: #ffffff;
-  --border: #222222;
+  --border: #262626;
   --input: #121212;
   --ring: #0075de;
   
-  --surface-1: #0e0e0e;
-  --surface-2: #080808;
-  --border-subtle: #1c1c1c;
+  --surface-1: #101010;
+  --surface-2: #0A0A0A;
+  --border-subtle: #262626;
+  --border-default: #262626;
   --border-hover: #0075de;
   
   --text-primary: #ffffff;
@@ -419,19 +422,16 @@ html.dark .notion-theme,
   --text-muted: #737373;
   --text-tertiary: #525252;
 
-  /* Dark mode overrides for Figma-Quality Design Workspace Tokens */
-  --app-bg: #0e0f11;
-  --panel-bg: #111214;
-  --panel-raised: #17181b;
-  --surface-hover: #1d1f22;
-  --surface-active: #24262a;
-
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.09);
+  /* Figma-Quality Design Workspace Tokens */
+  --app-bg: #070707;
+  --panel-bg: #0A0A0A;
+  --panel-raised: #1B1B1B;
+  --surface-hover: #171717;
+  --surface-active: #1D1D1D;
 
   /* Dark Inspector Tokens */
-  --inspector-border: rgba(255, 255, 255, 0.065);
-  --inspector-border-strong: rgba(255, 255, 255, 0.11);
+  --inspector-border: #262626;
+  --inspector-border-strong: #262626;
 }
 
 /* ═══════════════════════════════════════════════════════════════ */
