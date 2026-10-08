@@ -181,7 +181,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
   return (
     <div className="space-y-4">
       {/* Enterprise Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white border border-[#e6e6e6] p-2.5 rounded-lg shadow-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white border border-[#dce0e6] p-2.5 rounded-xl shadow-2xs">
         <div className="flex items-center gap-2 flex-1">
           {/* Real-time search */}
           <div className="relative flex-1 max-w-xs">
@@ -193,7 +193,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter tasks by key, title, milestone..."
-              className="w-full h-8 pl-8 pr-3 text-xs bg-neutral-50/70 border border-[#e6e6e6] rounded-md text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:bg-white focus:border-[#0075de] transition-colors"
+              className="w-full h-8 pl-8 pr-3 text-xs bg-neutral-50 border border-neutral-200 rounded-md text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:bg-white focus:border-[#0075de] transition-colors"
             />
             {searchQuery && (
               <button
@@ -222,7 +222,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                     "h-6 px-2 text-[10px] font-bold rounded uppercase transition-colors tracking-tight",
                     isSelected
                       ? "bg-neutral-900 text-white"
-                      : "bg-neutral-100/70 text-neutral-600 hover:bg-neutral-200/60"
+                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
                   )}
                 >
                   {p}
@@ -267,27 +267,25 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
               onDragLeave={() => handleDragLeave(col.id)}
               onDrop={(e) => handleDrop(e, col.id)}
               className={cn(
-                "flex-shrink-0 w-[280px] flex flex-col bg-[#f8f7f6] border rounded-lg p-2.5 transition-all duration-150",
-                isDragOver
-                  ? "border-[#0075de] bg-blue-50/40 ring-2 ring-[#0075de]/20"
-                  : "border-[#e6e6e6]"
+                "flex-shrink-0 w-[285px] flex flex-col bg-[#f0f2f5] border border-[#dce0e6] rounded-xl p-2.5 transition-all duration-150 shadow-2xs",
+                isDragOver && "border-[#0075de] bg-blue-50/70 ring-2 ring-[#0075de]/20"
               )}
             >
               {/* Column Header */}
               <div className="flex items-center justify-between mb-2.5 px-1 pt-0.5">
                 <div className="flex items-center gap-1.5">
                   <span className={cn("w-2 h-2 rounded-full", col.dot)} />
-                  <h3 className="text-xs font-bold text-neutral-900 tracking-tight leading-none">
+                  <h3 className="text-xs font-bold text-neutral-800 tracking-tight leading-none">
                     {col.label}
                   </h3>
-                  <span className="text-[10px] font-bold text-neutral-500 bg-white border border-[#e6e6e6] px-1.5 py-0.2 rounded-full min-w-4 text-center">
+                  <span className="text-[10px] font-mono font-bold text-neutral-600 bg-white border border-neutral-300/80 px-1.5 py-0.2 rounded-full min-w-4 text-center shadow-2xs">
                     {colTasks.length}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   {colPoints > 0 && (
-                    <span className="font-mono text-[9px] font-bold text-neutral-400 uppercase tracking-tight">
+                    <span className="font-mono text-[9px] font-bold text-neutral-500 uppercase tracking-tight">
                       {colPoints} SP
                     </span>
                   )}
@@ -297,7 +295,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                       setAddingCol(isAdding ? null : col.id);
                       setNewTitle("");
                     }}
-                    className="w-5 h-5 rounded hover:bg-neutral-200/70 text-neutral-400 hover:text-neutral-900 flex items-center justify-center transition-colors"
+                    className="w-5 h-5 rounded hover:bg-neutral-300/70 text-neutral-500 hover:text-neutral-900 flex items-center justify-center transition-colors"
                     title={`Add task to ${col.label}`}
                   >
                     <IconPlus size={12} />
@@ -307,7 +305,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
 
               {/* Inline Quick Add Form */}
               {isAdding && (
-                <div className="mb-2.5 bg-white border border-[#0075de] rounded-lg p-2.5 shadow-sm space-y-2">
+                <div className="mb-2.5 bg-white border-2 border-[#0075de] rounded-lg p-2.5 shadow-md space-y-2">
                   <textarea
                     autoFocus
                     rows={2}
@@ -369,13 +367,13 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
               {/* Tasks List */}
               <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar pb-3">
                 {colTasks.length === 0 ? (
-                  /* Clean quiet empty state — NO permanent ugly dashed text */
+                  /* Clean quiet empty state with distinct drop target */
                   <div
                     className={cn(
-                      "h-20 rounded-md border border-dashed transition-all duration-150 flex items-center justify-center text-center p-2",
+                      "h-24 rounded-lg border border-dashed transition-all duration-150 flex items-center justify-center text-center p-3 cursor-pointer",
                       isDragOver
-                        ? "border-[#0075de] bg-blue-100/30 text-[#0075de] font-bold text-xs"
-                        : "border-transparent hover:border-neutral-200/80 group cursor-pointer"
+                        ? "border-[#0075de] bg-blue-100/40 text-[#0075de] font-bold text-xs"
+                        : "border-neutral-300/80 bg-white/40 hover:bg-white/80 hover:border-neutral-400 group"
                     )}
                     onClick={() => {
                       setAddingCol(col.id);
@@ -387,8 +385,8 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                         Drop into {col.label}
                       </span>
                     ) : (
-                      <span className="text-[10px] font-semibold text-neutral-400 group-hover:text-neutral-600 transition-colors flex items-center gap-1">
-                        <IconPlus size={10} /> Add card
+                      <span className="text-[11px] font-medium text-neutral-400 group-hover:text-neutral-700 transition-colors flex items-center gap-1.5">
+                        <IconPlus size={11} /> Add task
                       </span>
                     )}
                   </div>
@@ -403,8 +401,9 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                         draggable
                         onDragStart={(e) => handleDragStart(e, task.id)}
                         className={cn(
-                          "group relative bg-white border border-[#e6e6e6] p-3 rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.03)] cursor-grab active:cursor-grabbing transition-all duration-150",
-                          "hover:border-[#0075de]/50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5",
+                          "group relative bg-white border border-[#d6dadf] p-3 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-150",
+                          "shadow-[0_1px_3px_rgba(15,23,42,0.06),0_1px_2px_rgba(15,23,42,0.04)]",
+                          "hover:border-[#0075de]/60 hover:shadow-[0_4px_12px_rgba(15,23,42,0.1)] hover:-translate-y-0.5",
                           isDragged && "opacity-40 scale-95 border-dashed border-[#0075de]"
                         )}
                       >
@@ -412,28 +411,28 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                         <div className="flex items-center justify-between gap-1.5 mb-1.5">
                           <div className="flex items-center gap-1.5">
                             <IconIssueType type={task.type || "task"} size={11} />
-                            <span className="font-mono text-[10px] font-bold text-neutral-400 group-hover:text-[#0075de] transition-colors">
+                            <span className="font-mono text-[10px] font-bold text-neutral-500 group-hover:text-[#0075de] transition-colors">
                               {issueKey}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-1.5">
                             <IconPriority priority={task.priority} size={13} />
-                            <span className="font-mono text-[9px] font-bold bg-neutral-100/80 text-neutral-600 px-1.5 py-0.2 rounded border border-neutral-200/60">
+                            <span className="font-mono text-[9px] font-bold bg-neutral-100 text-neutral-700 px-1.5 py-0.2 rounded border border-neutral-200">
                               {task.story_points || 0} SP
                             </span>
                           </div>
                         </div>
 
                         {/* Task Title */}
-                        <h4 className="text-[11.5px] font-semibold text-neutral-900 leading-snug tracking-tight mb-2 line-clamp-2 group-hover:text-[#0075de] transition-colors">
+                        <h4 className="text-xs font-semibold text-neutral-900 leading-snug tracking-tight mb-2 line-clamp-2 group-hover:text-[#0075de] transition-colors">
                           {task.title}
                         </h4>
 
                         {/* Milestone / Epic Tag */}
                         {task.milestone && (
                           <div className="mb-2">
-                            <span className="inline-flex items-center gap-1 text-[9px] font-medium bg-neutral-50 text-neutral-500 border border-neutral-200/70 rounded px-1.5 py-0.5">
+                            <span className="inline-flex items-center gap-1 text-[9px] font-medium bg-neutral-100/80 text-neutral-600 border border-neutral-200 rounded px-1.5 py-0.5">
                               <span className="w-1 h-1 rounded-full bg-neutral-400" />
                               {task.milestone}
                             </span>
@@ -442,7 +441,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
 
                         {/* Card Footer: Due Date & Assignee Avatar */}
                         <div className="border-t border-neutral-100 pt-2 mt-1 flex items-center justify-between text-[10px]">
-                          <div className="flex items-center gap-2 text-neutral-400 font-medium">
+                          <div className="flex items-center gap-2 text-neutral-500 font-medium">
                             {task.due_date ? (
                               <span className="flex items-center gap-1">
                                 <IconCalendar size={11} className="text-neutral-400" />
@@ -462,7 +461,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                           <div className="flex items-center">
                             {task.assignee?.name ? (
                               <div
-                                className="w-5 h-5 rounded-full bg-blue-100/80 border border-blue-200 text-[#0075de] text-[9px] font-black flex items-center justify-center uppercase shadow-2xs"
+                                className="w-5 h-5 rounded-full bg-blue-100/90 border border-blue-200 text-[#0075de] text-[9px] font-black flex items-center justify-center uppercase shadow-2xs"
                                 title={`Assignee: ${task.assignee.name}`}
                               >
                                 {getInitials(task.assignee.name)}
@@ -491,7 +490,7 @@ export function AgileKanban({ initialTasks, onTaskMove, onTaskCreate }: AgileKan
                     setAddingCol(col.id);
                     setNewTitle("");
                   }}
-                  className="w-full py-1 text-[10px] font-semibold text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/50 rounded flex items-center justify-center gap-1 transition-colors mt-1"
+                  className="w-full py-1 text-[10px] font-semibold text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 rounded flex items-center justify-center gap-1 transition-colors mt-1"
                 >
                   <IconPlus size={10} /> Add card
                 </button>
