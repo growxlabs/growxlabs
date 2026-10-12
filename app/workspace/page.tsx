@@ -5,8 +5,15 @@ import { getEmployeeWorkQueue } from "@/lib/employee-os/work-queue";
 import { getAssignedLeads, getMeetings } from "@/lib/employee-os/sales-service";
 import { EmptyState } from "@/components/workspace/WorkspaceUI";
 
+import { redirect } from "next/navigation";
+import { isHealthcareLeadManager } from "@/lib/employee-os/persona";
+
 export default async function WorkspaceHome() {
-  const employee=await requireActiveEmployeeContext(),sales=employee.permissions.includes("sales.workspace");
+  const employee = await requireActiveEmployeeContext();
+  if (isHealthcareLeadManager(employee)) {
+    redirect("/workspace/h");
+  }
+  const sales = employee.permissions.includes("sales.workspace");
   const [work,notifications,leads,meetings]=await Promise.all([getEmployeeWorkQueue(employee,"today"),employeeNotifications(employee,5),sales?getAssignedLeads(employee):Promise.resolve([]),sales?getMeetings(employee):Promise.resolve([])]);
   const now=Date.now(),nextMeeting=meetings.filter(item=>item.status==="scheduled"&&Date.parse(item.scheduled_start)>=now).sort((a,b)=>Date.parse(a.scheduled_start)-Date.parse(b.scheduled_start))[0];
   const overdue=work.filter(item=>item.dueAt&&Date.parse(item.dueAt)<now).length,followups=work.filter(item=>item.sourceType==="crm_followup").length;

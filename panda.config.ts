@@ -7,6 +7,8 @@ export default defineConfig({
     "./components/document/**/*.{ts,tsx}",
     "./app/(careers)/careers/**/*.{ts,tsx}",
     "./components/careers/**/*.{ts,tsx}",
+    "./app/workspace/**/*.{ts,tsx}",
+    "./components/workspace/**/*.{ts,tsx}",
   ],
   exclude: [],
   outdir: "styled-system",

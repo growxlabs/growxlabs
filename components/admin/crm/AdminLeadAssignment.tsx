@@ -8,27 +8,43 @@ export function AdminLeadAssignment({ leadId }: { leadId: string }) {
   const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
   const [value, setValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
     fetch(`/api/admin/crm/leads/${leadId}/assignment`)
       .then((r) => r.json())
       .then((b) => {
+        if (!isMounted) return;
         setEmployees(b.employees || []);
-        if (b.currentEmployeeId) setValue(b.currentEmployeeId);
+        if (b.currentEmployeeId) {
+          setValue(b.currentEmployeeId);
+        } else {
+          setValue("");
+        }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load assignment:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [leadId]);
 
   async function assign() {
-    if (!value) return;
     setSaving(true);
     setStatusMessage(null);
     try {
       const r = await fetch(`/api/admin/crm/leads/${leadId}/assignment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId: value }),
+        body: JSON.stringify({ employeeId: value || null }),
       });
       const b = await r.json();
       if (r.ok) {
@@ -64,8 +80,9 @@ export function AdminLeadAssignment({ leadId }: { leadId: string }) {
       <div className="mt-3 flex gap-2">
         <select
           value={value}
+          disabled={loading || saving}
           onChange={(e) => setValue(e.target.value)}
-          className="h-8 min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-1)] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#0075de] transition-colors"
+          className="h-8 min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--surface-1)] px-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-[#0075de] transition-colors disabled:opacity-50"
         >
           <option value="">Unassigned</option>
           {employees.map((e) => (
@@ -75,7 +92,7 @@ export function AdminLeadAssignment({ leadId }: { leadId: string }) {
           ))}
         </select>
         <button
-          disabled={!value || saving}
+          disabled={loading || saving}
           onClick={() => void assign()}
           className="h-8 rounded-md bg-[#0075de] hover:bg-[#005bab] px-3 text-xs font-semibold text-white transition-colors disabled:opacity-50 flex items-center gap-1 cursor-pointer shrink-0"
         >

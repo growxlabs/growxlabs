@@ -11,10 +11,15 @@ export async function GET() {
     }
 
     const { role, id } = session.user as any;
-    
+
+    if (role !== "ADMIN" && role !== "CO_ADMIN" && role !== "crm_agent") {
+      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+    }
+
     let query = supabaseAdmin
       .from("leads")
       .select("*")
+      .is("deleted_at", null)
       .order("created_at", { ascending: false });
 
     // Filter by assigned agent if it's a CRM Agent
@@ -25,11 +30,11 @@ export async function GET() {
     const { data, error } = await query;
 
     if (error) throw error;
-    
+
     // Ensure every lead has a business_name for the UI
-    const processedLeads = (data || []).map(lead => ({
+    const processedLeads = (data || []).map((lead) => ({
       ...lead,
-      business_name: lead.business_name || lead.name || "Unknown Business"
+      business_name: lead.business_name || lead.name || "Unknown Business",
     }));
 
     return NextResponse.json(processedLeads);

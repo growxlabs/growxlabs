@@ -768,7 +768,7 @@ export function AdminNav({
 
             {/* Sign Out Button */}
             <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: "/login?callbackUrl=/admin" })}
               className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-slate-600 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all text-left text-[11.5px] font-medium cursor-pointer"
             >
               <IconLogOut size={13} className="text-slate-400 dark:text-neutral-500" />

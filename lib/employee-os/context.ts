@@ -63,3 +63,5 @@ export async function requireActiveEmployeeContext(): Promise<EmployeeContext> {
   if (result.state !== "active") throw new EmployeeContextError(403,`workspace_${result.state}`,"Active employee workspace required");
   return result.employee;
 }
+
+export { isHealthcareLeadManager } from "./persona";

@@ -1,2 +1,61 @@
-import { requireActiveEmployeeContext } from "@/lib/employee-os/context";import { getAssignedLeads } from "@/lib/employee-os/sales-service";import { EmptyState } from "@/components/workspace/WorkspaceUI";import { LeadRows,SalesHeader } from "@/components/workspace/SalesUI";import { AddLeadButton } from "@/components/workspace/AddLeadButton";
-export default async function LeadsPage({searchParams}:{searchParams:Promise<{status?:string;q?:string;priority?:string}>}){const c=await requireActiveEmployeeContext(),f=await searchParams,leads=await getAssignedLeads(c,f);return <><SalesHeader title="Assigned prospects" description="Only prospects currently assigned to you are searchable here."/><div className="mb-6 flex justify-end"><AddLeadButton/></div><form className="mb-6 grid gap-3 sm:grid-cols-[1fr_180px_auto]"><input name="q" defaultValue={f.q} placeholder="Search company, contact, email or phone" className="border border-slate-300 bg-white px-3 py-2 text-sm"/><select name="status" defaultValue={f.status||"all"} className="border border-slate-300 bg-white px-3 py-2 text-sm"><option value="all">All statuses</option>{["new","contacted","engaged","qualified","disqualified"].map(s=><option key={s}>{s}</option>)}</select><button className="bg-slate-950 px-4 py-2 text-sm text-white">Filter</button></form>{leads.length?<LeadRows leads={leads}/>:<EmptyState>No assigned prospects. New prospects assigned to you will appear here.</EmptyState>}</>}
+import { redirect } from "next/navigation";
+import { isHealthcareLeadManager } from "@/lib/employee-os/persona";
+import { requireActiveEmployeeContext } from "@/lib/employee-os/context";
+import { getAssignedLeads } from "@/lib/employee-os/sales-service";
+import { SalesHeader, LeadRows } from "@/components/workspace/SalesUI";
+import { AddLeadButton } from "@/components/workspace/AddLeadButton";
+import { EmptyState } from "@/components/workspace/WorkspaceUI";
+
+export default async function LeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; q?: string; priority?: string }>;
+}) {
+  const c = await requireActiveEmployeeContext();
+  if (isHealthcareLeadManager(c)) {
+    redirect("/workspace/h/leads");
+  }
+  const f = await searchParams;
+  const leads = await getAssignedLeads(c, { ...f, query: f.q });
+  return (
+    <>
+      <SalesHeader
+        title="Assigned prospects"
+        description="Only prospects currently assigned to you are searchable here."
+      />
+      <div className="mb-6 flex justify-end">
+        <AddLeadButton />
+      </div>
+      <form className="mb-6 grid gap-3 sm:grid-cols-[1fr_180px_auto]">
+        <input
+          name="q"
+          defaultValue={f.q}
+          placeholder="Search company, contact, email or phone"
+          className="border border-slate-300 bg-white px-3 py-2 text-sm"
+        />
+        <select
+          name="status"
+          defaultValue={f.status || "all"}
+          className="border border-slate-300 bg-white px-3 py-2 text-sm"
+        >
+          <option value="all">All statuses</option>
+          {["new", "contacted", "engaged", "qualified", "disqualified"].map(
+            (s) => (
+              <option key={s}>{s}</option>
+            )
+          )}
+        </select>
+        <button className="bg-slate-950 px-4 py-2 text-sm text-white">
+          Filter
+        </button>
+      </form>
+      {leads.length ? (
+        <LeadRows leads={leads} />
+      ) : (
+        <EmptyState>
+          No assigned prospects. New prospects assigned to you will appear here.
+        </EmptyState>
+      )}
+    </>
+  );
+}

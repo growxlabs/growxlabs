@@ -80,10 +80,12 @@ export function proxy(request: NextRequest) {
   }
 
   // 1c. Return 404 on /login, /register, and /signup for root marketing domain (exact 360labs.dev behavior)
-  // Only rendered if on portal/client subdomain or arriving with an authorized workspace callback
+  // Only rendered if on portal/client subdomain, localhost, or arriving with an authorized workspace callback
+  const isLocalhost = hostname.includes("localhost") || hostname.includes("127.0.0.1") || process.env.NODE_ENV === "development";
   if (pathname === "/login" || pathname === "/register" || pathname === "/signup") {
     const hasCallback = request.nextUrl.searchParams.has("callbackUrl");
-    if (!isPortalSubdomain && !hasCallback) {
+    const hasError = request.nextUrl.searchParams.has("error");
+    if (!isLocalhost && !isPortalSubdomain && !hasCallback && !hasError) {
       const notFoundUrl = new URL("/_not-found", request.url);
       return secureResponse(NextResponse.rewrite(notFoundUrl, { status: 404, request: { headers: requestHeaders } }), requestId);
     }

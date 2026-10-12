@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/login?callbackUrl=/admin");
       return;
     }
 
@@ -229,7 +229,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/login?callbackUrl=/admin" })}
             className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--card)] text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/5 transition-all"
           >
             <LogOut size={12} /> Sign Out

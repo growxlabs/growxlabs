@@ -8,27 +8,18 @@ async function checkAdmin(req: Request) {
     req: req as any,
     secret: process.env.NEXTAUTH_SECRET,
   });
-  if (!token || (token.role !== "ADMIN" && token.role !== "CO_ADMIN")) {
-    return false;
-  }
-  return true;
+  if (!token) return false;
+  const role = String(token.role || "").toUpperCase();
+  return role === "ADMIN" || role === "CO_ADMIN";
 }
 
 export async function GET(req: Request) {
   try {
-    if (!await checkAdmin(req)) {
+    if (!(await checkAdmin(req))) {
       return NextResponse.json({ error: "Access Denied" }, { status: 403 });
     }
-    
-    // 1. Fetch team members with their individual sessions
-    const { data: teamMembers, error: teamError } = await supabaseAdmin.from("team_members").select(`
-      id, name, email, phone, role, is_active, accepted_terms, allowed_paths, created_at,
-      sessions:team_sessions(login_at, logout_at, ip_address, device)
-    `).order("created_at", { ascending: false });
-    
-    if (teamError) throw teamError;
 
-    // 2. Fetch recent activities from lead_activities table
+    // 1. Fetch recent activities from lead_activities table
     const { data: activityLogs, error: logError } = await supabaseAdmin
       .from("lead_activities")
       .select(`
@@ -41,11 +32,47 @@ export async function GET(req: Request) {
       .order("created_at", { ascending: false })
       .limit(20);
 
-    if (logError) throw logError;
-    
-    return NextResponse.json({ 
-      team: teamMembers, 
-      logs: activityLogs || [] 
+    if (logError) {
+      console.warn("Activity logs fetch warning:", logError.message);
+    }
+
+    // 2. Fetch active workspace employees from Employee OS
+    const { data: activeIdentities } = await supabaseAdmin
+      .schema("identity")
+      .from("employee_identities")
+      .select("employee_id, email, workspace_status")
+      .eq("workspace_status", "active");
+
+    const empIds = (activeIdentities || []).map((i) => i.employee_id).filter(Boolean);
+    const emailByEmpId = new Map(
+      (activeIdentities || []).map((i) => [i.employee_id, i.email])
+    );
+
+    const { data: emps, error: empError } = empIds.length
+      ? await supabaseAdmin
+          .schema("people")
+          .from("employees")
+          .select("id, first_name, last_name")
+          .in("id", empIds)
+          .is("deleted_at", null)
+      : { data: [], error: null };
+
+    if (empError) {
+      console.error("Error loading employees for team:", empError);
+    }
+
+    const workspaceEmployees = (emps || []).map((e) => ({
+      id: e.id,
+      name: `${e.first_name} ${e.last_name || ""}`.trim(),
+      email: emailByEmpId.get(e.id) || "",
+      role: "Healthcare Lead Manager",
+      is_active: true,
+      sessions: [],
+    }));
+
+    return NextResponse.json({
+      team: workspaceEmployees,
+      logs: activityLogs || [],
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

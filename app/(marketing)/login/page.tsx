@@ -9,7 +9,13 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+    if (typeof window !== "undefined") {
+      const p = new URLSearchParams(window.location.search).get("error");
+      if (p) return p;
+    }
+    return "";
+  });
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -19,17 +25,20 @@ export default function LoginPage() {
 
     try {
       const requestedCallback = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("callbackUrl") : null;
-      const callbackUrl = requestedCallback && requestedCallback.startsWith("/") ? requestedCallback : "/admin";
+      const callbackUrl = requestedCallback && requestedCallback.startsWith("/") ? requestedCallback : "/workspace/sales";
       const result = await signIn("credentials", {
-        email,
+        email: email.trim().toLowerCase(),
         password,
-        redirect: true,
+        redirect: false,
         callbackUrl,
       });
 
       if (result?.error) {
         throw new Error("Invalid email or password. Please check your credentials and try again.");
       }
+
+      router.push(result?.url || callbackUrl);
+      router.refresh();
     } catch (err: any) {
       setError(err.message || "Authentication failed. Please check your credentials.");
       setLoading(false);

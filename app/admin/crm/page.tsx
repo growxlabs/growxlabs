@@ -34,6 +34,8 @@ interface Lead {
   status: 'new' | 'contacted' | 'engaged' | 'qualified' | 'disqualified';
   priority?: 'low' | 'medium' | 'high';
   assigned_to?: string;
+  assigned_employee_id?: string;
+  assigned_at?: string;
   notes?: string;
   last_contacted_at?: string;
   next_followup_at?: string;
@@ -74,7 +76,8 @@ function LeadScoreBar({ score }: { score: number }) {
 export default function AdminCRMPage() {
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
-  const isAdminOrCoAdmin = role === "ADMIN" || role === "CO_ADMIN";
+  const roleUpper = String(role || "").toUpperCase();
+  const isAdminOrCoAdmin = roleUpper === "ADMIN" || roleUpper === "CO_ADMIN";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
@@ -128,10 +131,8 @@ export default function AdminCRMPage() {
   // Loaders & API Calls
   useEffect(() => {
     fetchLeads();
-    if (isAdminOrCoAdmin) {
-      fetchTeamMembers();
-    }
-  }, [isAdminOrCoAdmin]);
+    fetchTeamMembers();
+  }, []);
 
   useEffect(() => {
     if (toast) {
@@ -198,9 +199,13 @@ export default function AdminCRMPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates)
       });
-      if (!resCrm.ok) throw new Error("Failed to update lead");
+      if (!resCrm.ok) {
+        const errData = await resCrm.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to update lead");
+      }
 
       showToast("Lead updated successfully");
+      setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...updates } : l)));
       fetchLeads();
     } catch (e: any) {
       showToast(e.message || "Failed to update lead", "error");
@@ -275,7 +280,7 @@ export default function AdminCRMPage() {
         const res = await fetch(`/api/crm/leads?id=${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ assigned_to: memberId })
+          body: JSON.stringify({ assigned_to: memberId, assigned_employee_id: memberId })
         });
         if (res.ok) successCount++;
       }
@@ -1011,9 +1016,15 @@ export default function AdminCRMPage() {
                     <div className="space-y-1">
                       <label className="text-[9px] font-bold text-[#615d59] uppercase tracking-wider">Assigned Owner</label>
                       <select 
-                        value={selectedLead.assigned_to || ""}
-                        onChange={(e) => handleUpdateLead(selectedLead.id!, { assigned_to: e.target.value || undefined })}
-                        disabled={!isAdminOrCoAdmin}
+                        value={selectedLead.assigned_employee_id || selectedLead.assigned_to || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          handleUpdateLead(selectedLead.id!, { 
+                            assigned_to: val || undefined,
+                            assigned_employee_id: val || undefined 
+                          } as any);
+                        }}
+                        disabled={!isAdminOrCoAdmin && Boolean(role)}
                         className="w-full h-8 px-2 border border-[#e6e6e6] rounded-md bg-white text-slate-800 text-xs focus:outline-none focus:border-[#0075de] disabled:bg-slate-50 disabled:text-slate-400"
                       >
                         <option value="">Unassigned</option>
