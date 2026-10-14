@@ -1,0 +1,2 @@
+openstatus_api_token = "os_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+api_health_url       = "https://api.acme.dev/health"

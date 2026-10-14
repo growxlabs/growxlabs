@@ -59,11 +59,11 @@ BEGIN
       UPDATE public.leads SET priority=COALESCE(p_priority,priority),updated_at=v_now WHERE id=v_lead;
       CONTINUE;
     END IF;
-    UPDATE public.lead_assignment_history SET ended_at=v_now WHERE organisation_id=p_organisation_id AND lead_id=v_lead AND ended_at IS NULL;
+    UPDATE public.lead_assignment_history SET ended_at=v_now WHERE organisation_id=p_organisation_id::uuid AND lead_id=v_lead AND ended_at IS NULL;
     UPDATE public.leads SET assigned_employee_id=p_employee_id,assigned_at=v_now,priority=COALESCE(p_priority,priority),updated_at=v_now WHERE id=v_lead AND organisation_id=p_organisation_id;
-    INSERT INTO public.lead_assignment_history(organisation_id,lead_id,previous_employee_id,assigned_employee_id,assigned_by,assigned_at,assignment_note,initial_due_at) VALUES(p_organisation_id,v_lead,v_previous,p_employee_id,p_actor_user_id,v_now,NULLIF(btrim(p_assignment_note),''),p_initial_due_at);
-    IF p_initial_due_at IS NOT NULL THEN INSERT INTO public.sales_followups(organisation_id,lead_id,assigned_employee_id,created_by_employee_id,context,due_at,priority) VALUES(p_organisation_id,v_lead,p_employee_id,p_employee_id,COALESCE(NULLIF(btrim(p_assignment_note),''),'Initial assigned prospect review'),p_initial_due_at,COALESCE(p_priority,'medium')); END IF;
-    INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES(p_organisation_id,v_user_id,'sales_lead_assigned',jsonb_build_object('title','New prospect assigned','message',COALESCE(NULLIF(btrim(p_assignment_note),''),'A prospect has been assigned to you.'),'href','/workspace/sales/leads/'||v_lead,'eventKey','lead-assignment:'||v_lead||':'||v_now));
+    INSERT INTO public.lead_assignment_history(organisation_id,lead_id,previous_employee_id,assigned_employee_id,assigned_by,assigned_at,assignment_note,initial_due_at) VALUES(p_organisation_id::uuid,v_lead,v_previous,p_employee_id,p_actor_user_id,v_now,NULLIF(btrim(p_assignment_note),''),p_initial_due_at);
+    IF p_initial_due_at IS NOT NULL THEN INSERT INTO public.sales_followups(organisation_id,lead_id,assigned_employee_id,created_by_employee_id,context,due_at,priority) VALUES(p_organisation_id::uuid,v_lead,p_employee_id,p_employee_id,COALESCE(NULLIF(btrim(p_assignment_note),''),'Initial assigned prospect review'),p_initial_due_at,COALESCE(p_priority,'medium')); END IF;
+    INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES(p_organisation_id::uuid,v_user_id,'sales_lead_assigned',jsonb_build_object('title','New prospect assigned','message',COALESCE(NULLIF(btrim(p_assignment_note),''),'A prospect has been assigned to you.'),'href','/workspace/sales/leads/'||v_lead,'eventKey','lead-assignment:'||v_lead||':'||v_now));
     v_count:=v_count+1;
   END LOOP;RETURN v_count;
 END $$;
@@ -86,8 +86,8 @@ BEGIN
     UPDATE public.sales_handoffs SET review_status='needs_clarification',clarification_request=btrim(p_message),reviewed_by=p_actor_user_id,reviewed_at=now() WHERE id=p_handoff_id;
     SELECT handed_off_by_employee_id INTO v_employee FROM public.sales_handoffs WHERE id=p_handoff_id;
     SELECT user_id INTO v_user FROM people.employees WHERE id=v_employee;
-    INSERT INTO public.sales_management_feedback(organisation_id,employee_id,lead_id,handoff_id,feedback_type,message,created_by) VALUES(p_organisation_id,v_employee,h.lead_id,p_handoff_id,'handoff',btrim(p_message),p_actor_user_id);
-    INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES(p_organisation_id,v_user,'sales_handoff_clarification',jsonb_build_object('title','Handoff needs clarification','message',btrim(p_message),'href','/workspace/sales/opportunities/'||h.opportunity_id,'eventKey','handoff-clarification:'||p_handoff_id||':'||now()));
+    INSERT INTO public.sales_management_feedback(organisation_id,employee_id,lead_id,handoff_id,feedback_type,message,created_by) VALUES(p_organisation_id::uuid,v_employee,h.lead_id,p_handoff_id,'handoff',btrim(p_message),p_actor_user_id);
+    INSERT INTO notifications.notifications(organisation_id,recipient_user_id,template_key,payload) VALUES(p_organisation_id::uuid,v_user,'sales_handoff_clarification',jsonb_build_object('title','Handoff needs clarification','message',btrim(p_message),'href','/workspace/sales/opportunities/'||h.opportunity_id,'eventKey','handoff-clarification:'||p_handoff_id||':'||now()));
   ELSE RAISE EXCEPTION 'Invalid handoff action'; END IF;
   RETURN jsonb_build_object('handoffId',p_handoff_id,'status',CASE WHEN p_action='accept' THEN 'accepted' ELSE 'needs_clarification' END);
 END $$;
