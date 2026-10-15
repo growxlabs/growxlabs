@@ -31,7 +31,7 @@ export function ReadingProgressBar() {
         className="h-full transition-all duration-100 ease-out"
         style={{ 
           width: `${progress}%`,
-          background: 'linear-gradient(90deg, #355CFF 0%, #5B7FFF 100%)'
+          background: 'linear-gradient(90deg, #C0F0FB 0%, #7DD3FC 100%)'
         }}
       />
     </div>
@@ -115,7 +115,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 className={cn(
                   "block text-[13px] leading-relaxed transition-all duration-200 relative pl-4 border-l-2 py-1 rounded-r-sm",
                   isActive
-                    ? "text-[#355CFF] font-semibold border-[#355CFF] bg-[#355CFF]/[0.04]"
+                    ? "text-[#C0F0FB] font-semibold border-[#C0F0FB] bg-[#C0F0FB]/[0.08]"
                     : "text-muted-foreground hover:text-foreground border-transparent hover:border-[#D1D5DB]"
                 )}
               >

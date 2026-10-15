@@ -19,8 +19,8 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
   };
 
   // Dynamic theme variables
-  const hoverText = isBlog ? "group-hover:text-[#355CFF]" : "group-hover:text-white";
-  const activeText = isBlog ? "text-[#355CFF]" : "text-white";
+  const hoverText = isBlog ? "group-hover:text-[#C0F0FB]" : "group-hover:text-white";
+  const activeText = isBlog ? "text-[#C0F0FB]" : "text-white";
 
   // Build Google-verified FAQPage JSON-LD schema
   const faqSchema = {

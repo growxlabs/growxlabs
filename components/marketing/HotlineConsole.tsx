@@ -186,7 +186,7 @@ export function HotlineConsole() {
             <span className="relative inline-flex rounded-full h-3 w-3 bg-[#10B981]"></span>
           </span>
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#355CFF]">Direct Studio Connect</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#C0F0FB]">Direct Studio Connect</p>
             <h3 className="text-[14px] font-bold text-foreground tracking-tight mt-0.5 uppercase font-mono">
               {showCalendly ? "secure_calendly_session.sh" : "studio_terminal_active.log"}
             </h3>
@@ -284,7 +284,7 @@ export function HotlineConsole() {
                     if (log.startsWith("guest@growxlabs")) {
                       return (
                         <p key={index} className="text-white/40">
-                          <span className="text-[#355CFF]">guest@growxlabs</span>
+                          <span className="text-[#C0F0FB]">guest@growxlabs</span>
                           <span className="text-white/60">:</span>
                           <span className="text-[#10B981]">~$</span>{" "}
                           <span className="text-white/95">{log.split("~$ ")[1]}</span>
@@ -308,7 +308,7 @@ export function HotlineConsole() {
                     }}
                     className="flex items-center text-white/95 mt-1"
                   >
-                    <span className="text-[#355CFF]">guest@growxlabs</span>
+                    <span className="text-[#C0F0FB]">guest@growxlabs</span>
                     <span className="text-white/60">:</span>
                     <span className="text-[#10B981]">~$</span>{" "}
                     <input
@@ -383,10 +383,10 @@ export function HotlineConsole() {
               href="/contact"
               onMouseEnter={() => handleButtonHover("whatsapp")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="group/btn flex items-center justify-between rounded-xl border border-border bg-background p-4 text-left hover:border-[#355CFF] hover:bg-card transition-all duration-300 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+              className="group/btn flex items-center justify-between rounded-xl border border-border bg-background p-4 text-left hover:border-[#C0F0FB]/50 hover:bg-card transition-all duration-300 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
             >
               <div className="flex gap-3">
-                <div className="h-10 w-10 rounded-lg bg-[#355CFF]/5 text-[#355CFF] flex items-center justify-center group-hover/btn:bg-[#355CFF] group-hover/btn:text-white transition-all duration-300">
+                <div className="h-10 w-10 rounded-lg bg-[#C0F0FB]/10 text-[#C0F0FB] flex items-center justify-center group-hover/btn:bg-[#C0F0FB] group-hover/btn:text-black transition-all duration-300">
                   <MessageSquare className="h-5 w-5" />
                 </div>
                 <div>
@@ -394,7 +394,7 @@ export function HotlineConsole() {
                   <p className="text-[11px] text-muted-foreground">Instant dispatch to engineer</p>
                 </div>
               </div>
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover/btn:text-[#355CFF] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover/btn:text-[#C0F0FB] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
             </Link>
 
             <button 
@@ -402,10 +402,10 @@ export function HotlineConsole() {
               onClick={() => setShowCalendly(true)}
               onMouseEnter={() => handleButtonHover("calendly")}
               onMouseLeave={() => setHoveredButton(null)}
-              className="group/btn flex items-center justify-between rounded-xl border border-border bg-background p-4 text-left hover:border-[#355CFF] hover:bg-card transition-all duration-300 shadow-[0_1px_2px_rgba(0,0,0,0.02)] w-full text-left cursor-pointer"
+              className="group/btn flex items-center justify-between rounded-xl border border-border bg-background p-4 text-left hover:border-[#C0F0FB]/50 hover:bg-card transition-all duration-300 shadow-[0_1px_2px_rgba(0,0,0,0.02)] w-full text-left cursor-pointer"
             >
               <div className="flex gap-3">
-                <div className="h-10 w-10 rounded-lg bg-[#355CFF]/5 text-[#355CFF] flex items-center justify-center group-hover/btn:bg-[#355CFF] group-hover/btn:text-white transition-all duration-300">
+                <div className="h-10 w-10 rounded-lg bg-[#C0F0FB]/10 text-[#C0F0FB] flex items-center justify-center group-hover/btn:bg-[#C0F0FB] group-hover/btn:text-black transition-all duration-300">
                   <Calendar className="h-5 w-5" />
                 </div>
                 <div>
@@ -413,7 +413,7 @@ export function HotlineConsole() {
                   <p className="text-[11px] text-muted-foreground">Book detailed digital strategy</p>
                 </div>
               </div>
-              <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover/btn:text-[#355CFF] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover/btn:text-[#C0F0FB] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
             </button>
           </div>
 

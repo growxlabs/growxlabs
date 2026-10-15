@@ -7,7 +7,7 @@ export default function RefundPage() {
     <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-muted">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
         <div className="mb-16 text-center lg:text-left">
-          <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-[#355CFF] mb-4 block">
+          <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-[#C0F0FB] mb-4 block">
             Financial Protocols
           </span>
           <h1 className="text-[clamp(40px,7vw,72px)] font-black text-foreground tracking-tighter mb-8 leading-[1.1] uppercase">
@@ -20,17 +20,17 @@ export default function RefundPage() {
 
         <div className="space-y-8 mb-20 max-w-4xl mx-auto lg:mx-0">
           <PolicyCard 
-            icon={<CheckCircle className="text-[#355CFF]" />} 
+            icon={<CheckCircle className="text-[#C0F0FB]" />} 
             title="Full Refund" 
             text="100% refund of initial deposit if requested before project assessment or engineering cycles begin." 
           />
           <PolicyCard 
-            icon={<AlertCircle className="text-[#355CFF]" />} 
+            icon={<AlertCircle className="text-[#C0F0FB]" />} 
             title="Non-Refundable" 
             text="Once technical engineering or strategic logic design has commenced, the initial 50% deposit is non-refundable." 
           />
           <PolicyCard 
-            icon={<Clock className="text-[#355CFF]" />} 
+            icon={<Clock className="text-[#C0F0FB]" />} 
             title="Failure to Deliver" 
             text="A full or partial refund will be provided if GrowxLabs fails to meet the agreed architectural deliverables within a reasonable grace period." 
           />
@@ -57,7 +57,7 @@ function PolicyCard({ icon, title, text }: { icon: any, title: string, text: str
     <div 
       className="bg-card border border-border p-8 rounded-[24px] flex gap-8 items-start shadow-sm hover:shadow-md transition-shadow duration-300"
     >
-      <div className="h-12 w-12 rounded-2xl bg-[#355CFF]/5 flex items-center justify-center flex-shrink-0">
+      <div className="h-12 w-12 rounded-2xl bg-[#C0F0FB]/10 flex items-center justify-center flex-shrink-0">
         {icon}
       </div>
       <div>

@@ -453,18 +453,6 @@ html.dark,
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
   --text-tertiary: #525252;
-}
-
-/* Dashboard Notion Dark Mode Specifics */
-html.dark .notion-theme,
-.dark .notion-theme,
-.dark.notion-theme {
-  --primary: #0075de;
-  --primary-foreground: #ffffff;
-  --accent: #0075de;
-  --ring: #0075de;
-  --border-hover: #0075de;
-}
 
   /* Figma-Quality Design Workspace Tokens */
   --app-bg: #070707;
@@ -476,6 +464,17 @@ html.dark .notion-theme,
   /* Dark Inspector Tokens */
   --inspector-border: #262626;
   --inspector-border-strong: #262626;
+}
+
+/* Dashboard Notion Dark Mode Specifics */
+html.dark .notion-theme,
+.dark .notion-theme,
+.dark.notion-theme {
+  --primary: #0075de;
+  --primary-foreground: #ffffff;
+  --accent: #0075de;
+  --ring: #0075de;
+  --border-hover: #0075de;
 }
 
 /* ═══════════════════════════════════════════════════════════════ */

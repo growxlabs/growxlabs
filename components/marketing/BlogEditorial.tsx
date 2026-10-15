@@ -16,7 +16,7 @@ interface InsightCalloutProps {
 }
 
 const calloutConfig = {
-  insight: { icon: Lightbulb, color: "#355CFF", bg: "rgba(53,92,255,0.04)", border: "rgba(53,92,255,0.18)", defaultLabel: "Key Insight" },
+  insight: { icon: Lightbulb, color: "#C0F0FB", bg: "rgba(192,240,251,0.06)", border: "rgba(192,240,251,0.25)", defaultLabel: "Key Insight" },
   trend: { icon: TrendingUp, color: "#059669", bg: "rgba(5,150,105,0.04)", border: "rgba(5,150,105,0.18)", defaultLabel: "Industry Trend" },
   warning: { icon: AlertTriangle, color: "#D97706", bg: "rgba(217,119,6,0.04)", border: "rgba(217,119,6,0.18)", defaultLabel: "Critical Note" },
   impact: { icon: Zap, color: "#7C3AED", bg: "rgba(124,58,237,0.04)", border: "rgba(124,58,237,0.18)", defaultLabel: "Business Impact" },
@@ -54,8 +54,8 @@ export function WhyThisMatters({ children }: { children: React.ReactNode }) {
     <div className="my-12 relative">
       <div className="bg-[#1A1A1A] text-white rounded-xl p-8 md:p-10">
         <div className="flex items-center gap-2.5 mb-5">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#355CFF]" />
-          <span className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-[#355CFF]">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB]" />
+          <span className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-[#C0F0FB]">
             Why This Matters
           </span>
         </div>
@@ -130,7 +130,7 @@ export function QuoteBlock({ quote, attribution, role }: { quote: string; attrib
   return (
     <figure className="my-12">
       <blockquote className="relative pl-6 md:pl-8">
-        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#355CFF] rounded-full" />
+        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#C0F0FB] rounded-full" />
         <p className="text-[20px] md:text-[22px] font-serif italic leading-[1.6] text-foreground tracking-[-0.01em]">
           &ldquo;{quote}&rdquo;
         </p>
@@ -159,14 +159,14 @@ export function TimelineBlock({ entries, label }: { entries: TimelineEntry[]; la
   return (
     <div className="my-12">
       {label && (
-        <span className="text-[11px] font-mono font-bold tracking-[0.15em] text-[#355CFF] uppercase mb-6 block">
+        <span className="text-[11px] font-mono font-bold tracking-[0.15em] text-[#C0F0FB] uppercase mb-6 block">
           {label}
         </span>
       )}
       <div className="relative pl-6 border-l-2 border-border space-y-8">
         {entries.map((entry, i) => (
           <div key={i} className="relative">
-            <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-card border-2 border-[#355CFF]" />
+            <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-card border-2 border-[#C0F0FB]" />
             <span className="text-[11px] font-mono tracking-[0.1em] text-[#9CA3AF] uppercase block mb-1">
               {entry.date}
             </span>

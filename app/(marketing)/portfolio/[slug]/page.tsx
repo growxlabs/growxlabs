@@ -379,7 +379,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             }
           ]}
         />
-        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
             
             {/* Hero Section */}
@@ -393,7 +393,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                 {/* Left Column: Content */}
                 <div className="lg:col-span-6 space-y-6">
-                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                     AI Platform
                   </span>
                   
@@ -434,7 +434,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Right Column: Showcase Image */}
                 <div className="lg:col-span-6 relative">
                   {/* Background Glow */}
-                  <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                  <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
                   
                   <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -452,19 +452,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               {/* Metrics Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">3x LLMs</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">3x LLMs</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">PARALLEL STREAMS</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Instant</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Instant</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">MULTILINGUAL TRANS</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Monaco</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Monaco</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">DEVELOPER SANDBOX</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Prisma</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Prisma</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">RELATIONAL POSTGRES</span>
                 </div>
               </div>
@@ -473,7 +473,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Overview Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="max-w-4xl space-y-6">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Overview</h2>
                 <p className="text-zinc-400 text-lg font-light leading-relaxed">
                   UniversalAI is an advanced, production-grade AI orchestration and translation platform designed to unify state-of-the-art Large Language Models and specialized tools into a single, high-fidelity workspace. Built on a Next.js and TypeScript framework, it solves the challenge of single-model bias and tool fragmentation by running parallel execution streams from GPT-4o, Gemini Pro, and Claude 3.5 Sonnet side-by-side. The platform integrates a semantic Retrieval-Augmented Generation (RAG) system for document intelligence, alongside a dedicated AI agent workspace that generates, executes, and previews project files on the fly. By securing conversations through a robust PostgreSQL persistence layer and supporting instant multilingual communication, UniversalAI delivers a scalable, enterprise-ready environment for technical collaboration.
@@ -484,7 +484,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Technical Specifications Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Technical Specifications</h2>
               </div>
               <div className="overflow-x-auto border border-white/[0.08] rounded-2xl bg-white/[0.01]">
@@ -500,7 +500,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     {universalAiSpecs.map((spec, i) => (
                       <tr key={i} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 font-bold text-white">{spec.component}</td>
-                        <td className="px-6 py-4 font-semibold text-primary">{spec.tech}</td>
+                        <td className="px-6 py-4 font-semibold text-[#C0F0FB]">{spec.tech}</td>
                         <td className="px-6 py-4 text-zinc-400 font-light">{spec.description}</td>
                       </tr>
                     ))}
@@ -512,19 +512,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Core Features Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Core Features</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {universalAiFeatures.map((feat, i) => (
                   <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-[24px] p-8 hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-primary font-mono text-xs font-bold block mb-2">0{i + 1}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-[#C0F0FB] font-mono text-xs font-bold block mb-2">0{i + 1}</span>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-4">{feat.title}</h3>
                     <ul className="space-y-3">
                       {feat.bullets.map((bullet, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-zinc-400 font-light leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -537,7 +537,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Architecture & Flow Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Architecture & System Flow</h2>
               </div>
               
@@ -619,7 +619,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Database Schema Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-6">
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 01</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 01</span>
                     <h4 className="text-white font-bold mb-2">users</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Stores credentials, profile indicators, email handles, and dynamic Stripe subscription levels.
@@ -627,7 +627,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 02</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 02</span>
                     <h4 className="text-white font-bold mb-2">sessions</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Logs active user logins, verification keys, and NextAuth adapter parameters.
@@ -635,7 +635,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 03</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 03</span>
                     <h4 className="text-white font-bold mb-2">chats</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Collects user conversations, workspace selections, and custom instructions reference indices.
@@ -643,7 +643,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 04</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 04</span>
                     <h4 className="text-white font-bold mb-2">messages</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Holds prompt logs, model identifiers, outputs content, and response speed metrics.
@@ -656,35 +656,35 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   <h3 className="text-lg font-bold text-white tracking-tight uppercase font-mono text-zinc-500">Parallel Stream Workflow</h3>
                   <ol className="space-y-4 text-sm text-zinc-400 font-light leading-relaxed">
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
                       <div>
                         <strong className="text-white font-semibold block">Prompt Dispatch</strong>
                         The client sends a prompt along with model parameters to the Next.js API endpoint.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
                       <div>
                         <strong className="text-white font-semibold block">Middleware Filtering</strong>
                         Auth middleware decrypts session JWT cookies and validates user rate limits on Upstash Redis cache.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
                       <div>
                         <strong className="text-white font-semibold block">Concurrent Execution</strong>
                         The endpoint maps the payload and dispatches parallel HTTP streams to OpenRouter (for Claude / Llama) and Gemini native API concurrently.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
                       <div>
                         <strong className="text-white font-semibold block">Edge Token Pipes</strong>
                         API routes catch chunk-by-chunk stream chunks and pipe them directly back to the client using server-sent event (SSE) buffers.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
                       <div>
                         <strong className="text-white font-semibold block">Real-time Comparative Render</strong>
                         Client hooks parse concurrent text stream pieces and feed them side-by-side into separate Framer Motion markdown boxes without blocking UI rendering.
@@ -819,7 +819,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             }
           ]}
         />
-        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
             
             {/* Hero Section */}
@@ -833,7 +833,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                 {/* Left Column: Content */}
                 <div className="lg:col-span-6 space-y-6">
-                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                     AI Product
                   </span>
                   
@@ -874,7 +874,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Right Column: Showcase Image */}
                 <div className="lg:col-span-6 relative">
                   {/* Background Glow */}
-                  <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                  <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
                   
                   <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -892,19 +892,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               {/* Metrics Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">10</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">10</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">FORGES / MODULES</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Real-Time</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Real-Time</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">VOICE FEEDBACK</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Cross-Platform</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Cross-Platform</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">WEB, iOS & ANDROID</span>
                 </div>
                 <div className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">Gemini AI</span>
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">Gemini AI</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">MENTOR ENGINE</span>
                 </div>
               </div>
@@ -913,7 +913,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Overview Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="max-w-4xl space-y-6">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Overview</h2>
                 <p className="text-zinc-400 text-lg font-light leading-relaxed">
                   ResumeForgeAI is an all-in-one AI-powered Career Intelligence Ecosystem designed to guide developers from learning to landing their dream jobs. The platform features a modular architecture comprising ten specialized "Forges" that manage resume optimization, technical interview practice, codebase documentation, and strategic job hunting. At its core, a centralized AI agent (MentorForge) tracks user progress, analyzes skill gaps, and calculates a dynamic "Career Readiness Score" to guide learning paths. Built on a modern stack including Next.js, Supabase, and Gemini AI, it delivers real-time voice feedback, automated database schema planning, and interactive coding environments. With native compilation via Capacitor, the entire system operates cross-platform across web, Android, and iOS, providing a premium, unified career acceleration suite.
@@ -924,7 +924,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Technical Specifications Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Technical Specifications</h2>
               </div>
               <div className="overflow-x-auto border border-white/[0.08] rounded-2xl bg-white/[0.01]">
@@ -940,7 +940,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     {resumeForgeSpecs.map((spec, i) => (
                       <tr key={i} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 font-bold text-white">{spec.component}</td>
-                        <td className="px-6 py-4 font-semibold text-primary">{spec.tech}</td>
+                        <td className="px-6 py-4 font-semibold text-[#C0F0FB]">{spec.tech}</td>
                         <td className="px-6 py-4 text-zinc-400 font-light">{spec.description}</td>
                       </tr>
                     ))}
@@ -952,19 +952,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Core Features Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Core Features (The Forges)</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {resumeForgeFeatures.map((feat, i) => (
                   <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-[24px] p-8 hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-primary font-mono text-xs font-bold block mb-2">0{i + 1}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-[#C0F0FB] font-mono text-xs font-bold block mb-2">0{i + 1}</span>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-4">{feat.title}</h3>
                     <ul className="space-y-3">
                       {feat.bullets.map((bullet, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-zinc-400 font-light leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -977,7 +977,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Architecture & Flow Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Architecture & System Flow</h2>
               </div>
               
@@ -1075,7 +1075,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Database Schema Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-6">
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 01</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 01</span>
                     <h4 className="text-white font-bold mb-2">profiles</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Handles core user account details, targets, learning achievements, and global readiness metrics.
@@ -1083,7 +1083,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 02</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 02</span>
                     <h4 className="text-white font-bold mb-2">resume_templates</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Stores multiple resume layouts, parsed files text, and customized keyword mapping tables.
@@ -1091,7 +1091,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 03</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 03</span>
                     <h4 className="text-white font-bold mb-2">mock_interviews</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Logs interactive audio transcripts, question streams, scoring metrics, and rubrics.
@@ -1099,7 +1099,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 04</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 04</span>
                     <h4 className="text-white font-bold mb-2">learning_roadmaps</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Maintains time-bound study goals, schedules, and active recall card indexes.
@@ -1112,35 +1112,35 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   <h3 className="text-lg font-bold text-white tracking-tight uppercase font-mono text-zinc-500">WebRTC Audio Streaming Sequence</h3>
                   <ol className="space-y-4 text-sm text-zinc-400 font-light leading-relaxed">
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
                       <div>
                         <strong className="text-white font-semibold block">Context Initialization</strong>
-                        The client browser initializes user audio inputs via <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">navigator.mediaDevices.getUserMedia</code>.
+                        The client browser initializes user audio inputs via <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">navigator.mediaDevices.getUserMedia</code>.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
                       <div>
                         <strong className="text-white font-semibold block">Track Negotiation</strong>
-                        Browser creates an <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">RTCPeerConnection</code> and binds the microphone track to exchange SDP signals with the serverless gateway.
+                        Browser creates an <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">RTCPeerConnection</code> and binds the microphone track to exchange SDP signals with the serverless gateway.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
                       <div>
                         <strong className="text-white font-semibold block">Real-time Stream Pipeline</strong>
                         Voice data packets stream dynamically to the voice evaluation endpoint where they undergo instant Speech-to-Text conversion.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
                       <div>
                         <strong className="text-white font-semibold block">Model Assessment</strong>
                         The transcription logs are passed to Gemini AI to generate answers correctness, evaluation scores, and actionable feedback metrics.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
                       <div>
                         <strong className="text-white font-semibold block">Database Persistence</strong>
                         The resulting report and readiness indicators save to Supabase, triggering a realtime update on the MentorForge dashboard.
@@ -1222,7 +1222,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             }
           ]}
         />
-        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
             
             {/* Hero Section */}
@@ -1236,7 +1236,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column: Content */}
               <div className="lg:col-span-6 space-y-6">
-                <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                   AI Recruitment Automation
                 </span>
                 
@@ -1277,7 +1277,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               {/* Right Column: Showcase Image */}
               <div className="lg:col-span-6 relative">
                 {/* Background Glow */}
-                <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
                 
                 <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -1296,8 +1296,8 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
               {project.results.map((result, i) => (
                 <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">{result.value}</span>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">{result.value}</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">{result.label}</span>
                 </div>
               ))}
@@ -1307,7 +1307,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Overview Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="max-w-4xl space-y-6">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Overview</h2>
                 <p className="text-zinc-400 text-lg font-light leading-relaxed">
                   RecruitAI is an enterprise-grade, AI-driven talent acquisition and secure assessment platform designed to automate the recruitment pipeline from application to final offer. The platform parses and scores candidate resumes using a multi-model LLM fallback mechanism, matching skills and experience directly to job descriptions. For secure examinations, it deploys a dual-camera proctoring system ("Third Eye") that streams desktop and mobile video feeds using WebRTC, utilizing Supabase Realtime for serverless signaling. Additionally, candidates undergo a voice-based AI interview round driven by browser-native speech-to-text and text-to-speech translation models. By combining automated screening, secure environments, and smart evaluations, RecruitAI establishes an efficient, bias-free, and highly scalable hiring workflow.
@@ -1318,7 +1318,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Technical Specifications Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Technical Specifications</h2>
               </div>
               <div className="overflow-x-auto border border-white/[0.08] rounded-2xl bg-white/[0.01]">
@@ -1334,7 +1334,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     {recruitAiSpecs.map((spec, i) => (
                       <tr key={i} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 font-bold text-white">{spec.component}</td>
-                        <td className="px-6 py-4 font-semibold text-primary">{spec.tech}</td>
+                        <td className="px-6 py-4 font-semibold text-[#C0F0FB]">{spec.tech}</td>
                         <td className="px-6 py-4 text-zinc-400 font-light">{spec.description}</td>
                       </tr>
                     ))}
@@ -1346,19 +1346,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Core Features Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Core Features</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {recruitAiFeatures.map((feat, i) => (
                   <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-[24px] p-8 hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-primary font-mono text-xs font-bold block mb-2">0{i + 1}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-[#C0F0FB] font-mono text-xs font-bold block mb-2">0{i + 1}</span>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-4">{feat.title}</h3>
                     <ul className="space-y-3">
                       {feat.bullets.map((bullet, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-zinc-400 font-light leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -1371,7 +1371,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Architecture & Flow Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Architecture & System Flow</h2>
               </div>
               
@@ -1466,7 +1466,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Database Schema Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 01</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 01</span>
                     <h4 className="text-white font-bold mb-2">profiles</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Stores core candidate details, academic credentials, skills, and target job roles.
@@ -1474,7 +1474,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 02</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 02</span>
                     <h4 className="text-white font-bold mb-2">applications</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Manages the candidacy state (ats_score, ats_status, resume_url, status tracking).
@@ -1482,7 +1482,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Table 03</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Table 03</span>
                     <h4 className="text-white font-bold mb-2">exam_proctoring_sessions</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Tracks live integrity variables (e.g., mobile_connected, tab switches, microphone logs).
@@ -1495,35 +1495,35 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   <h3 className="text-lg font-bold text-white tracking-tight uppercase font-mono text-zinc-500">WebRTC Signaling Sequence</h3>
                   <ol className="space-y-4 text-sm text-zinc-400 font-light leading-relaxed">
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">1</span>
                       <div>
                         <strong className="text-white font-semibold block">Handshake Initialization</strong>
-                        The Candidate Desktop page subscribes to a Supabase broadcast channel named <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">proctor-{"{examId}"}</code>.
+                        The Candidate Desktop page subscribes to a Supabase broadcast channel named <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">proctor-{"{examId}"}</code>.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">2</span>
                       <div>
                         <strong className="text-white font-semibold block">QR Scan</strong>
-                        The candidate scans the QR code containing a JWT token. The phone loads the <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">/third-eye/connect</code> route.
+                        The candidate scans the QR code containing a JWT token. The phone loads the <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">/third-eye/connect</code> route.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">3</span>
                       <div>
                         <strong className="text-white font-semibold block">Token Exchange</strong>
-                        The phone validates the token, subscribes to the <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">proctor-{"{examId}"}</code> broadcast channel, and fires a <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">mobile-connected</code> message.
+                        The phone validates the token, subscribes to the <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">proctor-{"{examId}"}</code> broadcast channel, and fires a <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">mobile-connected</code> message.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">4</span>
                       <div>
                         <strong className="text-white font-semibold block">SDP Exchange</strong>
-                        The desktop receives the announcement, acts as the WebRTC receiver, and sends a connection <code className="text-primary font-mono text-xs px-1 bg-white/5 rounded">ready</code> message. The phone generates a WebRTC SDP Offer and transmits it via the channel.
+                        The desktop receives the announcement, acts as the WebRTC receiver, and sends a connection <code className="text-[#C0F0FB] font-mono text-xs px-1 bg-white/5 rounded">ready</code> message. The phone generates a WebRTC SDP Offer and transmits it via the channel.
                       </div>
                     </li>
                     <li className="flex items-start gap-4">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
+                      <span className="w-6 h-6 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] flex items-center justify-center font-mono text-xs font-bold shrink-0">5</span>
                       <div>
                         <strong className="text-white font-semibold block">Direct Stream</strong>
                         The desktop returns an SDP Answer and exchanges ICE Candidates via Supabase. Once connected, a secure, peer-to-peer MediaStream is established, piping the mobile camera feed directly to the Recruiter's Live Monitor client.
@@ -1605,7 +1605,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             }
           ]}
         />
-        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
             
             {/* Hero Section */}
@@ -1619,7 +1619,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                 {/* Left Column: Content */}
                 <div className="lg:col-span-6 space-y-6">
-                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                     AI Developer Tools
                   </span>
                   
@@ -1660,7 +1660,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Right Column: Showcase Image */}
                 <div className="lg:col-span-6 relative">
                   {/* Background Glow */}
-                  <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                  <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
                   
                   <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -1679,8 +1679,8 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
                 {project.results.map((result, i) => (
                   <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">{result.value}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">{result.value}</span>
                     <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">{result.label}</span>
                   </div>
                 ))}
@@ -1690,7 +1690,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Overview Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="max-w-4xl space-y-6">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Overview</h2>
                 <p className="text-zinc-400 text-lg font-light leading-relaxed">
                   Pipper is a local developer harness and desktop interface (Omni) that centralizes agent-based coding runtimes. By launching Codex, Claude-Code, and OpenCode subprocesses concurrently within a single sandboxed session, the runtime shares workspace context, synchronizes credential access, and coordinates parallel agent operations. Developers can instruct one agent to implement feature blocks, while other runtimes actively audit outputs, run syntax compilers, and perform local check routines before safe write-backs to the project file system. Powered by Electron and Node, Pipper bridges the gap between fragmented command-line agents and unified IDE workflows.
@@ -1701,7 +1701,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Technical Specifications Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Technical Specifications</h2>
               </div>
               <div className="overflow-x-auto border border-white/[0.08] rounded-2xl bg-white/[0.01]">
@@ -1717,7 +1717,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     {pipperSpecs.map((spec, i) => (
                       <tr key={i} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 font-bold text-white">{spec.component}</td>
-                        <td className="px-6 py-4 font-semibold text-primary">{spec.tech}</td>
+                        <td className="px-6 py-4 font-semibold text-[#C0F0FB]">{spec.tech}</td>
                         <td className="px-6 py-4 text-zinc-400 font-light">{spec.description}</td>
                       </tr>
                     ))}
@@ -1729,19 +1729,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Core Features Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Core Features</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {pipperFeatures.map((feat, i) => (
                   <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-[24px] p-8 hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-primary font-mono text-xs font-bold block mb-2">0{i + 1}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-[#C0F0FB] font-mono text-xs font-bold block mb-2">0{i + 1}</span>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-4">{feat.title}</h3>
                     <ul className="space-y-3">
                       {feat.bullets.map((bullet, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-zinc-400 font-light leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -1754,7 +1754,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Architecture & Flow Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Architecture & System Flow</h2>
               </div>
               
@@ -1770,7 +1770,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                           <stop offset="100%" stopColor="#ffffff" stopOpacity="0.01" />
                         </linearGradient>
                         <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#355CFF" />
+                          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C0F0FB" />
                         </marker>
                       </defs>
  
@@ -1781,17 +1781,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                       </g>
  
                       {/* Flows / Lines */}
-                      <path d="M220,95 H320" stroke="#355CFF" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                      <text x="230" y="85" fill="#355CFF">1. Trigger Goal</text>
+                      <path d="M220,95 H320" stroke="#C0F0FB" strokeWidth="1.5" markerEnd="url(#arrow)" />
+                      <text x="230" y="85" fill="#C0F0FB">1. Trigger Goal</text>
  
-                      <path d="M460,95 H580" stroke="#355CFF" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                      <text x="475" y="85" fill="#355CFF">2. Bind Workspace</text>
+                      <path d="M460,95 H580" stroke="#C0F0FB" strokeWidth="1.5" markerEnd="url(#arrow)" />
+                      <text x="475" y="85" fill="#C0F0FB">2. Bind Workspace</text>
  
-                      <path d="M650,130 V240" stroke="#355CFF" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                      <text x="660" y="185" fill="#355CFF">3. Parallel Exec</text>
+                      <path d="M650,130 V240" stroke="#C0F0FB" strokeWidth="1.5" markerEnd="url(#arrow)" />
+                      <text x="660" y="185" fill="#C0F0FB">3. Parallel Exec</text>
  
-                      <path d="M580,275 H460" stroke="#355CFF" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                      <text x="480" y="265" fill="#355CFF">4. Draft Diffs</text>
+                      <path d="M580,275 H460" stroke="#C0F0FB" strokeWidth="1.5" markerEnd="url(#arrow)" />
+                      <text x="480" y="265" fill="#C0F0FB">4. Draft Diffs</text>
  
                       <path d="M320,275 H220" stroke="#a7f3d0" strokeWidth="1.5" markerEnd="url(#arrow)" />
                       <text x="235" y="265" fill="#a7f3d0">5. Verify & Compile</text>
@@ -1830,7 +1830,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Conceptual Data Model */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-6">
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Module 01</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Module 01</span>
                     <h4 className="text-white font-bold mb-2">Omni Desktop App</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Minimalist terminal container launching agent sub-processes, embedding shared credentials.
@@ -1838,7 +1838,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Module 02</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Module 02</span>
                     <h4 className="text-white font-bold mb-2">Credential Vault</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Locally securely binds model authorization tokens for Codex, Claude-Code, and OpenCode interfaces.
@@ -1846,7 +1846,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
  
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Module 03</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Module 03</span>
                     <h4 className="text-white font-bold mb-2">Security Shield</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Monitors agent syscalls, preventing unauthorized directory traversals or outbound API calls.
@@ -1854,7 +1854,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
  
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Module 04</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Module 04</span>
                     <h4 className="text-white font-bold mb-2">AST Merge Tool</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Parses abstract syntax trees from different agents to resolve git conflict styles and verify structure.
@@ -1935,7 +1935,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             }
           ]}
         />
-        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+        <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
           <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
             
             {/* Hero Section */}
@@ -1949,7 +1949,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                 {/* Left Column: Content */}
                 <div className="lg:col-span-6 space-y-6">
-                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                  <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                     AI Agent Platform
                   </span>
                   
@@ -1990,7 +1990,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Right Column: Showcase Image */}
                 <div className="lg:col-span-6 relative">
                   {/* Background Glow */}
-                  <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                  <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
                   
                   <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -2009,8 +2009,8 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
                 {project.results.map((result, i) => (
                   <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">{result.value}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">{result.value}</span>
                     <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">{result.label}</span>
                   </div>
                 ))}
@@ -2020,7 +2020,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Overview Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="max-w-4xl space-y-6">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">01 / Overview</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Overview</h2>
                 <p className="text-zinc-400 text-lg font-light leading-relaxed">
                   3RDMIND is an advanced agentic AI platform that simulates, runs, and scales digital startups using a squad of specialized C-suite agents (CEO, CMO, CTO, CFO, CRO, CSO) who collaborate, make decisions, execute tasks, and continuously learn from real-world feedback loops. Built on a decoupled, asynchronous agent-runtime model, the platform features a frontend Dashboard (Next.js), a Supabase Realtime backend, and a centralized Agent Runtime orchestrator powered by OpenRouter models. By tracking judge ratings, conversion outcomes, and natural language user corrections, the Compounding Intelligence Layer automatically updates agent operating strategies without polluting core system prompts.
@@ -2031,7 +2031,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Technical Specifications Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">02 / Architecture Specs</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Technical Specifications</h2>
               </div>
               <div className="overflow-x-auto border border-white/[0.08] rounded-2xl bg-white/[0.01]">
@@ -2047,7 +2047,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     {thirdMindSpecs.map((spec, i) => (
                       <tr key={i} className="hover:bg-white/[0.01] transition-colors">
                         <td className="px-6 py-4 font-bold text-white">{spec.component}</td>
-                        <td className="px-6 py-4 font-semibold text-primary">{spec.tech}</td>
+                        <td className="px-6 py-4 font-semibold text-[#C0F0FB]">{spec.tech}</td>
                         <td className="px-6 py-4 text-zinc-400 font-light">{spec.description}</td>
                       </tr>
                     ))}
@@ -2059,19 +2059,19 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Core Features Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">03 / Platform Modules</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Core Features</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {thirdMindFeatures.map((feat, i) => (
                   <div key={i} className="bg-white/[0.01] border border-white/[0.05] rounded-[24px] p-8 hover:border-white/[0.1] hover:bg-white/[0.02] transition-all duration-300 shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <span className="text-primary font-mono text-xs font-bold block mb-2">0{i + 1}</span>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <span className="text-[#C0F0FB] font-mono text-xs font-bold block mb-2">0{i + 1}</span>
                     <h3 className="text-xl font-bold text-white tracking-tight mb-4">{feat.title}</h3>
                     <ul className="space-y-3">
                       {feat.bullets.map((bullet, idx) => (
                         <li key={idx} className="flex items-start gap-3 text-sm text-zinc-400 font-light leading-relaxed">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -2084,7 +2084,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* Architecture & Flow Section */}
             <section className="my-20 border-t border-white/[0.06] pt-20">
               <div className="mb-10">
-                <span className="text-primary font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
+                <span className="text-[#C0F0FB] font-mono text-[10px] uppercase tracking-widest">04 / Systems Flow</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mt-2">Architecture & System Flow</h2>
               </div>
               
@@ -2163,7 +2163,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 {/* Conceptual Data Model */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-6">
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Signal 01</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Signal 01</span>
                     <h4 className="text-white font-bold mb-2">Performance Logs</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Captures task execution summaries, judge evaluations, human ratings, and natural language edit deltas.
@@ -2171,7 +2171,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Signal 02</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Signal 02</span>
                     <h4 className="text-white font-bold mb-2">Agent Learnings</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Stores categorized operating insights alongside dynamic confidence scores and evidence weightings.
@@ -2179,7 +2179,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Signal 03</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Signal 03</span>
                     <h4 className="text-white font-bold mb-2">Strategy Versions</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Tracks compiled prompt additions generated over time, enabling safe rollback and version comparison.
@@ -2187,7 +2187,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
 
                   <div className="bg-white/[0.01] border border-white/[0.05] rounded-xl p-6">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary block mb-2 font-mono">Signal 04</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#C0F0FB] block mb-2 font-mono">Signal 04</span>
                     <h4 className="text-white font-bold mb-2">Outcome Events</h4>
                     <p className="text-xs text-zinc-400 leading-relaxed font-light">
                       Records real-world telemetry (e.g., email responses, deployments) to validate long-term strategy efficiency.
@@ -2281,7 +2281,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           }
         ]}
       />
-      <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-primary/20 selection:text-white">
+      <div className="pt-24 pb-32 w-full bg-[#050505] text-zinc-300 font-sans selection:bg-[#C0F0FB]/20 selection:text-white">
         
         {/* Global Container Wrapper */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 xl:px-16 w-full">
@@ -2297,7 +2297,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
               {/* Left Column: Content */}
               <div className="lg:col-span-6 space-y-6">
-                <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 inline-block w-fit">
+                <span className="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 inline-block w-fit">
                   {project.category}
                 </span>
                 
@@ -2338,7 +2338,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               {/* Right Column: Showcase Media */}
               <div className="lg:col-span-6 relative">
                 {/* Background Glow */}
-                <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
+                <div className="absolute -inset-4 bg-[#C0F0FB]/10 blur-2xl rounded-full opacity-40 pointer-events-none" />
 
                 <div className="relative w-full h-0 pb-[56.25%] rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.01] shadow-2xl group transition-all duration-500 hover:scale-[1.01]">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-40 pointer-events-none" />
@@ -2369,8 +2369,8 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-16">
               {project.results.map((result, i) => (
                 <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-[24px] p-6 md:p-8 relative overflow-hidden group hover:border-white/[0.12] transition-all duration-300 shadow-sm">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                  <span className="text-3xl md:text-5xl font-extrabold text-primary mb-2 tracking-tight block leading-none">{result.value}</span>
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-[#C0F0FB]/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  <span className="text-3xl md:text-5xl font-extrabold text-[#C0F0FB] mb-2 tracking-tight block leading-none">{result.value}</span>
                   <span className="text-zinc-500 uppercase text-[10px] font-bold tracking-widest block">{result.label}</span>
                 </div>
               ))}
@@ -2404,7 +2404,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
             {/* Solution */}
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C0F0FB]/10 border border-[#C0F0FB]/20 text-[#C0F0FB] text-[10px] font-bold uppercase tracking-wider">
                 Solution
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-none">
@@ -2417,7 +2417,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 <ul className="space-y-3.5 pt-4">
                   {details.solutionPoints.map((pt, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm text-zinc-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] mt-2 shrink-0" />
                       <span>{pt}</span>
                     </li>
                   ))}
@@ -2434,7 +2434,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               {activeBlueprints.length > 0 && (
                 <>
                   <div className="max-w-2xl">
-                    <span className="text-primary font-bold uppercase text-[10px] tracking-widest font-mono">System Integrity</span>
+                    <span className="text-[#C0F0FB] font-bold uppercase text-[10px] tracking-widest font-mono">System Integrity</span>
                     <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mt-2">Engineering Blueprints</h2>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2479,7 +2479,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   <ul className="space-y-3">
                     {details.engineeringScope.map((s, i) => (
                       <li key={i} className="flex items-center text-zinc-300 text-xs font-semibold">
-                        <CheckCircle2 size={15} className="text-primary mr-3 shrink-0" /> {s}
+                        <CheckCircle2 size={15} className="text-[#C0F0FB] mr-3 shrink-0" /> {s}
                       </li>
                     ))}
                   </ul>
