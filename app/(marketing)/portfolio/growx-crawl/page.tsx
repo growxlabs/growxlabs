@@ -61,13 +61,17 @@ export default function GrowXCrawlCaseStudy() {
             01 — HERO METADATA & PREVIEW
         ══════════════════════════════════════════════════════════════════ */}
         <section className="space-y-10">
-          <div className="space-y-4 max-w-4xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-              // INTERNAL R&D
-            </span>
-            <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal max-w-3xl">
-              A web research tool built inside GrowxLabs to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // INTERNAL R&D
+              </span>
+            </div>
+            <div className="md:col-span-8">
+              <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal">
+                A web research tool built inside GrowxLabs to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.
+              </p>
+            </div>
           </div>
 
           {/* Metadata Parameters Strip */}

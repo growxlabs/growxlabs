@@ -43,13 +43,17 @@ export default function TrionyxCaseStudyPage() {
             01 — HERO METADATA & PREVIEW
         ══════════════════════════════════════════════════════════════════ */}
         <section className="space-y-10 pt-4">
-          <div className="space-y-4 max-w-4xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-[#C0F0FB]">
-              // CASE STUDY
-            </span>
-            <p className="text-xl sm:text-2xl text-muted-foreground font-light leading-relaxed max-w-3xl">
-              A digital platform built around Trionyx's products, customer experience and day-to-day operations.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-[#C0F0FB] block">
+                // CASE STUDY
+              </span>
+            </div>
+            <div className="md:col-span-8">
+              <p className="text-xl sm:text-2xl text-muted-foreground font-light leading-relaxed">
+                A digital platform built around Trionyx's products, customer experience and day-to-day operations.
+              </p>
+            </div>
           </div>
 
           {/* Clean Metadata Strip */}
@@ -142,62 +146,7 @@ export default function TrionyxCaseStudyPage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            04 — PRODUCT EXPERIENCE & SPECIFICATIONS
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="space-y-12">
-          <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-              // 02 PLATFORM SPECIFICATIONS
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Customer Experience & Platform Capabilities
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 divide-y md:divide-y-0 md:divide-x divide-neutral-800/80">
-            {/* Spec 1: Product Catalog */}
-            <div className="space-y-3 md:pr-8">
-              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#C0F0FB]">
-                01 / CATALOG
-              </span>
-              <h3 className="font-serif font-bold text-2xl text-foreground">
-                Product Catalog
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Products are organized by category with structured specifications, technical drawings, and dimension charts. Prospective clients can search and filter industrial equipment models directly in the browser without downloading bulky catalog PDFs.
-              </p>
-            </div>
-
-            {/* Spec 2: RFQ & Enquiry */}
-            <div className="space-y-3 pt-8 md:pt-0 md:px-8">
-              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#C0F0FB]">
-                02 / INQUIRY
-              </span>
-              <h3 className="font-serif font-bold text-2xl text-foreground">
-                RFQ & Enquiry Flow
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Custom enquiry forms collect essential engineering parameters, volume requirements, and project timelines upfront before dispatching requests directly to Trionyx's technical sales desk, eliminating back-and-forth email delays.
-              </p>
-            </div>
-
-            {/* Spec 3: Multi-Device Responsive */}
-            <div className="space-y-3 pt-8 md:pt-0 md:pl-8">
-              <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#C0F0FB]">
-                03 / ADAPTABILITY
-              </span>
-              <h3 className="font-serif font-bold text-2xl text-foreground">
-                Responsive Design
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Engineered for desktop, tablet, and mobile browsers, ensuring field engineers and buyers on site visits can quickly verify catalog measurements, part numbers, and component compatibility on any device.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════════════════════════════════════════════════════
-            04 — ARCHITECTURE (Platform & Operations Architecture)
+            03 — ARCHITECTURE (Platform & Operations Architecture)
         ══════════════════════════════════════════════════════════════════ */}
         <section aria-labelledby="architecture-title" className="border-t border-neutral-800 pt-16 space-y-8">
           <h2 id="architecture-title" className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
