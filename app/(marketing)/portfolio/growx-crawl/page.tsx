@@ -62,7 +62,7 @@ export default function GrowXCrawlCaseStudy() {
         ══════════════════════════════════════════════════════════════════ */}
         <section className="space-y-10">
           <div className="space-y-4 max-w-4xl">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
               // INTERNAL R&D
             </span>
             <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal max-w-3xl">
@@ -105,7 +105,7 @@ export default function GrowXCrawlCaseStudy() {
         <section className="border-t border-neutral-800 pt-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
             <div className="lg:col-span-5 space-y-3">
-              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
                 // 01 OVERVIEW
               </span>
               <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.12]">
@@ -133,7 +133,7 @@ export default function GrowXCrawlCaseStudy() {
 
           <div className="space-y-3">
 
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
 
               // 02 CAPABILITIES
 
@@ -164,7 +164,7 @@ export default function GrowXCrawlCaseStudy() {
                 </span>
                 <span
                   className={`text-sm sm:text-base text-right ${
-                    item.isHighlight ? "text-primary font-bold" : "text-neutral-400"
+                    item.isHighlight ? "text-[#C0F0FB] font-bold" : "text-neutral-400"
                   }`}
                 >
                   {item.detail}
@@ -191,7 +191,7 @@ export default function GrowXCrawlCaseStudy() {
 
           <div className="space-y-3">
 
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
 
               // 03 ARCHITECTURE
 
@@ -444,7 +444,7 @@ export default function GrowXCrawlCaseStudy() {
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16 space-y-8">
           <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
               // 04 PLATFORM SURFACES
             </span>
             <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">

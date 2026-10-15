@@ -422,40 +422,49 @@ html.light .notion-theme {
 /* VERCEL DARK THEME — Dashboard Dark Mode Override    */
 /* ═══════════════════════════════════════════════════ */
 html.dark,
-.dark,
-html.dark .notion-theme,
-.dark .notion-theme,
-.dark.notion-theme {
+.dark {
   --background: #070707;
   --foreground: #ffffff;
   --card: #101010;
   --card-foreground: #ffffff;
   --popover: #202020;
   --popover-foreground: #ffffff;
-  --primary: #0075de;
-  --primary-foreground: #ffffff;
+  --primary: #C0F0FB;
+  --primary-foreground: #000000;
   --secondary: #171717;
   --secondary-foreground: #ededed;
   --muted: #121212;
   --muted-foreground: #a0a0a0;
-  --accent: #0075de;
-  --accent-foreground: #ffffff;
+  --accent: #C0F0FB;
+  --accent-foreground: #000000;
   --destructive: #f43f5e;
   --destructive-foreground: #ffffff;
   --border: #262626;
   --input: #121212;
-  --ring: #0075de;
+  --ring: #C0F0FB;
   
   --surface-1: #101010;
   --surface-2: #0A0A0A;
   --border-subtle: #262626;
   --border-default: #262626;
-  --border-hover: #0075de;
+  --border-hover: #C0F0FB;
   
   --text-primary: #ffffff;
   --text-secondary: #a3a3a3;
   --text-muted: #737373;
   --text-tertiary: #525252;
+}
+
+/* Dashboard Notion Dark Mode Specifics */
+html.dark .notion-theme,
+.dark .notion-theme,
+.dark.notion-theme {
+  --primary: #0075de;
+  --primary-foreground: #ffffff;
+  --accent: #0075de;
+  --ring: #0075de;
+  --border-hover: #0075de;
+}
 
   /* Figma-Quality Design Workspace Tokens */
   --app-bg: #070707;

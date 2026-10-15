@@ -63,7 +63,7 @@ export function AIReadActions({
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-mono text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
+          <span className="font-mono text-[10px] font-bold tracking-[0.2em] uppercase text-[#C0F0FB]">
             // AI UTILITY
           </span>
           <span className="text-neutral-700 hidden sm:inline">·</span>
