@@ -69,20 +69,20 @@ function LabCard({ tool }: { tool: LabTool }) {
       <div>
         <div className="flex items-center justify-between pb-6 border-b border-neutral-800/60">
           {tool.category ? (
-            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-primary uppercase">
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase">
               {tool.category}
             </span>
           ) : (
             <span />
           )}
-          <span className="font-mono text-[10px] font-bold tracking-widest text-primary/70 uppercase">
+          <span className="font-mono text-[10px] font-bold tracking-widest text-[#C0F0FB]/70 uppercase">
             {tool.category ? `· ${tool.status}` : tool.status}
           </span>
         </div>
 
         {/* Icon & Title */}
         <div className="pt-6 flex items-center gap-3.5">
-          <div className="w-10 h-10 border border-neutral-700/80 rounded-lg flex items-center justify-center text-primary shrink-0">
+          <div className="w-10 h-10 border border-neutral-700/80 rounded-lg flex items-center justify-center text-[#C0F0FB] shrink-0">
             <IconComponent size={20} />
           </div>
           <h3 className="font-sans font-black text-xl sm:text-[22px] text-foreground tracking-tight leading-tight">
@@ -97,7 +97,7 @@ function LabCard({ tool }: { tool: LabTool }) {
       </div>
 
       {/* Bottom Action CTA */}
-      <div className="pt-6 mt-8 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-primary uppercase tracking-wider">
+      <div className="pt-6 mt-8 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] uppercase tracking-wider">
         <span>{tool.cta}</span>
         <GrowxArrowRight
           size={14}
@@ -152,7 +152,7 @@ export default function AiLabPage() {
 
                 {/* Section Header */}
                 <div className={`${index === 0 ? "pt-6" : "pt-2"} pb-8 flex flex-col md:flex-row md:items-start justify-between gap-6`}>
-                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block shrink-0 pt-1">
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block shrink-0 pt-1">
                     {tool.kicker}
                   </span>
                   {index === 0 && (

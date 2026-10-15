@@ -473,10 +473,10 @@ html.dark .notion-theme,
 /* CHATGPT ACCENT COLOR PRESETS (Admin & Notion Workspace)         */
 /* ═══════════════════════════════════════════════════════════════ */
 
-/* Default Blue */
-[data-accent="blue"],
-[data-accent="default"],
-:root:not([data-accent]) {
+/* Default Blue (Scoped strictly to Notion/Admin Workspace) */
+.notion-theme[data-accent="blue"],
+.notion-theme[data-accent="default"],
+.notion-theme:not([data-accent]) {
   --primary: #0075de;
   --primary-hover: #005bab;
   --primary-foreground: #ffffff;
