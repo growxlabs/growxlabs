@@ -47,6 +47,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isArchitecture = normalizedPath.includes("/architecture");
   const isDocumentAssessment = normalizedPath === "/onboarding";
   const isActivation = normalizedPath.startsWith("/activate/");
+  const isHealthcareAuth = normalizedPath === "/h" || normalizedPath.startsWith("/h/");
   const isEmployeeWorkspace = isEmployeeWorkspaceRoute(normalizedPath);
   
   const isCheckoutPage = normalizedPath.includes("/checkout");
@@ -57,7 +58,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     return <div className="flex min-h-dvh flex-col bg-white text-slate-900"><ActivationHeader/><main className="flex-1">{children}</main><ActivationFooter/></div>;
   }
 
-  if (isEmployeeWorkspace || isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment || isPortalSubdomain) {
+  if (isHealthcareAuth || isEmployeeWorkspace || isDashboard || isDemo || isAuthPage || isCareersPage || isCoursesPage || isWishGame || isArchitecture || isDocumentAssessment || isPortalSubdomain) {
     return <>{children}</>;
   }
 
