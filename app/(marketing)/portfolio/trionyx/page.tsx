@@ -15,7 +15,7 @@ export const metadata = {
   },
 };
 
-const TRIONYX_FEATURES = [
+const TRIONYX_SPECIFICATIONS = [
   {
     title: "Product catalogue:",
     description: "Browse automotive protection products by category and view specifications.",
@@ -88,7 +88,7 @@ export default function TrionyxCaseStudyPage() {
         </Link>
       </div>
 
-      <main className="max-w-[1400px] mx-auto px-6 md:px-12 pb-32 space-y-28 md:space-y-36">
+      <main className="max-w-[1400px] mx-auto px-6 md:px-12 pb-32 space-y-20 md:space-y-24">
 
         {/* ══════════════════════════════════════════════════════════════════
             01 — HERO METADATA & PREVIEW
@@ -162,21 +162,21 @@ export default function TrionyxCaseStudyPage() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            02 — FEATURES (2-Column Editorial Layout)
+            02 — SPECIFICATIONS (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
             <div className="md:col-span-4">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-                // 02 FEATURES
+                // 02 SPECIFICATIONS
               </span>
             </div>
             <div className="md:col-span-8 divide-y divide-neutral-800/80">
-              {TRIONYX_FEATURES.map((feature, idx) => (
+              {TRIONYX_SPECIFICATIONS.map((feature, idx) => (
                 <div
                   key={feature.title}
                   className={`text-base sm:text-lg leading-relaxed flex items-start gap-3 ${
-                    idx === 0 ? "pb-5 first:pt-0" : idx === TRIONYX_FEATURES.length - 1 ? "pt-5" : "py-5"
+                    idx === 0 ? "pb-5 first:pt-0" : idx === TRIONYX_SPECIFICATIONS.length - 1 ? "pt-5" : "py-5"
                   }`}
                 >
                   <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
