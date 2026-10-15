@@ -201,8 +201,8 @@ export function InteractiveWhatsappNurture() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-border gap-4 z-10">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#355CFF] animate-ping" />
-            <h4 className="font-mono text-[11px] tracking-[0.18em] text-[#355CFF] uppercase font-bold">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#C0F0FB] animate-ping" />
+            <h4 className="font-mono text-[11px] tracking-[0.18em] text-[#C0F0FB] uppercase font-bold">
               WhatsApp Pipeline Simulator
             </h4>
           </div>
@@ -216,14 +216,14 @@ export function InteractiveWhatsappNurture() {
             <>
               <button
                 onClick={() => startSimulation("instant")}
-                className="bg-[#355CFF] hover:bg-[#2A4AD4] text-white font-mono text-[11px] font-bold px-3.5 py-2 rounded-md shadow-sm flex items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                className="bg-[#C0F0FB] hover:bg-[#2A4AD4] text-white font-mono text-[11px] font-bold px-3.5 py-2 rounded-md shadow-sm flex items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="w-3 h-3 fill-current" />
                 <span>TRACE INSTANT RESOLUTION</span>
               </button>
               <button
                 onClick={() => startSimulation("drip")}
-                className="bg-[#355CFF]/10 text-[#355CFF] border border-[#355CFF]/20 hover:bg-[#355CFF]/20 font-mono text-[11px] font-bold px-3.5 py-2 rounded-md flex items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                className="bg-[#C0F0FB]/10 text-[#C0F0FB] border border-[#C0F0FB]/20 hover:bg-[#C0F0FB]/20 font-mono text-[11px] font-bold px-3.5 py-2 rounded-md flex items-center gap-1.5 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Play className="w-3 h-3 fill-current" />
                 <span>TRACE DRIP ESCALATION</span>
@@ -278,10 +278,10 @@ export function InteractiveWhatsappNurture() {
             
             {/* Filled highlight backgrounds for simulated active state */}
             {isNodeActive("agent_inbox") && (
-              <motion.rect initial={{ opacity: 0 }} animate={{ opacity: 0.15 }} x="420" y="100" width="45" height="340" fill="#355CFF" />
+              <motion.rect initial={{ opacity: 0 }} animate={{ opacity: 0.15 }} x="420" y="100" width="45" height="340" fill="#C0F0FB" />
             )}
             {isNodeActive("automated_workflow") && (
-              <motion.rect initial={{ opacity: 0 }} animate={{ opacity: 0.15 }} x="420" y="440" width="45" height="360" fill="#355CFF" />
+              <motion.rect initial={{ opacity: 0 }} animate={{ opacity: 0.15 }} x="420" y="440" width="45" height="360" fill="#C0F0FB" />
             )}
 
             {/* Vertical text inside bars */}
@@ -296,28 +296,28 @@ export function InteractiveWhatsappNurture() {
             {/* Website Chat (x=120, y=190) -> Inbox */}
             <path
               d="M 280,190 L 420,190"
-              stroke={isNodeActive("agent_inbox") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_inbox") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_inbox") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_inbox") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* WhatsApp (x=120, y=270) -> Inbox */}
             <path
               d="M 280,270 L 420,270"
-              stroke={isNodeActive("agent_inbox") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_inbox") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_inbox") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_inbox") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Messenger (x=120, y=350) -> Inbox */}
             <path
               d="M 280,350 L 420,350"
-              stroke={isNodeActive("agent_inbox") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_inbox") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_inbox") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_inbox") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* SMS (x=120, y=430) -> Inbox */}
             <path
               d="M 280,430 L 420,430"
-              stroke={isNodeActive("agent_inbox") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_inbox") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_inbox") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_inbox") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
@@ -325,7 +325,7 @@ export function InteractiveWhatsappNurture() {
             {/* WhatsApp (x=120, y=270) -> Automated Workflow (curved path down) */}
             <path
               d="M 280,270 C 350,270 350,620 420,620"
-              stroke={isNodeActive("automated_workflow") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("automated_workflow") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("automated_workflow") ? "2" : "1.2"}
               strokeDasharray={isNodeActive("automated_workflow") ? "none" : "3 3"}
               markerEnd={isNodeActive("automated_workflow") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
@@ -334,21 +334,21 @@ export function InteractiveWhatsappNurture() {
             {/* Inbox -> Customer Inquiry (Real-Time) */}
             <path
               d="M 465,220 L 530,220"
-              stroke={isNodeActive("customer_inquiry") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("customer_inquiry") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("customer_inquiry") ? "2" : "1.2"}
               markerEnd={isNodeActive("customer_inquiry") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Customer Inquiry -> Agent Response */}
             <path
               d="M 650,220 L 710,220"
-              stroke={isNodeActive("agent_response") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_response") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_response") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_response") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Agent Response -> Conversation Resolved */}
             <path
               d="M 830,220 L 890,220"
-              stroke={isNodeActive("conv_resolved") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("conv_resolved") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("conv_resolved") ? "2" : "1.2"}
               markerEnd={isNodeActive("conv_resolved") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
@@ -356,42 +356,42 @@ export function InteractiveWhatsappNurture() {
             {/* Automated Workflow -> Inquiry (Unresolved/Idle) */}
             <path
               d="M 465,560 L 530,560"
-              stroke={isNodeActive("inquiry_idle") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("inquiry_idle") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("inquiry_idle") ? "2" : "1.2"}
               markerEnd={isNodeActive("inquiry_idle") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Inquiry (Idle) -> Inactivity Trigger */}
             <path
               d="M 650,560 L 710,560"
-              stroke={isNodeActive("inactivity_trigger") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("inactivity_trigger") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("inactivity_trigger") ? "2" : "1.2"}
               markerEnd={isNodeActive("inactivity_trigger") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Inactivity Trigger -> Follow-Up 1 */}
             <path
               d="M 830,560 L 890,560"
-              stroke={isNodeActive("followup_1") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("followup_1") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("followup_1") ? "2" : "1.2"}
               markerEnd={isNodeActive("followup_1") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Follow-Up 1 -> Follow-Up 2 (downwards loop) */}
             <path
               d="M 950,600 L 950,680 C 950,710 830,710 650,710"
-              stroke={isNodeActive("followup_2") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("followup_2") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("followup_2") ? "2" : "1.2"}
               markerEnd={isNodeActive("followup_2") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Follow-Up 2 -> Agent Alert */}
             <path
               d="M 530,710 L 465,710 C 400,710 390,750 530,750"
-              stroke={isNodeActive("agent_alert") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_alert") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_alert") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_alert") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
             {/* Agent Alert -> Agent Engagement */}
             <path
               d="M 650,750 L 710,750"
-              stroke={isNodeActive("agent_engagement") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("agent_engagement") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("agent_engagement") ? "2" : "1.2"}
               markerEnd={isNodeActive("agent_engagement") ? "url(#arrow-blue)" : "url(#arrow-gray)"}
             />
@@ -402,7 +402,7 @@ export function InteractiveWhatsappNurture() {
                 <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9CA3AF" />
               </marker>
               <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#355CFF" />
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C0F0FB" />
               </marker>
             </defs>
 
@@ -415,10 +415,10 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("website_chat")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="80" y="160" width="200" height="50" fill={isNodeActive("website_chat") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("website_chat") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("website_chat") ? "1.8" : "1"} rx="6" />
+              <rect x="80" y="160" width="200" height="50" fill={isNodeActive("website_chat") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("website_chat") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("website_chat") ? "1.8" : "1"} rx="6" />
               <text x="140" y="190" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="600">WEBSITE CHAT</text>
               <circle cx="110" cy="185" r="14" fill="#E5E2DC" />
-              <g transform="translate(102, 177) scale(0.65)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#355CFF" strokeWidth="2" fill="none" /></g>
+              <g transform="translate(102, 177) scale(0.65)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#C0F0FB" strokeWidth="2" fill="none" /></g>
             </g>
 
             {/* WhatsApp */}
@@ -427,10 +427,10 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("whatsapp")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="80" y="245" width="200" height="50" fill={isNodeActive("whatsapp") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("whatsapp") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("whatsapp") ? "1.8" : "1"} rx="6" />
+              <rect x="80" y="245" width="200" height="50" fill={isNodeActive("whatsapp") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("whatsapp") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("whatsapp") ? "1.8" : "1"} rx="6" />
               <text x="140" y="275" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="600">WHATSAPP</text>
               <circle cx="110" cy="270" r="14" fill="#E5E2DC" />
-              <g transform="translate(102, 262) scale(0.65)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="#355CFF" strokeWidth="2" fill="none" /></g>
+              <g transform="translate(102, 262) scale(0.65)"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="#C0F0FB" strokeWidth="2" fill="none" /></g>
             </g>
 
             {/* FB Messenger */}
@@ -439,10 +439,10 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("messenger")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="80" y="325" width="200" height="50" fill={isNodeActive("messenger") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("messenger") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("messenger") ? "1.8" : "1"} rx="6" />
+              <rect x="80" y="325" width="200" height="50" fill={isNodeActive("messenger") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("messenger") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("messenger") ? "1.8" : "1"} rx="6" />
               <text x="140" y="355" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="600">MESSENGER</text>
               <circle cx="110" cy="350" r="14" fill="#E5E2DC" />
-              <g transform="translate(102, 342) scale(0.65)"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4Z" stroke="#355CFF" strokeWidth="2" fill="none" /></g>
+              <g transform="translate(102, 342) scale(0.65)"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4Z" stroke="#C0F0FB" strokeWidth="2" fill="none" /></g>
             </g>
 
             {/* SMS */}
@@ -451,10 +451,10 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("sms")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="80" y="405" width="200" height="50" fill={isNodeActive("sms") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("sms") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("sms") ? "1.8" : "1"} rx="6" />
+              <rect x="80" y="405" width="200" height="50" fill={isNodeActive("sms") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("sms") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("sms") ? "1.8" : "1"} rx="6" />
               <text x="140" y="435" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="12" fontWeight="600">SMS GATEWAY</text>
               <circle cx="110" cy="430" r="14" fill="#E5E2DC" />
-              <g transform="translate(102, 422) scale(0.65)"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="#355CFF" strokeWidth="2" fill="none" /><line x1="12" y1="18" x2="12.01" y2="18" stroke="#355CFF" strokeWidth="3" /></g>
+              <g transform="translate(102, 422) scale(0.65)"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="#C0F0FB" strokeWidth="2" fill="none" /><line x1="12" y1="18" x2="12.01" y2="18" stroke="#C0F0FB" strokeWidth="3" /></g>
             </g>
 
             {/* ─── TOP PATH NODES (INSTANT PATH) ─── */}
@@ -464,7 +464,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("customer_inquiry")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="530" y="180" width="120" height="80" fill={isNodeActive("customer_inquiry") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("customer_inquiry") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("customer_inquiry") ? "1.8" : "1.2"} rx="8" />
+              <rect x="530" y="180" width="120" height="80" fill={isNodeActive("customer_inquiry") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("customer_inquiry") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("customer_inquiry") ? "1.8" : "1.2"} rx="8" />
               <text x="590" y="215" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">CUSTOMER</text>
               <text x="590" y="230" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">INQUIRY</text>
               <text x="590" y="248" fill="#6B7280" fontFamily="monospace" fontSize="8.5" textAnchor="middle">(Real-Time)</text>
@@ -476,7 +476,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("agent_response")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="710" y="180" width="120" height="80" fill={isNodeActive("agent_response") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_response") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("agent_response") ? "1.8" : "1.2"} rx="8" />
+              <rect x="710" y="180" width="120" height="80" fill={isNodeActive("agent_response") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_response") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("agent_response") ? "1.8" : "1.2"} rx="8" />
               <text x="770" y="215" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">AGENT</text>
               <text x="770" y="230" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">RESPONSE</text>
               <text x="770" y="248" fill="#6B7280" fontFamily="monospace" fontSize="8.5" textAnchor="middle">(Instant)</text>
@@ -488,7 +488,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("conv_resolved")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="890" y="180" width="85" height="80" fill={isNodeActive("conv_resolved") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("conv_resolved") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("conv_resolved") ? "1.8" : "1.2"} rx="8" />
+              <rect x="890" y="180" width="85" height="80" fill={isNodeActive("conv_resolved") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("conv_resolved") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("conv_resolved") ? "1.8" : "1.2"} rx="8" />
               <text x="932" y="215" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="9.5" fontWeight="bold" textAnchor="middle">CONVERSATION</text>
               <text x="932" y="230" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="9.5" fontWeight="bold" textAnchor="middle">RESOLVED</text>
             </g>
@@ -501,7 +501,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("inquiry_idle")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="530" y="520" width="120" height="80" fill={isNodeActive("inquiry_idle") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("inquiry_idle") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("inquiry_idle") ? "1.8" : "1.2"} rx="8" />
+              <rect x="530" y="520" width="120" height="80" fill={isNodeActive("inquiry_idle") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("inquiry_idle") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("inquiry_idle") ? "1.8" : "1.2"} rx="8" />
               <text x="590" y="555" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">INQUIRY</text>
               <text x="590" y="570" fill="#6B7280" fontFamily="monospace" fontSize="8.5" textAnchor="middle">(Unresolved/Idle)</text>
             </g>
@@ -512,7 +512,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("inactivity_trigger")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="710" y="520" width="120" height="80" fill={isNodeActive("inactivity_trigger") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("inactivity_trigger") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("inactivity_trigger") ? "1.8" : "1.2"} rx="8" />
+              <rect x="710" y="520" width="120" height="80" fill={isNodeActive("inactivity_trigger") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("inactivity_trigger") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("inactivity_trigger") ? "1.8" : "1.2"} rx="8" />
               <text x="770" y="550" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">TRIGGER:</text>
               <text x="770" y="565" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="bold" textAnchor="middle">30 MIN INACTIVITY</text>
             </g>
@@ -523,7 +523,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("followup_1")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="890" y="520" width="85" height="80" fill={isNodeActive("followup_1") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("followup_1") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("followup_1") ? "1.8" : "1.2"} rx="8" />
+              <rect x="890" y="520" width="85" height="80" fill={isNodeActive("followup_1") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("followup_1") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("followup_1") ? "1.8" : "1.2"} rx="8" />
               <text x="932" y="550" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="9.5" fontWeight="bold" textAnchor="middle">AUTO-FOLLOW UP 1</text>
               <text x="932" y="568" fill="#6B7280" fontFamily="monospace" fontSize="8" textAnchor="middle">(Friendly Reminder)</text>
             </g>
@@ -534,7 +534,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("followup_2")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="530" y="670" width="120" height="80" fill={isNodeActive("followup_2") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("followup_2") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("followup_2") ? "1.8" : "1.2"} rx="8" />
+              <rect x="530" y="670" width="120" height="80" fill={isNodeActive("followup_2") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("followup_2") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("followup_2") ? "1.8" : "1.2"} rx="8" />
               <text x="590" y="700" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="10" fontWeight="bold" textAnchor="middle">AUTO-FOLLOW UP 2</text>
               <text x="590" y="718" fill="#6B7280" fontFamily="monospace" fontSize="8" textAnchor="middle">(Offer Support/FAQ)</text>
             </g>
@@ -545,7 +545,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("agent_alert")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="530" y="725" width="120" height="50" fill={isNodeActive("agent_alert") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_alert") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("agent_alert") ? "1.8" : "1.2"} rx="8" />
+              <rect x="530" y="725" width="120" height="50" fill={isNodeActive("agent_alert") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_alert") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("agent_alert") ? "1.8" : "1.2"} rx="8" />
               <text x="590" y="750" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="bold" textAnchor="middle">AGENT ALERT (Urgent)</text>
             </g>
 
@@ -555,7 +555,7 @@ export function InteractiveWhatsappNurture() {
               onMouseEnter={() => setHoveredNode("agent_engagement")}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              <rect x="710" y="710" width="120" height="80" fill={isNodeActive("agent_engagement") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_engagement") ? "#355CFF" : "#9CA3AF"} strokeWidth={isNodeActive("agent_engagement") ? "1.8" : "1.2"} rx="8" />
+              <rect x="710" y="710" width="120" height="80" fill={isNodeActive("agent_engagement") ? "#FAF9F6" : "#FFFFFF"} stroke={isNodeActive("agent_engagement") ? "#C0F0FB" : "#9CA3AF"} strokeWidth={isNodeActive("agent_engagement") ? "1.8" : "1.2"} rx="8" />
               <text x="770" y="745" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">AGENT</text>
               <text x="770" y="760" fill="#1A1A1A" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="bold" textAnchor="middle">ENGAGEMENT</text>
             </g>
@@ -599,7 +599,7 @@ export function InteractiveWhatsappNurture() {
           <div className="space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#355CFF]" />
+                <Activity className="w-4 h-4 text-[#C0F0FB]" />
                 <h5 className="font-mono text-[11px] tracking-[0.1em] text-foreground uppercase font-bold">
                   TELEMETRY PANEL
                 </h5>
@@ -613,7 +613,7 @@ export function InteractiveWhatsappNurture() {
             {hoveredNode && nodeDetails[hoveredNode] ? (
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono text-[#355CFF] uppercase tracking-wider block mb-1">
+                  <span className="text-[10px] font-mono text-[#C0F0FB] uppercase tracking-wider block mb-1">
                     {nodeDetails[hoveredNode].category}
                   </span>
                   <h6 className="text-[16px] font-black tracking-tight text-foreground leading-tight">
@@ -626,10 +626,10 @@ export function InteractiveWhatsappNurture() {
                 </p>
 
                 <div className="bg-background border border-border rounded-md p-3.5 font-mono text-[11px] text-foreground/90 space-y-1 relative">
-                  <div className="absolute top-2 right-2 text-[#355CFF]/30"><Terminal className="w-3.5 h-3.5" /></div>
+                  <div className="absolute top-2 right-2 text-[#C0F0FB]/30"><Terminal className="w-3.5 h-3.5" /></div>
                   <span className="text-muted-foreground block uppercase text-[9px] tracking-wider mb-1.5">SYSTEM DIAGNOSTICS:</span>
                   <div className="truncate">{nodeDetails[hoveredNode].metrics}</div>
-                  <div>Trace State: <span className="text-[#355CFF] font-bold">ACTIVE</span></div>
+                  <div>Trace State: <span className="text-[#C0F0FB] font-bold">ACTIVE</span></div>
                 </div>
               </div>
             ) : (
@@ -652,7 +652,7 @@ export function InteractiveWhatsappNurture() {
             </div>
             <div className="flex justify-between">
               <span>LATENCY TOLERANCE:</span>
-              <span className="text-[#355CFF] font-semibold">&lt;50ms SYNC</span>
+              <span className="text-[#C0F0FB] font-semibold">&lt;50ms SYNC</span>
             </div>
             <div className="flex justify-between">
               <span>CRM SYNC PIPELINE:</span>

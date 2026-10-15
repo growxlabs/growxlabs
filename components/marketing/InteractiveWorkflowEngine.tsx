@@ -242,8 +242,8 @@ export function InteractiveWorkflowEngine() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-border gap-4 z-10">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#355CFF] animate-ping" />
-            <h4 className="font-mono text-[11px] tracking-[0.18em] text-[#355CFF] uppercase font-bold">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#C0F0FB] animate-ping" />
+            <h4 className="font-mono text-[11px] tracking-[0.18em] text-[#C0F0FB] uppercase font-bold">
               Interactive Blueprint Architecture
             </h4>
           </div>
@@ -256,7 +256,7 @@ export function InteractiveWorkflowEngine() {
           {!isSimulating ? (
             <button
               onClick={startSimulation}
-              className="bg-[#355CFF] hover:bg-[#2A4AD4] text-white font-mono text-[11px] font-bold px-4 py-2 rounded-md shadow-sm flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-[#C0F0FB] hover:bg-[#99E0F2] text-white font-mono text-[11px] font-bold px-4 py-2 rounded-md shadow-sm flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>SIMULATE RUN</span>
@@ -305,7 +305,7 @@ export function InteractiveWorkflowEngine() {
             {/* Stripe Webhook -> Trigger Router */}
             <path
               d="M 215,250 L 300,250"
-              stroke={isNodeActive("trigger_router") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("trigger_router") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("trigger_router") ? "2" : "1.5"}
               strokeDasharray={isNodeActive("trigger_router") ? "3 3" : "none"}
               className={isNodeActive("trigger_router") ? "animate-[dash_12s_linear_infinite]" : ""}
@@ -343,7 +343,7 @@ export function InteractiveWorkflowEngine() {
             {/* Trigger Router -> Workflow Engine Box */}
             <path
               d="M 357,280 L 357,325"
-              stroke={isNodeActive("state_manager") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("state_manager") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("state_manager") ? "2" : "1.5"}
               strokeDasharray={isNodeActive("state_manager") ? "3 3" : "none"}
             />
@@ -351,13 +351,13 @@ export function InteractiveWorkflowEngine() {
             {/* State Manager -> Exec Instance */}
             <path
               d="M 437,365 L 437,405"
-              stroke={isNodeActive("execution_instance") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("execution_instance") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("execution_instance") ? "2" : "1.5"}
             />
             {/* Exec Instance -> Data Context */}
             <path
               d="M 437,445 L 437,485"
-              stroke={isNodeActive("data_context") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("data_context") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("data_context") ? "2" : "1.5"}
             />
             {/* Data Context -> Action Dispatcher */}
@@ -367,14 +367,14 @@ export function InteractiveWorkflowEngine() {
             {/* Step Defs -> Persistence Store */}
             <path
               d="M 437,685 L 437,725"
-              stroke={isNodeActive("persistence_store") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("persistence_store") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("persistence_store") ? "2" : "1.5"}
             />
 
             {/* Persistence Store -> Data Flow Diamond */}
             <path
               d="M 575,760 L 620,760 L 620,250 L 670,250"
-              stroke={isNodeActive("step_1_fetch") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("step_1_fetch") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("step_1_fetch") ? "2" : "1.5"}
               strokeDasharray={isNodeActive("step_1_fetch") ? "3 3" : "none"}
             />
@@ -384,7 +384,7 @@ export function InteractiveWorkflowEngine() {
             {/* Data Flow Diamond -> Step 1 Fetch */}
             <path
               d="M 695,275 L 695,325"
-              stroke={isNodeActive("step_1_fetch") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("step_1_fetch") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("step_1_fetch") ? "2" : "1.5"}
             />
 
@@ -393,7 +393,7 @@ export function InteractiveWorkflowEngine() {
             {/* Step 1 Fetch -> Gateway 1 Conditions */}
             <path
               d="M 695,375 L 695,415"
-              stroke={isNodeActive("gateway_1") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("gateway_1") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("gateway_1") ? "2" : "1.5"}
             />
 
@@ -403,7 +403,7 @@ export function InteractiveWorkflowEngine() {
             {/* Gateway 1 -> Step 2A (Yes) */}
             <path
               d="M 695,465 C 695,500 640,500 640,535"
-              stroke={isNodeActive("step_2a_process") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("step_2a_process") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("step_2a_process") ? "2" : "1.5"}
             />
             {/* Gateway 1 -> Step 2B (No) */}
@@ -414,7 +414,7 @@ export function InteractiveWorkflowEngine() {
             {/* Step 2A -> Timers Delays */}
             <path
               d="M 640,585 L 600,585 L 600,740 L 640,740"
-              stroke={isNodeActive("timers_delays") ? "#355CFF" : "#9CA3AF"}
+              stroke={isNodeActive("timers_delays") ? "#C0F0FB" : "#9CA3AF"}
               strokeWidth={isNodeActive("timers_delays") ? "2" : "1.5"}
             />
 
@@ -443,7 +443,7 @@ export function InteractiveWorkflowEngine() {
                   height="40"
                   rx="6"
                   fill={isNodeActive(node.id) ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                  stroke={isNodeActive(node.id) ? "#355CFF" : "#9CA3AF"}
+                  stroke={isNodeActive(node.id) ? "#C0F0FB" : "#9CA3AF"}
                   strokeWidth={isNodeActive(node.id) ? "2" : "1.2"}
                   className="transition-all duration-300"
                 />
@@ -451,7 +451,7 @@ export function InteractiveWorkflowEngine() {
                   cx="70"
                   cy={node.y + 20}
                   r="10"
-                  fill={isNodeActive(node.id) ? "#355CFF" : "#9CA3AF"}
+                  fill={isNodeActive(node.id) ? "#C0F0FB" : "#9CA3AF"}
                   className="transition-colors duration-300"
                 />
                 {/* SVG ForeignObject to render Lucide Icons inside SVG */}
@@ -491,7 +491,7 @@ export function InteractiveWorkflowEngine() {
                   height="40"
                   rx="6"
                   fill={isNodeActive(node.id) ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                  stroke={isNodeActive(node.id) ? "#355CFF" : "#9CA3AF"}
+                  stroke={isNodeActive(node.id) ? "#C0F0FB" : "#9CA3AF"}
                   strokeWidth={isNodeActive(node.id) ? "2" : "1.2"}
                   className="transition-all duration-300"
                 />
@@ -517,7 +517,7 @@ export function InteractiveWorkflowEngine() {
                 height="40"
                 rx="6"
                 fill={isNodeActive("trigger_router") ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                stroke={isNodeActive("trigger_router") ? "#355CFF" : "#9CA3AF"}
+                stroke={isNodeActive("trigger_router") ? "#C0F0FB" : "#9CA3AF"}
                 strokeWidth={isNodeActive("trigger_router") ? "2" : "1.2"}
                 className="transition-all duration-300"
               />
@@ -576,7 +576,7 @@ export function InteractiveWorkflowEngine() {
                   height="45"
                   rx="6"
                   fill={isNodeActive(node.id) ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                  stroke={isNodeActive(node.id) ? "#355CFF" : "#9CA3AF"}
+                  stroke={isNodeActive(node.id) ? "#C0F0FB" : "#9CA3AF"}
                   strokeWidth={isNodeActive(node.id) ? "2" : "1.2"}
                   className="transition-all duration-300"
                 />
@@ -584,7 +584,7 @@ export function InteractiveWorkflowEngine() {
                   cx="320"
                   cy={node.y + 22}
                   r="8"
-                  fill={isNodeActive(node.id) ? "#355CFF" : "#9CA3AF"}
+                  fill={isNodeActive(node.id) ? "#C0F0FB" : "#9CA3AF"}
                   className="transition-colors duration-300"
                 />
                 <foreignObject x="315" y={node.y + 17} width="10" height="10" className={isNodeActive(node.id) ? "text-white" : "text-muted-foreground"}>
@@ -611,11 +611,11 @@ export function InteractiveWorkflowEngine() {
               <polygon
                 points="695,225 720,250 695,275 670,250"
                 fill={isNodeActive("step_1_fetch") ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                stroke={isNodeActive("step_1_fetch") ? "#355CFF" : "#9CA3AF"}
+                stroke={isNodeActive("step_1_fetch") ? "#C0F0FB" : "#9CA3AF"}
                 strokeWidth={isNodeActive("step_1_fetch") ? "2" : "1.2"}
                 className="transition-all duration-300"
               />
-              <path d="M 691,244 L 699,252 M 699,244 L 695,244 L 695,256" stroke={isNodeActive("step_1_fetch") ? "#355CFF" : "#374151"} strokeWidth="1.2" />
+              <path d="M 691,244 L 699,252 M 699,244 L 695,244 L 695,256" stroke={isNodeActive("step_1_fetch") ? "#C0F0FB" : "#374151"} strokeWidth="1.2" />
               <text x="690" y="215" fill="#374151" fontFamily="monospace" fontSize="6.5">DATA FLOW</text>
             </g>
 
@@ -656,7 +656,7 @@ export function InteractiveWorkflowEngine() {
                 height="45"
                 rx="6"
                 fill={isNodeActive("step_1_fetch") ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                stroke={isNodeActive("step_1_fetch") ? "#355CFF" : "#9CA3AF"}
+                stroke={isNodeActive("step_1_fetch") ? "#C0F0FB" : "#9CA3AF"}
                 strokeWidth={isNodeActive("step_1_fetch") ? "2" : "1.2"}
                 className="transition-all duration-300"
               />
@@ -698,7 +698,7 @@ export function InteractiveWorkflowEngine() {
               <polygon
                 points="695,415 720,440 695,465 670,440"
                 fill={isNodeActive("gateway_1") ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                stroke={isNodeActive("gateway_1") ? "#355CFF" : "#9CA3AF"}
+                stroke={isNodeActive("gateway_1") ? "#C0F0FB" : "#9CA3AF"}
                 strokeWidth={isNodeActive("gateway_1") ? "2" : "1.2"}
                 className="transition-all duration-300"
               />
@@ -838,7 +838,7 @@ export function InteractiveWorkflowEngine() {
                 height="45"
                 rx="6"
                 fill={isNodeActive("timers_delays") ? "rgba(53,92,255,0.03)" : "#FAF9F6"}
-                stroke={isNodeActive("timers_delays") ? "#355CFF" : "#9CA3AF"}
+                stroke={isNodeActive("timers_delays") ? "#C0F0FB" : "#9CA3AF"}
                 strokeWidth={isNodeActive("timers_delays") ? "2" : "1.2"}
                 className="transition-all duration-300"
               />
@@ -854,7 +854,7 @@ export function InteractiveWorkflowEngine() {
             <line x1="390" x2="420" y1="835" y2="835" stroke="#9CA3AF" strokeWidth="1.5" />
             <text x="430" y="838" fill="#6B7280" fontFamily="monospace" fontSize="8">DATA FLOW</text>
 
-            <line x1="530" x2="560" y1="835" y2="835" stroke="#355CFF" strokeWidth="2" strokeDasharray="3 3" />
+            <line x1="530" x2="560" y1="835" y2="835" stroke="#C0F0FB" strokeWidth="2" strokeDasharray="3 3" />
             <text x="570" y="838" fill="#6B7280" fontFamily="monospace" fontSize="8">ACTIVE RUN / EXECUTION PATH</text>
           </svg>
         </div>
@@ -867,7 +867,7 @@ export function InteractiveWorkflowEngine() {
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <span className="font-mono text-[9px] tracking-wider text-muted-foreground uppercase flex items-center gap-1.5">
-                  <Terminal className="w-3 h-3 text-[#355CFF]" />
+                  <Terminal className="w-3 h-3 text-[#C0F0FB]" />
                   <span>Node Inspector</span>
                 </span>
                 <span className="font-mono text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center gap-1">
@@ -887,7 +887,7 @@ export function InteractiveWorkflowEngine() {
                     className="space-y-3.5"
                   >
                     <div>
-                      <span className="text-[9px] font-mono tracking-wider text-[#355CFF] bg-[#355CFF]/5 px-2 py-0.5 rounded uppercase font-bold">
+                      <span className="text-[9px] font-mono tracking-wider text-[#C0F0FB] bg-[#C0F0FB]/5 px-2 py-0.5 rounded uppercase font-bold">
                         {nodeDetails[hoveredNode].category}
                       </span>
                       <h4 className="text-xl font-black text-foreground mt-2 tracking-tight">
@@ -928,7 +928,7 @@ export function InteractiveWorkflowEngine() {
               </span>
               <div className="space-y-2.5">
                 {[
-                  { label: "Engine CPU Load", val: isSimulating ? 78 : 34, color: "bg-[#355CFF]" },
+                  { label: "Engine CPU Load", val: isSimulating ? 78 : 34, color: "bg-[#C0F0FB]" },
                   { label: "Memory Pool", val: 56, color: "bg-[#6B7280]" },
                   { label: "Database Queue", val: isSimulating ? 88 : 12, color: isSimulating ? "bg-emerald-500" : "bg-[#6B7280]" }
                 ].map((bar) => (
@@ -956,7 +956,7 @@ export function InteractiveWorkflowEngine() {
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center">
                 {isSimulating ? (
-                  <Activity className="w-4 h-4 text-[#355CFF] animate-spin" />
+                  <Activity className="w-4 h-4 text-[#C0F0FB] animate-spin" />
                 ) : (
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                 )}
@@ -969,7 +969,7 @@ export function InteractiveWorkflowEngine() {
               </div>
             </div>
             {isSimulating && (
-              <span className="text-[8px] font-mono tracking-widest text-[#355CFF] bg-[#355CFF]/5 border border-[#355CFF]/15 px-1.5 py-0.5 rounded animate-pulse">
+              <span className="text-[8px] font-mono tracking-widest text-[#C0F0FB] bg-[#C0F0FB]/5 border border-[#C0F0FB]/15 px-1.5 py-0.5 rounded animate-pulse">
                 SIM_RUNNING
               </span>
             )}
