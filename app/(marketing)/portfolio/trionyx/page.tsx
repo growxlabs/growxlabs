@@ -101,7 +101,7 @@ export default function TrionyxCaseStudyPage() {
             </div>
             <div className="md:col-span-8 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
               <p>
-                Trionyx manufactures specialized industrial products that require accurate technical communication. Prior to this build, prospective clients had to rely on fragmented product brochures and static PDF catalogs that were difficult to maintain and search.
+                Trionyx brings product discovery, dealer operations and after-sales support into one platform for an automotive protection brand. Customers can browse products and verify warranties, while dealers and distributors manage stock, product requests and warranty registrations.
               </p>
               <p>
                 GrowXLabs engineered a dedicated digital platform centered around their physical catalog. The system combines clear product categorization, technical specifications, direct inquiry pipelines, and an internal administrative surface to keep catalog data and inquiries synchronized.
