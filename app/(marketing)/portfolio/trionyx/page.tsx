@@ -93,16 +93,13 @@ export default function TrionyxCaseStudyPage() {
             02 — OVERVIEW (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-            <div className="lg:col-span-5 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
                 // 01 OVERVIEW
               </span>
-              <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.12]">
-                What Trionyx needed and what we built.
-              </h2>
             </div>
-            <div className="lg:col-span-7 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
+            <div className="md:col-span-8 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
               <p>
                 Trionyx manufactures specialized industrial products that require accurate technical communication. Prior to this build, prospective clients had to rely on fragmented product brochures and static PDF catalogs that were difficult to maintain and search.
               </p>
