@@ -110,37 +110,6 @@ export default function TrionyxCaseStudyPage() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            03 — SPECIFICATIONS (Clean Horizontal Row)
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-y border-neutral-800 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 divide-y md:divide-y-0 md:divide-x divide-neutral-800/80">
-            <div className="space-y-1.5 md:pr-6">
-              <span className="font-mono text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
-                APPLICATION
-              </span>
-              <p className="text-base font-bold text-foreground">Digital Web Platform</p>
-            </div>
-            <div className="space-y-1.5 pt-6 md:pt-0 md:px-6">
-              <span className="font-mono text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
-                DELIVERY
-              </span>
-              <p className="text-base font-bold text-foreground">Custom Build</p>
-            </div>
-            <div className="space-y-1.5 pt-6 md:pt-0 md:px-6">
-              <span className="font-mono text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
-                DEVICES
-              </span>
-              <p className="text-base font-bold text-foreground">Desktop · Tablet · Mobile</p>
-            </div>
-            <div className="space-y-1.5 pt-6 md:pt-0 md:pl-6">
-              <span className="font-mono text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
-                STATUS
-              </span>
-              <p className="text-base font-bold text-[#C0F0FB]">Live</p>
-            </div>
-          </div>
-        </section>
 
         {/* ══════════════════════════════════════════════════════════════════
             03 — ARCHITECTURE (Platform & Operations Architecture)
