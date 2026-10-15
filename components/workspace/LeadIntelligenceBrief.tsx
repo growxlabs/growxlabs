@@ -186,7 +186,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
             Business Dossier
           </h2>
           <p className={css({ fontSize: "11px", color: "#64748B" })}>
-            Verified operational profile &amp; outreach strategy
+            CRM context, source links &amp; questions to verify
           </p>
         </div>
 
@@ -301,7 +301,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
               })}
             >
               <span className={css({ fontSize: "10px", fontWeight: "600", textTransform: "uppercase", color: "#64748B" })}>
-                Decision Maker
+                CRM Contact / Role To Verify
               </span>
               <p className={css({ fontSize: "13px", fontWeight: "600", color: "#0F172A", mt: "2px" })}>
                 {intelligence?.decision_maker?.name || healthcare?.doctor_name || "Doctor / Hospital Admin"}
@@ -326,7 +326,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
                 OPD / Consultation Hours
               </span>
               <p className={css({ fontSize: "13px", fontWeight: "600", color: "#0F172A", mt: "2px" })}>
-                {healthcare?.consultation_hours || "Standard OPD"}
+                {healthcare?.consultation_hours || "Not recorded"}
               </p>
             </div>
           </div>
@@ -481,7 +481,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
           {renderDossierField("Company Snapshot", intelligence?.company_snapshot?.en, intelligence?.company_snapshot?.te)}
           {renderDossierField("What They Do", intelligence?.what_they_do?.en, intelligence?.what_they_do?.te)}
           {renderDossierField("How Their Business Works", intelligence?.business_model?.en, intelligence?.business_model?.te)}
-          {renderDossierField("How They Make Money", intelligence?.operations?.en, intelligence?.operations?.te)}
+          {renderDossierField("Operations To Confirm", intelligence?.operations?.en, intelligence?.operations?.te)}
         </div>
       </div>
 
@@ -517,7 +517,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
               color: "#475569",
             })}
           >
-            Verified Findings ({intelligence.findings.length})
+            Recorded Signals ({intelligence.findings.length})
           </span>
           <div className={css({ display: "flex", flexDirection: "column", gap: "6px" })}>
             {intelligence.findings.map((f, i) => (
@@ -580,7 +580,7 @@ export function LeadIntelligenceBrief({ customFields, city }: LeadIntelligenceBr
               color: "#475569",
             })}
           >
-            Problems &amp; Gaps ({intelligence.gaps.length})
+            Discovery Questions ({intelligence.gaps.length})
           </span>
           <div className={css({ display: "flex", flexDirection: "column", gap: "6px" })}>
             {intelligence.gaps.map((gap, i) => (

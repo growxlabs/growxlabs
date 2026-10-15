@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import bcrypt from "bcryptjs";
 import { requiredHrmsGatewayURL } from "@/lib/hrms/gateway";
+import { verifyHealthcareOtp } from "@/lib/employee-os/healthcare-otp-service";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -16,13 +17,37 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        code: { label: "Code", type: "text" },
+        type: { label: "Type", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email) {
           throw new Error("Missing credentials");
         }
 
         const emailLower = credentials.email.toLowerCase().trim();
+
+        // 0. Dedicated Healthcare Workspace OTP Authentication
+        // Scope strictly locked to Healthcare Lead Manager (/h)
+        if (credentials.type === "healthcare_otp" || (credentials.code && !credentials.password)) {
+          const otpResult = await verifyHealthcareOtp(emailLower, String(credentials.code || ""));
+          if (!otpResult.success || !otpResult.user) {
+            throw new Error(otpResult.error || "Invalid verification code");
+          }
+
+          return {
+            id: otpResult.user.id,
+            email: otpResult.user.email,
+            name: otpResult.user.display_name || otpResult.user.email,
+            role: "EMPLOYEE",
+            organisation_id: otpResult.user.organisation_id,
+            permissions: [],
+          };
+        }
+
+        if (!credentials?.password) {
+          throw new Error("Missing credentials");
+        }
 
         // 1. Vercel-native employee identity authentication.
         let userData = null;

@@ -133,7 +133,7 @@ export function WorkspaceNav({
               {name.split(" ")[0]}
             </span>
             <button
-              onClick={() => void signOut({ callbackUrl: "/login?callbackUrl=/workspace/h" })}
+              onClick={() => void signOut({ callbackUrl: "/h" })}
               className={css({
                 color: "#94A3B8",
                 cursor: "pointer",
@@ -240,7 +240,7 @@ export function WorkspaceNav({
               Healthcare Lead Manager
             </p>
             <button
-              onClick={() => void signOut({ callbackUrl: "/login?callbackUrl=/workspace/h" })}
+              onClick={() => void signOut({ callbackUrl: "/h" })}
               className={css({
                 mt: "16px",
                 display: "flex",
