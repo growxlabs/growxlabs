@@ -435,61 +435,6 @@ export default function GrowXCrawlCaseStudy() {
 
         </section>
 
-
-
-
-
-        {/* ══════════════════════════════════════════════════════════════════
-            04 — PLATFORM SURFACES (Playground & API Reference)
-        ══════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-neutral-800 pt-16 space-y-8">
-          <div className="space-y-3">
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-              // 04 PLATFORM SURFACES
-            </span>
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-              Interactive Extraction &amp; API Suite
-            </h2>
-            <p className="text-muted-foreground text-base max-w-3xl leading-relaxed">
-              Explore the dedicated Extraction Playground for live testing across 7 scraping capabilities, alongside the complete RESTful API specifications.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <div className="overflow-hidden rounded-xl border border-neutral-800/90 shadow-xl bg-[#0A0A0C]">
-                <Image
-                  src="/portfolio/growx-crawl-playground.png"
-                  alt="GrowX Crawl Extraction Playground"
-                  width={1920}
-                  height={1080}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="font-mono text-[11px] text-muted-foreground flex justify-between px-1">
-                <span>EXTRACTION PLAYGROUND</span>
-                <span>7 ENGINE CAPABILITIES</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="overflow-hidden rounded-xl border border-neutral-800/90 shadow-xl bg-[#0A0A0C]">
-                <Image
-                  src="/portfolio/growx-crawl-api.png"
-                  alt="GrowX Crawl API Reference"
-                  width={1920}
-                  height={1080}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="font-mono text-[11px] text-muted-foreground flex justify-between px-1">
-                <span>RESTFUL API REFERENCE</span>
-                <span>CURL &amp; SCHEMA DOCS</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* ══════════════════════════════════════════════════════════════════
             EXPLORE WITH AI (Secondary Publishing Utility)
         ══════════════════════════════════════════════════════════════════ */}

@@ -79,11 +79,7 @@ export const projects: CaseStudy[] = [
       { label: "Engine", value: "HTTP + Playwright" },
       { label: "Audits", value: "SEO / AEO / GEO" }
     ],
-    gallery: [
-      "/portfolio/growx-crawl.png",
-      "/portfolio/growx-crawl-playground.png",
-      "/portfolio/growx-crawl-api.png"
-    ],
+    gallery: [],
     features: [
       { title: "Company Discovery", desc: "Uncovers public profiles, people, key executives, and related domains across target markets." },
       { title: "Dual-Engine Crawling", desc: "High-throughput static HTTP fetching with automated Playwright browser fallback for dynamic JavaScript sites." },
