@@ -110,6 +110,49 @@ export default function TrionyxCaseStudyPage() {
           </div>
         </section>
 
+        {/* ══════════════════════════════════════════════════════════════════
+            02 — SPECIFICATIONS (2-Column Editorial Layout)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // 02 SPECIFICATIONS
+              </span>
+            </div>
+            <div className="md:col-span-8 divide-y divide-neutral-800/80">
+              <div className="pb-5 first:pt-0 text-base sm:text-lg leading-relaxed flex items-start gap-3">
+                <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
+                <div>
+                  <strong className="text-foreground font-semibold">Product catalogue:</strong>{" "}
+                  <span className="text-muted-foreground font-normal">Browse automotive protection products and specifications.</span>
+                </div>
+              </div>
+              <div className="py-5 text-base sm:text-lg leading-relaxed flex items-start gap-3">
+                <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
+                <div>
+                  <strong className="text-foreground font-semibold">Dealer management:</strong>{" "}
+                  <span className="text-muted-foreground font-normal">Manage dealers, distributors and product requests.</span>
+                </div>
+              </div>
+              <div className="py-5 text-base sm:text-lg leading-relaxed flex items-start gap-3">
+                <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
+                <div>
+                  <strong className="text-foreground font-semibold">Inventory tracking:</strong>{" "}
+                  <span className="text-muted-foreground font-normal">Track stock levels, serial numbers and stock movements.</span>
+                </div>
+              </div>
+              <div className="pt-5 text-base sm:text-lg leading-relaxed flex items-start gap-3">
+                <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
+                <div>
+                  <strong className="text-foreground font-semibold">Warranty management:</strong>{" "}
+                  <span className="text-muted-foreground font-normal">Register warranties and let customers verify coverage online.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
 
         {/* ══════════════════════════════════════════════════════════════════
             03 — ARCHITECTURE (Platform & Operations Architecture)
