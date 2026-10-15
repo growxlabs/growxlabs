@@ -10,8 +10,8 @@ const supabase = createClient(
 );
 
 async function main() {
-  const targetEmail = (process.argv[2] || "saivarshith8284@gmail.com").trim().toLowerCase();
-  const targetName = process.argv[3] || "Healthcare Specialist";
+  const targetEmail = (process.argv[2] || "ramubollikonda999@gmail.com").trim().toLowerCase();
+  const targetName = process.argv[3] || "Ramu Bollikonda";
 
   console.log(`\n======================================================`);
   console.log(`Generating Invitation for: ${targetEmail}`);
