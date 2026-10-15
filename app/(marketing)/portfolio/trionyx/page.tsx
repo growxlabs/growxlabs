@@ -67,16 +67,20 @@ export default function TrionyxCaseStudyPage() {
             </div>
           </div>
 
-          {/* Large Full-Width Hero Screenshot */}
-          <div className="w-full overflow-hidden rounded-md border border-neutral-800/90 shadow-xl">
+          {/* Large Hero Operations Interface Showcase */}
+          <div className="w-full overflow-hidden rounded-xl border border-neutral-800/90 shadow-2xl bg-[#0A0A0C]">
             <Image
-              src="/portfolio/trionyx-dashboard.png"
-              alt="Trionyx Main Platform Interface"
-              width={1400}
-              height={788}
+              src="/portfolio/trionyx-operations.png"
+              alt="Trionyx Central Operations & Inventory Telemetry Platform"
+              width={1920}
+              height={1080}
               className="w-full h-auto object-cover"
               priority
             />
+          </div>
+          <div className="font-mono text-[11px] text-muted-foreground flex justify-between px-1">
+            <span>OPERATIONS SUMMARY · LIVE TELEMETRY</span>
+            <span>DOMAIN BALANCES &amp; INVENTORY CONTROL</span>
           </div>
         </section>
 
@@ -571,9 +575,70 @@ export default function TrionyxCaseStudyPage() {
           </div>
         </section>
 
+        {/* ══════════════════════════════════════════════════════════════════
+            04 — PLATFORM SURFACES (Operations Hub & Dealer Registry)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16 space-y-8">
+          <div className="space-y-3">
+            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary block">
+              // 04 PLATFORM SURFACES
+            </span>
+            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
+              Operational Command &amp; Dealer Registry
+            </h2>
+            <p className="text-muted-foreground text-base max-w-3xl leading-relaxed">
+              Explore the core administrative workflows powering Trionyx, from real-time operational domain telemetry to regional studio network management.
+            </p>
+          </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Surface 1: Operations Summary */}
+            <div className="space-y-3">
+              <div className="overflow-hidden rounded-xl border border-neutral-800/90 shadow-xl bg-[#0A0A0C]">
+                <Image
+                  src="/portfolio/trionyx-operations.png"
+                  alt="Trionyx Operations Summary & Domain Balances"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="font-mono text-[11px] text-muted-foreground flex justify-between px-1">
+                <span>OPERATIONS SUMMARY</span>
+                <span>REAL-TIME DOMAIN BALANCES</span>
+              </div>
+              <div className="space-y-1 pt-1">
+                <h3 className="font-sans font-bold text-lg text-white">Operations Control Hub</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed font-sans">
+                  Real-time exception queues and balance tracking across authorized detailing studios, physical serial inventory, registered chemical formulas, and active warranty policies.
+                </p>
+              </div>
+            </div>
 
-
+            {/* Surface 2: Studio Registry */}
+            <div className="space-y-3">
+              <div className="overflow-hidden rounded-xl border border-neutral-800/90 shadow-xl bg-[#0A0A0C]">
+                <Image
+                  src="/portfolio/trionyx-dealers.png"
+                  alt="Trionyx Studio & Dealer Registry"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="font-mono text-[11px] text-muted-foreground flex justify-between px-1">
+                <span>STUDIO REGISTRY</span>
+                <span>DEALER &amp; REGIONAL HUBS</span>
+              </div>
+              <div className="space-y-1 pt-1">
+                <h3 className="font-sans font-bold text-lg text-white">Dealer &amp; Studio Network</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed font-sans">
+                  Centralized registry tracking certified detailing studios, dealer codes, direct contact channels, state locations, and assigned regional distribution hubs.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ══════════════════════════════════════════════════════════════════
             EXPLORE WITH AI (Secondary Publishing Utility)

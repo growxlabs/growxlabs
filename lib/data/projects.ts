@@ -52,7 +52,7 @@ export const projects: CaseStudy[] = [
       { label: "Experience", value: "Responsive Web" },
       { label: "Workflows", value: "Automated Routing" }
     ],
-    gallery: ["/portfolio/trionyx.png"],
+    gallery: ["/portfolio/trionyx-operations.png", "/portfolio/trionyx-dealers.png"],
     features: [
       { title: "Product Catalog & Showcase", desc: "Interactive presentation of Trionyx products with clean categorization, technical specifications, and visual previews." },
       { title: "Customer Inquiry Pipeline", desc: "Structured request forms that route technical queries and quote requests directly to the operations team." },
