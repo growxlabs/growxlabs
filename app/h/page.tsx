@@ -1,21 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import { 
-  Loader2, 
-  ArrowRight, 
-  ShieldCheck, 
-  Mail, 
-  RefreshCw, 
-  ArrowLeft, 
-  Lock, 
-  AlertCircle,
-  KeyRound,
-  CheckCircle2
-} from "lucide-react";
 
 export default function HealthcareAccessPage() {
   const router = useRouter();
@@ -132,249 +120,209 @@ export default function HealthcareAccessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#06080E] text-white flex flex-col justify-between selection:bg-emerald-500/30 selection:text-emerald-200 font-sans relative overflow-x-hidden">
-      {/* Ambient background glows */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-sky-500/10 via-emerald-500/5 to-transparent blur-[120px] rounded-full" />
-        <div className="absolute top-1/3 -right-40 w-[400px] h-[400px] bg-emerald-500/5 blur-[140px] rounded-full" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-blue-600/5 blur-[160px] rounded-full" />
-        <div 
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px)`,
-            backgroundSize: "24px 24px",
-          }}
-        />
-      </div>
-
-      {/* Top Header */}
-      <header className="w-full max-w-5xl mx-auto px-6 py-7 flex items-center justify-between">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between selection:bg-white selection:text-black">
+      {/* Top Header Bar */}
+      <header className="w-full max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
         <Link 
           href="/"
-          className="group flex items-center gap-1.5 transition-opacity hover:opacity-90"
+          className="text-lg font-semibold tracking-tight text-white hover:text-neutral-300 transition-colors flex items-center gap-1.5"
         >
-          <span className="font-serif text-xl tracking-tight text-white font-medium">GrowX</span>
-          <span className="font-sans text-xl font-normal text-neutral-400">Labs</span>
+          <span className="font-serif">GrowX</span>
+          <span className="font-sans font-normal text-neutral-400">Labs</span>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-neutral-400">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="font-medium tracking-wide">Healthcare Lead Portal</span>
-          </div>
-          
-          <Link
-            href="/"
-            className="text-xs text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 font-medium px-3 py-1.5 rounded-lg hover:bg-white/[0.04]"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to site</span>
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="text-xs text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 font-medium"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+            <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>Back to website</span>
+        </Link>
       </header>
 
-      {/* Main Authentication Card */}
-      <main className="w-full max-w-md mx-auto px-5 py-8 flex-1 flex flex-col justify-center">
-        <div className="relative">
-          {/* Card outer soft glow */}
-          <div className="absolute -inset-0.5 bg-gradient-to-b from-emerald-500/20 via-sky-500/10 to-transparent rounded-2xl blur-xl opacity-60" />
+      {/* Main Corporate Card */}
+      <main className="w-full max-w-md mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
+        <div className="bg-[#09090b] border border-white/10 rounded-xl p-8 sm:p-10 shadow-2xl space-y-8">
+          
+          {/* Header */}
+          <div className="space-y-2 text-left">
+            <h1 className="text-2xl font-medium tracking-tight text-white">
+              Healthcare Lead Portal
+            </h1>
+            <p className="text-sm text-neutral-400 leading-normal">
+              {step === "email"
+                ? "Enter your work email to receive a single-use verification code."
+                : `Enter the 6-digit code sent to ${email}`}
+            </p>
+          </div>
 
-          {/* Main Card */}
-          <div className="relative bg-[#0A0E17]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-7 sm:p-9 shadow-2xl space-y-6 overflow-hidden">
-            
-            {/* Top accent gradient bar */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-500 via-sky-400 to-indigo-500" />
-
-            {/* Header info */}
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold tracking-wider uppercase">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Passwordless Access</span>
+          {/* Form */}
+          {step === "email" ? (
+            <form onSubmit={handleSendCode} className="space-y-5">
+              <div className="space-y-1.5">
+                <label 
+                  htmlFor="email" 
+                  className="block text-xs font-medium text-neutral-300"
+                >
+                  Work email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                  autoComplete="email"
+                  placeholder="ramubollikonda999@gmail.com"
+                  className="w-full h-11 rounded-lg bg-black border border-white/15 px-3.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all font-sans"
+                  disabled={loading}
+                />
               </div>
 
-              <div className="space-y-1">
-                <h1 className="text-2xl font-semibold tracking-tight text-white">
-                  Lead Manager Access
-                </h1>
-                <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
-                  {step === "email"
-                    ? "Enter your registered GrowX email to receive an instant single-use sign-in code."
-                    : "Enter the 6-digit authentication code sent to your email inbox."}
-                </p>
-              </div>
-            </div>
+              {error && (
+                <div className="rounded-lg border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-300 flex items-start gap-2">
+                  <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0-10.5a.75.75 0 01.75.75v4a.75.75 0 01-1.5 0v-4A.75.75 0 018 4.5zm0 7.5a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
 
-            {/* Alerts */}
-            {error && (
-              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-start gap-2.5 leading-relaxed animate-in fade-in">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                <div className="flex-1 font-normal">{error}</div>
-              </div>
-            )}
-
-            {infoMessage && !error && (
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-start gap-2.5 leading-relaxed animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div className="flex-1 font-normal">{infoMessage}</div>
-              </div>
-            )}
-
-            {/* Step 1: Email Form */}
-            {step === "email" ? (
-              <form onSubmit={handleSendCode} className="space-y-4">
-                <div className="space-y-2">
+              <button
+                type="submit"
+                disabled={loading || !email.trim()}
+                className="w-full h-11 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center cursor-pointer border-0 shadow-sm font-sans"
+              >
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-black" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Sending code...
+                  </span>
+                ) : (
+                  "Send verification code"
+                )}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyCode} className="space-y-5">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
                   <label 
-                    htmlFor="work-email" 
+                    htmlFor="code" 
                     className="block text-xs font-medium text-neutral-300"
                   >
-                    Authorized Work Email
+                    6-digit verification code
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <input
-                      id="work-email"
-                      type="email"
-                      required
-                      autoFocus
-                      autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@growxlabs.tech"
-                      disabled={loading}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111724] border border-white/10 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-emerald-500/70 focus:ring-1 focus:ring-emerald-500/50 transition-all disabled:opacity-50"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep("email");
+                      setError(null);
+                      setInfoMessage(null);
+                      setCode("");
+                    }}
+                    className="text-xs text-neutral-400 hover:text-white transition-colors"
+                  >
+                    Change email
+                  </button>
                 </div>
+                <input
+                  ref={codeInputRef}
+                  id="code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  required
+                  placeholder="······"
+                  className="w-full h-11 rounded-lg bg-black border border-white/15 px-3.5 text-center font-mono text-xl tracking-[0.35em] text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/50 focus:ring-1 focus:ring-white/20 transition-all"
+                  disabled={loading}
+                />
+              </div>
 
-                <button
-                  type="submit"
-                  disabled={loading || !email.trim()}
-                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-neutral-950 font-semibold text-sm shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group active:scale-[0.99]"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
-                      <span>Sending verification code...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Send single-use code</span>
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 text-neutral-950" />
-                    </>
-                  )}
-                </button>
-              </form>
-            ) : (
-              /* Step 2: Verification Code Form */
-              <form onSubmit={handleVerifyCode} className="space-y-5">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label 
-                      htmlFor="otp-code" 
-                      className="block text-xs font-medium text-neutral-300"
-                    >
-                      6-Digit Security Code
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep("email");
-                        setError(null);
-                        setInfoMessage(null);
-                        setCode("");
-                      }}
-                      className="text-xs text-neutral-400 hover:text-white transition-colors underline-offset-4 hover:underline"
-                    >
-                      Change email
-                    </button>
-                  </div>
-
-                  <div className="relative">
-                    <input
-                      ref={codeInputRef}
-                      id="otp-code"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      pattern="\d{6}"
-                      maxLength={6}
-                      required
-                      value={code}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                        setCode(val);
-                      }}
-                      placeholder="······"
-                      disabled={loading}
-                      className="w-full py-3.5 px-4 rounded-xl bg-[#111724] border border-white/15 text-white text-center font-mono text-2xl tracking-[0.45em] placeholder-neutral-600 focus:outline-none focus:border-emerald-500/80 focus:ring-2 focus:ring-emerald-500/30 transition-all disabled:opacity-50"
-                    />
-                  </div>
+              {infoMessage && !error && (
+                <div className="rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-3 text-xs text-emerald-300 flex items-start gap-2">
+                  <svg className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm3.78-8.72a.75.75 0 00-1.06-1.06L7.25 8.69 5.28 6.72a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.06 0l4.5-4.5z" clipRule="evenodd" />
+                  </svg>
+                  <span>{infoMessage}</span>
                 </div>
+              )}
 
-                <button
-                  type="submit"
-                  disabled={loading || code.trim().length !== 6}
-                  className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-neutral-950 font-semibold text-sm shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group active:scale-[0.99]"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin text-neutral-950" />
-                      <span>Verifying code...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Verify & Access Workspace</span>
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 text-neutral-950" />
-                    </>
-                  )}
-                </button>
-
-                {/* Resend Action */}
-                <div className="text-center pt-1">
-                  {cooldown > 0 ? (
-                    <span className="text-xs text-neutral-500 font-mono">
-                      Resend available in {cooldown}s
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleResend}
-                      disabled={loading}
-                      className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-emerald-400 transition-colors cursor-pointer"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Resend code</span>
-                    </button>
-                  )}
+              {error && (
+                <div className="rounded-lg border border-red-500/20 bg-red-950/30 p-3 text-xs text-red-300 flex items-start gap-2">
+                  <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="currentColor">
+                    <path fillRule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0-10.5a.75.75 0 01.75.75v4a.75.75 0 01-1.5 0v-4A.75.75 0 018 4.5zm0 7.5a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <span>{error}</span>
                 </div>
-              </form>
-            )}
+              )}
 
-            {/* Bottom Security Note */}
-            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-center gap-2 text-[11px] text-neutral-500">
-              <Lock className="w-3.5 h-3.5 text-neutral-400" />
-              <span>Single-use OTP · 10-minute expiry · Rate-limited</span>
-            </div>
+              <button
+                type="submit"
+                disabled={loading || code.trim().length !== 6}
+                className="w-full h-11 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center justify-center cursor-pointer border-0 shadow-sm font-sans"
+              >
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4 text-black" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Verifying...
+                  </span>
+                ) : (
+                  "Continue to workspace"
+                )}
+              </button>
+
+              <div className="text-center pt-1">
+                {cooldown > 0 ? (
+                  <p className="text-xs text-neutral-500 font-mono">
+                    Resend code in {cooldown}s
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={loading}
+                    className="text-xs text-neutral-400 hover:text-white transition-colors underline underline-offset-2"
+                  >
+                    Resend verification code
+                  </button>
+                )}
+              </div>
+            </form>
+          )}
+
+          {/* Quiet Support Info */}
+          <div className="pt-4 border-t border-white/10 text-center">
+            <p className="text-xs text-neutral-500">
+              Healthcare Lead Manager access ·{" "}
+              <a 
+                href="mailto:support@growxlabs.tech" 
+                className="text-neutral-400 hover:text-white underline underline-offset-2 transition-colors"
+              >
+                support@growxlabs.tech
+              </a>
+            </p>
           </div>
+
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
-        <div>
-          <span>© {new Date().getFullYear()} GrowX Labs · Healthcare Workspace</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="inline-flex items-center gap-1.5 text-neutral-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Encrypted Employee OS</span>
-          </span>
-        </div>
+      {/* Corporate Footer */}
+      <footer className="w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-neutral-600">
+        <p>© {new Date().getFullYear()} GrowXLabs. All rights reserved.</p>
       </footer>
     </div>
   );
