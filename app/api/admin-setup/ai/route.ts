@@ -22,7 +22,7 @@ function getLocalAdminFallback(type: string, inputData: any) {
     return {
       anomaliesDetected: 0,
       policyBreaches: [],
-      userEmail: inputData?.userEmail || "sai@growxlabs.tech",
+      userEmail: inputData?.userEmail || "svp@growxlabs.tech",
       status: "Platform activity verified within compliance policy"
     };
   } else if (type === "recommend-permissions") {

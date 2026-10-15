@@ -32,7 +32,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ le
     if (invitation.error) throw new Error(`Unable to create invitation: ${invitation.error.message}`);
     if (!process.env.RESEND_API_KEY) throw new Error("Invitation created but RESEND_API_KEY is not configured.");
     const base = process.env.NEXTAUTH_URL || "https://growxlabs.tech"; const template = generateClientInvitationEmail({ clientName: lead.name || "Client", companyName, invitationUrl: `${base}/client/invite/${token}`, expiryDate: new Date(expiresAt).toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Kolkata" }) });
-    const sent = await new Resend(process.env.RESEND_API_KEY).emails.send({ from: process.env.RESEND_FROM_EMAIL || "GrowXLabs Client Services <noreply@growxlabs.tech>", replyTo: process.env.RESEND_REPLY_TO || "sai@growxlabs.tech", to: email, subject: template.subject, html: template.html, text: template.text });
+    const sent = await new Resend(process.env.RESEND_API_KEY).emails.send({ from: process.env.RESEND_FROM_EMAIL || "GrowXLabs Client Services <noreply@growxlabs.tech>", replyTo: process.env.RESEND_REPLY_TO || "svp@growxlabs.tech", to: email, subject: template.subject, html: template.html, text: template.text });
     if (sent.error) throw new Error(`Invitation created but email failed: ${sent.error.message}`);
     return Response.json({ status: "sent", email, expiresAt, clientId: invitation.data, dealId: deal.id }, { status: 201 });
   } catch (error) { return assessmentErrorResponse(error); }

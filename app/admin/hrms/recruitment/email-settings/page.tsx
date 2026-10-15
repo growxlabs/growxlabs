@@ -23,7 +23,7 @@ export default function EmailSettingsPage() {
     reply_to: "hr@growxlabs.tech",
     enabled: true,
     internal_audit_enabled: true,
-    internal_audit_recipients: ["sai@growxlabs.tech"],
+    internal_audit_recipients: ["svp@growxlabs.tech"],
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -228,9 +228,9 @@ export default function EmailSettingsPage() {
             <label className="mt-3 block text-[9px] font-black uppercase tracking-wider text-[var(--text-muted)]">Audit recipients</label>
             <input
               type="text"
-              value={(settings.internal_audit_recipients || ["sai@growxlabs.tech"]).join(", ")}
+              value={(settings.internal_audit_recipients || ["svp@growxlabs.tech"]).join(", ")}
               onChange={(e) => setSettings((s) => ({ ...s, internal_audit_recipients: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))}
-              placeholder="sai@growxlabs.tech, hr@growxlabs.tech"
+              placeholder="svp@growxlabs.tech, hr@growxlabs.tech"
               className="mt-1.5 w-full h-9 px-3 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[#0075de]/40"
             />
           </div>

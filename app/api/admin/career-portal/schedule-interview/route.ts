@@ -87,7 +87,7 @@ async function createHRCalendarEvent(
           },
           attendees: [
             { email: email },
-            { email: "sai@growxlabs.tech" }
+            { email: "svp@growxlabs.tech" }
           ],
           conferenceData: customMeetLink ? undefined : {
             createRequest: {
@@ -270,8 +270,8 @@ export async function POST(request: Request) {
       </html>
     `;
 
-    const bccList = ["sai@growxlabs.tech"];
-    if (token?.email && token.email !== "sai@growxlabs.tech") {
+    const bccList = ["svp@growxlabs.tech"];
+    if (token?.email && token.email !== "svp@growxlabs.tech") {
       bccList.push(token.email);
     }
 

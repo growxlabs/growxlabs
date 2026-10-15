@@ -339,7 +339,7 @@ export function Navbar() {
             <div className="flex flex-col">
               {/* Contact Email */}
               <a
-                href="mailto:sai@growxlabs.tech"
+                href="mailto:svp@growxlabs.tech"
                 className={cn(
                   "group flex items-center w-full px-6 py-2.5 border-b border-dashed transition-colors text-left",
                   isLightThemePage
@@ -348,7 +348,7 @@ export function Navbar() {
                 )}
                 title="Email us directly"
               >
-                <span className="text-xs font-mono tracking-tight truncate">sai@growxlabs.tech</span>
+                <span className="text-xs font-mono tracking-tight truncate">svp@growxlabs.tech</span>
               </a>
 
               {/* Mobile No & WhatsApp */}

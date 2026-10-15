@@ -97,7 +97,7 @@ export default async function RootLayout({
 
                   contactPoint: {
                     "@type": "ContactPoint",
-                    email: "sai@growxlabs.tech",
+                    email: "svp@growxlabs.tech",
                     contactType: "general inquiries",
                     availableLanguage: ["English"],
                   },

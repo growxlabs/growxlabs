@@ -40,7 +40,7 @@ export default function RefundPage() {
           <h2 className="text-[clamp(28px,5vw,36px)] font-black text-foreground mb-8 tracking-tighter uppercase underline decoration-[#E5E2DC] underline-offset-8">The Process</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-muted-foreground font-medium text-lg">
             <p>
-              To initiate a refund, please email <span className="text-foreground font-bold">sai@growxlabs.tech</span> with your project ID and reason for cancellation.
+              To initiate a refund, please email <span className="text-foreground font-bold">svp@growxlabs.tech</span> with your project ID and reason for cancellation.
             </p>
             <p>
               Processing typically takes <span className="text-foreground font-bold">7–10 business days</span> following formal approval of the refund request.

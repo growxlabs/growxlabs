@@ -69,7 +69,7 @@ export default function RecruiterWorkspace() {
     {
       id: "cand_bde_01",
       name: "Varshith Pujala",
-      email: "sai@growxlabs.tech",
+      email: "svp@growxlabs.tech",
       location: "Hyderabad, India",
       skills: ["Sales", "Business Development", "Client Acquisition", "CRM", "Negotiation"],
       currentCompany: "GrowXLabs Tech",

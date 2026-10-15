@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
     // Notify HR
     sendRecruitmentEmail({
-      to: "sai@growxlabs.tech",
+      to: "svp@growxlabs.tech",
       subject: `[HR Alert] Candidate Offer ${decision.toUpperCase()}: ${candidateName}`,
       templateKey: "general",
       html: `

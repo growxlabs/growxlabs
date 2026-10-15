@@ -24,7 +24,7 @@ export default function HiringOperations() {
   const [form, setForm] = useState({
     title: "Business Development Executive (BDE)",
     departmentID: "Sales & Marketing",
-    managerID: "sai@growxlabs.tech",
+    managerID: "svp@growxlabs.tech",
     positions: "15",
   });
 
@@ -222,7 +222,7 @@ export default function HiringOperations() {
           <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Hiring Manager</label>
           <input
             required
-            placeholder="e.g. sai@growxlabs.tech"
+            placeholder="e.g. svp@growxlabs.tech"
             value={form.managerID}
             onChange={(e) => setForm({ ...form, managerID: e.target.value })}
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium outline-none focus:border-[#0075de]"

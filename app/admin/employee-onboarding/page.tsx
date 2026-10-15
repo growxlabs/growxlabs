@@ -39,7 +39,7 @@ export default function DedicatedOfferLetterStudioPage() {
   
   // Sender Credentials (STRICT)
   const [senderName, setSenderName] = useState("Sai Varshith");
-  const [senderEmail, setSenderEmail] = useState("sai@growxlabs.tech");
+  const [senderEmail, setSenderEmail] = useState("svp@growxlabs.tech");
   const [bccEmail, setBccEmail] = useState("saivarshith8284@gmail.com");
 
   // Email Drawer & Collapsible State
@@ -768,7 +768,7 @@ export default function DedicatedOfferLetterStudioPage() {
                 <span className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-[#111827] truncate">Sender &amp; BCC Configured</p>
-                  <p className="text-[10px] text-[#6B7280] truncate">sai@growxlabs.tech • saivarshith8284@gmail.com</p>
+                  <p className="text-[10px] text-[#6B7280] truncate">svp@growxlabs.tech • saivarshith8284@gmail.com</p>
                 </div>
               </div>
               <div className="flex gap-2.5 min-w-0">

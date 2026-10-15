@@ -49,8 +49,8 @@ export function Footer() {
 
             <span className="hidden md:inline text-white/15">|</span>
 
-            <a href="mailto:sai@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-white transition-colors ${textColor}`}>
-              <GrowxContact size={14} className={accentColor} aria-hidden="true" /> sai@growxlabs.tech
+            <a href="mailto:svp@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-white transition-colors ${textColor}`}>
+              <GrowxContact size={14} className={accentColor} aria-hidden="true" /> svp@growxlabs.tech
             </a>
 
             <span className="hidden md:inline text-white/15">|</span>

@@ -16,7 +16,7 @@ export async function GET() {
     const users = (rawUsers || []).map((u) => {
       const isSai =
         u.email?.toLowerCase() === "saivarshith8284@gmail.com" ||
-        u.email?.toLowerCase() === "sai@growxlabs.tech" ||
+        u.email?.toLowerCase() === "svp@growxlabs.tech" ||
         u.name?.toLowerCase().includes("sai varshith");
 
       const isAdmin = u.role === "ADMIN" || isSai;
@@ -24,7 +24,7 @@ export async function GET() {
       return {
         id: u.id,
         full_name: isSai ? "Sai Varshith Pujala" : (u.name || u.email?.split("@")[0] || "Platform User"),
-        email: isSai ? "sai@growxlabs.tech" : u.email,
+        email: isSai ? "svp@growxlabs.tech" : u.email,
         role: isSai
           ? "Founder & CEO / Super Admin"
           : isAdmin

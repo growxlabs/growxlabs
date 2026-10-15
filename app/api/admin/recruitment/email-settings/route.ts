@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
       enabled,
       provider: provider || 'resend',
       internal_audit_enabled: internal_audit_enabled !== false,
-      internal_audit_recipients: Array.isArray(internal_audit_recipients) ? internal_audit_recipients : ['sai@growxlabs.tech'],
+      internal_audit_recipients: Array.isArray(internal_audit_recipients) ? internal_audit_recipients : ['svp@growxlabs.tech'],
       updated_at: new Date().toISOString()
     };
 
@@ -82,7 +82,7 @@ function defaultSettings() {
     reply_to: '',
     enabled: true,
     internal_audit_enabled: true,
-    internal_audit_recipients: ['sai@growxlabs.tech'],
+    internal_audit_recipients: ['svp@growxlabs.tech'],
   };
 }
 

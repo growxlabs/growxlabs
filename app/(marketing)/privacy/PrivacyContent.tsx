@@ -116,8 +116,8 @@ export function PrivacyContent() {
             {/* Contact CTA */}
             <div className="border-t border-white/10 pt-12 mt-16 text-left">
               <p className="text-mono text-xs text-white/40 uppercase tracking-widest mb-3">Questions regarding your data?</p>
-              <a href="mailto:sai@growxlabs.tech" className="text-2xl font-sans font-black text-[#C0F0FB] hover:text-white transition-colors duration-300">
-                sai@growxlabs.tech
+              <a href="mailto:svp@growxlabs.tech" className="text-2xl font-sans font-black text-[#C0F0FB] hover:text-white transition-colors duration-300">
+                svp@growxlabs.tech
               </a>
             </div>
 

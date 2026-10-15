@@ -59,7 +59,7 @@ async function ensureActivationInvitation(input:{organisationId:string;userId:st
         </td></tr>
         <tr><td style="padding:22px 36px;background:#f8fafc;border-top:1px solid #e4e7ec;">
           <div style="font-size:12px;line-height:19px;font-weight:700;color:#344054;">GrowXLabs People</div>
-          <div style="margin-top:2px;font-size:12px;line-height:19px;color:#667085;"><a href="mailto:sai@growxlabs.tech" style="color:#0878d1;text-decoration:none;">sai@growxlabs.tech</a></div>
+          <div style="margin-top:2px;font-size:12px;line-height:19px;color:#667085;"><a href="mailto:svp@growxlabs.tech" style="color:#0878d1;text-decoration:none;">svp@growxlabs.tech</a></div>
           <div style="margin-top:13px;font-size:11px;line-height:18px;color:#98a2b3;">&copy; 2026 GrowXLabs</div>
         </td></tr>
       </table>

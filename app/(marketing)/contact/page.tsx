@@ -4,7 +4,7 @@ import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 export async function generateMetadata() {
   return {
     title: "Contact GrowxLabs | Technical Discovery & Engagements",
-    description: "Schedule a technical discovery conversation with GrowxLabs. We work with organizations globally. sai@growxlabs.tech",
+    description: "Schedule a technical discovery conversation with GrowxLabs. We work with organizations globally. svp@growxlabs.tech",
     alternates: {
       canonical: "https://growxlabs.tech/contact"
     }

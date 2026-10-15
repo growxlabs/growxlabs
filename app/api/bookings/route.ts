@@ -261,7 +261,7 @@ export async function POST(req: Request) {
 
         // 1. Send confirmation email to client
         await resend.emails.send({
-          from: "GrowX Labs <sai@growxlabs.tech>", 
+          from: "GrowX Labs <svp@growxlabs.tech>", 
           to: [email],
           subject: "Strategy Call Confirmed | GrowX Labs",
           html: ensureGrowXLabsEmailLayout(`
@@ -289,8 +289,8 @@ export async function POST(req: Request) {
 
         // 2. Send booking alert email to admin
         await resend.emails.send({
-          from: "GrowX Labs Alerts <sai@growxlabs.tech>", 
-          to: ["sai@growxlabs.tech"],
+          from: "GrowX Labs Alerts <svp@growxlabs.tech>", 
+          to: ["svp@growxlabs.tech"],
           subject: `🗓️ New Strategy Call: ${name}`,
           html: ensureGrowXLabsEmailLayout(`
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e4e4e7; border-radius: 12px; color: #18181b; background-color: #ffffff;">

@@ -172,7 +172,7 @@ export function DiscoveryBookingForm() {
 
       setIsBooked(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Something went wrong. You can also reach out directly to sai@growxlabs.tech.";
+      const msg = err instanceof Error ? err.message : "Something went wrong. You can also reach out directly to svp@growxlabs.tech.";
       setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);

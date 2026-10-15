@@ -173,8 +173,8 @@ export async function POST(request: Request) {
           const resend = new Resend(apiKey);
           const { subject, html } = getEmailContent(data.name || "Candidate", data.role || "Specialist", status);
           
-          const bccList = ["sai@growxlabs.tech"];
-          if (token?.email && token.email !== "sai@growxlabs.tech") {
+          const bccList = ["svp@growxlabs.tech"];
+          if (token?.email && token.email !== "svp@growxlabs.tech") {
             bccList.push(token.email);
           }
 

@@ -15,11 +15,11 @@ import {
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const DEFAULT_FROM = 'GrowXLabs <noreply@growxlabs.tech>';
-const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'sai@growxlabs.tech';
+const HR_TO_EMAIL = process.env.RECRUITMENT_HR_EMAIL || 'svp@growxlabs.tech';
 
 async function getSettings() {
   const { data } = await supabaseAdmin.schema('recruitment').from('email_settings').select('*').eq('organisation_id', CAREERS_ORGANISATION).maybeSingle();
-  return data || { enabled: true, from_name: 'GrowXLabs', from_email: 'noreply@growxlabs.tech', reply_to: 'hr@growxlabs.tech', internal_audit_enabled: true, internal_audit_recipients: ['sai@growxlabs.tech'] };
+  return data || { enabled: true, from_name: 'GrowXLabs', from_email: 'noreply@growxlabs.tech', reply_to: 'hr@growxlabs.tech', internal_audit_enabled: true, internal_audit_recipients: ['svp@growxlabs.tech'] };
 }
 
 async function getTemplate(templateKey: TemplateType) {
@@ -99,7 +99,7 @@ export async function sendRecruitmentEmail(options: SendRecruitmentEmailOptions)
     if (!options.skipInternalAudit && settings.internal_audit_enabled !== false) {
       const recipients = Array.isArray(settings.internal_audit_recipients)
         ? settings.internal_audit_recipients.filter((recipient: unknown): recipient is string => typeof recipient === 'string' && recipient.includes('@'))
-        : ['sai@growxlabs.tech'];
+        : ['svp@growxlabs.tech'];
       if (recipients.length) {
         try {
           const auditHtml = buildInternalAuditHtml(options, recipients, settings, messageId);

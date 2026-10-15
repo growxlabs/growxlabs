@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
     // Send Notification Alert to HR
     sendRecruitmentEmail({
-      to: "sai@growxlabs.tech",
+      to: "svp@growxlabs.tech",
       subject: `[Candidate Alert] Interview Reschedule Request: ${candidateName}`,
       templateKey: "general",
       html: `
