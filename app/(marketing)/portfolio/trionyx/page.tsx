@@ -18,51 +18,42 @@ export const metadata = {
 const TRIONYX_SPECIFICATIONS = [
   {
     title: "Product catalogue:",
+    description: "Browse automotive protection products and specifications.",
+  },
+  {
+    title: "Dealer management:",
+    description: "Manage dealers, distributors and product requests.",
+  },
+  {
+    title: "Inventory tracking:",
+    description: "Track stock levels, serial numbers and stock movements.",
+  },
+  {
+    title: "Warranty management:",
+    description: "Register warranties and let customers verify coverage online.",
+  },
+];
+
+const TRIONYX_FEATURES = [
+  {
+    title: "Product catalogue:",
     description: "Browse automotive protection products by category and view specifications.",
-  },
-  {
-    title: "Product enquiries:",
-    description: "Send questions about products directly to the team.",
-  },
-  {
-    title: "Warranty verification:",
-    description: "Check warranty status using a product's serial number.",
-  },
-  {
-    title: "Warranty registration:",
-    description: "Register products and maintain warranty records.",
   },
   {
     title: "Dealer portal:",
     description: "Give dealers access to products, availability and requests.",
   },
   {
-    title: "Product requests:",
-    description: "Submit requests and track their status.",
-  },
-  {
     title: "Stock tracking:",
     description: "View stock availability across locations.",
   },
   {
-    title: "Serial number tracking:",
-    description: "Track individual products using their serial numbers.",
-  },
-  {
-    title: "Stock movement records:",
-    description: "Keep a record of inventory transfers and movements.",
-  },
-  {
-    title: "Dealer and distributor management:",
-    description: "Maintain partner profiles and contact details.",
+    title: "Warranty verification:",
+    description: "Check warranty status using a product's serial number.",
   },
   {
     title: "Enquiry tracking:",
     description: "Review incoming enquiries and manage follow-ups.",
-  },
-  {
-    title: "Product management:",
-    description: "Update product details, images, categories and catalogue visibility.",
   },
 ];
 
@@ -172,14 +163,47 @@ export default function TrionyxCaseStudyPage() {
               </span>
             </div>
             <div className="md:col-span-8 divide-y divide-neutral-800/80">
-              {TRIONYX_SPECIFICATIONS.map((feature, idx) => (
+              {TRIONYX_SPECIFICATIONS.map((spec, idx) => (
                 <div
-                  key={feature.title}
-                  className={`text-base sm:text-lg leading-relaxed flex items-start gap-3 ${
+                  key={spec.title}
+                  className={`text-base sm:text-lg leading-relaxed flex items-start gap-4 ${
                     idx === 0 ? "pb-5 first:pt-0" : idx === TRIONYX_SPECIFICATIONS.length - 1 ? "pt-5" : "py-5"
                   }`}
                 >
-                  <span className="text-[#C0F0FB] mt-2.5 h-1.5 w-1.5 rounded-full bg-[#C0F0FB] shrink-0" />
+                  <span className="font-mono text-xs font-bold text-[#C0F0FB] shrink-0 mt-1 select-none w-6">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <strong className="text-foreground font-semibold">{spec.title}</strong>{" "}
+                    <span className="text-muted-foreground font-normal">{spec.description}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            03 — FEATURES (2-Column Editorial Layout)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // 03 FEATURES
+              </span>
+            </div>
+            <div className="md:col-span-8 divide-y divide-neutral-800/80">
+              {TRIONYX_FEATURES.map((feature, idx) => (
+                <div
+                  key={feature.title}
+                  className={`text-base sm:text-lg leading-relaxed flex items-start gap-4 ${
+                    idx === 0 ? "pb-5 first:pt-0" : idx === TRIONYX_FEATURES.length - 1 ? "pt-5" : "py-5"
+                  }`}
+                >
+                  <span className="font-mono text-xs font-bold text-[#C0F0FB] shrink-0 mt-1 select-none w-6">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
                   <div>
                     <strong className="text-foreground font-semibold">{feature.title}</strong>{" "}
                     <span className="text-muted-foreground font-normal">{feature.description}</span>
@@ -190,15 +214,14 @@ export default function TrionyxCaseStudyPage() {
           </div>
         </section>
 
-
         {/* ══════════════════════════════════════════════════════════════════
-            03 — ARCHITECTURE (Platform & Operations Architecture)
+            04 — ARCHITECTURE (Platform & Operations Architecture)
         ══════════════════════════════════════════════════════════════════ */}
         <section aria-labelledby="architecture-title" className="border-t border-neutral-800 pt-16 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
             <div className="md:col-span-4">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-                // 03 ARCHITECTURE
+                // 04 ARCHITECTURE
               </span>
             </div>
             <div className="md:col-span-8">
