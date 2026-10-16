@@ -105,8 +105,8 @@ export default function GrowXCrawlCaseStudy() {
             </div>
           </div>
 
-          {/* Large Hero Terminal / Research Interface Showcase */}
-          <div className="w-full overflow-hidden rounded-xl border border-neutral-800/90 shadow-2xl bg-[#0A0A0C]">
+          {/* Hero Terminal / Research Interface Showcase */}
+          <div className="max-w-3xl mr-auto w-full overflow-hidden rounded-xl border border-neutral-800/90 shadow-2xl bg-[#0A0A0C]">
             <Image
               src="/portfolio/growx-crawl.png"
               alt="GrowX Crawl Enterprise Web Intelligence & Research Platform"
