@@ -76,23 +76,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const cardBody = (
     <>
-      {/* Left: Clean Platform Surface Screenshot (Padded, No Window Chrome) */}
-      <div className="flex items-center justify-center w-full sm:w-1/2 p-2 sm:p-3">
+      {/* Left Column: Clean Platform Surface Screenshot */}
+      <div className="w-full flex items-center justify-center p-3 sm:p-4 md:p-5">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#07070A]">
           {product.image && (
             <Image
               src={product.image}
               alt={product.name}
               fill
-              sizes="(max-width: 640px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.01]"
             />
           )}
         </div>
       </div>
 
-      {/* Right: Editorial Product Details (Matching 360labs Reference) */}
-      <div className="w-full sm:w-1/2 flex flex-col justify-center p-8 sm:p-10 lg:p-12 xl:p-14">
+      {/* Right Column: Editorial Product Details (Full Right Side) */}
+      <div className="w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14">
         <h3 className="text-3xl sm:text-4xl font-normal text-white/90 leading-tight font-sans tracking-tight">
           {product.name}
         </h3>
@@ -104,7 +104,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   );
 
   const containerClasses = cn(
-    "group flex flex-col sm:flex-row overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-neutral-600 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] cursor-pointer no-underline block",
+    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-neutral-600 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] cursor-pointer no-underline w-full",
     className
   );
 
