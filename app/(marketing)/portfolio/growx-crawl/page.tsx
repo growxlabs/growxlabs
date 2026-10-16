@@ -104,24 +104,18 @@ export default function GrowXCrawlCaseStudy() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            02 — OVERVIEW (2-Column Editorial Layout)
+            01 — OVERVIEW (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-            <div className="lg:col-span-5 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
                 // 01 OVERVIEW
               </span>
-              <h2 className="font-serif font-black text-3xl sm:text-4xl md:text-[42px] text-foreground tracking-tight leading-[1.12]">
-                Researching the web from one place.
-              </h2>
             </div>
-            <div className="lg:col-span-7 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
+            <div className="md:col-span-8 space-y-6 text-muted-foreground text-base sm:text-lg leading-relaxed font-normal">
               <p>
-                GrowX Crawl is a web research platform built by GrowxLabs. Give it a URL, a list of websites, or a research topic — and it will discover pages, extract structured information, score search visibility, capture screenshots, and deliver clean reports. Everything runs locally on your machine with no cloud dependency.
-              </p>
-              <p>
-                It handles both simple and complex websites automatically. For pages that need full browser rendering, GrowX Crawl switches seamlessly without any extra setup. The platform includes a web dashboard for running research tasks, reviewing results, and exporting data in multiple formats.
+                One API, seven capabilities. GrowX Crawl scrapes individual pages using fast HTTP, a browser, or stealth fetching when needed, and extracts specific data with CSS or XPath selectors. It can crawl up to 50 pages across five levels or process batches of up to 100 URLs, with job tracking and webhooks for longer runs. It also captures screenshots, generates PDFs, and audits site SEO. Proxy support, robots.txt controls, and response caching are built in.
               </p>
             </div>
           </div>
