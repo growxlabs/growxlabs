@@ -201,18 +201,18 @@ export default function GrowXCrawlCaseStudy() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            04 — ARCHITECTURE
+            04 — ARCHITECTURE (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
-
-        <section aria-label="Architecture" className="border-t border-neutral-800 pt-16 space-y-6">
-          <div>
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-              // 04 ARCHITECTURE
-            </span>
-          </div>
-
-          <div className="max-w-4xl mx-auto w-full">
-            <GrowXCrawlArchitecture />
+        <section aria-label="Architecture" className="border-t border-neutral-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // 04 ARCHITECTURE
+              </span>
+            </div>
+            <div className="md:col-span-8 w-full">
+              <GrowXCrawlArchitecture />
+            </div>
           </div>
         </section>
 
