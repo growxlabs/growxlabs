@@ -70,9 +70,11 @@ export function ProjectCard({ slug, title, description, image, tag, category, su
               </p>
             )}
             
-            <p className="text-neutral-400 text-sm leading-relaxed">
-              {description}
-            </p>
+            {description ? (
+              <p className="text-neutral-400 text-sm leading-relaxed">
+                {description}
+              </p>
+            ) : null}
           </div>
 
           {/* Action Link */}

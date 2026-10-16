@@ -47,7 +47,7 @@ const PRODUCTS: ProductItem[] = [
     name: "GrowX Crawl™",
     image: "/portfolio/growx-crawl.png",
     description:
-      "A local-first web research tool built inside GrowXLabs to discover companies, crawl websites, extract structured information, and keep verifiable source evidence behind every finding.",
+      "Production-grade web crawling API for scraping pages, extracting structured data, crawling websites, processing URLs in batches, capturing screenshots, generating PDFs, and auditing SEO.",
     href: "/portfolio/growx-crawl",
     isExternal: false,
   },
