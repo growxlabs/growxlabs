@@ -12,6 +12,33 @@ export const metadata = {
   description: "Production-grade web crawling API for scraping pages, extracting structured data, crawling websites, processing URLs in batches, capturing screenshots, generating PDFs, and auditing SEO.",
 };
 
+const CRAWL_SPECIFICATIONS = [
+  {
+    label: "Capabilities",
+    value: "7: scrape, extract, crawl, batch, screenshot, PDF, URL-based SEO audit",
+  },
+  {
+    label: "Fetching",
+    value: "3 modes: Fast HTTP, headless browser, stealth",
+  },
+  {
+    label: "Crawl limit",
+    value: "Up to 50 pages and five levels deep",
+  },
+  {
+    label: "Batch limit",
+    value: "Up to 100 URLs per job; configurable concurrency",
+  },
+  {
+    label: "Job delivery",
+    value: "Status polling and optional completion webhook",
+  },
+  {
+    label: "Formats",
+    value: "PNG/JPEG screenshots and A4, Letter, or Legal PDFs",
+  },
+];
+
 const CRAWL_FEATURES = [
   "Fetches standard and JavaScript-heavy pages, switching methods when a page resists extraction",
   "Pulls the exact fields you need with CSS or XPath rules",
@@ -110,13 +137,47 @@ export default function GrowXCrawlCaseStudy() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            02 — FEATURES (2-Column Editorial Layout)
+            02 — SPECIFICATIONS (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
         <section className="border-t border-neutral-800 pt-16">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
             <div className="md:col-span-4">
               <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-                // 02 FEATURES
+                // 02 SPECIFICATIONS
+              </span>
+            </div>
+            <div className="md:col-span-8">
+              <div className="border-y border-neutral-800 divide-y divide-neutral-800/80">
+                <div className="py-3.5 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                  <span>Specification</span>
+                  <span className="text-right">GrowX Crawl</span>
+                </div>
+                {CRAWL_SPECIFICATIONS.map((spec) => (
+                  <div
+                    key={spec.label}
+                    className="py-4 flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-6 transition-colors hover:bg-white/[0.02]"
+                  >
+                    <span className="text-foreground font-semibold text-sm sm:text-base shrink-0 sm:w-36">
+                      {spec.label}
+                    </span>
+                    <span className="text-muted-foreground text-sm sm:text-base sm:text-right font-normal">
+                      {spec.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            03 — FEATURES (2-Column Editorial Layout)
+        ══════════════════════════════════════════════════════════════════ */}
+        <section className="border-t border-neutral-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // 03 FEATURES
               </span>
             </div>
             <div className="md:col-span-8 divide-y divide-neutral-800/80">
@@ -140,13 +201,13 @@ export default function GrowXCrawlCaseStudy() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-            03 — ARCHITECTURE
+            04 — ARCHITECTURE
         ══════════════════════════════════════════════════════════════════ */}
 
         <section aria-label="Architecture" className="border-t border-neutral-800 pt-16 space-y-6">
           <div>
             <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-              // 03 ARCHITECTURE
+              // 04 ARCHITECTURE
             </span>
           </div>
 
