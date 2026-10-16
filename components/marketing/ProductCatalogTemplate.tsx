@@ -3,7 +3,6 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHero } from "@/components/marketing/PageHero";
 import { ProductStudioToggle } from "@/components/marketing/ProductStudioToggle";
@@ -75,88 +74,37 @@ export interface ProductCatalogTemplateProps {
 export function ProductCard({ product, className }: ProductCardProps) {
   const isExternal = product.isExternal ?? (product.href.startsWith("http://") || product.href.startsWith("https://"));
 
-  const cardContent = (
+  const cardBody = (
     <>
-      {/* Left: Clean Platform Surface Screenshot */}
-      <div className="w-full lg:w-1/2 p-3 sm:p-4 md:p-5 lg:p-6 flex items-center justify-center">
-        <div
-          className={cn(
-            "relative w-full overflow-hidden rounded-lg bg-[#07070A] border border-neutral-800/60 shadow-inner",
-            product.aspectRatio || "aspect-[16/10]"
-          )}
-        >
+      {/* Left: Clean Platform Surface Screenshot (Padded, No Window Chrome) */}
+      <div className="flex items-center justify-center w-full sm:w-1/2 p-2 sm:p-3">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#07070A]">
           {product.image && (
             <Image
               src={product.image}
               alt={product.name}
               fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.015]"
+              sizes="(max-width: 640px) 100vw, 50vw"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.01]"
             />
-          )}
-
-          {/* Optional Badge over Image */}
-          {product.badge && (
-            <div className="absolute top-3 left-3 z-10">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/75 backdrop-blur-md text-[#C0F0FB] border border-[#C0F0FB]/30">
-                {product.badge}
-              </span>
-            </div>
           )}
         </div>
       </div>
 
-      {/* Right: Editorial Product Details */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14">
-        {/* Category Tag */}
-        {product.categoryTag && (
-          <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] mb-3 block">
-            {product.categoryTag}
-          </span>
-        )}
-
-        {/* Product Title */}
-        <div className="flex items-baseline justify-between gap-4">
-          <h3 className="text-3xl sm:text-4xl font-normal text-white/95 leading-tight font-sans tracking-tight group-hover:text-white transition-colors">
-            {product.name}
-          </h3>
-          {isExternal && (
-            <ArrowUpRight className="h-5 w-5 text-neutral-500 group-hover:text-[#C0F0FB] transition-colors shrink-0" />
-          )}
-        </div>
-
-        {/* Product Description */}
-        <p className="mt-4 text-base sm:text-lg text-neutral-400 leading-relaxed font-sans font-light">
+      {/* Right: Editorial Product Details (Matching 360labs Reference) */}
+      <div className="w-full sm:w-1/2 flex flex-col justify-center p-8 sm:p-10 lg:p-12 xl:p-14">
+        <h3 className="text-3xl sm:text-4xl font-normal text-white/90 leading-tight font-sans tracking-tight">
+          {product.name}
+        </h3>
+        <p className="mt-4 text-base text-neutral-400 leading-relaxed font-sans font-light">
           {product.description}
         </p>
-
-        {/* Optional Tags / Tech list */}
-        {product.tags && product.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-5">
-            {product.tags.map((tag) => (
-              <span
-                key={tag}
-                className="font-mono text-[11px] text-neutral-400 border border-neutral-800 bg-neutral-900/60 px-2.5 py-0.5 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Optional CTA Link */}
-        {product.ctaText && (
-          <div className="mt-6 flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-neutral-400 group-hover:text-[#C0F0FB] transition-colors">
-            <span>{product.ctaText}</span>
-            <GrowxArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
-          </div>
-        )}
       </div>
     </>
   );
 
   const containerClasses = cn(
-    "group flex flex-col lg:flex-row overflow-hidden rounded-xl border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-neutral-600 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] cursor-pointer no-underline block",
+    "group flex flex-col sm:flex-row overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-neutral-600 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] cursor-pointer no-underline block",
     className
   );
 
@@ -168,14 +116,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
         rel="noopener noreferrer"
         className={containerClasses}
       >
-        {cardContent}
+        {cardBody}
       </a>
     );
   }
 
   return (
     <Link href={product.href} className={containerClasses}>
-      {cardContent}
+      {cardBody}
     </Link>
   );
 }
