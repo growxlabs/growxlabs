@@ -8,7 +8,7 @@ import { AIReadActions } from "@/components/marketing/AIReadActions";
 
 export const metadata = {
   title: "GrowX Crawl — Web Research & Discovery Platform | GrowXLabs",
-  description: "A web research tool built inside GrowxLabs to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.",
+  description: "Production-grade web crawling API for scraping pages, extracting structured data, crawling websites, processing URLs in batches, capturing screenshots, generating PDFs, and auditing SEO.",
 };
 
 interface CapabilityItem {
@@ -69,7 +69,7 @@ export default function GrowXCrawlCaseStudy() {
             </div>
             <div className="md:col-span-8">
               <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl leading-relaxed font-normal">
-                A web research tool built inside GrowxLabs to discover companies, crawl websites, extract useful information and keep the evidence behind every finding.
+                Production-grade web crawling API for scraping pages, extracting structured data, crawling websites, processing URLs in batches, capturing screenshots, generating PDFs, and auditing SEO.
               </p>
             </div>
           </div>
