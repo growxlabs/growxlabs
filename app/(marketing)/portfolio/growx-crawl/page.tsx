@@ -12,26 +12,13 @@ export const metadata = {
   description: "Production-grade web crawling API for scraping pages, extracting structured data, crawling websites, processing URLs in batches, capturing screenshots, generating PDFs, and auditing SEO.",
 };
 
-interface CapabilityItem {
-  capability: string;
-  detail: string;
-  isHighlight?: boolean;
-}
-
-const CRAWL_CAPABILITIES: CapabilityItem[] = [
-  { capability: "Single Website Crawl", detail: "Up to 100+ pages per site" },
-  { capability: "Batch Research", detail: "100+ websites in one run" },
-  { capability: "Page Discovery", detail: "Sitemaps, internal links, robots.txt" },
-  { capability: "Content Extraction", detail: "Company info, contacts, key data" },
-  { capability: "Dynamic Websites", detail: "Full browser rendering when needed" },
-  { capability: "SEO Score", detail: "0 – 100", isHighlight: true },
-  { capability: "AEO Score", detail: "0 – 100", isHighlight: true },
-  { capability: "GEO Score", detail: "0 – 100", isHighlight: true },
-  { capability: "Screenshots", detail: "Full-page captures of every site" },
-  { capability: "PDF Export", detail: "Save any page as a PDF" },
-  { capability: "Reports", detail: "JSON, CSV, Excel, PDF" },
-  { capability: "Web Dashboard", detail: "Visual interface for all tasks" },
-  { capability: "Runs On", detail: "Your machine — no cloud needed", isHighlight: true },
+const CRAWL_FEATURES = [
+  "Fetches standard and JavaScript-heavy pages, switching methods when a page resists extraction",
+  "Pulls the exact fields you need with CSS or XPath rules",
+  "Follows links through a site, up to 50 pages and five levels",
+  "Processes URL lists in batches of up to 100",
+  "Creates page screenshots and PDFs, and checks a URL’s SEO",
+  "Provides API key access, usage limits, job tracking, webhooks, and scrape caching",
 ];
 
 export default function GrowXCrawlCaseStudy() {
@@ -123,67 +110,37 @@ export default function GrowXCrawlCaseStudy() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════
-
-            02 — WHAT IT DOES
-
+            02 — FEATURES (2-Column Editorial Layout)
         ══════════════════════════════════════════════════════════════════ */}
-
-        <section className="border-t border-neutral-800 pt-16 space-y-8">
-
-          <div className="space-y-3">
-
-            <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
-
-              // 02 CAPABILITIES
-
-            </span>
-
-            <h2 className="font-serif font-black text-3xl sm:text-4xl text-foreground tracking-tight">
-
-              What It Does
-
-            </h2>
-
-          </div>
-
-
-
-          <div className="border-y border-neutral-800 divide-y divide-neutral-800/80">
-            <div className="py-3.5 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-wider text-neutral-500">
-              <span>Capability</span>
-              <span className="text-right">Detail</span>
+        <section className="border-t border-neutral-800 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
+            <div className="md:col-span-4">
+              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block">
+                // 02 FEATURES
+              </span>
             </div>
-            {CRAWL_CAPABILITIES.map((item) => (
-              <div
-                key={item.capability}
-                className="py-4 sm:py-4.5 flex items-center justify-between gap-4 transition-colors hover:bg-white/[0.02]"
-              >
-                <span className="text-foreground font-medium text-sm sm:text-base">
-                  {item.capability}
-                </span>
-                <span
-                  className={`text-sm sm:text-base text-right ${
-                    item.isHighlight ? "text-[#C0F0FB] font-bold" : "text-neutral-400"
+            <div className="md:col-span-8 divide-y divide-neutral-800/80">
+              {CRAWL_FEATURES.map((feature, idx) => (
+                <div
+                  key={idx}
+                  className={`text-base sm:text-lg leading-relaxed flex items-start gap-4 ${
+                    idx === 0 ? "pb-5 first:pt-0" : idx === CRAWL_FEATURES.length - 1 ? "pt-5" : "py-5"
                   }`}
                 >
-                  {item.detail}
-                </span>
-              </div>
-            ))}
+                  <span className="font-mono text-xs font-bold text-[#C0F0FB] shrink-0 mt-1 select-none w-6">
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <span className="text-foreground font-normal">{feature}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-
         </section>
 
-
-
-
-
-
         {/* ══════════════════════════════════════════════════════════════════
-        {/* ══════════════════════════════════════════════════════════════════
-
-            03 — PLATFORM ARCHITECTURE
-
+            03 — ARCHITECTURE
         ══════════════════════════════════════════════════════════════════ */}
 
         <section aria-label="Architecture" className="border-t border-neutral-800 pt-16 space-y-6">
