@@ -82,16 +82,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
   const cardBody = (
     <>
-      {/* Left Column: Clean Platform Surface Screenshot */}
-      <div className="w-full flex items-center justify-center p-3 sm:p-4 md:p-5">
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#07070A] border border-white/10 group-hover:border-[#C0F0FB]/30 transition-colors duration-300">
+      {/* Left Column: Clean Platform Surface Screenshot (Sharp edges matching card) */}
+      <div className="w-full flex items-center justify-center p-4 sm:p-6 md:p-8">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-black border border-black/15 shadow-md">
           {product.image && (
             <Image
               src={product.image}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.01]"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
             />
           )}
         </div>
@@ -100,23 +100,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
       {/* Right Column: Editorial Product Details (Full Right Side) */}
       <div className="w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 space-y-4">
         <div>
-          <span className="font-mono text-xs font-bold text-[#C0F0FB] tracking-[0.2em] uppercase block mb-3">
+          <span className="font-mono text-xs font-bold text-black/60 tracking-[0.2em] uppercase block mb-3">
             {displayCategory}
           </span>
-          <h3 className="text-3xl sm:text-4xl font-normal text-white/90 leading-tight font-sans tracking-tight group-hover:text-[#C0F0FB] transition-colors duration-200">
+          <h3 className="text-3xl sm:text-4xl font-black text-black leading-tight font-sans tracking-tight">
             {product.name}
           </h3>
         </div>
-        <p className="text-base text-neutral-400 leading-relaxed font-sans font-light">
+        <p className="text-base text-black/80 leading-relaxed font-sans font-medium">
           {product.description}
         </p>
-        <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-          <span className="inline-flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] group-hover:text-white transition-colors uppercase tracking-wider">
+        <div className="pt-4 border-t border-black/15 flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 font-mono text-xs font-bold text-black group-hover:opacity-75 transition-opacity uppercase tracking-wider">
             <span>{product.ctaText ?? (isExternal ? "Launch Platform" : "Explore Platform")}</span>
             <GrowxArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
           </span>
           {product.status && (
-            <span className="font-mono text-[11px] text-neutral-500 tracking-wider uppercase">
+            <span className="font-mono text-[11px] font-bold text-black/60 tracking-wider uppercase">
               {product.status}
             </span>
           )}
@@ -126,7 +126,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   );
 
   const containerClasses = cn(
-    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-[#C0F0FB]/40 hover:shadow-[0_0_35px_rgba(192,240,251,0.08)] cursor-pointer no-underline w-full",
+    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-black/15 bg-[#C0F0FB] text-black shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85)] cursor-pointer no-underline w-full",
     className
   );
 

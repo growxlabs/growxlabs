@@ -25,11 +25,11 @@ export function ProjectCard({ slug, title, description, image, tag, category, su
     <div className="group h-full relative">
       <div className="h-full flex flex-col bg-[#C0F0FB] text-black border border-black/15 shadow-[0_2px_4px_rgba(0,0,0,0.4),0_10px_20px_rgba(0,0,0,0.5),0_28px_56px_rgba(0,0,0,0.75),0_48px_96px_rgba(0,0,0,0.85)] transition-all duration-300 ease-out hover:-translate-y-3 hover:shadow-[0_12px_24px_rgba(0,0,0,0.5),0_24px_48px_rgba(0,0,0,0.65),0_48px_96px_rgba(0,0,0,0.85),0_72px_130px_rgba(0,0,0,0.95)] will-change-transform">
         
-        {/* Clickable Image Preview (Clean framed preview with uniform padding and balanced radius) */}
+        {/* Clickable Image Preview (Sharp edges matching card) */}
         <div className="p-4 sm:p-5">
           <Link
             href={`/portfolio/${slug}`}
-            className="relative aspect-[16/10] w-full overflow-hidden block rounded-2xl bg-black border border-black/15 shadow-md"
+            className="relative aspect-[16/10] w-full overflow-hidden block bg-black border border-black/15 shadow-md"
           >
             {image ? (
               <Image
