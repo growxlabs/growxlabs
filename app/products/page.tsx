@@ -12,6 +12,9 @@ import { ProductCatalogTemplate, ProductItem } from "@/components/marketing/Prod
 const PRODUCTS: ProductItem[] = [
   {
     name: "ResumeForgeAI™",
+    categoryTag: "// CAREER INTELLIGENCE",
+    status: "PROPRIETARY PLATFORM",
+    ctaText: "Launch Platform",
     image: "/images/products/resumeforgeai.png",
     description:
       "An AI-native resume engineering platform designed for software engineers and technical leaders. It builds role-specific resumes with granular version branching, ATS semantic match benchmarking, and publication-ready typography. The system ensures every bullet point is grounded in verifiable impact metrics tailored to target job descriptions.",
@@ -20,6 +23,9 @@ const PRODUCTS: ProductItem[] = [
   },
   {
     name: "Pipper™",
+    categoryTag: "// MULTI-AGENT RUNTIME",
+    status: "DESKTOP RUNTIME",
+    ctaText: "Explore Platform",
     image: "/images/products/pipper.png",
     description:
       "A desktop workspace for running and seeing autonomous coding agents work together. Pipper orchestrates parallel model execution, visualizes live file changes across branches, and runs deterministic AST compilations before merging into your codebase. Its companion dashboard gives full visibility over agent prompts, test coverage, and sandbox rollbacks.",

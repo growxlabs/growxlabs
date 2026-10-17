@@ -74,11 +74,17 @@ export interface ProductCatalogTemplateProps {
 export function ProductCard({ product, className }: ProductCardProps) {
   const isExternal = product.isExternal ?? (product.href.startsWith("http://") || product.href.startsWith("https://"));
 
+  const displayCategory = product.categoryTag?.startsWith("//")
+    ? product.categoryTag
+    : product.categoryTag
+    ? `// ${product.categoryTag.toUpperCase()}`
+    : "// AI-NATIVE PLATFORM";
+
   const cardBody = (
     <>
       {/* Left Column: Clean Platform Surface Screenshot */}
       <div className="w-full flex items-center justify-center p-3 sm:p-4 md:p-5">
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#07070A]">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#07070A] border border-white/10 group-hover:border-[#C0F0FB]/30 transition-colors duration-300">
           {product.image && (
             <Image
               src={product.image}
@@ -92,19 +98,35 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </div>
 
       {/* Right Column: Editorial Product Details (Full Right Side) */}
-      <div className="w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14">
-        <h3 className="text-3xl sm:text-4xl font-normal text-white/90 leading-tight font-sans tracking-tight">
-          {product.name}
-        </h3>
-        <p className="mt-4 text-base text-neutral-400 leading-relaxed font-sans font-light">
+      <div className="w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 space-y-4">
+        <div>
+          <span className="font-mono text-xs font-bold text-[#C0F0FB] tracking-[0.2em] uppercase block mb-3">
+            {displayCategory}
+          </span>
+          <h3 className="text-3xl sm:text-4xl font-normal text-white/90 leading-tight font-sans tracking-tight group-hover:text-[#C0F0FB] transition-colors duration-200">
+            {product.name}
+          </h3>
+        </div>
+        <p className="text-base text-neutral-400 leading-relaxed font-sans font-light">
           {product.description}
         </p>
+        <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] group-hover:text-white transition-colors uppercase tracking-wider">
+            <span>{product.ctaText ?? (isExternal ? "Launch Platform" : "Explore Platform")}</span>
+            <GrowxArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+          </span>
+          {product.status && (
+            <span className="font-mono text-[11px] text-neutral-500 tracking-wider uppercase">
+              {product.status}
+            </span>
+          )}
+        </div>
       </div>
     </>
   );
 
   const containerClasses = cn(
-    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-neutral-600 hover:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.6)] cursor-pointer no-underline w-full",
+    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-neutral-800 bg-[#0C0C10] transition-all duration-300 hover:border-[#C0F0FB]/40 hover:shadow-[0_0_35px_rgba(192,240,251,0.08)] cursor-pointer no-underline w-full",
     className
   );
 
