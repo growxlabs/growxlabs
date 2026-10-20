@@ -2695,10 +2695,12 @@ export function EditorialCarouselClient() {
     };
 
     const renderImageMarkup = (el: ImageElementStyle) => {
-      if (!el.visible) return "";
+      if (!el || !el.visible) return "";
+      if (!el.mediaUrl && (!el.color || el.color === "transparent")) return "";
+
       const borderStyle =
-        el.borderWidth > 0
-          ? `border: ${el.borderWidth}px solid ${el.borderColor};`
+        (el.borderWidth || 0) > 0
+          ? `border: ${el.borderWidth}px solid ${el.borderColor || "transparent"};`
           : "";
       const shadowStyle = el.shadowEnabled
         ? "box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);"
@@ -2714,9 +2716,9 @@ export function EditorialCarouselClient() {
           top: ${el.y}px;
           width: ${el.width}px;
           height: ${el.height}px;
-          border-radius: ${el.borderRadius}px;
-          opacity: ${el.opacity};
-          transform: rotate(${el.rotation}deg);
+          border-radius: ${el.borderRadius || 0}px;
+          opacity: ${el.opacity ?? 1};
+          transform: rotate(${el.rotation || 0}deg);
           box-sizing: border-box;
           overflow: hidden;
           background: ${bgColor};
@@ -2728,15 +2730,13 @@ export function EditorialCarouselClient() {
             el.mediaUrl
               ? isVideoAsset
                 ? `
-              <img src="${videoFrameUrl || el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
+              <img src="${videoFrameUrl || el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit || "cover"}; filter: brightness(${el.brightness ?? 100}%) contrast(${el.contrast ?? 100}%);" />
             `
                 : `
-              <img src="${el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit}; filter: brightness(${el.brightness}%) contrast(${el.contrast}%);" />
+              <img src="${el.mediaUrl}" style="width: 100%; height: 100%; object-fit: ${el.objectFit || "cover"}; filter: brightness(${el.brightness ?? 100}%) contrast(${el.contrast ?? 100}%);" />
             `
               : `
-            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); display: flex; align-items: center; justify-content: center; color: #475569; font-family: sans-serif; font-weight: bold; font-size: 24px;">
-              Featured Asset
-            </div>
+            <div style="width: 100%; height: 100%; background: ${bgColor};"></div>
           `
           }
         </div>
@@ -2971,6 +2971,7 @@ export function EditorialCarouselClient() {
             ${renderTextMarkup(slide.category)}
             ${renderTextMarkup(slide.headline)}
             ${renderImageMarkup(slide.featuredImage)}
+            ${slide.secondaryImage ? renderImageMarkup(slide.secondaryImage) : ""}
             ${renderTextMarkup(slide.body)}
             ${renderBulletsMarkup(slide.bullets)}
             ${renderQuoteMarkup(slide.quote)}
@@ -2985,7 +2986,21 @@ export function EditorialCarouselClient() {
 
   const toDataUrl = async (url: string): Promise<string> => {
     if (!url) return "";
-    if (url.startsWith("data:") || url.startsWith("blob:")) return url; // already local
+    if (url.startsWith("data:")) return url; // already data URL
+    if (url.startsWith("blob:")) {
+      try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      } catch (e) {
+        console.error("Failed to convert blob URL to data URL:", url, e);
+        return url;
+      }
+    }
     try {
       const targetUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
       const res = await fetch(targetUrl);
@@ -3018,10 +3033,20 @@ export function EditorialCarouselClient() {
       if (frameUrl) {
         videoFrameDataUrl = await toDataUrl(frameUrl);
       }
-    } else if (cloned.featuredImage.visible && cloned.featuredImage.mediaUrl) {
+    } else if (cloned.featuredImage?.visible && cloned.featuredImage?.mediaUrl) {
       // Convert normal image to data URL
       cloned.featuredImage.mediaUrl = await toDataUrl(
         cloned.featuredImage.mediaUrl,
+      );
+    }
+
+    // 1b. Convert secondary image to data URL
+    if (
+      cloned.secondaryImage?.visible &&
+      cloned.secondaryImage?.mediaUrl
+    ) {
+      cloned.secondaryImage.mediaUrl = await toDataUrl(
+        cloned.secondaryImage.mediaUrl,
       );
     }
 
