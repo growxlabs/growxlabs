@@ -10,7 +10,7 @@ interface FontPickerProps {
 }
 
 const FONTS = [
-  "Inter", "Geist", "Satoshi", "Manrope", "Roboto", "Poppins", 
+  "Inter", "Helvetica", "Swiss 721", "Geist", "Satoshi", "Manrope", "Roboto", "Poppins", 
   "Montserrat", "Lato", "Playfair Display", "Merriweather", 
   "Source Code Pro", "Space Grotesk", "DM Sans", "Outfit", "Plus Jakarta Sans"
 ];

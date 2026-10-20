@@ -208,6 +208,14 @@ const DEFAULT_FONTS = [
     name: "Inter",
     value: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
   },
+  {
+    name: "Helvetica",
+    value: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+  },
+  {
+    name: "Swiss 721",
+    value: "'Swiss 721', 'Helvetica Neue', Helvetica, sans-serif",
+  },
   { name: "Outfit", value: "'Outfit', sans-serif" },
   { name: "SF Mono", value: "'SF Mono', 'Fira Code', monospace" },
   { name: "Playfair Display", value: "'Playfair Display', serif" },
@@ -3973,8 +3981,11 @@ export function EditorialCarouselClient() {
       top: `${elem.y}px`,
       width: `${elem.width}px`,
       height: `${elem.height}px`,
-      opacity: elem.opacity,
-      transform: `rotate(${elem.rotation || 0}deg)`,
+      opacity: elem.opacity ?? 1,
+      transform: `rotate(${elem.rotation || 0}deg)${
+        (elem as any).flipH ? " scaleX(-1)" : ""
+      }${(elem as any).flipV ? " scaleY(-1)" : ""}`,
+      mixBlendMode: ((elem as any).blendMode as any) || "normal",
       cursor: elem.locked ? "not-allowed" : "move",
       boxSizing: "border-box",
       userSelect: "none",
@@ -4703,13 +4714,15 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "category",
                 <div
-                  className="w-full h-full font-sans uppercase tracking-widest truncate animate-fade"
+                  className="w-full h-full tracking-widest truncate animate-fade"
                   style={{
+                    fontFamily: activeSlide.category.fontFamily || "'Inter', sans-serif",
                     fontSize: `${activeSlide.category.fontSize}px`,
                     fontWeight: activeSlide.category.fontWeight,
                     color: activeSlide.category.color,
                     letterSpacing: `${activeSlide.category.letterSpacing}px`,
                     textAlign: activeSlide.category.align,
+                    textTransform: activeSlide.category.uppercase !== false ? "uppercase" : "none",
                   }}
                 >
                   {activeSlide.category.text}
@@ -4720,14 +4733,16 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "headline",
                 <div
-                  className="w-full h-full font-sans tracking-tight leading-tight animate-fade"
+                  className="w-full h-full tracking-tight leading-tight animate-fade"
                   style={{
+                    fontFamily: activeSlide.headline.fontFamily || "'Inter', sans-serif",
                     fontSize: `${activeSlide.headline.fontSize}px`,
                     fontWeight: activeSlide.headline.fontWeight,
                     color: activeSlide.headline.color,
                     lineHeight: activeSlide.headline.lineHeight,
                     letterSpacing: `${activeSlide.headline.letterSpacing}px`,
                     textAlign: activeSlide.headline.align,
+                    textTransform: activeSlide.headline.uppercase ? "uppercase" : "none",
                   }}
                 >
                   {renderFormattedText(activeSlide.headline.text)}
@@ -4865,14 +4880,16 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "body",
                 <div
-                  className="w-full h-full font-sans whitespace-pre-line text-neutral-800 animate-fade"
+                  className="w-full h-full whitespace-pre-line animate-fade"
                   style={{
+                    fontFamily: activeSlide.body.fontFamily || "'Inter', sans-serif",
                     fontSize: `${activeSlide.body.fontSize}px`,
                     fontWeight: activeSlide.body.fontWeight,
                     color: activeSlide.body.color,
                     lineHeight: activeSlide.body.lineHeight,
                     letterSpacing: `${activeSlide.body.letterSpacing}px`,
                     textAlign: activeSlide.body.align,
+                    textTransform: activeSlide.body.uppercase ? "uppercase" : "none",
                   }}
                 >
                   {renderFormattedText(activeSlide.body.text)}
@@ -4883,12 +4900,15 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "bullets",
                 <div
-                  className="w-full h-full font-sans text-neutral-800 animate-fade"
+                  className="w-full h-full animate-fade"
                   style={{
+                    fontFamily: activeSlide.bullets.fontFamily || "'Inter', sans-serif",
                     fontSize: `${activeSlide.bullets.fontSize}px`,
                     fontWeight: activeSlide.bullets.fontWeight,
                     color: activeSlide.bullets.color,
                     lineHeight: activeSlide.bullets.lineHeight,
+                    textAlign: activeSlide.bullets.align,
+                    textTransform: activeSlide.bullets.uppercase ? "uppercase" : "none",
                   }}
                 >
                   <ul
@@ -4901,7 +4921,12 @@ export function EditorialCarouselClient() {
                   >
                     {activeSlide.bullets.items.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <span className="text-black font-bold">
+                        <span
+                          className="font-bold"
+                          style={{
+                            color: activeSlide.bullets.bulletColor || activeSlide.bullets.color || "#000000",
+                          }}
+                        >
                           {activeSlide.bullets.bulletStyle === "check"
                             ? "✔"
                             : activeSlide.bullets.bulletStyle === "number"
@@ -4919,28 +4944,36 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "quote",
                 <div
-                  className="w-full h-full font-sans animate-fade"
+                  className="w-full h-full animate-fade"
                   style={{
-                    background: activeSlide.quote.backgroundColor,
-                    borderLeft: `5px solid ${activeSlide.quote.borderColor}`,
-                    borderRadius: `${activeSlide.quote.borderRadius}px`,
+                    fontFamily: activeSlide.quote.fontFamily || "'Inter', sans-serif",
+                    background: activeSlide.quote.backgroundColor || "rgba(0,0,0,0.03)",
+                    borderLeft: `5px solid ${activeSlide.quote.borderColor || "#1687f8"}`,
+                    borderRadius: `${activeSlide.quote.borderRadius ?? 8}px`,
                     padding: `${activeSlide.quote.padding || 24}px`,
+                    textAlign: activeSlide.quote.align,
                   }}
                 >
                   <p
                     className="m-0 mb-2 font-bold"
                     style={{
+                      fontFamily: activeSlide.quote.fontFamily || "'Inter', sans-serif",
                       fontSize: `${activeSlide.quote.fontSize}px`,
                       fontWeight: activeSlide.quote.fontWeight,
                       lineHeight: activeSlide.quote.lineHeight,
                       color: activeSlide.quote.color,
+                      textTransform: activeSlide.quote.uppercase ? "uppercase" : "none",
                     }}
                   >
                     "{activeSlide.quote.text}"
                   </p>
                   <span
-                    className="text-neutral-500 font-semibold"
-                    style={{ fontSize: `${activeSlide.quote.fontSize - 4}px` }}
+                    className="font-semibold"
+                    style={{
+                      fontFamily: activeSlide.quote.fontFamily || "'Inter', sans-serif",
+                      fontSize: `${(activeSlide.quote.authorFontSize || activeSlide.quote.fontSize - 4)}px`,
+                      color: activeSlide.quote.authorColor || "rgba(0,0,0,0.55)",
+                    }}
                   >
                     — {activeSlide.quote.author}
                   </span>
@@ -4951,16 +4984,27 @@ export function EditorialCarouselClient() {
               {renderCanvasElement(
                 "cta",
                 <div
-                  className="w-full h-full flex items-center justify-center animate-fade"
+                  className={`w-full h-full flex items-center animate-fade ${
+                    activeSlide.cta.align === "left"
+                      ? "justify-start text-left px-5"
+                      : activeSlide.cta.align === "right"
+                        ? "justify-end text-right px-5"
+                        : "justify-center text-center px-4"
+                  }`}
                   style={{
-                    background: activeSlide.cta.backgroundColor,
-                    color: activeSlide.cta.textColor,
-                    borderRadius: `${activeSlide.cta.borderRadius}px`,
+                    background: activeSlide.cta.backgroundColor || activeSlide.cta.color || "#1c1813",
+                    color: activeSlide.cta.textColor || "#ffffff",
+                    borderRadius: `${activeSlide.cta.borderRadius ?? 8}px`,
                     fontSize: `${activeSlide.cta.fontSize}px`,
                     fontWeight: activeSlide.cta.fontWeight,
-                    fontFamily: activeSlide.cta.fontFamily,
+                    fontFamily: activeSlide.cta.fontFamily || "'Inter', sans-serif",
                     padding: `${activeSlide.cta.padding || 16}px`,
                     letterSpacing: `${activeSlide.cta.letterSpacing}px`,
+                    textTransform: activeSlide.cta.uppercase ? "uppercase" : "none",
+                    border: (activeSlide.cta as any).borderWidth
+                      ? `${(activeSlide.cta as any).borderWidth}px solid ${(activeSlide.cta as any).borderColor || "#ffffff"}`
+                      : "none",
+                    cursor: "pointer",
                   }}
                 >
                   {activeSlide.cta.text}
@@ -4970,10 +5014,19 @@ export function EditorialCarouselClient() {
               {/* Author profile */}
               {renderCanvasElement(
                 "author",
-                <div className="w-full h-full flex items-center gap-2 animate-fade">
+                <div
+                  className="w-full h-full flex items-center gap-2 animate-fade"
+                  style={{
+                    fontFamily: activeSlide.author.fontFamily || "'Inter', sans-serif",
+                  }}
+                >
                   <div
                     className="rounded-full bg-neutral-200 overflow-hidden shrink-0 border border-neutral-300"
-                    style={{ width: "32px", height: "32px" }}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: `${(activeSlide.author as any).borderRadius ?? 9999}px`,
+                    }}
                   >
                     {activeSlide.author.avatarUrl ? (
                       <img
@@ -4986,8 +5039,14 @@ export function EditorialCarouselClient() {
                   </div>
                   <div className="flex flex-col text-left">
                     <span
-                      className="font-bold text-neutral-800 leading-tight"
-                      style={{ fontSize: `${activeSlide.author.fontSize}px` }}
+                      className="font-bold leading-tight"
+                      style={{
+                        fontFamily: activeSlide.author.fontFamily || "'Inter', sans-serif",
+                        fontSize: `${activeSlide.author.fontSize}px`,
+                        fontWeight: activeSlide.author.fontWeight,
+                        color: activeSlide.author.color,
+                        textTransform: activeSlide.author.uppercase ? "uppercase" : "none",
+                      }}
                     >
                       {activeSlide.author.name}
                     </span>

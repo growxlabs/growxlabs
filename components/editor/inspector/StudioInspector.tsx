@@ -51,11 +51,22 @@ export const CANVAS_FORMAT_PRESETS: CanvasPreset[] = [
 
 const STUDIO_FONTS = [
   { name: "Inter", value: "'Inter', sans-serif" },
+  { name: "Helvetica", value: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { name: "Swiss 721", value: "'Swiss 721', 'Helvetica Neue', Helvetica, sans-serif" },
   { name: "Outfit", value: "'Outfit', sans-serif" },
   { name: "SF Mono", value: "'SF Mono', monospace" },
   { name: "Playfair Display", value: "'Playfair Display', serif" },
-  { name: "Neue Haas", value: "'Neue Haas Grotesk', sans-serif" },
+  { name: "Neue Haas Grotesk", value: "'Neue Haas Grotesk', 'Inter', sans-serif" },
 ];
+
+const getElementActiveFillColor = (elem: any, key: ElementKey | null): string => {
+  if (!elem || !key) return "#FAFAFA";
+  if (key === "cta") return elem.backgroundColor || elem.color || "#1c1813";
+  if (key === "quote") return elem.backgroundColor || elem.color || "#f4f4f5";
+  if (key === "divider") return elem.color || "#e4e4e7";
+  if (key === "featuredImage" || key === "secondaryImage") return elem.color || "transparent";
+  return elem.color || (key === "headline" ? "#000000" : "#FAFAFA");
+};
 
 const STOCK_IMAGE_PRESETS = [
   {
@@ -83,6 +94,8 @@ const STOCK_IMAGE_PRESETS = [
 const COLOR_SWATCHES = [
   "#ffffff",
   "#000000",
+  "#C0F0FB",
+  "#00F0FF",
   "#1687f8",
   "#10b981",
   "#f59e0b",
@@ -249,6 +262,28 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
   const isTextType =
     selectedElement && ["headline", "category", "body", "quote", "cta", "author"].includes(selectedElement);
   const isImageType = selectedElement === "featuredImage" || selectedElement === "secondaryImage";
+
+  useEffect(() => {
+    if (currentElement) {
+      setBlendMode((currentElement as any).blendMode || "normal");
+      setOutlineActive(Boolean((currentElement as any).borderWidth && (currentElement as any).borderWidth > 0));
+    }
+  }, [selectedElement, activeIndex]);
+
+  const activeColor = getElementActiveFillColor(currentElement, selectedElement);
+
+  const handleElementFillChange = (newColor: string) => {
+    if (!selectedElement) return;
+    if (selectedElement === "cta") {
+      onUpdateElement("cta", { backgroundColor: newColor, color: newColor });
+    } else if (selectedElement === "quote") {
+      onUpdateElement("quote", { backgroundColor: newColor });
+    } else if (selectedElement === "bullets") {
+      onUpdateElement("bullets", { color: newColor, bulletColor: newColor });
+    } else {
+      onUpdateElement(selectedElement, { color: newColor });
+    }
+  };
 
   // 1:1 Paper Alignment Handlers
   const handleAlign = (type: "left" | "hcenter" | "right" | "top" | "vcenter" | "bottom") => {
@@ -1162,7 +1197,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   type="range"
                   min={0}
                   max={64}
-                  value={(currentElement as any).borderRadius ?? 18}
+                  value={(currentElement as any).borderRadius ?? (selectedElement === "cta" ? 8 : 0)}
                   onChange={(e) => onUpdateElement(selectedElement, { borderRadius: Number(e.target.value) })}
                   className="w-full accent-white h-1 bg-[#373737] rounded-full cursor-pointer"
                 />
@@ -1173,7 +1208,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     type="number"
                     min={0}
                     max={120}
-                    value={(currentElement as any).borderRadius ?? 18}
+                    value={(currentElement as any).borderRadius ?? (selectedElement === "cta" ? 8 : 0)}
                     onChange={(e) => onUpdateElement(selectedElement, { borderRadius: Number(e.target.value) })}
                     className="w-full bg-transparent text-center font-mono text-[11px] text-[#ececec] focus:outline-none"
                   />
@@ -1215,7 +1250,10 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 {/* Blend Mode (Paper Custom Dropdown) */}
                 <StudioDropdown
                   value={blendMode}
-                  onValueChange={(val) => setBlendMode(val)}
+                  onValueChange={(val) => {
+                    setBlendMode(val);
+                    onUpdateElement(selectedElement, { blendMode: val });
+                  }}
                   prefix="💧"
                   triggerHeight="h-[26px]"
                   options={[
@@ -1320,23 +1358,24 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     {/* Native Picker Swatch */}
                     <label
                       className="w-7 h-7 rounded border border-white/20 cursor-pointer shrink-0 transition-transform hover:scale-105 relative overflow-hidden shadow-sm"
-                      style={{ backgroundColor: currentElement.color || "#FAFAFA" }}
+                      style={{ backgroundColor: activeColor }}
                       title="Pick custom color"
                     >
                       <input
                         type="color"
-                        value={currentElement.color?.startsWith("#") ? currentElement.color : "#ffffff"}
-                        onChange={(e) => onUpdateElement(selectedElement, { color: e.target.value })}
+                        value={activeColor.startsWith("#") && activeColor.length === 7 ? activeColor : "#ffffff"}
+                        onChange={(e) => handleElementFillChange(e.target.value)}
                         className="sr-only"
                       />
                     </label>
 
                     {/* Hex Code Input */}
                     <div className="flex-1 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center gap-1 focus-within:border-[#1687f8]">
+                      <span className="text-[10px] text-[#8e8e93]">#</span>
                       <input
                         type="text"
-                        value={(currentElement.color || "FAFAFA").replace("#", "")}
-                        onChange={(e) => onUpdateElement(selectedElement, { color: `#${e.target.value}` })}
+                        value={activeColor.replace("#", "")}
+                        onChange={(e) => handleElementFillChange(`#${e.target.value}`)}
                         className="w-full bg-transparent font-mono text-[11px] text-[#ececec] uppercase focus:outline-none font-medium"
                       />
                     </div>
@@ -1361,16 +1400,62 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                       <button
                         key={hex}
                         type="button"
-                        onClick={() => onUpdateElement(selectedElement, { color: hex })}
+                        onClick={() => handleElementFillChange(hex)}
                         className="w-5 h-5 rounded-md border border-white/20 hover:scale-110 transition-transform relative cursor-pointer"
                         style={{ backgroundColor: hex }}
+                        title={`Set fill to ${hex}`}
                       >
-                        {currentElement.color?.toLowerCase() === hex.toLowerCase() && (
+                        {activeColor.toLowerCase() === hex.toLowerCase() && (
                           <Check size={9} className={hex === "#ffffff" ? "text-black mx-auto" : "text-white mx-auto"} />
                         )}
                       </button>
                     ))}
                   </div>
+
+                  {/* Extra CTA Button Text Color Control */}
+                  {selectedElement === "cta" && (
+                    <div className="pt-2 border-t border-[#383838]/60 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-[#8e8e93] font-medium">Button Text Color</span>
+                        <span className="text-[10px] font-mono text-[#ececec]">{(currentElement as any).textColor || "#ffffff"}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <label
+                          className="w-6 h-6 rounded border border-white/20 cursor-pointer shrink-0 transition-transform hover:scale-105 relative overflow-hidden shadow-sm"
+                          style={{ backgroundColor: (currentElement as any).textColor || "#ffffff" }}
+                          title="Pick button text color"
+                        >
+                          <input
+                            type="color"
+                            value={(currentElement as any).textColor?.startsWith("#") ? (currentElement as any).textColor : "#ffffff"}
+                            onChange={(e) => onUpdateElement("cta", { textColor: e.target.value })}
+                            className="sr-only"
+                          />
+                        </label>
+                        <div className="flex-1 h-[24px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center gap-1 focus-within:border-[#1687f8]">
+                          <span className="text-[9px] text-[#8e8e93]">#</span>
+                          <input
+                            type="text"
+                            value={((currentElement as any).textColor || "ffffff").replace("#", "")}
+                            onChange={(e) => onUpdateElement("cta", { textColor: `#${e.target.value}` })}
+                            className="w-full bg-transparent font-mono text-[10px] text-[#ececec] uppercase focus:outline-none"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {["#ffffff", "#000000", "#C0F0FB", "#00F0FF", "#1687f8", "#f59e0b"].map((hex) => (
+                            <button
+                              key={hex}
+                              type="button"
+                              onClick={() => onUpdateElement("cta", { textColor: hex })}
+                              className="w-4 h-4 rounded border border-white/20 hover:scale-110 transition-transform cursor-pointer"
+                              style={{ backgroundColor: hex }}
+                              title={`Set text to ${hex}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -1381,9 +1466,16 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                 <span className="text-[11px] font-medium text-[#ececec]">Outline</span>
                 <button
                   type="button"
-                  onClick={() => setOutlineActive(!outlineActive)}
+                  onClick={() => {
+                    const nextActive = !outlineActive;
+                    setOutlineActive(nextActive);
+                    onUpdateElement(selectedElement, {
+                      borderWidth: nextActive ? ((currentElement as any).borderWidth || 1) : 0,
+                      borderColor: (currentElement as any).borderColor || "#1687f8",
+                    });
+                  }}
                   className="p-1 text-[#8e8e93] hover:text-white cursor-pointer"
-                  title="Add outline/border"
+                  title="Toggle outline/border"
                 >
                   <Plus size={12} />
                 </button>
@@ -1391,12 +1483,26 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
 
               {outlineActive && (
                 <div className="flex items-center gap-1.5">
-                  <div className="w-6 h-6 rounded bg-[#1687f8] border border-white/20 shrink-0" />
+                  <label
+                    className="w-6 h-6 rounded border border-white/20 shrink-0 cursor-pointer relative overflow-hidden"
+                    style={{ backgroundColor: (currentElement as any).borderColor || "#1687f8" }}
+                    title="Outline Color"
+                  >
+                    <input
+                      type="color"
+                      value={(currentElement as any).borderColor?.startsWith("#") ? (currentElement as any).borderColor : "#1687f8"}
+                      onChange={(e) => onUpdateElement(selectedElement, { borderColor: e.target.value })}
+                      className="sr-only"
+                    />
+                  </label>
                   <div className="flex-1 h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center justify-between">
                     <span className="text-[10px] text-[#8e8e93]">Width</span>
                     <input
                       type="number"
-                      defaultValue={1}
+                      min={0}
+                      max={40}
+                      value={(currentElement as any).borderWidth ?? 1}
+                      onChange={(e) => onUpdateElement(selectedElement, { borderWidth: Number(e.target.value) })}
                       className="w-10 bg-transparent text-right font-mono text-[11px] text-[#ececec] focus:outline-none"
                     />
                     <span className="text-[10px] text-[#8e8e93] ml-0.5">px</span>
@@ -1427,10 +1533,22 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <div className="space-y-1">
                     <label className="text-[10px] text-[#8e8e93]">Content</label>
                     <textarea
-                      rows={3}
+                      rows={selectedElement === "cta" ? 1 : 3}
                       value={(currentElement as any).text}
                       onChange={(e) => onUpdateElement(selectedElement, { text: e.target.value })}
                       className="w-full bg-[#373737] border border-[#48484a]/30 rounded-lg p-2 text-[11px] font-medium text-[#ececec] focus:outline-none focus:border-[#1687f8] resize-none"
+                    />
+                  </div>
+                )}
+
+                {selectedElement === "author" && (currentElement as any).name !== undefined && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-[#8e8e93]">Author Name</label>
+                    <input
+                      type="text"
+                      value={(currentElement as any).name}
+                      onChange={(e) => onUpdateElement("author", { name: e.target.value })}
+                      className="w-full bg-[#373737] border border-[#48484a]/30 rounded-lg px-2 py-1.5 text-[11px] font-medium text-[#ececec] focus:outline-none focus:border-[#1687f8]"
                     />
                   </div>
                 )}
@@ -1440,8 +1558,13 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                   <label className="text-[10px] text-[#8e8e93]">Font Family</label>
                   <StudioDropdown
                     value={
-                      STUDIO_FONTS.find((f) => f.value === currentElement.fontFamily)?.value ||
-                      STUDIO_FONTS[0].value
+                      STUDIO_FONTS.find(
+                        (f) =>
+                          f.value === currentElement.fontFamily ||
+                          (currentElement.fontFamily &&
+                            (f.name.toLowerCase() === currentElement.fontFamily.toLowerCase() ||
+                              f.value.toLowerCase().includes(currentElement.fontFamily.toLowerCase())))
+                      )?.value || STUDIO_FONTS[0].value
                     }
                     onValueChange={(val) => onUpdateElement(selectedElement, { fontFamily: val })}
                     triggerHeight="h-[28px]"
@@ -1460,7 +1583,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                     <div className="h-[26px] bg-[#373737] border border-[#48484a]/30 rounded-md px-2 flex items-center focus-within:border-[#1687f8]">
                       <input
                         type="number"
-                        value={currentElement.fontSize}
+                        value={currentElement.fontSize || 16}
                         onChange={(e) => onUpdateElement(selectedElement, { fontSize: Number(e.target.value) })}
                         className="w-full bg-transparent font-mono text-[11px] text-[#ececec] focus:outline-none"
                       />
@@ -1479,6 +1602,7 @@ export const StudioInspector: React.FC<StudioInspectorProps> = ({
                         { value: "500", label: "Medium (500)" },
                         { value: "600", label: "SemiBold (600)" },
                         { value: "700", label: "Bold (700)" },
+                        { value: "800", label: "ExtraBold (800)" },
                         { value: "900", label: "Black (900)" },
                       ]}
                     />
