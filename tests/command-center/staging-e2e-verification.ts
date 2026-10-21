@@ -1,6 +1,6 @@
 /**
  * Staging End-to-End Verification Test Suite
- * Tracked location: tests/command-center/staging-e2e-verification.ts
+ * Tracked location: tests/command-center/staging-e2e-verification.ts (v1.0.1)
  *
  * Runs 9 strict verification gates against a designated staging / preview environment:
  * 1. Gateway Route Dispatch & Unauthenticated 401 Enforcement
