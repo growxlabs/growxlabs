@@ -31,6 +31,11 @@ func Open(ctx context.Context, databaseURL string) (*Postgres, error) {
 		config.MaxConns, config.MinConns = 3, 0
 		config.MaxConnLifetime, config.MaxConnIdleTime = 5*time.Minute, 30*time.Second
 	}
+	// Enforce compatibility with Supabase Transaction Pooler (port 6543 / Supavisor / PgBouncer)
+	// by disabling named prepared statements across pooled sessions.
+	if config.ConnConfig.DefaultQueryExecMode == 0 {
+		config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+	}
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return nil, fmt.Errorf("open database pool: %w", err)

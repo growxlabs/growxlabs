@@ -5,7 +5,9 @@ import { fetchWithResilience } from "../production/resilience";
 import { signServiceJWT } from "./service-jwt";
 
 export async function invokeBoundedScheduler(requestId: string, signal: AbortSignal): Promise<void> {
-  const baseURL = process.env.INTERNAL_API_GATEWAY_URL;
+  const baseURL =
+    process.env.EXECUTION_SCHEDULER_INTERNAL_URL ||
+    process.env.INTERNAL_API_GATEWAY_URL;
   const secret = process.env.EXECUTION_SERVICE_JWT_SECRET;
   const environment = process.env.APP_ENV;
   if (!baseURL || !secret || !environment) {

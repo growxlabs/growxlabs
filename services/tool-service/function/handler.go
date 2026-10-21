@@ -24,10 +24,15 @@ var state struct {
 func Handler(response http.ResponseWriter, request *http.Request) {
 	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
 	authorised := false
-	for _, issuer := range []string{"execution-worker", "internal-api-gateway"} {
-		claims, err := serviceauth.Verify(token, os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), issuer, "tool-service", os.Getenv("APP_ENV"), time.Now())
-		if err == nil && claims.Service == issuer {
-			authorised = true
+	for _, issuer := range []string{"execution-worker", "internal-api-gateway", "gxl-web"} {
+		for _, audience := range []string{"tool-service", "internal-api-gateway"} {
+			claims, err := serviceauth.Verify(token, os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), issuer, audience, os.Getenv("APP_ENV"), time.Now())
+			if err == nil && claims.Service == issuer {
+				authorised = true
+				break
+			}
+		}
+		if authorised {
 			break
 		}
 	}

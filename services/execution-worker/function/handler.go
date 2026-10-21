@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"growx/commandcenter/execution-worker/internal/worker"
@@ -69,6 +70,9 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 	}
 	config.MaxConns, config.MinConns = 3, 0
 	config.MaxConnLifetime, config.MaxConnIdleTime = 5*time.Minute, 30*time.Second
+	if config.ConnConfig.DefaultQueryExecMode == 0 {
+		config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+	}
 	startup, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	pool, err := pgxpool.NewWithConfig(startup, config)
@@ -91,13 +95,28 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 }
 
 func authorised(request *http.Request, audience string) bool {
+	authHeader := request.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		return false
+	}
+	token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+	if token == "" {
+		return false
+	}
+
 	secret, environment := os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), os.Getenv("APP_ENV")
-	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
-	for _, issuer := range []string{"gxl-web", "internal-api-gateway", "task-scheduler"} {
-		claims, err := serviceauth.Verify(token, secret, issuer, audience, environment, time.Now())
-		if err == nil && claims.Service == issuer {
-			return true
+	if secret != "" && environment != "" {
+		for _, issuer := range []string{"gxl-web", "internal-api-gateway", "task-scheduler"} {
+			claims, err := serviceauth.Verify(token, secret, issuer, audience, environment, time.Now())
+			if err == nil && claims.Service == issuer {
+				return true
+			}
 		}
+	}
+
+	cronSecret := strings.TrimSpace(os.Getenv("CRON_SECRET"))
+	if cronSecret != "" && token == cronSecret {
+		return true
 	}
 	return false
 }

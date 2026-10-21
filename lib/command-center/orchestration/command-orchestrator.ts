@@ -13,6 +13,8 @@ import {
   ExecutionClient,
   ExecutionServiceError,
 } from "../execution/execution-client";
+import { invokeBoundedScheduler } from "../execution/scheduler-client";
+import { scheduleDecoupledDispatch } from "../execution/execution-dispatch";
 import { Phase4RegistryClient } from "../services/phase4-registry-client";
 
 export class CommandOrchestrator {
@@ -156,8 +158,26 @@ export class CommandOrchestrator {
           runId: run.id,
           status: run.status,
         });
+
+        // Fast initial scheduler tick (bounded to 3s) so steps immediately move to 'queued'
+        try {
+          const quickTickController = new AbortController();
+          const quickTickTimeout = setTimeout(() => quickTickController.abort(), 3_000);
+          await invokeBoundedScheduler(commandContext.requestId, quickTickController.signal);
+          clearTimeout(quickTickTimeout);
+        } catch {
+          // Non-fatal: background scheduler or cron will advance the steps
+        }
+
+        // Schedule decoupled worker execution independent of the browser connection
+        scheduleDecoupledDispatch({
+          runId: run.id,
+          requestId: commandContext.requestId,
+          maxPasses: 3,
+        });
+
         writer.sendEvent("text_delta", {
-          text: `Execution queued. Run ID: ${run.id}`,
+          text: `Execution initiated. Run ID: ${run.id}`,
         });
         writer.sendEvent("done", {});
         writer.close();

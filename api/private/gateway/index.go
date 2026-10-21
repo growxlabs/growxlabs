@@ -68,7 +68,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		capability.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/crm") || strings.HasPrefix(path, "/api/private/crm") || strings.HasPrefix(internalPath, "/internal/v1/crm"):
 		crm.Handler(recorder, r)
-	case strings.HasPrefix(path, "/api/private/gateway/execution") || strings.HasPrefix(path, "/api/private/execution"):
+	case strings.HasPrefix(path, "/api/private/gateway/execution") || strings.HasPrefix(path, "/api/private/execution") || strings.HasPrefix(internalPath, "/internal/v1/runs"):
 		execution.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/finance") || strings.HasPrefix(path, "/api/private/finance") || strings.HasPrefix(internalPath, "/internal/v1/finance"):
 		finance.Handler(recorder, r)
@@ -78,13 +78,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		marketing.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/projects") || strings.HasPrefix(path, "/api/private/projects") || strings.HasPrefix(internalPath, "/internal/v1/projects"):
 		project.Handler(recorder, r)
-	case strings.HasPrefix(path, "/api/private/gateway/scheduler") || strings.HasPrefix(path, "/api/private/scheduler"):
+	case strings.HasPrefix(path, "/api/private/gateway/scheduler") || strings.HasPrefix(path, "/api/private/scheduler") || strings.HasPrefix(internalPath, "/internal/v1/scheduler"):
 		scheduler.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/skills") || strings.HasPrefix(path, "/api/private/skills") || strings.HasPrefix(internalPath, "/internal/v1/skills"):
 		skill.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/tools") || strings.HasPrefix(path, "/api/private/tools") || strings.HasPrefix(internalPath, "/internal/v1/tools") || strings.HasPrefix(internalPath, "/internal/v1/tool-executions"):
 		tool.Handler(recorder, r)
-	case strings.HasPrefix(path, "/api/private/gateway/worker") || strings.HasPrefix(path, "/api/private/worker"):
+	case strings.HasPrefix(path, "/api/private/gateway/worker") || strings.HasPrefix(path, "/api/private/worker") || strings.HasPrefix(internalPath, "/internal/v1/worker"):
 		worker.Handler(recorder, r)
 	case strings.HasPrefix(path, "/api/private/gateway/governance") || strings.HasPrefix(path, "/api/private/governance") || strings.HasPrefix(internalPath, "/internal/v1/governance"):
 		governance.Handler(recorder, r)

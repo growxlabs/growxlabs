@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "growxlabs-recovery-cron",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "triggers": {
+    "crons": ["*/1 * * * *"]
+  },
+
+  "env": {
+    "staging": {
+      "vars": {
+        "RECOVERY_ENDPOINT_URL": "https://staging.growxlabs.com/api/cron/command-center/recover-execution",
+        "APP_ENV": "staging"
+      }
+    },
+    "production": {
+      "vars": {
+        "RECOVERY_ENDPOINT_URL": "https://growxlabs.com/api/cron/command-center/recover-execution",
+        "APP_ENV": "production"
+      }
+    }
+  }
+}
