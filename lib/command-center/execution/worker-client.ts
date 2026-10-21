@@ -17,7 +17,8 @@ export async function invokeBoundedWorker(
 ): Promise<WorkerBatchResult> {
   const baseURL =
     process.env.EXECUTION_WORKER_INTERNAL_URL ||
-    process.env.INTERNAL_API_GATEWAY_URL;
+    process.env.INTERNAL_API_GATEWAY_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/private/gateway` : undefined);
   const secret = process.env.EXECUTION_SERVICE_JWT_SECRET;
   const environment = process.env.APP_ENV;
 
@@ -50,16 +51,22 @@ export async function invokeBoundedWorker(
     secret,
   );
 
+  const bypass = process.env.VERCEL_PROTECTION_BYPASS || process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "X-Request-ID": requestId,
+    "X-GXL-Internal-Path": "/internal/v1/worker/batch",
+  };
+  if (bypass) {
+    headers["x-vercel-protection-bypass"] = bypass;
+  }
+
   const response = await fetchWithResilience(
     parsed,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "X-Request-ID": requestId,
-        "X-GXL-Internal-Path": "/internal/v1/worker/batch",
-      },
+      headers,
       cache: "no-store",
       signal,
     },

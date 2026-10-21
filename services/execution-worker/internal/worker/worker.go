@@ -290,7 +290,7 @@ func (w *Worker) claim(ctx context.Context) (job, bool, error) {
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        'step.started', jsonb_build_object('attempt', $6))`,
+		        'step.started', jsonb_build_object('attempt', $6::int))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID, item.requestID, item.attempt,
 	)
 	if err != nil {
@@ -514,7 +514,7 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        'step.succeeded', jsonb_build_object('attempt', $6))`,
+		        'step.succeeded', jsonb_build_object('attempt', $6::int))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID, item.requestID, item.attempt); err != nil {
 		return err
 	}
@@ -644,7 +644,7 @@ func (w *Worker) fail(ctx context.Context, item job, executionErr error, timedOu
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        $6, jsonb_build_object('attempt', $7, 'errorCode', $8))`,
+		        $6, jsonb_build_object('attempt', $7::int, 'errorCode', $8::text))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID,
 		item.requestID, eventType, item.attempt, errorCode); err != nil {
 		return err

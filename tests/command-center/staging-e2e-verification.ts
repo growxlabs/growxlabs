@@ -291,10 +291,10 @@ async function runStagingVerification() {
       method: "POST",
       headers: getHeaders("internal-api-gateway", reqId, "/internal/v1/capabilities/resolve"),
       body: JSON.stringify({
-        capabilityId: "crm.leads.read",
+        capabilityId: "sales.leads",
         version: "1.0.0",
-        agentId: "agent-1",
-        scope: { organisationId: "org-1", workspaceId: "ws-1", userId: "user-1", permissions: ["crm:leads:read"] }
+        agentId: "agent_sales",
+        scope: { organisationId: "org-1", workspaceId: "ws-1", userId: "user-1", permissions: ["leads:read"] }
       }),
     });
     if (res.status === 401) throw new Error(`Capability resolution token was rejected with 401`);
@@ -309,9 +309,9 @@ async function runStagingVerification() {
   await test("Gateway routes /internal/v1/governance/policy/evaluate with gxl-web token", async () => {
     const reqId = `req-gov-${Date.now()}`;
     const headers = getHeaders("internal-api-gateway", reqId, "/internal/v1/governance/policy/evaluate");
-    headers["X-GXL-Organisation-ID"] = "org-1";
-    headers["X-GXL-Workspace-ID"] = "ws-1";
-    headers["X-GXL-User-ID"] = "user-1";
+    headers["X-GXL-Organisation-ID"] = "00000000-0000-0000-0000-000000000001";
+    headers["X-GXL-Workspace-ID"] = "00000000-0000-0000-0000-000000000002";
+    headers["X-GXL-User-ID"] = "00000000-0000-0000-0000-000000000003";
 
     const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
