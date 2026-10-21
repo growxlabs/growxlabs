@@ -317,9 +317,23 @@ async function runStagingVerification() {
       method: "POST",
       headers,
       body: JSON.stringify({
-        action: "lead.export",
-        resource: "leads",
-        context: { count: 10 }
+        requestId: reqId,
+        traceId: reqId,
+        organisationId: "00000000-0000-0000-0000-000000000001",
+        workspaceId: "00000000-0000-0000-0000-000000000002",
+        userId: "00000000-0000-0000-0000-000000000003",
+        roleIds: ["admin"],
+        teamIds: ["team-core"],
+        permissionIds: ["leads:read"],
+        agentId: "agent_sales",
+        capabilityId: "sales.leads",
+        toolId: "query_leads",
+        toolVersion: "1.0.0",
+        domain: "crm",
+        operation: "leads.search",
+        executionMode: "read",
+        sensitivity: "moderate",
+        dataClassification: "internal"
       }),
     });
     if (res.status === 401) throw new Error(`Governance token was rejected with 401`);
@@ -440,17 +454,21 @@ async function runStagingVerification() {
     }
 
     // 3. Trigger Worker Pass to claim step using DB lease and execute transform step
-    const workerHeaders = getHeaders("execution-worker", `req-worker-${uniqueId}`, "/internal/v1/worker/batch?limit=5");
-    const workerRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
-      method: "POST",
-      headers: workerHeaders,
-    });
-    if (workerRes.status !== 200) {
-      const workerText = await workerRes.text().catch(() => "");
-      throw new Error(`Worker batch execution failed with HTTP ${workerRes.status}: ${workerText.slice(0, 200)}`);
+    let workerProcessed = 0;
+    for (let pass = 0; pass < 3; pass++) {
+      const workerHeaders = getHeaders("execution-worker", `req-worker-${uniqueId}-${pass}`, "/internal/v1/worker/batch");
+      const workerRes = await stagingFetch(`${baseURL}/api/private/gateway?limit=5`, {
+        method: "POST",
+        headers: workerHeaders,
+      });
+      if (workerRes.status === 200) {
+        const workerData = (await workerRes.json()) as { processed: number };
+        workerProcessed += workerData.processed;
+        if (workerProcessed >= 1) break;
+      }
+      await new Promise((r) => setTimeout(r, 400));
     }
-    const workerData = (await workerRes.json()) as { processed: number };
-    if (workerData.processed < 1) {
+    if (workerProcessed < 1) {
       throw new Error(`Worker processed 0 items; step was not claimed or queued properly`);
     }
 
@@ -459,16 +477,19 @@ async function runStagingVerification() {
     getHeadersObj["X-Organisation-ID"] = orgId;
     getHeadersObj["X-Workspace-ID"] = wsId;
 
-    const getRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
-      method: "GET",
-      headers: getHeadersObj,
-    });
-    if (getRes.status !== 200) {
-      const getText = await getRes.text().catch(() => "");
-      throw new Error(`GetRun failed with HTTP ${getRes.status}: ${getText.slice(0, 200)}`);
+    let runState: { id: string; status: string } = { id: actualRunId, status: "unknown" };
+    for (let poll = 0; poll < 6; poll++) {
+      const getRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+        method: "GET",
+        headers: getHeadersObj,
+      });
+      if (getRes.status === 200) {
+        runState = (await getRes.json()) as { id: string; status: string };
+        if (runState.status === "succeeded") break;
+      }
+      await new Promise((r) => setTimeout(r, 500));
     }
 
-    const runState = (await getRes.json()) as { id: string; status: string };
     if (runState.status !== "succeeded") {
       throw new Error(`Expected run status to reach 'succeeded', but got '${runState.status}'`);
     }
