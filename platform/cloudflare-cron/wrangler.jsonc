@@ -5,18 +5,20 @@
   "compatibility_date": "2024-10-01",
   "compatibility_flags": ["nodejs_compat"],
 
-  "triggers": {
-    "crons": ["*/1 * * * *"]
-  },
-
   "env": {
     "staging": {
+      "triggers": {
+        "crons": []
+      },
       "vars": {
-        "RECOVERY_ENDPOINT_URL": "https://staging.growxlabs.tech/api/cron/command-center/recover-execution",
+        "RECOVERY_ENDPOINT_URL": "https://growxlabs-9derb6jwf-growxlabstechs-projects.vercel.app/api/cron/command-center/recover-execution",
         "APP_ENV": "staging"
       }
     },
     "production": {
+      "triggers": {
+        "crons": []
+      },
       "vars": {
         "RECOVERY_ENDPOINT_URL": "https://growxlabs.tech/api/cron/command-center/recover-execution",
         "APP_ENV": "production"
