@@ -12,13 +12,13 @@
   "env": {
     "staging": {
       "vars": {
-        "RECOVERY_ENDPOINT_URL": "https://staging.growxlabs.com/api/cron/command-center/recover-execution",
+        "RECOVERY_ENDPOINT_URL": "https://staging.growxlabs.tech/api/cron/command-center/recover-execution",
         "APP_ENV": "staging"
       }
     },
     "production": {
       "vars": {
-        "RECOVERY_ENDPOINT_URL": "https://growxlabs.com/api/cron/command-center/recover-execution",
+        "RECOVERY_ENDPOINT_URL": "https://growxlabs.tech/api/cron/command-center/recover-execution",
         "APP_ENV": "production"
       }
     }

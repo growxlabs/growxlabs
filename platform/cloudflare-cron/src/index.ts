@@ -11,6 +11,7 @@ export interface Env {
   RECOVERY_ENDPOINT_URL: string;
   CRON_SECRET: string;
   APP_ENV?: string;
+  VERCEL_PROTECTION_BYPASS?: string;
 }
 
 export interface ScheduledEvent {
@@ -81,6 +82,7 @@ export default {
           status: "healthy",
           service: "growxlabs-recovery-cron",
           targetConfigured: Boolean(env.RECOVERY_ENDPOINT_URL),
+          targetURL: env.RECOVERY_ENDPOINT_URL || null,
           environment: env.APP_ENV ?? "production",
           timestamp: new Date().toISOString(),
         }),
@@ -104,7 +106,7 @@ export default {
       const requestId = crypto.randomUUID();
       const started = Date.now();
       try {
-        const result = await triggerRecovery(env, requestId, started);
+        const result = await triggerRecoveryWithRetry(env, requestId, started);
         return new Response(JSON.stringify(result), {
           status: result.success ? 200 : 502,
           headers: { "Content-Type": "application/json" },
@@ -126,8 +128,10 @@ export default {
 
 /**
  * Executes the recovery call with bounded retry logic for transient errors.
+ * Preserves the same requestId and Idempotency-Key across retries.
+ * Strictly avoids blind retries on timeouts or concurrent locks.
  */
-async function triggerRecoveryWithRetry(
+export async function triggerRecoveryWithRetry(
   env: Env,
   requestId: string,
   started: number,
@@ -140,18 +144,37 @@ async function triggerRecoveryWithRetry(
       return await triggerRecovery(env, requestId, started);
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
+      const isTimeout =
+        lastError.name === "AbortError" ||
+        lastError.message.includes("aborted") ||
+        lastError.message.includes("timeout");
+
       console.warn(
         JSON.stringify({
           level: "WARN",
           msg: "Recovery attempt failed",
           attempt,
           requestId,
+          isTimeout,
           error: lastError.message,
         }),
       );
 
+      // CRITICAL: If the request timed out on Vercel after 55s, do NOT retry immediately!
+      // Vercel might still be processing or holding the distributed lease.
+      // Let the next scheduled 1-minute cron cycle advance cleanly.
+      if (isTimeout) {
+        return {
+          success: false,
+          job: "recover-execution",
+          requestId,
+          durationMs: Date.now() - started,
+          error: "Vercel execution deadline exceeded (55s timeout). Next cron tick will resume.",
+        };
+      }
+
+      // Only retry on transient connect / DNS / gateway failures
       if (attempt < maxAttempts) {
-        // Short jittered delay before retry (1.5s - 2.5s)
         await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1000));
       }
     }
@@ -175,19 +198,42 @@ export async function triggerRecovery(
     throw new Error("CRON_SECRET environment variable is missing or empty");
   }
 
-  // Enforce a strict 25-second HTTP timeout so we stay well within Cloudflare Worker limits
+  // Safety Guard: Staging worker must never target the production domain
+  if (env.APP_ENV === "staging") {
+    const urlLower = env.RECOVERY_ENDPOINT_URL.toLowerCase();
+    if (
+      urlLower.includes("growxlabs.tech") &&
+      !urlLower.includes("staging") &&
+      !urlLower.includes("preview") &&
+      !urlLower.includes("vercel.app")
+    ) {
+      throw new Error(
+        "CRITICAL SAFETY VIOLATION: Staging worker must never target the production domain!",
+      );
+    }
+  }
+
+  // Bounded 55-second HTTP timeout: allows Vercel's 50s deadlineMs to finish cleanly
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 25_000);
+  const timeoutId = setTimeout(() => controller.abort(), 55_000);
 
   try {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${env.CRON_SECRET}`,
+      "X-Request-ID": requestId,
+      "Idempotency-Key": requestId,
+      "User-Agent": "GrowxLabs-Cloudflare-Cron/1.0",
+      Accept: "application/json",
+    };
+
+    // Support Vercel Preview Deployment Protection Bypass if configured
+    if (env.VERCEL_PROTECTION_BYPASS) {
+      headers["x-vercel-protection-bypass"] = env.VERCEL_PROTECTION_BYPASS;
+    }
+
     const response = await fetch(env.RECOVERY_ENDPOINT_URL, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.CRON_SECRET}`,
-        "X-Request-ID": requestId,
-        "User-Agent": "GrowxLabs-Cloudflare-Cron/1.0",
-        Accept: "application/json",
-      },
+      headers,
       signal: controller.signal,
     });
 
@@ -195,7 +241,7 @@ export async function triggerRecovery(
 
     if (response.status === 409) {
       // HTTP 409 Conflict indicates the distributed lock (Upstash/local) is currently held
-      // by another in-flight recovery invocation. This is expected and safe.
+      // by another in-flight recovery invocation. This is expected, safe, and must NOT be retried.
       console.log(
         JSON.stringify({
           level: "INFO",
@@ -213,6 +259,14 @@ export async function triggerRecovery(
         processed: 0,
         checkpoint: "locked",
       };
+    }
+
+    // Transient edge errors: throw so the caller can retry ONCE
+    if (response.status === 502 || response.status === 503 || response.status === 504) {
+      const errorText = await response.text().catch(() => "");
+      throw new Error(
+        `Transient gateway error (HTTP ${response.status}): ${errorText.slice(0, 200)}`,
+      );
     }
 
     if (!response.ok) {
