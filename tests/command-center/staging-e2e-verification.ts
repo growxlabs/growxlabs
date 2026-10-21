@@ -58,14 +58,30 @@ async function runStagingVerification() {
   // Pre-flight connectivity check
   try {
     const preflight = new AbortController();
-    const timeout = setTimeout(() => preflight.abort(), 4000);
+    const timeout = setTimeout(() => preflight.abort(), 8000);
     const headers: Record<string, string> = {};
     if (bypassSecret) headers["x-vercel-protection-bypass"] = bypassSecret;
 
-    await fetch(`${baseURL}/api/command-center/health`, { method: "GET", headers, signal: preflight.signal }).catch(() => {
-      return fetch(baseURL, { method: "HEAD", headers, signal: preflight.signal });
+    const preRes = await fetch(`${baseURL}/api/health`, {
+      method: "GET",
+      headers,
+      signal: preflight.signal,
+      redirect: "manual"
+    }).catch(() => {
+      return fetch(baseURL, { method: "HEAD", headers, signal: preflight.signal, redirect: "manual" });
     });
     clearTimeout(timeout);
+
+    if (preRes && (preRes.status === 302 || preRes.status === 307 || preRes.status === 308)) {
+      const loc = preRes.headers.get("location") || "";
+      if (loc.includes("sso-api") || loc.includes("vercel.com")) {
+        console.warn(`\n⚠️  WARNING: Target deployment is Protected by Vercel Authentication (SSO).`);
+        console.warn(`   External requests are being redirected to: ${loc.split('?')[0]}`);
+        console.warn(`   To run automated tests against Vercel Preview Deployments:`);
+        console.warn(`   1. Pass VERCEL_PROTECTION_BYPASS=<secret> (from Vercel Project -> Settings -> Deployment Protection)`);
+        console.warn(`   2. OR disable Preview Deployment Protection for branch 'staging-go-verification'\n`);
+      }
+    }
   } catch (error) {
     console.error(`❌ Connection Error: Unable to reach server at ${baseURL}`);
     console.error(`\nWhy did this happen?`);
@@ -95,6 +111,19 @@ async function runStagingVerification() {
 
   let totalTests = 0;
   let passedTests = 0;
+
+  async function stagingFetch(url: string, init?: RequestInit): Promise<Response> {
+    const res = await fetch(url, { ...init, redirect: "manual" });
+    if (res.status === 302 || res.status === 307 || res.status === 308) {
+      const loc = res.headers.get("location") || "";
+      if (loc.includes("sso-api") || loc.includes("vercel.com")) {
+        throw new Error(
+          `Vercel SSO Protection intercepted request (HTTP ${res.status}). Set VERCEL_PROTECTION_BYPASS or disable Preview Deployment Protection for branch.`
+        );
+      }
+    }
+    return res;
+  }
 
   async function test(name: string, fn: () => Promise<void>) {
     totalTests++;
@@ -143,7 +172,7 @@ async function runStagingVerification() {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (bypassSecret) headers["x-vercel-protection-bypass"] = bypassSecret;
 
-    const res = await fetch(`${baseURL}/api/private/gateway`, {
+    const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers,
       body: JSON.stringify({}),
@@ -156,7 +185,7 @@ async function runStagingVerification() {
   // --- Gate 2: Internal Path Dispatch for Scheduler ---
   await test("Gateway dispatches /internal/v1/scheduler via header to task-scheduler", async () => {
     const reqId = `req-sched-${Date.now()}`;
-    const res = await fetch(`${baseURL}/api/private/gateway`, {
+    const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers: getHeaders("task-scheduler", reqId, "/internal/v1/scheduler/tick"),
     });
@@ -168,7 +197,7 @@ async function runStagingVerification() {
   await test("Scheduler accepts valid CRON_SECRET and rejects empty/invalid secret", async () => {
     const headersInvalid: Record<string, string> = { "Authorization": "Bearer wrong-secret" };
     if (bypassSecret) headersInvalid["x-vercel-protection-bypass"] = bypassSecret;
-    const invalidRes = await fetch(`${baseURL}/api/private/scheduler`, {
+    const invalidRes = await stagingFetch(`${baseURL}/api/private/scheduler`, {
       method: "POST",
       headers: headersInvalid,
     });
@@ -178,7 +207,7 @@ async function runStagingVerification() {
 
     const headersEmpty: Record<string, string> = { "Authorization": "Bearer " };
     if (bypassSecret) headersEmpty["x-vercel-protection-bypass"] = bypassSecret;
-    const emptyRes = await fetch(`${baseURL}/api/private/scheduler`, {
+    const emptyRes = await stagingFetch(`${baseURL}/api/private/scheduler`, {
       method: "POST",
       headers: headersEmpty,
     });
@@ -192,7 +221,7 @@ async function runStagingVerification() {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (bypassSecret) headers["x-vercel-protection-bypass"] = bypassSecret;
 
-    const unauthRes = await fetch(`${baseURL}/api/internal/v1/tool-executions`, {
+    const unauthRes = await stagingFetch(`${baseURL}/api/internal/v1/tool-executions`, {
       method: "POST",
       headers,
       body: JSON.stringify({}),
@@ -207,7 +236,7 @@ async function runStagingVerification() {
     const headersUnauth: Record<string, string> = {};
     if (bypassSecret) headersUnauth["x-vercel-protection-bypass"] = bypassSecret;
 
-    const unauthRes = await fetch(`${baseURL}/api/cron/command-center/recover-execution`, {
+    const unauthRes = await stagingFetch(`${baseURL}/api/cron/command-center/recover-execution`, {
       headers: headersUnauth,
     });
     if (unauthRes.status !== 401 && unauthRes.status !== 403) {
@@ -217,7 +246,7 @@ async function runStagingVerification() {
     const headersAuth: Record<string, string> = { "Authorization": `Bearer ${cronSecret}` };
     if (bypassSecret) headersAuth["x-vercel-protection-bypass"] = bypassSecret;
 
-    const authRes = await fetch(`${baseURL}/api/cron/command-center/recover-execution`, {
+    const authRes = await stagingFetch(`${baseURL}/api/cron/command-center/recover-execution`, {
       headers: headersAuth,
     });
     if (authRes.status === 401 || authRes.status === 403) {
@@ -228,7 +257,7 @@ async function runStagingVerification() {
   // --- Gate 6: Phase 4 Capability & Skill Registry Gateway Routing ---
   await test("Gateway routes /internal/v1/capabilities/resolve with gxl-web token", async () => {
     const reqId = `req-cap-${Date.now()}`;
-    const res = await fetch(`${baseURL}/api/private/gateway`, {
+    const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers: getHeaders("internal-api-gateway", reqId, "/internal/v1/capabilities/resolve"),
       body: JSON.stringify({
@@ -250,7 +279,7 @@ async function runStagingVerification() {
     headers["X-GXL-Workspace-ID"] = "ws-1";
     headers["X-GXL-User-ID"] = "user-1";
 
-    const res = await fetch(`${baseURL}/api/private/gateway`, {
+    const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -266,7 +295,7 @@ async function runStagingVerification() {
   // --- Gate 8: Targeted Run Cancellation Route ---
   await test("Gateway routes /internal/v1/runs/{id}/cancel without blanket database mutations", async () => {
     const reqId = `req-cancel-${Date.now()}`;
-    const res = await fetch(`${baseURL}/api/private/gateway`, {
+    const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers: getHeaders("execution-engine", reqId, "/internal/v1/runs/test-run-id/cancel"),
       body: JSON.stringify({
@@ -315,7 +344,7 @@ async function runStagingVerification() {
     };
 
     // 1. Create durable run via Execution Engine
-    const createRes = await fetch(`${baseURL}/api/private/gateway`, {
+    const createRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
       headers: getHeaders("execution-engine", reqId, "/internal/v1/runs"),
       body: JSON.stringify({
@@ -335,20 +364,20 @@ async function runStagingVerification() {
       const actualRunId = createdData.id || runId;
 
       // 2. Trigger Scheduler Tick to advance queued step to scheduled
-      await fetch(`${baseURL}/api/private/gateway`, {
+      await stagingFetch(`${baseURL}/api/private/gateway`, {
         method: "POST",
         headers: getHeaders("task-scheduler", `req-sched-${uniqueId}`, "/internal/v1/scheduler/tick"),
       });
 
       // 3. Trigger Worker Pass to claim step using DB lease and execute transform step
-      await fetch(`${baseURL}/api/private/gateway`, {
+      await stagingFetch(`${baseURL}/api/private/gateway`, {
         method: "POST",
         headers: getHeaders("execution-worker", `req-worker-${uniqueId}`, "/internal/v1/worker/batch"),
         body: JSON.stringify({ limit: 5 })
       });
 
       // 4. Query Run Status to verify state transition & output persistence
-      const getRes = await fetch(`${baseURL}/api/private/gateway`, {
+      const getRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
         method: "GET",
         headers: getHeaders("execution-engine", `req-get-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}`),
       });
@@ -359,7 +388,7 @@ async function runStagingVerification() {
       }
 
       // 5. Clean up: Cancel disposable run to ensure zero orphaned state
-      await fetch(`${baseURL}/api/private/gateway`, {
+      await stagingFetch(`${baseURL}/api/private/gateway`, {
         method: "POST",
         headers: getHeaders("execution-engine", `req-cancel-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}/cancel`),
         body: JSON.stringify({ reason: "Disposable staging verification completed", cancelledBy: "test-runner" })
