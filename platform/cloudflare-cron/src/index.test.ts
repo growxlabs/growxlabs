@@ -77,3 +77,32 @@ test("Timeout handling does not blind-retry and exits cleanly", async () => {
   // Must either catch timeout or connection refused cleanly without looping
   assert.equal(typeof result, "object");
 });
+
+test("VERCEL_PROTECTION_BYPASS header is passed when configured", async () => {
+  let capturedHeaders: HeadersInit | undefined;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+    capturedHeaders = init?.headers;
+    return new Response(JSON.stringify({ success: true, processed: 1 }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }) as typeof fetch;
+
+  try {
+    const env = {
+      RECOVERY_ENDPOINT_URL: "https://staging-preview.vercel.app/api/cron/command-center/recover-execution",
+      CRON_SECRET: "test-secret-at-least-thirty-two-bytes",
+      APP_ENV: "staging",
+      VERCEL_PROTECTION_BYPASS: "automation-bypass-test-secret",
+    };
+    const res = await triggerRecovery(env, "req-bypass-test", Date.now());
+    assert.equal(res.success, true);
+    assert.equal(
+      (capturedHeaders as Record<string, string>)["x-vercel-protection-bypass"],
+      "automation-bypass-test-secret",
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

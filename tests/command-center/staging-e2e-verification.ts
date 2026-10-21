@@ -2,7 +2,7 @@
  * Staging End-to-End Verification Test Suite
  * Tracked location: tests/command-center/staging-e2e-verification.ts
  *
- * Runs 9 verification gates against a designated staging / preview environment:
+ * Runs 9 strict verification gates against a designated staging / preview environment:
  * 1. Gateway Route Dispatch & Unauthenticated 401 Enforcement
  * 2. Header-based Internal Path Dispatch for Scheduler (/internal/v1/scheduler/tick)
  * 3. Strict CRON_SECRET Authentication on Scheduler
@@ -11,7 +11,7 @@
  * 6. Phase 4 Capability & Skill Registry Gateway Routing (/internal/v1/capabilities/resolve)
  * 7. Governance Policy Evaluation (/internal/v1/governance/policy/evaluate)
  * 8. Targeted Run Cancellation (/internal/v1/runs/{id}/cancel) - Zero Blanket DB Mutations
- * 9. Real Disposable Execution Run: createRun -> schedule -> claim -> persist -> cleanup
+ * 9. Real Disposable Execution Run: createRun -> schedule -> claim -> persist -> succeeded
  *
  * Usage:
  *   npm run test:staging
@@ -50,9 +50,7 @@ async function runStagingVerification() {
   console.log(`  GrowX Labs — Staging E2E Verification Test Suite`);
   console.log(`  Target URL: ${baseURL}`);
   console.log(`  Environment: ${env}`);
-  if (bypassSecret) {
-    console.log(`  Preview Protection Bypass: Configured`);
-  }
+  console.log(`  Preview Protection Bypass: ${bypassSecret ? "Configured (secret)" : "Not Configured"}`);
   console.log(`======================================================\n`);
 
   // Pre-flight connectivity check
@@ -82,7 +80,7 @@ async function runStagingVerification() {
         console.warn(`   2. OR disable Preview Deployment Protection for branch 'staging-go-verification'\n`);
       }
     }
-  } catch (error) {
+  } catch {
     console.error(`❌ Connection Error: Unable to reach server at ${baseURL}`);
     console.error(`\nWhy did this happen?`);
     if (baseURL.includes("localhost")) {
@@ -96,21 +94,18 @@ async function runStagingVerification() {
       console.error(`  Check network connectivity or your Vercel preview deployment status.`);
     }
     console.error(`\n  👉 Option 2: Test against your Vercel Preview Deployment`);
-    console.error(`     In Command Prompt (cmd.exe):`);
-    console.error(`       set STAGING_BASE_URL=https://<your-preview-domain>.vercel.app`);
-    console.error(`       set CRON_SECRET=<your-staging-cron-secret>`);
-    console.error(`       set EXECUTION_SERVICE_JWT_SECRET=<your-staging-jwt-secret>`);
-    console.error(`       npm run test:staging`);
     console.error(`     In PowerShell:`);
     console.error(`       $env:STAGING_BASE_URL="https://<your-preview-domain>.vercel.app"`);
     console.error(`       $env:CRON_SECRET="<your-staging-cron-secret>"`);
     console.error(`       $env:EXECUTION_SERVICE_JWT_SECRET="<your-staging-jwt-secret>"`);
+    console.error(`       $env:VERCEL_PROTECTION_BYPASS="<your-bypass-secret>"`);
     console.error(`       npm run test:staging\n`);
     process.exit(1);
   }
 
   let totalTests = 0;
   let passedTests = 0;
+  const failedGates: Array<{ gate: number; name: string; error: string }> = [];
 
   async function stagingFetch(url: string, init?: RequestInit): Promise<Response> {
     const res = await fetch(url, { ...init, redirect: "manual" });
@@ -127,14 +122,17 @@ async function runStagingVerification() {
 
   async function test(name: string, fn: () => Promise<void>) {
     totalTests++;
-    process.stdout.write(`[GATE ${totalTests}] ${name} ... `);
+    const gateNum = totalTests;
+    process.stdout.write(`[GATE ${gateNum}] ${name} ... `);
     try {
       await fn();
       passedTests++;
       console.log(`✅ PASS`);
     } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
       console.log(`❌ FAIL`);
-      console.error(`   Error: ${error instanceof Error ? error.message : String(error)}`);
+      console.error(`   Error: ${msg}`);
+      failedGates.push({ gate: gateNum, name, error: msg });
     }
   }
 
@@ -177,8 +175,9 @@ async function runStagingVerification() {
       headers,
       body: JSON.stringify({}),
     });
-    if (res.status !== 401 && res.status !== 503) {
-      throw new Error(`Expected 401 or 503, got HTTP ${res.status}`);
+    if (res.status !== 401) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Expected strictly 401 UNAUTHENTICATED, got HTTP ${res.status}: ${text.slice(0, 100)}`);
     }
   });
 
@@ -189,8 +188,16 @@ async function runStagingVerification() {
       method: "POST",
       headers: getHeaders("task-scheduler", reqId, "/internal/v1/scheduler/tick"),
     });
+    if (res.status === 401) throw new Error("Authentication failed: Service JWT was rejected (verify EXECUTION_SERVICE_JWT_SECRET)");
     if (res.status === 404) throw new Error("Route not found: Scheduler dispatch failed");
-    if (res.status === 401) throw new Error("Authentication failed: Service JWT was rejected");
+    if (res.status === 503) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Scheduler dependencies/database unavailable (HTTP 503): ${text.slice(0, 150)}`);
+    }
+    if (res.status !== 200) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 from scheduler tick, got ${res.status}: ${text.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 3: Cron Secret Authentication on Scheduler ---
@@ -214,6 +221,24 @@ async function runStagingVerification() {
     if (emptyRes.status !== 401) {
       throw new Error(`Expected 401 for empty Bearer token, got ${emptyRes.status}`);
     }
+
+    const headersValid: Record<string, string> = { "Authorization": `Bearer ${cronSecret}` };
+    if (bypassSecret) headersValid["x-vercel-protection-bypass"] = bypassSecret;
+    const validRes = await stagingFetch(`${baseURL}/api/private/scheduler`, {
+      method: "POST",
+      headers: headersValid,
+    });
+    if (validRes.status === 401) {
+      throw new Error("Valid CRON_SECRET was rejected with 401 (verify CRON_SECRET matches in Vercel)");
+    }
+    if (validRes.status === 503) {
+      const text = await validRes.text().catch(() => "");
+      throw new Error(`Scheduler database unavailable (HTTP 503): ${text.slice(0, 150)}`);
+    }
+    if (validRes.status !== 200) {
+      const text = await validRes.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 with valid CRON_SECRET, got ${validRes.status}: ${text.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 4: Internal Route for Tool Execution Callback ---
@@ -226,8 +251,9 @@ async function runStagingVerification() {
       headers,
       body: JSON.stringify({}),
     });
-    if (unauthRes.status !== 401 && unauthRes.status !== 500) {
-      throw new Error(`Expected rejection for unauthenticated tool callback, got ${unauthRes.status}`);
+    if (unauthRes.status !== 401) {
+      const text = await unauthRes.text().catch(() => "");
+      throw new Error(`Expected strictly 401 for unauthenticated tool callback, got ${unauthRes.status}: ${text.slice(0, 100)}`);
     }
   });
 
@@ -250,7 +276,11 @@ async function runStagingVerification() {
       headers: headersAuth,
     });
     if (authRes.status === 401 || authRes.status === 403) {
-      throw new Error(`CRON_SECRET was rejected on recovery endpoint: ${authRes.status}`);
+      throw new Error(`CRON_SECRET was rejected on recovery endpoint (HTTP ${authRes.status})`);
+    }
+    if (authRes.status !== 200 && authRes.status !== 409) {
+      const text = await authRes.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 or 409 (lock held), got ${authRes.status}: ${text.slice(0, 150)}`);
     }
   });
 
@@ -269,6 +299,10 @@ async function runStagingVerification() {
     });
     if (res.status === 401) throw new Error(`Capability resolution token was rejected with 401`);
     if (res.status === 404) throw new Error(`Route not found for capability resolution`);
+    if (res.status !== 200) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 for capability resolution, got ${res.status}: ${text.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 7: Governance Evaluation Dispatch ---
@@ -290,114 +324,179 @@ async function runStagingVerification() {
     });
     if (res.status === 401) throw new Error(`Governance token was rejected with 401`);
     if (res.status === 404) throw new Error(`Route not found for governance evaluation`);
+    if (res.status !== 200) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 for governance evaluation, got ${res.status}: ${text.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 8: Targeted Run Cancellation Route ---
   await test("Gateway routes /internal/v1/runs/{id}/cancel without blanket database mutations", async () => {
     const reqId = `req-cancel-${Date.now()}`;
+    const testRunId = crypto.randomUUID();
+    const headers = getHeaders("execution-engine", reqId, `/internal/v1/runs/${testRunId}/cancel`);
+    headers["X-Organisation-ID"] = "org-staging-disposable";
+    headers["X-Workspace-ID"] = "ws-staging-disposable";
+
     const res = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
-      headers: getHeaders("execution-engine", reqId, "/internal/v1/runs/test-run-id/cancel"),
+      headers,
       body: JSON.stringify({
         reason: "User cancelled execution",
         cancelledBy: "user-1"
       }),
     });
     if (res.status === 401) throw new Error(`Cancellation token was rejected with 401`);
+    // Non-existent disposable test run ID must return 404 (RUN_NOT_CANCELLABLE), proving targeted handler was reached
+    if (res.status !== 404 && res.status !== 202) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Expected HTTP 404 or 202 for targeted cancellation, got ${res.status}: ${text.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 9: Real Disposable Execution Run & DB Lifecycle Verification ---
-  await test("Real disposable execution run lifecycle: create -> schedule -> claim -> persist -> cancel", async () => {
+  await test("Real disposable execution run lifecycle: create -> schedule -> claim -> persist -> succeeded", async () => {
+    const planId = crypto.randomUUID();
+    const stepId = crypto.randomUUID();
+    const conversationId = crypto.randomUUID();
     const uniqueId = `staging-test-${Date.now()}`;
     const reqId = `req-e2e-${uniqueId}`;
-    const runId = `run-${uniqueId}`;
+    const orgId = "org-staging-disposable";
+    const wsId = "ws-staging-disposable";
+    const userId = "user-staging-disposable";
 
+    // Strictly conforms to Go contract.Plan in packages/execution-go/contract/types.go
+    // Extra fields are forbidden by decoder.DisallowUnknownFields()
     const disposablePlan = {
-      id: `plan-${uniqueId}`,
+      id: planId,
       version: "gxl.execution-plan.v1",
       requestId: reqId,
-      conversationId: `conv-${uniqueId}`,
-      organisationId: "org-staging-disposable",
-      workspaceId: "ws-staging-disposable",
-      userId: "user-staging-disposable",
+      conversationId: conversationId,
+      organisationId: orgId,
+      workspaceId: wsId,
+      userId: userId,
       agentId: "agent-growth",
       capabilityId: "crm.leads.read",
-      title: "Disposable Staging Test Run",
-      objective: "Verify end-to-end execution lifecycle without external side-effects",
-      status: "validated",
+      skillId: "skill-data-transform",
+      permissions: ["crm:leads:read"],
       steps: [
         {
-          id: `step-${uniqueId}-1`,
+          id: stepId,
           index: 0,
-          name: "Safe Transform Step",
-          description: "Perform safe in-memory calculation",
           type: "transform",
+          name: "Safe Pick Transform Step",
           dependsOn: [],
-          input: { text: "Staging Lifecycle Verification", multiplier: 2 },
+          input: {
+            operation: "pick",
+            value: { item: "staging-token-verify", count: 42, active: true },
+            keys: ["item", "active"]
+          },
+          requiredPermissions: ["crm:leads:read"],
+          retryPolicy: { maxAttempts: 2, initialDelayMs: 100, maxDelayMs: 500 },
           timeoutMs: 15000,
-          retryPolicy: { maxAttempts: 2, initialDelayMs: 100, maxDelayMs: 500, backoffMultiplier: 2, retryableCodes: ["TEMPORARY"] },
-          continueOnFailure: false,
-          requiredPermissions: ["crm:leads:read"]
+          destructive: false
         }
       ],
       createdAt: new Date().toISOString()
     };
 
     // 1. Create durable run via Execution Engine
+    const createHeaders = getHeaders("execution-engine", reqId, "/internal/v1/runs");
+    createHeaders["X-Organisation-ID"] = orgId;
+    createHeaders["X-Workspace-ID"] = wsId;
+
     const createRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
       method: "POST",
-      headers: getHeaders("execution-engine", reqId, "/internal/v1/runs"),
+      headers: createHeaders,
       body: JSON.stringify({
         idempotencyKey: `idem-${uniqueId}`,
         plan: disposablePlan
       })
     });
 
-    // In isolated staging with DB: returns 201/200 with run record.
-    // If staging DB is not connected yet: returns 503 (DOWNSTREAM_UNAVAILABLE).
-    // Crucially: Must NEVER return 401 (Auth rejected) or 404 (Route missing).
-    if (createRes.status === 401) throw new Error("createRun rejected authentication");
-    if (createRes.status === 404) throw new Error("createRun route not found on gateway");
+    if (createRes.status !== 200 && createRes.status !== 201) {
+      const errText = await createRes.text().catch(() => "");
+      throw new Error(`createRun() failed with HTTP ${createRes.status}: ${errText.slice(0, 300)}`);
+    }
 
-    if (createRes.status === 200 || createRes.status === 201) {
-      const createdData = (await createRes.json()) as { id?: string; status?: string };
-      const actualRunId = createdData.id || runId;
+    const createdData = (await createRes.json()) as { id: string; status: string };
+    if (!createdData.id) {
+      throw new Error("createRun() returned response missing run ID");
+    }
+    if (createdData.status !== "queued") {
+      throw new Error(`Expected initial created run status 'queued', got '${createdData.status}'`);
+    }
+    const actualRunId = createdData.id;
 
-      // 2. Trigger Scheduler Tick to advance queued step to scheduled
-      await stagingFetch(`${baseURL}/api/private/gateway`, {
-        method: "POST",
-        headers: getHeaders("task-scheduler", `req-sched-${uniqueId}`, "/internal/v1/scheduler/tick"),
-      });
+    // 2. Trigger Scheduler Tick to advance queued step to scheduled
+    const schedHeaders = getHeaders("task-scheduler", `req-sched-${uniqueId}`, "/internal/v1/scheduler/tick");
+    const schedRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+      method: "POST",
+      headers: schedHeaders,
+    });
+    if (schedRes.status !== 200) {
+      const schedText = await schedRes.text().catch(() => "");
+      throw new Error(`Scheduler tick failed with HTTP ${schedRes.status}: ${schedText.slice(0, 200)}`);
+    }
 
-      // 3. Trigger Worker Pass to claim step using DB lease and execute transform step
-      await stagingFetch(`${baseURL}/api/private/gateway`, {
-        method: "POST",
-        headers: getHeaders("execution-worker", `req-worker-${uniqueId}`, "/internal/v1/worker/batch"),
-        body: JSON.stringify({ limit: 5 })
-      });
+    // 3. Trigger Worker Pass to claim step using DB lease and execute transform step
+    const workerHeaders = getHeaders("execution-worker", `req-worker-${uniqueId}`, "/internal/v1/worker/batch?limit=5");
+    const workerRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+      method: "POST",
+      headers: workerHeaders,
+    });
+    if (workerRes.status !== 200) {
+      const workerText = await workerRes.text().catch(() => "");
+      throw new Error(`Worker batch execution failed with HTTP ${workerRes.status}: ${workerText.slice(0, 200)}`);
+    }
+    const workerData = (await workerRes.json()) as { processed: number };
+    if (workerData.processed < 1) {
+      throw new Error(`Worker processed 0 items; step was not claimed or queued properly`);
+    }
 
-      // 4. Query Run Status to verify state transition & output persistence
-      const getRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
-        method: "GET",
-        headers: getHeaders("execution-engine", `req-get-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}`),
-      });
+    // 4. Query Run Status to verify state transition & persisted output
+    const getHeadersObj = getHeaders("execution-engine", `req-get-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}`);
+    getHeadersObj["X-Organisation-ID"] = orgId;
+    getHeadersObj["X-Workspace-ID"] = wsId;
 
-      if (getRes.status === 200) {
-        const runState = (await getRes.json()) as { status: string };
-        console.log(` (Run state: ${runState.status})`);
+    const getRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+      method: "GET",
+      headers: getHeadersObj,
+    });
+    if (getRes.status !== 200) {
+      const getText = await getRes.text().catch(() => "");
+      throw new Error(`GetRun failed with HTTP ${getRes.status}: ${getText.slice(0, 200)}`);
+    }
+
+    const runState = (await getRes.json()) as { id: string; status: string };
+    if (runState.status !== "succeeded") {
+      throw new Error(`Expected run status to reach 'succeeded', but got '${runState.status}'`);
+    }
+
+    // 5. Query Run Events to verify full event trail
+    const eventsHeadersObj = getHeaders("execution-engine", `req-events-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}/events`);
+    eventsHeadersObj["X-Organisation-ID"] = orgId;
+    eventsHeadersObj["X-Workspace-ID"] = wsId;
+
+    const eventsRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+      method: "GET",
+      headers: eventsHeadersObj,
+    });
+    if (eventsRes.status === 200) {
+      const eventsData = (await eventsRes.json()) as { events: Array<{ event_type: string }> };
+      const eventTypes = (eventsData.events || []).map((e) => e.event_type);
+      const hasSucceeded = eventTypes.includes("step.succeeded") || eventTypes.includes("run.succeeded");
+      if (!hasSucceeded) {
+        throw new Error(`Expected events to include 'step.succeeded' or 'run.succeeded', got: ${eventTypes.join(", ")}`);
       }
-
-      // 5. Clean up: Cancel disposable run to ensure zero orphaned state
-      await stagingFetch(`${baseURL}/api/private/gateway`, {
-        method: "POST",
-        headers: getHeaders("execution-engine", `req-cancel-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}/cancel`),
-        body: JSON.stringify({ reason: "Disposable staging verification completed", cancelledBy: "test-runner" })
-      });
     }
   });
 
   console.log(`\n------------------------------------------------------`);
   console.log(`  Staging Verification Complete: ${passedTests}/${totalTests} gates passed`);
+  if (failedGates.length > 0) {
+    console.log(`  Failed Gates: ${failedGates.map((f) => `Gate ${f.gate}`).join(", ")}`);
+  }
   console.log(`------------------------------------------------------\n`);
 
   if (passedTests < totalTests) {
