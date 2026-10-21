@@ -11,7 +11,7 @@
         "crons": []
       },
       "vars": {
-        "RECOVERY_ENDPOINT_URL": "https://growxlabs-9derb6jwf-growxlabstechs-projects.vercel.app/api/cron/command-center/recover-execution",
+        "RECOVERY_ENDPOINT_URL": "https://growxlabs-git-staging-go-verification-growxlabstechs-projects.vercel.app/api/cron/command-center/recover-execution",
         "APP_ENV": "staging"
       }
     },
