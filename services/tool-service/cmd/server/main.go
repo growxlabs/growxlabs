@@ -29,7 +29,7 @@ func main() {
 	environment := required("APP_ENV", logger)
 	handler, err := httpapi.New(
 		database,
-		adapter.NewLegacyNextJS(required("GXL_WEB_BASE_URL", logger), secret, environment),
+		adapter.NewLegacyNextJS(required("GXL_WEB_BASE_URL", logger), os.Getenv("VERCEL_PROTECTION_BYPASS"), secret, environment),
 		adapter.NewPolicyValidator(required("INTERNAL_API_GATEWAY_URL", logger), secret, environment),
 		adapter.NewGovernanceClient(required("INTERNAL_API_GATEWAY_URL", logger), secret, environment),
 		secret, environment, logger,

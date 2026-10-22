@@ -11,15 +11,21 @@ export function GET(request: Request): Promise<Response> {
   return runBoundedCron(request, "recover-execution", async (signal) => {
     await invokeBoundedScheduler(requestId, signal);
     const workerResult = await invokeBoundedWorker(requestId, signal, { limit: 10 });
-    const totalProcessed = 1 + workerResult.processed;
     const hasError = Boolean(workerResult.error);
+    const stepsProcessed = workerResult.processed;
+    const stepsSucceeded = hasError ? Math.max(0, stepsProcessed - 1) : stepsProcessed;
+    const stepsFailed = hasError ? 1 : 0;
 
     return {
-      processed: totalProcessed,
-      succeeded: hasError ? 1 : totalProcessed,
-      failed: hasError ? 1 : 0,
+      schedulerInvoked: true,
+      schedulerSucceeded: true,
+      processed: stepsProcessed,
+      succeeded: stepsSucceeded,
+      failed: stepsFailed,
       checkpoint: null,
-      workerStepsProcessed: workerResult.processed,
+      workerStepsProcessed: stepsProcessed,
+      workerStepsSucceeded: stepsSucceeded,
+      workerStepsFailed: stepsFailed,
     };
   });
 }

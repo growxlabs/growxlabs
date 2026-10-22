@@ -23,6 +23,7 @@ import (
 type Config struct {
 	WorkerID           string
 	WebBaseURL         string
+	BypassSecret       string
 	ToolServiceURL     string
 	LegacyToolFallback bool
 	ServiceSecret      string
@@ -387,6 +388,9 @@ func (w *Worker) callToolService(ctx context.Context, item job) (json.RawMessage
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Request-ID", item.requestID)
 	request.Header.Set("X-GXL-Internal-Path", "/internal/v1/tool-executions")
+	if w.config.BypassSecret != "" {
+		request.Header.Set("x-vercel-protection-bypass", w.config.BypassSecret)
+	}
 	response, err := w.client.Do(request)
 	if err != nil {
 		return nil, err
@@ -469,6 +473,9 @@ func (w *Worker) callWebAdapter(ctx context.Context, item job, path string) (jso
 	request.Header.Set("Authorization", "Bearer "+token)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Request-ID", item.requestID)
+	if w.config.BypassSecret != "" {
+		request.Header.Set("x-vercel-protection-bypass", w.config.BypassSecret)
+	}
 	response, err := w.client.Do(request)
 	if err != nil {
 		return nil, err

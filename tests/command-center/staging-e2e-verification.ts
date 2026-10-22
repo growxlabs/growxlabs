@@ -255,6 +255,52 @@ async function runStagingVerification() {
       const text = await unauthRes.text().catch(() => "");
       throw new Error(`Expected strictly 401 for unauthenticated tool callback, got ${unauthRes.status}: ${text.slice(0, 100)}`);
     }
+
+    // Verify authorized tool execution with disposable staging scope
+    const reqId = `req-tool-verify-${Date.now()}`;
+    const now = Math.floor(Date.now() / 1000);
+    const token = signServiceJWT({
+      iss: "execution-worker",
+      aud: "gxl-web",
+      service: "execution-worker",
+      env: "staging",
+      requestId: reqId,
+      iat: now,
+      exp: now + 120,
+    }, jwtSecret);
+
+    const authHeaders: Record<string, string> = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-Request-ID": reqId,
+    };
+    if (bypassSecret) authHeaders["x-vercel-protection-bypass"] = bypassSecret;
+
+    const authRes = await stagingFetch(`${baseURL}/api/internal/v1/tool-executions`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({
+        runId: crypto.randomUUID(),
+        stepId: crypto.randomUUID(),
+        attempt: 1,
+        organisationId: "00000000-0000-0000-0000-000000000000",
+        workspaceId: "00000000-0000-0000-0000-000000000000",
+        userId: "usr_admin_default",
+        requestId: reqId,
+        conversationId: crypto.randomUUID(),
+        agentId: "agent_sales",
+        capabilityId: "sales.leads",
+        skillId: "skill_lead_qualification",
+        toolId: "get_company_stats",
+        input: {},
+        requiredPermissions: ["leads:read"],
+      }),
+    });
+
+    if (authRes.status !== 200) {
+      const errText = await authRes.text().catch(() => "");
+      throw new Error(`Expected HTTP 200 for authorized tool callback, got ${authRes.status}: ${errText.slice(0, 150)}`);
+    }
   });
 
   // --- Gate 5: Recovery Cron Endpoint & Distributed Locking ---
@@ -510,6 +556,131 @@ async function runStagingVerification() {
       if (!hasSucceeded) {
         throw new Error(`Expected events to include 'step.succeeded' or 'run.succeeded', got: ${eventTypes.join(", ")}`);
       }
+    }
+
+    // 6. Query Persisted Step Details to verify actual persisted step-output content
+    const stepsHeadersObj = getHeaders("execution-engine", `req-steps-${uniqueId}`, `/internal/v1/runs/${encodeURIComponent(actualRunId)}/steps`);
+    stepsHeadersObj["X-Organisation-ID"] = orgId;
+    stepsHeadersObj["X-Workspace-ID"] = wsId;
+
+    const stepsRes = await stagingFetch(`${baseURL}/api/private/gateway`, {
+      method: "GET",
+      headers: stepsHeadersObj,
+    });
+    if (stepsRes.status !== 200) {
+      const errText = await stepsRes.text().catch(() => "");
+      throw new Error(`Failed to retrieve run steps (HTTP ${stepsRes.status}): ${errText.slice(0, 150)}`);
+    }
+    const stepsData = (await stepsRes.json()) as { steps?: Array<{ id: string; status: string; output?: any }> };
+    if (!stepsData.steps || stepsData.steps.length === 0) {
+      throw new Error("Expected at least 1 persisted step record, got 0");
+    }
+    const persistedStep = stepsData.steps.find((s) => s.id === stepId) || stepsData.steps[0];
+    if (persistedStep.status !== "succeeded") {
+      throw new Error(`Expected persisted step status 'succeeded', got '${persistedStep.status}'`);
+    }
+    if (!persistedStep.output || typeof persistedStep.output !== "object") {
+      throw new Error(`Expected persisted step.output to be an object, got ${JSON.stringify(persistedStep.output)}`);
+    }
+    const outputResult = (persistedStep.output as any).result;
+    if (!outputResult || outputResult.item !== "staging-token-verify" || outputResult.active !== true) {
+      throw new Error(`Persisted step output content mismatch: expected { result: { item: 'staging-token-verify', active: true } }, got ${JSON.stringify(persistedStep.output)}`);
+    }
+
+    // 7. Verify a real, safe model-execution step with disposable staging data
+    const modelReqId = `req-model-verify-${uniqueId}`;
+    const modelNow = Math.floor(Date.now() / 1000);
+    const modelToken = signServiceJWT({
+      iss: "execution-worker",
+      aud: "gxl-web",
+      service: "execution-worker",
+      env: "staging",
+      requestId: modelReqId,
+      iat: modelNow,
+      exp: modelNow + 120,
+    }, jwtSecret);
+
+    const modelHeaders: Record<string, string> = {
+      "Authorization": `Bearer ${modelToken}`,
+      "Content-Type": "application/json",
+      "X-Request-ID": modelReqId,
+    };
+    if (bypassSecret) modelHeaders["x-vercel-protection-bypass"] = bypassSecret;
+
+    const modelRes = await stagingFetch(`${baseURL}/api/internal/v1/model-executions`, {
+      method: "POST",
+      headers: modelHeaders,
+      body: JSON.stringify({
+        runId: crypto.randomUUID(),
+        stepId: crypto.randomUUID(),
+        attempt: 1,
+        organisationId: orgId,
+        workspaceId: wsId,
+        userId: userId,
+        requestId: modelReqId,
+        conversationId: conversationId,
+        agentId: "agent_sales",
+        capabilityId: "sales.leads",
+        skillId: "skill_lead_qualification",
+        input: { prompt: "Staging gate 9 verification: reply strictly with the word: STAGING_VERIFIED" },
+        requiredPermissions: ["leads:read"],
+      }),
+    });
+    if (modelRes.status !== 200) {
+      const errText = await modelRes.text().catch(() => "");
+      throw new Error(`Model execution step failed (HTTP ${modelRes.status}): ${errText.slice(0, 150)}`);
+    }
+    const modelData = (await modelRes.json()) as { result?: { text?: string; provider?: string } };
+    if (!modelData.result?.text || !modelData.result?.provider) {
+      throw new Error(`Expected model result with text and provider, got ${JSON.stringify(modelData)}`);
+    }
+
+    // 8. Verify an authorized internal tool-execution step with disposable staging data
+    const toolReqId = `req-tool-verify-${uniqueId}`;
+    const toolToken = signServiceJWT({
+      iss: "execution-worker",
+      aud: "gxl-web",
+      service: "execution-worker",
+      env: "staging",
+      requestId: toolReqId,
+      iat: modelNow,
+      exp: modelNow + 120,
+    }, jwtSecret);
+
+    const toolHeaders: Record<string, string> = {
+      "Authorization": `Bearer ${toolToken}`,
+      "Content-Type": "application/json",
+      "X-Request-ID": toolReqId,
+    };
+    if (bypassSecret) toolHeaders["x-vercel-protection-bypass"] = bypassSecret;
+
+    const toolRes = await stagingFetch(`${baseURL}/api/internal/v1/tool-executions`, {
+      method: "POST",
+      headers: toolHeaders,
+      body: JSON.stringify({
+        runId: crypto.randomUUID(),
+        stepId: crypto.randomUUID(),
+        attempt: 1,
+        organisationId: orgId,
+        workspaceId: wsId,
+        userId: userId,
+        requestId: toolReqId,
+        conversationId: conversationId,
+        agentId: "agent_sales",
+        capabilityId: "sales.leads",
+        skillId: "skill_lead_qualification",
+        toolId: "query_leads",
+        input: { limit: 2 },
+        requiredPermissions: ["leads:read"],
+      }),
+    });
+    if (toolRes.status !== 200) {
+      const errText = await toolRes.text().catch(() => "");
+      throw new Error(`Tool execution step failed (HTTP ${toolRes.status}): ${errText.slice(0, 150)}`);
+    }
+    const toolData = (await toolRes.json()) as { result?: any[] };
+    if (!Array.isArray(toolData.result)) {
+      throw new Error(`Expected query_leads result to be an array, got ${JSON.stringify(toolData)}`);
     }
   });
 

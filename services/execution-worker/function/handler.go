@@ -82,10 +82,23 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 		return nil, err
 	}
 	state.pool = pool
+	webBaseURL := os.Getenv("GXL_WEB_BASE_URL")
+	if webBaseURL == "" && os.Getenv("VERCEL_URL") != "" {
+		webBaseURL = "https://" + os.Getenv("VERCEL_URL")
+	}
+	toolServiceURL := os.Getenv("TOOL_SERVICE_INTERNAL_URL")
+	if toolServiceURL == "" && webBaseURL != "" {
+		toolServiceURL = webBaseURL + "/api/private/gateway"
+	}
+	bypassSecret := os.Getenv("VERCEL_PROTECTION_BYPASS")
+	if bypassSecret == "" {
+		bypassSecret = os.Getenv("VERCEL_AUTOMATION_BYPASS_SECRET")
+	}
 	state.service = worker.New(pool, slog.New(slog.NewJSONHandler(os.Stdout, nil)), worker.Config{
-		WorkerID: "vercel-" + os.Getenv("VERCEL_REGION"), WebBaseURL: os.Getenv("GXL_WEB_BASE_URL"),
-		ToolServiceURL:     os.Getenv("TOOL_SERVICE_INTERNAL_URL"),
-		LegacyToolFallback: os.Getenv("PHASE1_TOOL_COMPATIBILITY_FALLBACK_ENABLED") == "true",
+		WorkerID: "vercel-" + os.Getenv("VERCEL_REGION"), WebBaseURL: webBaseURL,
+		BypassSecret:       bypassSecret,
+		ToolServiceURL:     toolServiceURL,
+		LegacyToolFallback: os.Getenv("PHASE1_TOOL_COMPATIBILITY_FALLBACK_ENABLED") != "false",
 		ServiceSecret:      os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), Environment: os.Getenv("APP_ENV"),
 		LeaseDuration: 45 * time.Second, PollInterval: time.Second,
 	})

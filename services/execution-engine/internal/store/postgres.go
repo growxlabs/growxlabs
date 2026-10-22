@@ -281,3 +281,51 @@ func (p *Postgres) ListEvents(ctx context.Context, organisationID, workspaceID, 
 	}
 	return events, rows.Err()
 }
+
+type StepRecord struct {
+	ID         string          `json:"id"`
+	RunID      string          `json:"runId"`
+	StepKey    string          `json:"stepKey"`
+	Ordinal    int             `json:"ordinal"`
+	Type       string          `json:"type"`
+	Status     string          `json:"status"`
+	Input      json.RawMessage `json:"input"`
+	Output     json.RawMessage `json:"output,omitempty"`
+	StartedAt  *time.Time      `json:"startedAt,omitempty"`
+	FinishedAt *time.Time      `json:"finishedAt,omitempty"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	UpdatedAt  time.Time       `json:"updatedAt"`
+}
+
+func (p *Postgres) ListSteps(ctx context.Context, organisationID, workspaceID, runID string) ([]StepRecord, error) {
+	rows, err := p.pool.Query(ctx, `
+		SELECT id::text, run_id::text, step_key, ordinal, step_type,
+		       status, input, COALESCE(output, '{}'::jsonb), started_at, finished_at,
+		       created_at, updated_at
+		FROM command_execution.steps
+		WHERE run_id = $1::uuid AND organisation_id = $2 AND workspace_id = $3
+		ORDER BY ordinal ASC`,
+		runID, organisationID, workspaceID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	steps := make([]StepRecord, 0)
+	for rows.Next() {
+		var s StepRecord
+		var inputBytes, outputBytes []byte
+		if err := rows.Scan(
+			&s.ID, &s.RunID, &s.StepKey, &s.Ordinal, &s.Type,
+			&s.Status, &inputBytes, &outputBytes, &s.StartedAt, &s.FinishedAt,
+			&s.CreatedAt, &s.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		s.Input = json.RawMessage(inputBytes)
+		s.Output = json.RawMessage(outputBytes)
+		steps = append(steps, s)
+	}
+	return steps, rows.Err()
+}
+

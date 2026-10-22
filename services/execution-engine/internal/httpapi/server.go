@@ -30,6 +30,7 @@ func New(database *store.Postgres, logger *slog.Logger, secret, environment stri
 	mux.Handle("GET /internal/v1/runs/{runID}", server.authorize(http.HandlerFunc(server.getRun)))
 	mux.Handle("POST /internal/v1/runs/{runID}/cancel", server.authorize(http.HandlerFunc(server.cancelRun)))
 	mux.Handle("GET /internal/v1/runs/{runID}/events", server.authorize(http.HandlerFunc(server.events)))
+	mux.Handle("GET /internal/v1/runs/{runID}/steps", server.authorize(http.HandlerFunc(server.steps)))
 	return requestLog(logger, mux)
 }
 
@@ -132,6 +133,20 @@ func (s *Server) events(response http.ResponseWriter, request *http.Request) {
 	}
 	writeJSON(response, http.StatusOK, map[string]any{"events": events})
 }
+
+func (s *Server) steps(response http.ResponseWriter, request *http.Request) {
+	organisationID, workspaceID, ok := scopeHeaders(response, request)
+	if !ok {
+		return
+	}
+	steps, err := s.store.ListSteps(request.Context(), organisationID, workspaceID, request.PathValue("runID"))
+	if err != nil {
+		writeError(response, http.StatusInternalServerError, "STEP_READ_FAILED", "steps could not be read")
+		return
+	}
+	writeJSON(response, http.StatusOK, map[string]any{"steps": steps})
+}
+
 
 func scopeHeaders(response http.ResponseWriter, request *http.Request) (string, string, bool) {
 	organisationID := request.Header.Get("X-Organisation-ID")

@@ -72,6 +72,16 @@ func initialise(ctx context.Context) (http.Handler, error) {
 	}
 	databaseURL, secret, environment := os.Getenv("DATABASE_URL"), os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), os.Getenv("APP_ENV")
 	gatewayURL, webURL := os.Getenv("INTERNAL_API_GATEWAY_URL"), os.Getenv("GXL_WEB_BASE_URL")
+	if webURL == "" && os.Getenv("VERCEL_URL") != "" {
+		webURL = "https://" + os.Getenv("VERCEL_URL")
+	}
+	if gatewayURL == "" && webURL != "" {
+		gatewayURL = webURL + "/api/private/gateway"
+	}
+	bypassSecret := os.Getenv("VERCEL_PROTECTION_BYPASS")
+	if bypassSecret == "" {
+		bypassSecret = os.Getenv("VERCEL_AUTOMATION_BYPASS_SECRET")
+	}
 	if databaseURL == "" || secret == "" || environment == "" || gatewayURL == "" || webURL == "" {
 		return nil, errors.New("required tool function configuration is missing")
 	}
@@ -82,7 +92,7 @@ func initialise(ctx context.Context) (http.Handler, error) {
 		return nil, err
 	}
 	handler, err := httpapi.New(
-		database, adapter.NewLegacyNextJS(webURL, secret, environment),
+		database, adapter.NewLegacyNextJS(webURL, bypassSecret, secret, environment),
 		adapter.NewPolicyValidator(gatewayURL, secret, environment),
 		adapter.NewGovernanceClient(gatewayURL, secret, environment),
 		secret, environment, slog.New(slog.NewJSONHandler(os.Stdout, nil)),
