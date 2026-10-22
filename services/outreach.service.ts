@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Lead } from "@/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export class OutreachService {
   static async sendInitialOutreach(leadId: string) {
@@ -32,6 +32,12 @@ export class OutreachService {
           <strong>GrowXLabsTech Team</strong>
         </div>
       `;
+
+      const apiKey = process.env.RESEND_API_KEY;
+      if (!apiKey) {
+        throw new Error("RESEND_API_KEY is not configured for outreach email operations.");
+      }
+      const resend = new Resend(apiKey);
 
       const { data, error: sendError } = await resend.emails.send({
         from: "GrowXLabsTech <outreach@growxlabs.tech>",

@@ -4,12 +4,18 @@ import fs from 'fs';
 import path from 'path';
 import { ensureGrowXLabsEmailLayout } from '@/lib/email/growxlabs-layout';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export async function GET() {
   try {
     const templatePath = path.join(process.cwd(), 'public', 'templates', 'welcome_email.html');
     const html = fs.readFileSync(templatePath, 'utf8');
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "RESEND_API_KEY is not configured." }, { status: 500 });
+    }
+    const resend = new Resend(apiKey);
 
     const { data, error } = await resend.emails.send({
       from: 'GrowXLabsTech <onboarding@growxlabs.tech>',

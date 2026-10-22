@@ -2,7 +2,7 @@ import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Lead } from "@/types";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export class FollowUpService {
   static async processFollowUps() {
@@ -50,6 +50,12 @@ export class FollowUpService {
 
   private static async sendEmail(lead: Lead, type: string) {
     if (!lead.email) return;
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not configured for follow-up email operations.");
+    }
+    const resend = new Resend(apiKey);
 
     await resend.emails.send({
       from: "GrowXLabsTech <outreach@growxlabs.tech>",
