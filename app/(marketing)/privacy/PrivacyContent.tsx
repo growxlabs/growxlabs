@@ -37,7 +37,7 @@ export function PrivacyContent() {
   ];
 
   return (
-    <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#0d0d0e]">
+    <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-black">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           

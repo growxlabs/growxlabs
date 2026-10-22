@@ -4,7 +4,7 @@ import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 
 export default function RefundPage() {
   return (
-    <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-muted">
+    <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-black">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
         <div className="mb-16 text-center lg:text-left">
           <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-[#C0F0FB] mb-4 block">
