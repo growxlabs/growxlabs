@@ -43,8 +43,18 @@ jobs:
       - name: Run Production Hardening Verification Tests
         run: npm run test:phase8
 
+      - name: Run Production Readiness Verification Script
+        run: npx tsx scripts/verify-production-readiness.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
       - name: Run Next.js Production Build Test
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
   deploy-to-vercel:
     name: Deploy to Vercel Production
