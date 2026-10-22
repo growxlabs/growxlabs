@@ -8,7 +8,7 @@
   "env": {
     "staging": {
       "triggers": {
-        "crons": []
+        "crons": ["*/1 * * * *"]
       },
       "vars": {
         "RECOVERY_ENDPOINT_URL": "https://growxlabs-git-staging-go-verification-growxlabstechs-projects.vercel.app/api/cron/command-center/recover-execution",

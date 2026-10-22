@@ -70,9 +70,7 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 	}
 	config.MaxConns, config.MinConns = 3, 0
 	config.MaxConnLifetime, config.MaxConnIdleTime = 5*time.Minute, 30*time.Second
-	if config.ConnConfig.DefaultQueryExecMode == 0 {
-		config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
-	}
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 	startup, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	pool, err := pgxpool.NewWithConfig(startup, config)
