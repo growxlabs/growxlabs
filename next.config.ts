@@ -90,10 +90,6 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  typescript: {
-    // Type checking is strictly enforced as a blocking gate via `npm run type-check` in `package.json`'s build script and CI
-    ignoreBuildErrors: true,
-  },
   poweredByHeader: false,
   reactStrictMode: true,
 };
