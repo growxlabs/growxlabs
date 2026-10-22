@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -98,7 +99,7 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 		runID, request.IdempotencyKey, request.Plan.Version,
 		request.Plan.OrganisationID, request.Plan.WorkspaceID, request.Plan.UserID,
 		request.Plan.ConversationID, request.Plan.RequestID, request.Plan.AgentID,
-		request.Plan.CapabilityID, request.Plan.SkillID, planJSON, now,
+		request.Plan.CapabilityID, request.Plan.SkillID, string(planJSON), now,
 	)
 	if err != nil {
 		return contract.Run{}, false, err
@@ -115,6 +116,10 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 		if marshalErr != nil {
 			return contract.Run{}, false, marshalErr
 		}
+		stepInput := string(step.Input)
+		if strings.TrimSpace(stepInput) == "" {
+			stepInput = "{}"
+		}
 		_, err = tx.Exec(ctx, `
 			INSERT INTO command_execution.steps (
 				id, run_id, organisation_id, workspace_id, step_key, ordinal,
@@ -125,8 +130,8 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 				$8::jsonb, $9::jsonb, $10::jsonb, $11, $12, $12
 			)`,
 			step.ID, runID, request.Plan.OrganisationID, request.Plan.WorkspaceID,
-			step.ID, step.Index, step.Type, step.Input, permissionsJSON,
-			retryJSON, step.TimeoutMS, now,
+			step.ID, step.Index, step.Type, stepInput, string(permissionsJSON),
+			string(retryJSON), step.TimeoutMS, now,
 		)
 		if err != nil {
 			return contract.Run{}, false, err
@@ -157,7 +162,7 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 			id, run_id, organisation_id, workspace_id, request_id, event_type, payload
 		) VALUES (gen_random_uuid(), $1::uuid, $2, $3, $4, 'run.created', $5::jsonb)`,
 		runID, request.Plan.OrganisationID, request.Plan.WorkspaceID,
-		request.Plan.RequestID, eventPayload,
+		request.Plan.RequestID, string(eventPayload),
 	)
 	if err != nil {
 		return contract.Run{}, false, err

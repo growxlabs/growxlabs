@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -271,7 +272,10 @@ func (w *Worker) claim(ctx context.Context) (job, bool, error) {
 	if err != nil || tag.RowsAffected() != 1 {
 		return job{}, false, fmt.Errorf("claim step: %w", err)
 	}
-	inputJSON := item.step.Input
+	inputJSON := string(item.step.Input)
+	if strings.TrimSpace(inputJSON) == "" {
+		inputJSON = "{}"
+	}
 	_, err = tx.Exec(ctx, `
 		INSERT INTO command_execution.attempts (
 			id, run_id, step_id, organisation_id, workspace_id, attempt_number,
@@ -489,13 +493,17 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	outputStr := string(output)
+	if strings.TrimSpace(outputStr) == "" {
+		outputStr = "{}"
+	}
 	tag, err := tx.Exec(ctx, `
 		UPDATE command_execution.steps
 		SET status = 'succeeded', output = $4::jsonb, finished_at = now(),
 		    lease_owner = NULL, lease_token = NULL, lease_expires_at = NULL, updated_at = now()
 		WHERE id = $1::uuid AND status = 'running' AND lease_owner = $2
 		  AND lease_token = $3::uuid`,
-		item.stepID, w.config.WorkerID, item.leaseToken, output,
+		item.stepID, w.config.WorkerID, item.leaseToken, outputStr,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
 		return fmt.Errorf("stale completion rejected: %w", err)
@@ -504,7 +512,7 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		UPDATE command_execution.attempts
 		SET status = 'succeeded', output = $3::jsonb, finished_at = now()
 		WHERE step_id = $1::uuid AND lease_token = $2::uuid AND status = 'running'`,
-		item.stepID, item.leaseToken, output); err != nil {
+		item.stepID, item.leaseToken, outputStr); err != nil {
 		return err
 	}
 	if _, err = tx.Exec(ctx, `DELETE FROM command_execution.queue WHERE id = $1`, item.queueID); err != nil {

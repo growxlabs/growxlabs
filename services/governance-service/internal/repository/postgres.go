@@ -87,7 +87,7 @@ func (p *Postgres) SavePolicyDecision(ctx context.Context, input contracts.Evalu
 		ON CONFLICT (id) DO NOTHING`,
 		decision.DecisionID, input.OrganisationID, input.WorkspaceID, input.RequestID,
 		input.TraceID, input.UserID, input.ToolID, input.Operation, input.RunID, input.StepID, decision.Result,
-		decision.RiskLevel, versions, permissions, requirements, reasons, fingerprint, decision.EvaluatedAt)
+		decision.RiskLevel, string(versions), string(permissions), string(requirements), string(reasons), fingerprint, decision.EvaluatedAt)
 	if err != nil {
 		return err
 	}
@@ -154,10 +154,10 @@ func (p *Postgres) CreateApproval(ctx context.Context, input CreateApprovalInput
 		RETURNING id::text,created_at`,
 		request.RequestID, request.TraceID, request.RunID, request.StepID, request.OrganisationID,
 		request.WorkspaceID, request.RequestedByUserID, request.RequestedByAgentID,
-		request.PolicyDecisionID, versions, request.CapabilityID, request.SkillID, request.ToolID,
+		request.PolicyDecisionID, string(versions), request.CapabilityID, request.SkillID, request.ToolID,
 		request.ToolVersion, request.Domain, request.Operation, request.RiskLevel, request.Title,
 		request.SafeSummary, request.ResourceType, request.ResourceID, request.RequestFingerprint,
-		request.MinimumApprovals, roles, teams, request.ProhibitSelfApproval,
+		request.MinimumApprovals, string(roles), string(teams), request.ProhibitSelfApproval,
 		request.RequireDistinctApprovers, request.ExpiresAt, request.AuthorisationExpiresAt,
 		input.IdempotencyKey).Scan(&request.ID, &request.CreatedAt)
 	created := err == nil
@@ -340,7 +340,7 @@ func (p *Postgres) Decide(ctx context.Context, organisationID, workspaceID, appr
 		ON CONFLICT (organisation_id,workspace_id,idempotency_key) DO UPDATE
 		SET idempotency_key=EXCLUDED.idempotency_key
 		RETURNING id::text`,
-		approvalID, organisationID, workspaceID, userID, roles, teams, decision,
+		approvalID, organisationID, workspaceID, userID, string(roles), string(teams), decision,
 		reason, evidence, idempotencyKey).Scan(&decisionID)
 	if err != nil {
 		return request, err
@@ -766,7 +766,7 @@ func insertOutbox(ctx context.Context, tx pgx.Tx, organisationID, workspaceID, e
 	_, err = tx.Exec(ctx, `
 		INSERT INTO command_governance.audit_outbox
 		    (event_id,organisation_id,workspace_id,event_type,event_payload)
-		VALUES ($1,$2,$3,$4,$5::jsonb)`, eventID, organisationID, workspaceID, eventType, value)
+		VALUES ($1,$2,$3,$4,$5::jsonb)`, eventID, organisationID, workspaceID, eventType, string(value))
 	return err
 }
 
