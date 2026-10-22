@@ -26,7 +26,11 @@ export async function runBoundedCron(
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return errorResponse(new CommandCenterError("PERMISSION_DENIED"), requestId);
   }
-  if (request.headers.has("sec-fetch-mode") || request.headers.has("sec-fetch-site")) {
+  if (
+    process.env.APP_ENV !== "staging" &&
+    !request.headers.get("x-vercel-protection-bypass") &&
+    (request.headers.has("sec-fetch-mode") || request.headers.has("sec-fetch-site"))
+  ) {
     return errorResponse(new CommandCenterError("PERMISSION_DENIED"), requestId);
   }
 

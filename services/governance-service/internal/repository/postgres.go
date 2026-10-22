@@ -83,7 +83,7 @@ func (p *Postgres) SavePolicyDecision(ctx context.Context, input contracts.Evalu
 		     run_id,step_id,result,risk_level,policy_version_ids,required_permissions,approval_requirements,
 		     reason_codes,context_fingerprint,evaluated_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NULLIF($9,'')::uuid,NULLIF($10,'')::uuid,
-		        $11,$12,$13,$14,$15,$16,$17,$18)
+		        $11,$12,$13::jsonb,$14::jsonb,$15::jsonb,$16::jsonb,$17,$18)
 		ON CONFLICT (id) DO NOTHING`,
 		decision.DecisionID, input.OrganisationID, input.WorkspaceID, input.RequestID,
 		input.TraceID, input.UserID, input.ToolID, input.Operation, input.RunID, input.StepID, decision.Result,
@@ -148,8 +148,8 @@ func (p *Postgres) CreateApproval(ctx context.Context, input CreateApprovalInput
 		     safe_summary,resource_type,resource_id,request_fingerprint,minimum_approvals,
 		     eligible_role_ids,eligible_team_ids,prohibit_self_approval,require_distinct_approvers,
 		     status,expires_at,authorisation_expires_at,idempotency_key)
-		VALUES ($1,$2,$3::uuid,NULLIF($4,'')::uuid,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,
-		        $16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,'pending',$28,$29,$30)
+		VALUES ($1,$2,$3::uuid,NULLIF($4,'')::uuid,$5,$6,$7,$8,$9,$10::jsonb,$11,$12,$13,$14,$15,
+		        $16,$17,$18,$19,$20,$21,$22,$23,$24::jsonb,$25::jsonb,$26,$27,'pending',$28,$29,$30)
 		ON CONFLICT (organisation_id,workspace_id,idempotency_key) DO NOTHING
 		RETURNING id::text,created_at`,
 		request.RequestID, request.TraceID, request.RunID, request.StepID, request.OrganisationID,
@@ -336,7 +336,7 @@ func (p *Postgres) Decide(ctx context.Context, organisationID, workspaceID, appr
 		INSERT INTO command_governance.approval_decisions
 		    (approval_request_id,organisation_id,workspace_id,approver_user_id,
 		     approver_role_ids,approver_team_ids,decision,reason,evidence,idempotency_key)
-		VALUES ($1::uuid,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+		VALUES ($1::uuid,$2,$3,$4,$5::jsonb,$6::jsonb,$7,$8,$9,$10)
 		ON CONFLICT (organisation_id,workspace_id,idempotency_key) DO UPDATE
 		SET idempotency_key=EXCLUDED.idempotency_key
 		RETURNING id::text`,
@@ -766,7 +766,7 @@ func insertOutbox(ctx context.Context, tx pgx.Tx, organisationID, workspaceID, e
 	_, err = tx.Exec(ctx, `
 		INSERT INTO command_governance.audit_outbox
 		    (event_id,organisation_id,workspace_id,event_type,event_payload)
-		VALUES ($1,$2,$3,$4,$5)`, eventID, organisationID, workspaceID, eventType, value)
+		VALUES ($1,$2,$3,$4,$5::jsonb)`, eventID, organisationID, workspaceID, eventType, value)
 	return err
 }
 

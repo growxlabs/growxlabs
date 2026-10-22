@@ -505,7 +505,7 @@ async function runStagingVerification() {
     });
     if (eventsRes.status === 200) {
       const eventsData = (await eventsRes.json()) as { events: Array<{ event_type: string }> };
-      const eventTypes = (eventsData.events || []).map((e) => e.event_type);
+      const eventTypes = (eventsData.events || []).map((e: any) => e.type || e.event_type);
       const hasSucceeded = eventTypes.includes("step.succeeded") || eventTypes.includes("run.succeeded");
       if (!hasSucceeded) {
         throw new Error(`Expected events to include 'step.succeeded' or 'run.succeeded', got: ${eventTypes.join(", ")}`);
