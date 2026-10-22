@@ -21,13 +21,16 @@ export function GovernanceNav() {
     },
     {
       href: "/admin/command-center/governance/audit",
-      label: "Audit",
+      label: "Audit Ledger",
       icon: History,
     },
   ];
 
   return (
-    <nav className="flex items-center gap-1.5 p-1 rounded-xl bg-[#141416] border border-[#27272a] shadow-xs">
+    <nav
+      aria-label="Governance Navigation"
+      className="inline-flex items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-950/80 p-1 shadow-inner backdrop-blur-md"
+    >
       {links.map((link) => {
         const Icon = link.icon;
         const isActive = pathname?.startsWith(link.href);
@@ -36,13 +39,13 @@ export function GovernanceNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all",
+              "flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 select-none",
               isActive
-                ? "bg-white/10 text-white shadow-xs"
-                : "text-zinc-400 hover:text-white hover:bg-white/5"
+                ? "bg-zinc-800/90 text-white shadow-xs border border-zinc-700/60 font-semibold"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 border border-transparent"
             )}
           >
-            <Icon size={14} className={isActive ? "text-blue-400" : "text-zinc-500"} />
+            <Icon size={13} className={isActive ? "text-blue-400" : "text-zinc-500"} />
             <span>{link.label}</span>
           </Link>
         );

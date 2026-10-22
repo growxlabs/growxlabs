@@ -148,13 +148,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (authorized === null) {
     return (
       <div className={cn(
-        !isCommandCenterWorkspace && "notion-theme",
-        isCommandCenterWorkspace ? "bg-[#1f1e1d]" : "bg-[var(--background)]",
+        !isCommandCenter && !isEditorialStudio && "notion-theme",
+        isCommandCenter ? "bg-[#09090b] text-[#f4f4f5]" : "bg-[var(--background)]",
         "min-h-screen flex items-center justify-center"
       )}>
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className={cn("h-8 w-8 animate-spin", isCommandCenterWorkspace ? "text-[#d97756]" : "text-[#0075de]")} />
-          <p className={cn("text-xs font-mono uppercase tracking-widest", isCommandCenterWorkspace ? "text-[#9c9990]" : "text-[var(--text-muted)]")}>
+          <Loader2 className={cn("h-8 w-8 animate-spin", isCommandCenter ? "text-blue-500" : "text-[#0075de]")} />
+          <p className={cn("text-xs font-mono uppercase tracking-widest", isCommandCenter ? "text-zinc-400" : "text-[var(--text-muted)]")}>
             Authenticating workspace access...
           </p>
         </div>
@@ -294,8 +294,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <SettingsModalProvider>
       <div className={cn(
-        !isCommandCenterWorkspace && !isEditorialStudio && "notion-theme",
-        isCommandCenterWorkspace ? "bg-[#1f1e1d] text-[#edebe6]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
+        !isCommandCenter && !isEditorialStudio && "notion-theme",
+        isCommandCenter ? "bg-[#09090b] text-[#f4f4f5]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
         "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
       )}>
         {/* PERSISTENT SIDEBAR */}
@@ -311,7 +311,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* SCROLLABLE MAIN CONTENT AREA */}
         <main className={cn(
           "min-w-0 min-h-screen max-w-full overflow-x-hidden overflow-y-auto relative custom-scrollbar transition-[margin,width] duration-300 ease-out z-10 print:ml-0 print:w-full print:bg-transparent print:overflow-visible print:min-h-0",
-          isCommandCenterWorkspace ? "bg-[#1f1e1d]" : isEditorialStudio ? "bg-[#0e0f12]" : "bg-[var(--background)]",
+          isCommandCenter ? "bg-[#09090b]" : isEditorialStudio ? "bg-[#0e0f12]" : "bg-[var(--background)]",
           // Exact desktop shell sizing prevents flyouts or nested panels from changing workspace width.
           (isCommandCenter || isEditorialStudio)
             ? "md:ml-0 md:w-full"
@@ -326,12 +326,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
              "w-full mx-auto print:p-0 print:m-0 print:space-y-0 print:max-w-none",
              isEditorialStudio || isCommandCenterWorkspace
                ? "h-[calc(100vh-3.5rem)] md:h-screen max-w-none overflow-hidden"
+               : isCommandCenter
+               ? "min-h-screen max-w-none p-0 overflow-y-auto"
                : "p-4 sm:p-6 md:p-12 max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10"
            )}>
               {children}
            </div>
         </main>
-        {!isCommandCenterWorkspace && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
+        {!isCommandCenter && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
       </div>
     </SettingsModalProvider>
   );
