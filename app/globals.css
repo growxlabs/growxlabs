@@ -9,7 +9,7 @@
   --font-outfit: Outfit, "Segoe UI", Arial, sans-serif;
   --font-mono: "Fira Code", monospace;
 }
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 @import "tw-animate-css";
 /*
  * Candidate portal theme boundary.
@@ -470,11 +470,38 @@ html.dark,
 html.dark .notion-theme,
 .dark .notion-theme,
 .dark.notion-theme {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+  --card: #141416;
+  --card-foreground: #f4f4f5;
+  --popover: #18181b;
+  --popover-foreground: #f4f4f5;
   --primary: #0075de;
   --primary-foreground: #ffffff;
+  --secondary: #18181b;
+  --secondary-foreground: #f4f4f5;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
   --accent: #0075de;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #27272a;
+  --input: #18181b;
   --ring: #0075de;
+  --surface-1: #141416;
+  --surface-2: #1e1e20;
+  --border-subtle: #27272a;
   --border-hover: #0075de;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-tertiary: #52525b;
+  --app-bg: #09090b;
+  --panel-bg: #141416;
+  --panel-raised: #1c1c1f;
+  --surface-hover: #1f1f23;
+  --surface-active: #27272a;
 }
 
 /* ═══════════════════════════════════════════════════════════════ */
@@ -815,10 +842,21 @@ html.dark .notion-theme[data-accent="white"],
 .notion-theme .bg-green-500\/10 { background-color: rgba(26, 174, 57, 0.08) !important; }
 
 /* Notion-style inputs */
-.notion-theme input,
-.notion-theme select,
-.notion-theme textarea {
+html:not(.dark) .notion-theme input,
+html:not(.dark) .notion-theme select,
+html:not(.dark) .notion-theme textarea,
+html.light .notion-theme input,
+html.light .notion-theme select,
+html.light .notion-theme textarea {
   background-color: #ffffff !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+}
+.dark .notion-theme input,
+.dark .notion-theme select,
+.dark .notion-theme textarea {
+  background-color: var(--card) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border) !important;
   border-radius: 4px !important;
@@ -852,17 +890,33 @@ html.dark .notion-theme[data-accent="white"],
 }
 
 /* Notion-style utility buttons */
-.notion-theme .button-utility,
-.notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *) {
+html:not(.dark) .notion-theme .button-utility,
+html:not(.dark) .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *),
+html.light .notion-theme .button-utility,
+html.light .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *) {
   background-color: #ffffff !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border) !important;
   border-radius: 6px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
-.notion-theme .button-utility:hover,
-.notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *):hover {
+html:not(.dark) .notion-theme .button-utility:hover,
+html:not(.dark) .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *):hover,
+html.light .notion-theme .button-utility:hover,
+html.light .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *):hover {
   background-color: #f6f5f4 !important;
+}
+.dark .notion-theme .button-utility,
+.dark .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *) {
+  background-color: var(--card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+.dark .notion-theme .button-utility:hover,
+.dark .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *):hover {
+  background-color: var(--surface-2) !important;
 }
 
 .notion-theme .glass-card,

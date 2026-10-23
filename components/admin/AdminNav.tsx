@@ -534,7 +534,7 @@ export function AdminNav({
     .toUpperCase();
 
   const renderNavContent = (isMobile = false) => (
-    <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-[#0A0A0A] text-slate-800 dark:text-neutral-200 border-r border-slate-200/80 dark:border-[#262626]">
+    <div className="flex flex-col h-full overflow-hidden bg-[var(--card)] dark:bg-[#0A0A0A] text-[var(--text-primary)] dark:text-neutral-200 border-r border-[var(--border-subtle)] dark:border-[#262626]">
       {/* Sidebar Header */}
       <div
         className={cn(
@@ -827,7 +827,7 @@ export function AdminNav({
       <aside
         id="admin-sidebar-container"
         className={cn(
-          "hidden md:flex h-screen bg-white dark:bg-[#0A0A0A] flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-slate-200/80 dark:border-[#262626]",
+          "hidden md:flex h-screen bg-[var(--card)] dark:bg-[#0A0A0A] flex-col fixed left-0 top-0 transition-all duration-300 ease-in-out z-[90] overflow-visible border-r border-[var(--border-subtle)] dark:border-[#262626]",
           isCollapsed ? "w-20" : "w-[260px]",
         )}
       >
