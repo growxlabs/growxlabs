@@ -163,7 +163,7 @@ export default function AgreementContract({ data = {}, role = "admin", initialSi
       </div>
 
       {/* The Agreement Document */}
-      <div className="max-w-[900px] mx-auto bg-white shadow-[0_10px_50px_rgba(0,0,0,0.03)] print:shadow-none min-h-[1100px] flex flex-col border border-neutral-100 print:border-none p-10 md:p-16 text-neutral-800 text-[13px] leading-[1.8] rounded-3xl">
+      <div data-admin-typography="preserve" className="max-w-[900px] mx-auto bg-white shadow-[0_10px_50px_rgba(0,0,0,0.03)] print:shadow-none min-h-[1100px] flex flex-col border border-neutral-100 print:border-none p-10 md:p-16 text-neutral-800 text-[13px] leading-[1.8] rounded-3xl">
         
         {/* HEADER */}
         <div className="flex justify-between items-center border-b border-neutral-100 pb-8 mb-10">

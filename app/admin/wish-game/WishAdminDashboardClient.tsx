@@ -249,49 +249,49 @@ export default function WishAdminDashboardClient({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-[#e6e6e6] p-6 rounded-md hover:shadow-sm transition-all duration-200 relative group">
           <div className="flex justify-between items-start mb-4">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total Wishes Made</span>
+            <span className="admin-kpi-label text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total Wishes Made</span>
             <div className="p-2 bg-[#f6f5f4] border border-[#e6e6e6] rounded-md text-neutral-500">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <h3 className="text-3xl font-bold text-neutral-900 tracking-tight leading-none font-mono">{currentStats.totalWishes}</h3>
+            <h3 className="admin-kpi-value text-neutral-900 leading-none">{currentStats.totalWishes}</h3>
             <p className="text-[10px] text-neutral-400 font-medium">Logged wishes</p>
           </div>
         </div>
         <div className="bg-white border border-[#e6e6e6] p-6 rounded-md hover:shadow-sm transition-all duration-200 relative group">
           <div className="flex justify-between items-start mb-4">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Subscribers</span>
+            <span className="admin-kpi-label text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Subscribers</span>
             <div className="p-2 bg-[#f6f5f4] border border-[#e6e6e6] rounded-md text-neutral-500">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <h3 className="text-3xl font-bold text-neutral-900 tracking-tight leading-none font-mono">{currentStats.totalSubscribers}</h3>
+            <h3 className="admin-kpi-value text-neutral-900 leading-none">{currentStats.totalSubscribers}</h3>
             <p className="text-[10px] text-neutral-400 font-medium">Emails pool</p>
           </div>
         </div>
         <div className="bg-white border border-[#e6e6e6] p-6 rounded-md hover:shadow-sm transition-all duration-200 relative group">
           <div className="flex justify-between items-start mb-4">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total Emails Sent</span>
+            <span className="admin-kpi-label text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total Emails Sent</span>
             <div className="p-2 bg-[#f6f5f4] border border-[#e6e6e6] rounded-md text-neutral-500">
               <Mail className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <h3 className="text-3xl font-bold text-neutral-900 tracking-tight leading-none font-mono">{currentStats.emailsSent}</h3>
+            <h3 className="admin-kpi-value text-neutral-900 leading-none">{currentStats.emailsSent}</h3>
             <p className="text-[10px] text-neutral-400 font-medium">Resend dispatches</p>
           </div>
         </div>
         <div className="bg-white border border-[#e6e6e6] p-6 rounded-md hover:shadow-sm transition-all duration-200 relative group">
           <div className="flex justify-between items-start mb-4">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Blog Posts Sent</span>
+            <span className="admin-kpi-label text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Blog Posts Sent</span>
             <div className="p-2 bg-[#f6f5f4] border border-[#e6e6e6] rounded-md text-neutral-500">
               <FileText className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <h3 className="text-3xl font-bold text-neutral-900 tracking-tight leading-none font-mono">{currentStats.blogPostsSent}</h3>
+            <h3 className="admin-kpi-value text-neutral-900 leading-none">{currentStats.blogPostsSent}</h3>
             <p className="text-[10px] text-neutral-400 font-medium">Newsletter topics</p>
           </div>
         </div>

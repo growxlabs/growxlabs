@@ -57,7 +57,7 @@ function LeadScoreBar({ score }: { score: number }) {
   
   return (
     <div className="flex items-center gap-1.5" title={`Opportunity Score: ${scoreOutOfTen.toFixed(1)}/10.0`}>
-      <span className="text-[11px] font-bold text-slate-800 w-5">{scoreOutOfTen.toFixed(1)}</span>
+      <span className="text-[13px] font-medium text-[var(--text-primary)] w-6 text-right">{scoreOutOfTen.toFixed(1)}</span>
       <div className="flex gap-0.5">
         {Array.from({ length: barsCount }).map((_, i) => (
           <div 
@@ -490,7 +490,7 @@ export default function AdminCRMPage() {
     const completeness = [lead.email, lead.phone, lead.website_url, lead.city].filter(Boolean).length;
     
     let quality = "Low Profile Quality";
-    let scoreColor = "text-[#615d59] bg-[#f6f5f4]";
+    let scoreColor = "text-[var(--text-secondary)] bg-[#f6f5f4]";
     if (score >= 7 || completeness >= 3) {
       quality = "High Quality Account";
       scoreColor = "text-[#1aae39] bg-[#1aae39]/10 border-[#1aae39]/20";
@@ -531,27 +531,27 @@ export default function AdminCRMPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-3 border-b border-[var(--border-subtle)] bg-transparent">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Customer Management</h1>
+              <h1 className="text-[22px] font-semibold tracking-normal text-[var(--text-primary)]">Customer Management</h1>
               <span className="flex h-2.5 w-2.5 relative" title="Live Database Stream Connected">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
             </div>
-            <p className="text-[var(--text-muted)] text-xs">Manage customer accounts, monitor sales value, and review account activity.</p>
+            <p className="admin-description text-[var(--text-muted)] text-xs">Manage customer accounts, monitor sales value, and review account activity.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end shrink-0">
-            <Button onClick={() => setShowAddLead(true)} className="h-8 px-3 bg-[#0075de] hover:bg-[#005bab] text-white text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
+            <Button onClick={() => setShowAddLead(true)} className="h-8 px-3 bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
               <Plus size={12} className="shrink-0" /> Add Lead
             </Button>
-              <Button onClick={() => setShowImport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
+              <Button onClick={() => setShowImport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
               <Upload size={12} className="shrink-0" /> Import spreadsheet
             </Button>
             {isAdminOrCoAdmin ? (
-              <Button onClick={() => setShowExport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-[11px] font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
+              <Button onClick={() => setShowExport(true)} variant="outline" className="h-8 px-3 bg-[var(--card)] border border-[var(--border-subtle)] hover:bg-[var(--surface-2)] text-[var(--text-secondary)] text-xs font-semibold rounded-md shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0">
                 <Download size={12} className="shrink-0" /> Export Data
               </Button>
             ) : (
-              <div className="h-8 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-[10px] font-semibold rounded-md flex items-center justify-center whitespace-nowrap shrink-0 cursor-not-allowed select-none" title="Admin permissions required to export database data">
+              <div className="h-8 px-3 bg-[var(--surface-1)] border border-[var(--border-subtle)] text-[var(--text-muted)] text-xs font-semibold rounded-md flex items-center justify-center whitespace-nowrap shrink-0 cursor-not-allowed select-none" title="Admin permissions required to export database data">
                 🔒 Export
               </div>
             )}
@@ -569,8 +569,8 @@ export default function AdminCRMPage() {
           { label: "Follow-ups Due", value: followupsDue },
         ].map((widget, i) => (
           <div key={i} className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-lg shadow-sm flex flex-col justify-between h-20 hover:border-[var(--border-hover)] transition-colors">
-            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider leading-none">{widget.label}</p>
-            <p className="text-xl font-bold text-[var(--text-primary)] leading-none">{widget.value}</p>
+            <p className="admin-kpi-label text-xs font-semibold text-[var(--text-muted)] tracking-normal leading-none">{widget.label}</p>
+            <p className="admin-kpi-value text-[var(--text-primary)] leading-none">{widget.value}</p>
           </div>
         ))}
       </div>
@@ -612,7 +612,7 @@ export default function AdminCRMPage() {
                       {!statusFilter && <Check size={11} className="text-[var(--primary)]" />}
                     </button>
                     {['new', 'contacted', 'engaged', 'qualified', 'disqualified'].map((st) => (
-                      <button key={st} onClick={() => { setStatusFilter(st); setShowStatusDropdown(false); setCurrentPage(1); }} className="w-full px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-2)] font-medium flex items-center justify-between uppercase text-[10px] tracking-wider cursor-pointer">
+                      <button key={st} onClick={() => { setStatusFilter(st); setShowStatusDropdown(false); setCurrentPage(1); }} className="w-full px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-2)] font-medium flex items-center justify-between text-xs tracking-normal cursor-pointer">
                         <span>{st.replace("_", " ")}</span>
                         {statusFilter === st && <Check size={11} className="text-[var(--primary)]" />}
                       </button>
@@ -688,18 +688,18 @@ export default function AdminCRMPage() {
             {/* Selected items count & Bulk operations */}
             {selectedIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-semibold text-[#615d59]">{selectedIds.length} selected</span>
+                <span className="text-xs font-semibold text-[var(--text-secondary)]">{selectedIds.length} selected</span>
                 
                 {isAdminOrCoAdmin && (
                   <>
                     {/* Bulk Re-assign Agent */}
                     <div className="relative group">
-                      <Button variant="outline" className="h-7 px-2 border border-[#e6e6e6] text-[#31302e] bg-white text-[10px] font-bold rounded-lg flex items-center gap-1">
+                      <Button variant="outline" className="h-7 px-2 border border-[#e6e6e6] text-[var(--text-primary)] bg-white text-xs font-semibold rounded-lg flex items-center gap-1">
                         Assign Agent
                       </Button>
                       <div className="absolute right-0 mt-1 hidden group-hover:block hover:block w-44 bg-white border border-[#e6e6e6] rounded-lg shadow-lg py-1 z-50 text-left">
                         {teamMembers.map((member) => (
-                          <button key={member.id} onClick={() => handleBulkAssign(member.id)} className="w-full px-3 py-1.5 text-xs text-[#31302e] hover:bg-[#f6f5f4] text-left">
+                          <button key={member.id} onClick={() => handleBulkAssign(member.id)} className="w-full px-3 py-1.5 text-xs text-[var(--text-primary)] hover:bg-[#f6f5f4] text-left">
                             {member.name}
                           </button>
                         ))}
@@ -709,7 +709,7 @@ export default function AdminCRMPage() {
                     <Button
                       onClick={handleBulkDelete}
                       variant="outline"
-                      className="h-7 px-2.5 bg-red-50 border border-red-200 text-[#dd5b00] hover:bg-red-100/50 text-[10px] font-bold rounded-lg"
+                      className="h-7 px-2.5 bg-red-50 border border-red-200 text-[#dd5b00] hover:bg-red-100/50 text-xs font-semibold rounded-lg"
                     >
                       Delete Selected
                     </Button>
@@ -723,10 +723,10 @@ export default function AdminCRMPage() {
 
         {/* --- CRM LEADS DATA TABLE --- */}
         <div className="overflow-x-auto relative">
-          <table className="w-full text-left text-xs whitespace-nowrap table-fixed">
+          <table className="w-full min-w-[1328px] text-left text-[13px] leading-4 whitespace-nowrap table-fixed">
             <thead className="bg-[#f6f5f4]/45 border-b border-[#e6e6e6] sticky top-0 z-10">
               <tr className="divide-x divide-[#e6e6e6]/60">
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-12 text-center">
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-12 text-center">
                   <input 
                     type="checkbox" 
                     onChange={handleSelectAll}
@@ -734,15 +734,15 @@ export default function AdminCRMPage() {
                     className="rounded border-neutral-300 bg-white text-[#0075de] focus:ring-[#0075de]" 
                   />
                 </th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-48">Company</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-44">Contact</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-24">Lead Score</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-28">Status</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-32">Owner</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-32">Last Activity</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-32">Next Follow-up</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-28">Source</th>
-                <th className="px-4 py-3 font-bold text-[10px] uppercase tracking-wider text-[#615d59] w-16 text-center">Actions</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-64">Company</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-52">Contact</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-24">Lead Score</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Status</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-40">Owner</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Last Activity</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Next Follow-up</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-28">Source</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-16 text-center">Actions</th>
               </tr>
             </thead>
             
@@ -776,10 +776,10 @@ export default function AdminCRMPage() {
                         <Users size={18} />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-[var(--text-primary)] tracking-tight">No CRM Leads Found</h4>
-                        <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed">No lead profiles match your search criteria or filters. Reset your filters or add a new manual lead record.</p>
+                        <h4 className="text-sm font-semibold text-[var(--text-primary)] tracking-normal">No CRM Leads Found</h4>
+                        <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">No lead profiles match your search criteria or filters. Reset your filters or add a new manual lead record.</p>
                       </div>
-                      <Button onClick={() => setShowAddLead(true)} className="h-8 px-3.5 bg-[#0075de] text-white text-[10px] font-bold rounded-lg shadow-sm cursor-pointer">
+                      <Button onClick={() => setShowAddLead(true)} className="h-8 px-3.5 bg-[#0075de] text-white text-xs font-semibold rounded-lg shadow-sm cursor-pointer">
                         + Add Lead Record
                       </Button>
                     </div>
@@ -805,27 +805,27 @@ export default function AdminCRMPage() {
                         className="rounded border-neutral-300 bg-white text-[#0075de] focus:ring-[#0075de]" 
                       />
                     </td>
-                    <td className="px-4 py-3 font-semibold text-[#111827] truncate">
+                    <td className="px-4 py-3 font-semibold text-[var(--text-primary)] truncate">
                       <div className="flex items-center gap-1">
-                        <span className="truncate">{lead.business_name}</span>
+                        <span className="truncate" title={lead.business_name}>{lead.business_name}</span>
                         {lead.website_url && (
-                          <a href={lead.website_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-slate-400 hover:text-slate-700">
+                          <a href={lead.website_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-slate-400 hover:text-[var(--text-primary)]">
                             <ExternalLink size={10} />
                           </a>
                         )}
                       </div>
-                      <div className="text-[10px] font-normal text-[#615d59] truncate mt-0.5">{lead.city || "No location"}</div>
+                      <div className="text-xs font-normal text-[var(--text-secondary)] truncate mt-0.5" title={lead.city}>{lead.city || "No location"}</div>
                     </td>
-                    <td className="px-4 py-3 font-medium text-[#31302e] truncate">
-                      <div className="truncate">{lead.contact_name || lead.name || "—"}</div>
-                      <div className="text-[10px] font-normal text-[#615d59] truncate mt-0.5">{lead.email || lead.phone || "—"}</div>
+                    <td className="px-4 py-3 text-xs font-normal text-[var(--text-secondary)] truncate">
+                      <div className="truncate" title={lead.contact_name || lead.name}>{lead.contact_name || lead.name || "—"}</div>
+                      <div className="text-xs font-normal text-[var(--text-secondary)] truncate mt-0.5" title={lead.email || lead.phone}>{lead.email || lead.phone || "—"}</div>
                     </td>
                     <td className="px-4 py-3">
                       <LeadScoreBar score={lead.score || 0} />
                     </td>
                     <td className="px-4 py-3">
                       <span className={cn(
-                        "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border",
+                        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize border",
                         {
                           new: "text-blue-700 bg-blue-50 border-blue-100",
                           contacted: "text-emerald-700 bg-emerald-50 border-emerald-100",
@@ -837,23 +837,23 @@ export default function AdminCRMPage() {
                         {lead.status.replace("_", " ")}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[#615d59] font-semibold uppercase tracking-wider text-[9px] truncate">
+                    <td className="px-4 py-3 text-[var(--text-secondary)] font-normal tracking-normal text-[13px] truncate" title={lead.assigned_to_member?.name || "Unassigned"}>
                       {lead.assigned_to_member?.name || "Unassigned"}
                     </td>
-                    <td className="px-4 py-3 text-[#615d59]">
+                    <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">
                       {lead.last_contacted_at ? new Date(lead.last_contacted_at).toLocaleDateString() : "—"}
                     </td>
-                    <td className="px-4 py-3 text-[#615d59]">
+                    <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">
                       {lead.next_followup_at ? new Date(lead.next_followup_at).toLocaleDateString() : "—"}
                     </td>
-                    <td className="px-4 py-3 text-[#615d59] capitalize truncate">
+                    <td className="px-4 py-3 text-xs text-[var(--text-secondary)] capitalize truncate" title={lead.source || "Organic"}>
                       {lead.source || "Organic"}
                     </td>
                     <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <div className="relative inline-block text-left">
                         <button
                           onClick={() => setActiveActionMenuId(activeActionMenuId === lead.id ? null : (lead.id || null))}
-                          className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+                          className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-[var(--text-primary)] transition-colors"
                         >
                           <MoreHorizontal size={14} />
                         </button>
@@ -865,7 +865,7 @@ export default function AdminCRMPage() {
                           >
                             <button 
                               onClick={() => { setActiveLeadId(lead.id || null); setActiveActionMenuId(null); }}
-                              className="w-full text-left px-3 py-1.5 text-xs text-[#111827] hover:bg-slate-50 font-medium"
+                              className="w-full text-left px-3 py-1.5 text-xs text-[var(--text-primary)] hover:bg-slate-50 font-medium"
                             >
                               View Details
                             </button>
@@ -883,7 +883,7 @@ export default function AdminCRMPage() {
                             </button>
                             <button 
                               onClick={() => { handleUpdateLead(lead.id!, { status: 'qualified' }); setActiveActionMenuId(null); }}
-                              className="w-full text-left px-3 py-1.5 text-xs text-[#111827] hover:bg-slate-50 font-medium"
+                              className="w-full text-left px-3 py-1.5 text-xs text-[var(--text-primary)] hover:bg-slate-50 font-medium"
                             >
                               Send Proposal
                             </button>
@@ -908,8 +908,8 @@ export default function AdminCRMPage() {
 
         {/* --- PAGINATION BAR --- */}
         <div className="px-4 py-3.5 border-t border-[#e6e6e6] flex items-center justify-between bg-[#f6f5f4]/15">
-          <span className="text-xs text-[#615d59]">
-            Showing <span className="font-semibold text-slate-800">{filteredLeads.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</span> to <span className="font-semibold text-slate-800">{Math.min(currentPage * itemsPerPage, filteredLeads.length)}</span> of <span className="font-semibold text-slate-800">{filteredLeads.length}</span> leads
+          <span className="text-xs text-[var(--text-secondary)]">
+            Showing <span className="font-semibold text-[var(--text-primary)]">{filteredLeads.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</span> to <span className="font-semibold text-[var(--text-primary)]">{Math.min(currentPage * itemsPerPage, filteredLeads.length)}</span> of <span className="font-semibold text-[var(--text-primary)]">{filteredLeads.length}</span> leads
           </span>
           <div className="flex items-center gap-1">
             <button
@@ -919,7 +919,7 @@ export default function AdminCRMPage() {
             >
               <ChevronLeft size={14} />
             </button>
-            <span className="text-xs font-semibold px-3 text-slate-700">Page {currentPage} of {totalPages}</span>
+            <span className="text-xs font-semibold px-3 text-[var(--text-primary)]">Page {currentPage} of {totalPages}</span>
             <button
               onClick={() => setCurrentPage(curr => Math.min(curr + 1, totalPages))}
               disabled={currentPage === totalPages || loading}
@@ -958,17 +958,17 @@ export default function AdminCRMPage() {
               {/* Header */}
               <div className="p-4 border-b border-[#e6e6e6] flex items-center justify-between bg-[#f6f5f4]/60">
                 <div className="flex items-center gap-2 truncate">
-                  <Building2 size={16} className="text-[#615d59]" />
+                  <Building2 size={16} className="text-[var(--text-secondary)]" />
                   <div className="truncate">
-                    <h2 className="text-sm font-bold text-[#111827] leading-none truncate max-w-[280px]" title={selectedLead.business_name}>
+                    <h2 className="text-sm font-semibold text-[var(--text-primary)] leading-none truncate max-w-[280px]" title={selectedLead.business_name}>
                       {selectedLead.business_name}
                     </h2>
-                    <p className="text-[10px] font-bold text-[#615d59] uppercase tracking-wider mt-1.5">Lead Intelligence Profile</p>
+                    <p className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal mt-1.5">Lead Intelligence Profile</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setActiveLeadId(null)}
-                  className="p-1.5 hover:bg-[#f6f5f4] rounded-lg text-[#615d59] hover:text-[#111827] transition-colors"
+                  className="p-1.5 hover:bg-[#f6f5f4] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <X size={15} />
                 </button>
@@ -979,9 +979,9 @@ export default function AdminCRMPage() {
                 
                 {/* Section 1: Lead score overview */}
                 <div className="bg-white border border-[#e6e6e6] p-4 rounded-xl shadow-sm">
-                  <p className="text-[10px] font-bold text-[#615d59] uppercase tracking-wider mb-2">Calculated Quality</p>
+                  <p className="admin-kpi-label text-xs font-semibold text-[var(--text-secondary)] tracking-normal mb-2">Calculated Quality</p>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-extrabold text-[#111827] leading-none">{(selectedLead.score || 0).toFixed(1)}</span>
+                    <span className="admin-kpi-value text-[var(--text-primary)] leading-none">{(selectedLead.score || 0).toFixed(1)}</span>
                     <span className="text-slate-400 font-semibold">/ 10.0 Opportunity Score</span>
                   </div>
                   <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
@@ -999,11 +999,11 @@ export default function AdminCRMPage() {
                 <div className="bg-white border border-[#e6e6e6] p-4 rounded-xl shadow-sm space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#615d59] uppercase tracking-wider">Status</label>
+                      <label className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal">Status</label>
                       <select 
                         value={selectedLead.status}
                         onChange={(e) => handleUpdateLead(selectedLead.id!, { status: e.target.value as any })}
-                        className="w-full h-8 px-2 border border-[#e6e6e6] rounded-md bg-white text-slate-800 text-xs focus:outline-none focus:border-[#0075de]"
+                        className="w-full h-8 px-2 border border-[#e6e6e6] rounded-md bg-white text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#0075de]"
                       >
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>
@@ -1014,7 +1014,7 @@ export default function AdminCRMPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-[#615d59] uppercase tracking-wider">Assigned Owner</label>
+                      <label className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal">Assigned Owner</label>
                       <select 
                         value={selectedLead.assigned_employee_id || selectedLead.assigned_to || ""}
                         onChange={(e) => {
@@ -1025,7 +1025,7 @@ export default function AdminCRMPage() {
                           } as any);
                         }}
                         disabled={!isAdminOrCoAdmin && Boolean(role)}
-                        className="w-full h-8 px-2 border border-[#e6e6e6] rounded-md bg-white text-slate-800 text-xs focus:outline-none focus:border-[#0075de] disabled:bg-slate-50 disabled:text-slate-400"
+                        className="w-full h-8 px-2 border border-[#e6e6e6] rounded-md bg-white text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#0075de] disabled:bg-slate-50 disabled:text-slate-400"
                       >
                         <option value="">Unassigned</option>
                         {teamMembers.map(m => (
@@ -1039,15 +1039,15 @@ export default function AdminCRMPage() {
                 {/* Section 3: Contact Details */}
                 <div className="bg-white border border-[#e6e6e6] rounded-xl shadow-sm overflow-hidden">
                   <div className="px-4 py-2 bg-[#f6f5f4] border-b border-[#e6e6e6]">
-                    <p className="text-[10px] font-bold text-[#615d59] uppercase tracking-wider">Contact Cards</p>
+                    <p className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal">Contact Cards</p>
                   </div>
-                  <div className="p-4 space-y-3 font-medium text-slate-800">
+                  <div className="p-4 space-y-3 font-medium text-[var(--text-primary)]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[#615d59] font-normal">Contact Person</span>
+                      <span className="text-[var(--text-secondary)] font-normal">Contact Person</span>
                       <span>{selectedLead.contact_name || selectedLead.name || "—"}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#615d59] font-normal">Phone</span>
+                      <span className="text-[var(--text-secondary)] font-normal">Phone</span>
                       {selectedLead.phone ? (
                         <a href={`tel:${selectedLead.phone}`} className="text-[#0075de] hover:underline flex items-center gap-1 font-semibold">
                           <Phone size={10} /> {selectedLead.phone}
@@ -1055,7 +1055,7 @@ export default function AdminCRMPage() {
                       ) : "—"}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#615d59] font-normal">Email</span>
+                      <span className="text-[var(--text-secondary)] font-normal">Email</span>
                       {selectedLead.email ? (
                         <a href={`mailto:${selectedLead.email}`} className="text-[#0075de] hover:underline flex items-center gap-1 font-semibold">
                           <Mail size={10} /> {selectedLead.email}
@@ -1063,11 +1063,11 @@ export default function AdminCRMPage() {
                       ) : "—"}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#615d59] font-normal">Location</span>
+                      <span className="text-[var(--text-secondary)] font-normal">Location</span>
                       <span>{selectedLead.city || "—"}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[#615d59] font-normal">Source</span>
+                      <span className="text-[var(--text-secondary)] font-normal">Source</span>
                       <span className="capitalize">{selectedLead.source || "Organic"}</span>
                     </div>
                   </div>
@@ -1079,23 +1079,23 @@ export default function AdminCRMPage() {
                   return (
                     <div className="bg-white border border-[#e6e6e6] rounded-xl shadow-sm overflow-hidden">
                       <div className="px-4 py-2 bg-[#f6f5f4] border-b border-[#e6e6e6] flex items-center justify-between">
-                        <p className="text-[10px] font-bold text-[#615d59] uppercase tracking-wider">AI Account Insights</p>
+                        <p className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal">AI Account Insights</p>
                         <Sparkles size={11} className="text-[#0075de]" />
                       </div>
                       
                       <div className="p-4 space-y-4">
                         
                         <div className="flex items-center justify-between">
-                          <span className="text-[#615d59] font-medium">Quality Rating:</span>
-                          <span className={cn("px-2 py-0.5 rounded text-[9px] font-bold uppercase border", ai.scoreColor)}>
+                          <span className="text-[var(--text-secondary)] font-medium">Quality Rating:</span>
+                          <span className={cn("px-2 py-0.5 rounded text-xs font-semibold border", ai.scoreColor)}>
                             {ai.quality}
                           </span>
                         </div>
 
                         {/* Opportunity Bullet Points */}
                         <div className="space-y-1">
-                          <span className="text-[#615d59] font-medium block">Opportunity Analysis:</span>
-                          <ul className="list-disc pl-4 space-y-1 text-slate-700 text-[11px] font-medium leading-relaxed">
+                          <span className="text-[var(--text-secondary)] font-medium block">Opportunity Analysis:</span>
+                          <ul className="list-disc pl-4 space-y-1 text-[var(--text-primary)] text-xs font-medium leading-relaxed">
                             <li>Business profile calculated at {ai.confidence}% matching score index.</li>
                             {selectedLead.has_website && <li>Valid website domain detected with organic leads presence.</li>}
                             {selectedLead.deal_value && <li>Pipeline value is estimated at ₹{Number(selectedLead.deal_value).toLocaleString()}.</li>}
@@ -1106,12 +1106,12 @@ export default function AdminCRMPage() {
                         {/* Warnings / Missing Info */}
                         {ai.missingFields.length > 0 && (
                           <div className="space-y-1">
-                            <span className="text-[#dd5b00] font-semibold block flex items-center gap-1 text-[10px]">
+                            <span className="text-[#dd5b00] font-semibold block flex items-center gap-1 text-xs">
                               <AlertCircle size={10} /> Missing Information Profile:
                             </span>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {ai.missingFields.map((f, idx) => (
-                                <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[9px] font-semibold">
+                                <span key={idx} className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-xs font-semibold">
                                   {f}
                                 </span>
                               ))}
@@ -1122,10 +1122,10 @@ export default function AdminCRMPage() {
                         {/* Risks */}
                         {ai.risks.length > 0 && (
                           <div className="space-y-1">
-                            <span className="text-[#dd5b00] font-semibold block text-[10px]">Risk Indicators:</span>
+                            <span className="text-[#dd5b00] font-semibold block text-xs">Risk Indicators:</span>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {ai.risks.map((r, idx) => (
-                                <span key={idx} className="bg-red-50 border border-red-100 text-[#dd5b00] px-1.5 py-0.5 rounded text-[9px] font-semibold">
+                                <span key={idx} className="bg-red-50 border border-red-100 text-[#dd5b00] px-1.5 py-0.5 rounded text-xs font-semibold">
                                   {r}
                                 </span>
                               ))}
@@ -1140,16 +1140,16 @@ export default function AdminCRMPage() {
 
                 {/* Section 5: Notes & Timeline */}
                 <div className="bg-white border border-[#e6e6e6] p-4 rounded-xl shadow-sm space-y-3">
-                  <p className="text-[10px] font-bold text-[#615d59] uppercase tracking-wider">Account Notes</p>
+                  <p className="text-xs font-semibold text-[var(--text-secondary)] tracking-normal">Account Notes</p>
                   
                   <div className="space-y-2">
                     <textarea
                       placeholder="Add a new timeline note..."
                       value={noteInput}
                       onChange={(e) => setNoteInput(e.target.value)}
-                      className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md p-2 text-xs text-slate-800 placeholder-[#615d59] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all h-16 resize-none"
+                      className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md p-2 text-xs text-[var(--text-primary)] placeholder-[#615d59] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all h-16 resize-none"
                     />
-                    <Button onClick={handleAddNote} className="h-7 px-3 bg-[#0075de] text-white text-[10px] font-bold rounded-lg shadow-sm w-full">
+                    <Button onClick={handleAddNote} className="h-7 px-3 bg-[#0075de] text-white text-xs font-semibold rounded-lg shadow-sm w-full">
                       Save Note Entry
                     </Button>
                   </div>
@@ -1157,7 +1157,7 @@ export default function AdminCRMPage() {
                   {selectedLead.notes && (
                     <div className="border-t border-[#e6e6e6]/60 pt-3 space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
                       {selectedLead.notes.split("\n").filter(Boolean).reverse().map((note, idx) => (
-                        <div key={idx} className="bg-slate-50 border border-[#e6e6e6]/60 p-2 rounded-lg text-[10px] font-medium leading-relaxed text-slate-700">
+                        <div key={idx} className="bg-slate-50 border border-[#e6e6e6]/60 p-2 rounded-lg text-xs font-medium leading-relaxed text-[var(--text-primary)]">
                           {note}
                         </div>
                       ))}
@@ -1172,13 +1172,13 @@ export default function AdminCRMPage() {
               <div className="p-4 border-t border-[#e6e6e6] bg-[#f6f5f4]/60 flex gap-2">
                 <Button 
                   onClick={() => handleUpdateLead(selectedLead.id!, { status: 'qualified' })}
-                  className="flex-1 h-9 bg-[#1aae39] hover:bg-[#1aae39]/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
+                  className="flex-1 h-9 bg-[#1aae39] hover:bg-[#1aae39]/90 text-white text-xs font-semibold tracking-normal rounded-lg shadow-sm"
                 >
                   Mark Won
                 </Button>
                 <Button 
                   onClick={() => handleUpdateLead(selectedLead.id!, { status: 'disqualified' })}
-                  className="flex-1 h-9 bg-white border border-[#e6e6e6] hover:bg-slate-50 text-slate-700 text-[10px] font-bold uppercase tracking-wider rounded-lg shadow-sm"
+                  className="flex-1 h-9 bg-white border border-[#e6e6e6] hover:bg-slate-50 text-[var(--text-primary)] text-xs font-semibold tracking-normal rounded-lg shadow-sm"
                 >
                   Mark Lost
                 </Button>
@@ -1193,19 +1193,19 @@ export default function AdminCRMPage() {
       {showExport && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000000]/40 backdrop-blur-sm">
           <div className="bg-white border border-[#e6e6e6] rounded-xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <h2 className="text-base font-bold text-slate-800 tracking-tight mb-1.5">Export Lead Profiles</h2>
-            <p className="text-[#615d59] text-xs mb-4">Export all active pipeline records to your desktop.</p>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] tracking-normal mb-1.5">Export Lead Profiles</h2>
+            <p className="text-[var(--text-secondary)] text-xs mb-4">Export all active pipeline records to your desktop.</p>
             <div className="grid grid-cols-1 gap-2">
               <Button onClick={() => handleExport('csv')} variant="outline" className="h-12 justify-start bg-white border border-[#e6e6e6] hover:border-[#0075de]/30 hover:bg-[#0075de]/5 rounded-lg px-3 transition-colors">
                 <FileText className="w-4 h-4 mr-2.5 text-[#0075de]" /> 
                 <div className="text-left">
-                  <div className="text-xs font-bold text-slate-800 leading-none mb-0.5">Export as CSV</div>
-                  <div className="text-[9px] text-[#615d59]">Open in Microsoft Excel or Google Sheets</div>
+                  <div className="text-xs font-semibold text-[var(--text-primary)] leading-none mb-0.5">Export as CSV</div>
+                  <div className="text-xs text-[var(--text-secondary)]">Open in Microsoft Excel or Google Sheets</div>
                 </div>
               </Button>
             </div>
             <div className="mt-6 flex justify-end">
-              <Button onClick={() => setShowExport(false)} variant="ghost" className="text-[10px] font-bold uppercase tracking-widest text-[#a39e98] hover:text-slate-700">Cancel</Button>
+              <Button onClick={() => setShowExport(false)} variant="ghost" className="text-xs font-semibold tracking-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Cancel</Button>
             </div>
           </div>
         </div>
@@ -1215,8 +1215,8 @@ export default function AdminCRMPage() {
       {showImport && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000000]/40 backdrop-blur-sm">
           <div className="bg-white border border-[#e6e6e6] rounded-xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <h2 className="text-base font-bold text-slate-800 tracking-tight mb-1.5">Import Lead Records</h2>
-            <p className="text-[#615d59] text-xs mb-4">Select a CSV spreadsheet matching column headers.</p>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] tracking-normal mb-1.5">Import Lead Records</h2>
+            <p className="text-[var(--text-secondary)] text-xs mb-4">Select a CSV spreadsheet matching column headers.</p>
             
             <div className={cn(
               "relative border border-dashed rounded-xl p-6 text-center bg-[#f6f5f4]/40 mb-4 hover:border-[#0075de]/30 hover:bg-[#0075de]/5 transition-colors cursor-pointer",
@@ -1229,19 +1229,19 @@ export default function AdminCRMPage() {
                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                />
                <Upload className={cn("w-6 h-6 mx-auto mb-2.5", selectedFile ? "text-[#0075de]" : "text-slate-400")} />
-               <div className="text-xs font-bold text-slate-700">
+               <div className="text-xs font-semibold text-[var(--text-primary)]">
                  {selectedFile ? selectedFile.name : "Click to select CSV file"}
                </div>
-               <div className="text-[9px] font-bold uppercase tracking-widest text-[#a39e98] mt-1.5">
+               <div className="text-xs font-semibold tracking-normal text-[var(--text-secondary)] mt-1.5">
                  {selectedFile ? `${(selectedFile.size / 1024).toFixed(2)} KB` : "Maximum file size 5MB"}
                </div>
             </div>
             <div className="mt-6 flex justify-end gap-2">
-              <Button onClick={() => { setShowImport(false); setSelectedFile(null); }} variant="ghost" className="text-[10px] font-bold uppercase tracking-widest text-[#a39e98] hover:text-slate-700">Cancel</Button>
+              <Button onClick={() => { setShowImport(false); setSelectedFile(null); }} variant="ghost" className="text-xs font-semibold tracking-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Cancel</Button>
               <Button 
                 onClick={handleImportCSV}
                 disabled={!selectedFile || isSubmitting}
-                className="bg-[#0075de] hover:bg-[#005bab] text-white text-[10px] font-bold uppercase tracking-widest h-9 px-5 rounded-md shadow-sm"
+                className="bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold tracking-normal h-9 px-5 rounded-md shadow-sm"
               >
                 {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Import Spreadsheet"}
               </Button>
@@ -1254,47 +1254,47 @@ export default function AdminCRMPage() {
       {showAddLead && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-[#000000]/40 backdrop-blur-sm">
           <div className="bg-white border border-[#e6e6e6] rounded-xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <h2 className="text-base font-bold text-slate-800 tracking-tight mb-1.5">Add Manual Lead</h2>
-            <p className="text-[#615d59] text-xs mb-4">Enter profile fields to create a new pipeline account.</p>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] tracking-normal mb-1.5">Add Manual Lead</h2>
+            <p className="text-[var(--text-secondary)] text-xs mb-4">Enter profile fields to create a new pipeline account.</p>
             
             <form onSubmit={handleAddLead} className="space-y-3 text-xs">
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">Business Name</label>
+                <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">Business Name</label>
                 <input 
                   required
                   value={newLead.business_name}
                   onChange={(e) => setNewLead({...newLead, business_name: e.target.value})}
-                  className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-slate-800 focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
+                  className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-[var(--text-primary)] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
                   placeholder="Company name..."
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">Contact Person</label>
+                <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">Contact Person</label>
                 <input 
                   required
                   value={newLead.contact_name}
                   onChange={(e) => setNewLead({...newLead, contact_name: e.target.value})}
-                  className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-slate-800 focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
+                  className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-[var(--text-primary)] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
                   placeholder="Contact name..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">Email</label>
+                  <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">Email</label>
                   <input 
                     type="email"
                     value={newLead.email}
                     onChange={(e) => setNewLead({...newLead, email: e.target.value})}
-                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-slate-800 focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
+                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-[var(--text-primary)] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
                     placeholder="email@example.com"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">Phone</label>
+                  <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">Phone</label>
                   <input 
                     value={newLead.phone}
                     onChange={(e) => setNewLead({...newLead, phone: e.target.value})}
-                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-slate-800 focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
+                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-[var(--text-primary)] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
                     placeholder="Contact number..."
                   />
                 </div>
@@ -1302,21 +1302,21 @@ export default function AdminCRMPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">City Location</label>
+                  <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">City Location</label>
                   <input 
                     value={newLead.city}
                     onChange={(e) => setNewLead({...newLead, city: e.target.value})}
-                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-slate-800 focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
+                    className="w-full bg-[#f6f5f4] border border-[#e6e6e6] rounded-md h-9 px-3 text-[var(--text-primary)] focus:outline-none focus:border-[#0075de] focus:bg-white transition-all text-xs"
                     placeholder="City..."
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold uppercase tracking-wider text-[#615d59]">Assigned Owner</label>
+                  <label className="text-xs font-semibold tracking-normal text-[var(--text-secondary)]">Assigned Owner</label>
                   <select 
                     value={newLead.assigned_to}
                     onChange={(e) => setNewLead({...newLead, assigned_to: e.target.value})}
-                    className="w-full h-9 px-2 border border-[#e6e6e6] rounded-md bg-[#f6f5f4] text-slate-800 text-xs focus:outline-none focus:border-[#0075de] focus:bg-white"
+                    className="w-full h-9 px-2 border border-[#e6e6e6] rounded-md bg-[#f6f5f4] text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#0075de] focus:bg-white"
                   >
                     <option value="">Unassigned</option>
                     {teamMembers.map(m => (
@@ -1327,11 +1327,11 @@ export default function AdminCRMPage() {
               </div>
 
               <div className="mt-6 flex justify-end gap-2 pt-3 border-t border-[#e6e6e6]">
-                <Button type="button" onClick={() => setShowAddLead(false)} variant="ghost" className="text-[10px] font-bold uppercase tracking-widest text-[#a39e98] hover:text-slate-700">Cancel</Button>
+                <Button type="button" onClick={() => setShowAddLead(false)} variant="ghost" className="text-xs font-semibold tracking-normal text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Cancel</Button>
                 <Button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-[#0075de] hover:bg-[#005bab] text-white text-[10px] font-bold uppercase tracking-widest h-9 px-5 rounded-md shadow-sm"
+                  className="bg-[#0075de] hover:bg-[#005bab] text-white text-xs font-semibold tracking-normal h-9 px-5 rounded-md shadow-sm"
                 >
                   {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Save Profile"}
                 </Button>

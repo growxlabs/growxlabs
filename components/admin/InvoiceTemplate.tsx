@@ -118,7 +118,7 @@ export default function InvoiceTemplate({ data = {} }: InvoiceProps) {
       </div>
 
       {/* DOCUMENT CONTAINER */}
-      <div className="max-w-[900px] mx-auto bg-white shadow-2xl print:shadow-none min-h-[1100px] flex flex-col border border-neutral-100 print:border-none p-10 md:p-16 rounded-3xl text-neutral-800 text-[13px] leading-[1.7]">
+      <div data-admin-typography="preserve" className="max-w-[900px] mx-auto bg-white shadow-2xl print:shadow-none min-h-[1100px] flex flex-col border border-neutral-100 print:border-none p-10 md:p-16 rounded-3xl text-neutral-800 text-[13px] leading-[1.7]">
         
         {/* HEADER */}
         <div className="flex justify-between items-start border-b border-neutral-100 pb-8 mb-12">

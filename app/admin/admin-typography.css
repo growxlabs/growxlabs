@@ -1,0 +1,156 @@
+/* Admin-only foundation. Public pages and document/canvas content are excluded. */
+.admin-typography {
+  --admin-font: var(--font-admin-geist), Arial, sans-serif;
+  --admin-text-primary: #18181b;
+  --admin-text-secondary: #71717a;
+  --admin-text-muted: #a1a1aa;
+  --admin-title-size: 22px;
+  --admin-section-size: 16px;
+  --admin-card-size: 14px;
+  --admin-body-size: 13px;
+  --admin-meta-size: 12px;
+  --admin-label-size: 11px;
+  --admin-kpi-size: 24px;
+  font-family: var(--admin-font);
+  font-size: var(--admin-body-size);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.dark .admin-typography,
+.admin-typography [data-admin-tone="dark"] {
+  --admin-text-primary: #f4f4f5;
+  --admin-text-secondary: #a1a1aa;
+  --admin-text-muted: #71717a;
+  --text-primary: var(--admin-text-primary);
+  --text-secondary: var(--admin-text-secondary);
+  --text-muted: var(--admin-text-secondary);
+  --text-tertiary: var(--admin-text-secondary);
+}
+
+/* Limit the migration to application chrome, never an exported document. */
+@scope (.admin-typography) to ([data-admin-typography="preserve"], .document-shell, .document-container, .assessment-document, .ai-solution-document, .solution-architecture-document, .print-container, article:has(h1.font-serif), .editor-canvas, [contenteditable="true"], pre, code, svg) {
+  :scope:scope,
+  :scope:scope .notion-theme {
+    --text-primary: var(--admin-text-primary);
+    --text-secondary: var(--admin-text-secondary);
+    /* Existing muted utilities contain essential labels, so retain readable contrast. */
+    --text-muted: var(--admin-text-secondary);
+    --text-tertiary: var(--admin-text-secondary);
+    font-family: var(--admin-font) !important;
+  }
+
+  :scope:scope :is(h1, h2, h3, h4, h5, h6, button, input, select, textarea, .font-sans, .font-serif, .font-mono) {
+    font-family: var(--admin-font) !important;
+    letter-spacing: normal !important;
+  }
+
+  /* Compatibility for the audited legacy utilities; semantic roles below win. */
+  :scope:scope :is(.font-bold, .font-extrabold, .font-black, b, strong) { font-weight: 600 !important; }
+  :scope:scope :is(.font-light, .font-extralight, .font-thin) { font-weight: 400 !important; }
+  :scope:scope [class*="tracking-"] { letter-spacing: normal !important; }
+  :scope:scope .uppercase { text-transform: none !important; }
+  :scope:scope :is(.text-xs, .text-\[8px\], .text-\[9px\], .text-\[10px\], .text-\[11px\], .text-\[11\.5px\]) {
+    font-size: var(--admin-meta-size) !important;
+    line-height: 1.4;
+  }
+  :scope:scope .text-sm { font-size: var(--admin-body-size) !important; }
+
+  :scope:scope:scope :is(.text-neutral-950, .text-neutral-900, .text-neutral-800, .text-slate-950, .text-slate-900, .text-slate-800, .text-zinc-950, .text-zinc-900, .text-\[\#111827\], .text-\[\#31302e\]) {
+    color: var(--admin-text-primary) !important;
+  }
+  :scope:scope:scope :is(.text-neutral-700, .text-neutral-600, .text-neutral-500, .text-neutral-400, .text-slate-600, .text-slate-500, .text-slate-400, .text-zinc-500, .text-zinc-400, .text-\[\#615d59\], .text-\[\#a39e98\]) {
+    color: var(--admin-text-secondary) !important;
+  }
+
+  :scope:scope :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    overflow-wrap: break-word;
+  }
+  :scope:scope h1 { font-size: var(--admin-title-size) !important; }
+  :scope:scope h2 { font-size: var(--admin-section-size) !important; }
+  :scope:scope :is(h3, h4, h5, h6) { font-size: var(--admin-card-size) !important; }
+  :scope:scope :is(h1 + p, .admin-description) {
+    font-size: var(--admin-body-size) !important;
+    font-weight: 400 !important;
+    color: var(--admin-text-secondary) !important;
+    line-height: 1.5;
+  }
+  :scope:scope :is(label, .admin-form-label) {
+    font-size: var(--admin-meta-size) !important;
+    font-weight: 500 !important;
+    line-height: 1.4;
+  }
+  :scope:scope :is(input, select, textarea) {
+    font-size: var(--admin-body-size) !important;
+    font-weight: 400 !important;
+    line-height: 1.5;
+  }
+  :scope:scope :is(button, [role="button"], .admin-button) {
+    font-size: var(--admin-body-size) !important;
+    font-weight: 500 !important;
+    letter-spacing: normal !important;
+  }
+  :scope:scope :is(nav, aside) :is(a, button),
+  :scope:scope .admin-nav-label {
+    font-size: var(--admin-body-size) !important;
+    font-weight: 500 !important;
+  }
+  :scope:scope :is([aria-current="page"], .admin-nav-active) { font-weight: 600 !important; }
+
+  :scope:scope table { font-size: var(--admin-body-size); font-variant-numeric: tabular-nums; }
+  :scope:scope th {
+    font-size: var(--admin-label-size) !important;
+    font-weight: 500 !important;
+    color: var(--admin-text-secondary) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1.4;
+    vertical-align: middle;
+  }
+  :scope:scope td {
+    font-size: var(--admin-body-size);
+    line-height: 1.4;
+    vertical-align: middle;
+  }
+  :scope:scope :is(.admin-record-name, td .font-medium, td .font-semibold, td .font-bold) {
+    font-size: var(--admin-body-size) !important;
+    font-weight: 500 !important;
+  }
+  :scope:scope .admin-record-name { color: var(--admin-text-primary) !important; font-weight: 600 !important; }
+  :scope:scope :is(.admin-metadata, td .font-normal) {
+    font-size: var(--admin-meta-size) !important;
+    font-weight: 400 !important;
+    color: var(--admin-text-secondary) !important;
+  }
+  :scope:scope td :is(.rounded-full, [role="status"]) {
+    font-size: var(--admin-meta-size) !important;
+    font-weight: 500 !important;
+  }
+  :scope:scope .admin-kpi-value {
+    font-family: var(--admin-font) !important;
+    font-size: var(--admin-kpi-size) !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+    line-height: 1.2 !important;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  :scope:scope .admin-kpi-label {
+    font-size: var(--admin-label-size) !important;
+    font-weight: 500 !important;
+    color: var(--admin-text-secondary) !important;
+    line-height: 1.4;
+  }
+  :scope:scope .admin-section-heading { font-size: var(--admin-section-size) !important; }
+  :scope:scope .admin-card-heading { font-size: var(--admin-card-size) !important; }
+}
+
+/* Preserve inherited document type as well as its explicit source styles. */
+.admin-typography :is([data-admin-typography="preserve"], .document-shell, .document-container, .assessment-document, .ai-solution-document, .solution-architecture-document, .print-container, article:has(h1.font-serif)) {
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-variant-numeric: normal;
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, type ReactNode, type ComponentType } from "react";
+import { adminGeist } from "./typography";
 import { createPortal } from "react-dom";
 import { IconClose, IconSearch, IconChevronRight } from "@/components/admin/GrowXIcons";
 import { cn } from "@/lib/utils";
@@ -100,7 +101,7 @@ export function NavigationFlyout({
       aria-modal="false"
       aria-label={`${title} navigation`}
       className={cn(
-        "fixed z-[999] flex flex-col overflow-hidden",
+        adminGeist.variable, "admin-typography fixed z-[999] flex flex-col overflow-hidden",
         "rounded-2xl border border-slate-200/80 dark:border-[#262626]",
         "bg-white/95 dark:bg-[#202020]/95 backdrop-blur-xl",
         "text-slate-900 dark:text-neutral-100",

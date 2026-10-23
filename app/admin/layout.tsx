@@ -1,5 +1,8 @@
 "use client";
 
+import { adminGeist } from "@/components/admin/typography";
+import "./admin-typography.css";
+
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -147,10 +150,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (authorized === null) {
     return (
-      <div className={cn(
+      <div data-admin-tone={isCommandCenter || isEditorialStudio ? "dark" : undefined} className={cn(
         !isCommandCenter && !isEditorialStudio && "notion-theme",
         isCommandCenter ? "bg-[#09090b] text-[#f4f4f5]" : "bg-[var(--background)]",
-        "min-h-screen flex items-center justify-center"
+        adminGeist.variable, "admin-typography min-h-screen flex items-center justify-center"
       )}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className={cn("h-8 w-8 animate-spin", isCommandCenter ? "text-blue-500" : "text-[#0075de]")} />
@@ -212,7 +215,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     return (
-      <div className="notion-theme min-h-screen bg-[var(--background)] text-[var(--text-primary)] flex flex-col justify-between p-6 sm:p-12 relative overflow-hidden transition-colors duration-300">
+      <div className={cn(adminGeist.variable, "admin-typography notion-theme min-h-screen bg-[var(--background)] text-[var(--text-primary)] flex flex-col justify-between p-6 sm:p-12 relative overflow-hidden transition-colors duration-300")}>
         {/* Decorative subtle background blur elements */}
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#0075de]/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
@@ -292,6 +295,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
+    <div className={cn(adminGeist.variable, "admin-typography contents")}>
     <SettingsModalProvider>
       <div className={cn(
         !isCommandCenter && !isEditorialStudio && "notion-theme",
@@ -336,5 +340,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {!isCommandCenter && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
       </div>
     </SettingsModalProvider>
+    </div>
   );
 }

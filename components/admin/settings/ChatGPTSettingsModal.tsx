@@ -91,7 +91,7 @@ export function ChatGPTSettingsModal({
   );
 
   return (
-    <div className="fixed inset-0 z-[300] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div data-admin-tone="dark" className="fixed inset-0 z-[300] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
       <div
         ref={modalRef}
         className="w-full max-w-3xl h-[580px] bg-[#171717] border border-[#2e2e33] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden text-zinc-100 relative"

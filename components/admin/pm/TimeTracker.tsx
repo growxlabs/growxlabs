@@ -128,8 +128,8 @@ export function TimeTracker({ tasks, onLogTime }: TimeTrackerProps) {
           </div>
 
           <div className="flex flex-col items-center justify-center py-6 bg-[#f6f5f4] rounded-md border border-[#e6e6e6]/60 font-mono">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Time Elapsed</span>
-            <span className="text-3xl font-black text-neutral-950 tracking-widest">{formatTime(seconds)}</span>
+            <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Time Elapsed</span>
+            <span className="admin-kpi-value text-neutral-950">{formatTime(seconds)}</span>
           </div>
 
           <div className="flex gap-4">

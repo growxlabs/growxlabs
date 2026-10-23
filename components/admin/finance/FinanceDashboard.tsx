@@ -28,37 +28,37 @@ export function FinanceDashboard({ stats, expenseBreakdown }: FinanceDashboardPr
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Total Cash Balance</span>
+            <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400">Total Cash Balance</span>
             <span className="text-green-600 bg-green-500/5 px-2 py-0.5 rounded border border-green-200 text-[8px] font-bold">Liquid</span>
           </div>
-          <h3 className="text-xl font-black text-neutral-900 font-mono">₹{stats.cashBalance.toLocaleString()}</h3>
+          <h3 className="admin-kpi-value text-neutral-900">₹{stats.cashBalance.toLocaleString()}</h3>
           <p className="text-[9px] text-neutral-400 mt-1 font-medium">Bank & cash accounts</p>
         </Card>
 
         <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Accounts Receivable</span>
+            <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400">Accounts Receivable</span>
             <span className="text-blue-600 bg-blue-500/5 px-2 py-0.5 rounded border border-blue-200 text-[8px] font-bold">Due</span>
           </div>
-          <h3 className="text-xl font-black text-neutral-900 font-mono">₹{stats.receivables.toLocaleString()}</h3>
+          <h3 className="admin-kpi-value text-neutral-900">₹{stats.receivables.toLocaleString()}</h3>
           <p className="text-[9px] text-neutral-400 mt-1 font-medium">₹{stats.outstandingInvoices.toLocaleString()} outstanding</p>
         </Card>
 
         <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Accounts Payable</span>
+            <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400">Accounts Payable</span>
             <span className="text-red-500 bg-red-500/5 px-2 py-0.5 rounded border border-red-200 text-[8px] font-bold">Liability</span>
           </div>
-          <h3 className="text-xl font-black text-neutral-900 font-mono">₹{stats.payables.toLocaleString()}</h3>
+          <h3 className="admin-kpi-value text-neutral-900">₹{stats.payables.toLocaleString()}</h3>
           <p className="text-[9px] text-neutral-400 mt-1 font-medium">₹{stats.upcomingPayments.toLocaleString()} bills due</p>
         </Card>
 
         <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Net Profit Margin</span>
+            <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400">Net Profit Margin</span>
             <span className="text-green-600 bg-green-500/5 px-2 py-0.5 rounded border border-green-200 text-[8px] font-bold">{profitMargin}%</span>
           </div>
-          <h3 className="text-xl font-black text-[#0075de] font-mono">₹{stats.profit.toLocaleString()}</h3>
+          <h3 className="admin-kpi-value text-[#0075de]">₹{stats.profit.toLocaleString()}</h3>
           <p className="text-[9px] text-neutral-400 mt-1 font-medium">Revenue: ₹{stats.revenue.toLocaleString()}</p>
         </Card>
       </div>

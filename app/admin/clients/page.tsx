@@ -414,7 +414,7 @@ function ClientCard({
             <div className="flex items-center justify-between gap-2">
               <h3
                 onClick={onViewProfile}
-                className="text-[13px] font-bold text-[var(--text-primary,#0f172a)] truncate cursor-pointer hover:text-[#0075de] transition-colors leading-snug"
+                className="admin-record-name min-w-0 text-[13px] font-semibold text-[var(--text-primary,#0f172a)] truncate cursor-pointer hover:text-[#0075de] transition-colors leading-snug"
                 title={name}
               >
                 {name}
@@ -455,7 +455,7 @@ function ClientCard({
         <div className="flex items-center justify-between gap-2 mt-2.5 text-[11px] text-[var(--text-secondary,#64748b)]">
           <div className="flex items-center gap-1.5 min-w-0 truncate">
             <Mail size={12} className="shrink-0 text-[var(--text-muted,#94a3b8)]" />
-            <a href={`mailto:${client.email}`} className="truncate hover:text-[#0075de] hover:underline transition-colors">
+            <a href={`mailto:${client.email}`} className="truncate hover:text-[#0075de] hover:underline transition-colors" title={client.email}>
               {client.email}
             </a>
           </div>

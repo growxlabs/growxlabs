@@ -88,14 +88,14 @@ export function DataTable({
 
       {/* Table Content */}
       <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.02]">
-        <table className="w-full text-left text-sm whitespace-nowrap">
+        <table className="w-full text-left text-[13px] whitespace-nowrap">
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => col.sortable && handleSort(col.key)}
-                  className={`px-5 py-3 text-[10px] font-black uppercase tracking-wider text-neutral-400 ${
+                  className={`px-5 py-3 text-[11px] font-medium text-[var(--text-secondary)] ${
                     col.sortable ? "cursor-pointer select-none hover:text-white" : ""
                   }`}
                 >
@@ -112,7 +112,7 @@ export function DataTable({
               paginatedData.map((row, idx) => (
                 <tr key={row.id || idx} className="hover:bg-white/[0.01] transition-colors">
                   {columns.map((col) => (
-                    <td key={col.key} className="px-5 py-4">
+                    <td key={col.key} className={`px-5 py-4 ${col === columns[0] ? "admin-record-name" : ""}`}>
                       {col.render ? col.render(row) : String(row[col.key] ?? "")}
                     </td>
                   ))}
@@ -120,7 +120,7 @@ export function DataTable({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="px-5 py-8 text-center text-neutral-500 text-xs font-bold">
+                <td colSpan={columns.length} className="px-5 py-8 text-center text-neutral-500 text-xs font-normal">
                   No matching records found.
                 </td>
               </tr>
@@ -130,7 +130,7 @@ export function DataTable({
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between text-xs text-neutral-400 px-2 pt-2">
+      <div className="flex flex-wrap gap-3 items-center justify-between text-xs text-neutral-400 px-2 pt-2">
         <span>Showing Page {currentPage} of {totalPages} ({sortedData.length} records)</span>
         <div className="flex gap-2">
           <Button

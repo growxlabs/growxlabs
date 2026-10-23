@@ -321,7 +321,7 @@ function CandidateFlyout({ candidate, onClose }: { candidate: Candidate; onClose
             <Sparkles size={14} /> AI Resume Match & Competency Scorecard
           </h3>
           <div className="flex items-baseline gap-2">
-            <div className="text-3xl font-black text-violet-600">{candidate.matchScore ?? 94}%</div>
+            <div className="admin-kpi-value text-violet-600">{candidate.matchScore ?? 94}%</div>
             <span className="text-xs font-bold text-slate-500">Overall Role Fit: High Match</span>
           </div>
 

@@ -329,8 +329,8 @@ export default function SupportHubPage() {
                           <span className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400"><Ticket size={18} /></span>
                           <span className="text-[10px] font-black uppercase text-amber-400">{metrics?.pendingTickets ?? 0} Pending</span>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Open Support Tickets</p>
-                        <h3 className="text-3xl font-black text-white">{metrics?.openTickets ?? 0}</h3>
+                        <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Open Support Tickets</p>
+                        <h3 className="admin-kpi-value text-white">{metrics?.openTickets ?? 0}</h3>
                       </Card>
 
                       <Card className="bg-[#141416] border-[#27272a] hover:border-emerald-500/30 transition-all p-6">
@@ -338,8 +338,8 @@ export default function SupportHubPage() {
                           <span className="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400"><CheckCircle size={18} /></span>
                           <span className="text-[10px] font-black uppercase text-emerald-400">Target 98%</span>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">SLA Compliance</p>
-                        <h3 className="text-3xl font-black text-white">{metrics?.slaCompliance ?? 98.4}%</h3>
+                        <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">SLA Compliance</p>
+                        <h3 className="admin-kpi-value text-white">{metrics?.slaCompliance ?? 98.4}%</h3>
                       </Card>
 
                       <Card className="bg-[#141416] border-[#27272a] hover:border-blue-500/30 transition-all p-6">
@@ -347,8 +347,8 @@ export default function SupportHubPage() {
                           <span className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400"><ThumbsUp size={18} /></span>
                           <span className="text-[10px] font-black uppercase text-blue-400">NPS: +{metrics?.npsScore ?? 74}</span>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">CSAT Satisfaction</p>
-                        <h3 className="text-3xl font-black text-white">{metrics?.csatScore ?? 97}%</h3>
+                        <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">CSAT Satisfaction</p>
+                        <h3 className="admin-kpi-value text-white">{metrics?.csatScore ?? 97}%</h3>
                       </Card>
 
                       <Card className="bg-[#141416] border-[#27272a] hover:border-purple-500/30 transition-all p-6">
@@ -356,8 +356,8 @@ export default function SupportHubPage() {
                           <span className="p-2 bg-purple-500/10 rounded-xl border border-purple-500/20 text-purple-400"><HeartPulse size={18} /></span>
                           <span className="text-[10px] font-black uppercase text-purple-400">Renewals: ${(metrics?.renewalsDueValue ?? 145000).toLocaleString()}</span>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Avg Customer Health Score</p>
-                        <h3 className="text-3xl font-black text-white">{metrics?.avgHealthScore ?? 82} / 100</h3>
+                        <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Avg Customer Health Score</p>
+                        <h3 className="admin-kpi-value text-white">{metrics?.avgHealthScore ?? 82} / 100</h3>
                       </Card>
                     </div>
 

@@ -46,8 +46,8 @@ export default async function RevenueTracking() {
                   <IndianRupee className="text-white/80" size={24} />
                </div>
                <div>
-                  <p className="text-white/40 text-sm font-medium mb-1">Gross Yield</p>
-                  <h3 className="text-4xl font-bold text-white tracking-tight">₹{totalRevenue.toLocaleString()}</h3>
+                  <p className="admin-kpi-label text-white/40 text-sm font-medium mb-1">Gross Yield</p>
+                  <h3 className="admin-kpi-value text-white">₹{totalRevenue.toLocaleString()}</h3>
                </div>
             </div>
          </div>
@@ -56,8 +56,8 @@ export default async function RevenueTracking() {
             <div className="space-y-6">
                 <div className="flex justify-between items-start">
                    <div className="space-y-1">
-                      <p className="text-white/40 text-sm font-medium">Academy Sales</p>
-                      <h4 className="text-xl font-bold text-white tracking-tight">₹{courseRevenue.toLocaleString()}</h4>
+                      <p className="admin-kpi-label text-white/40 text-sm font-medium">Academy Sales</p>
+                      <h4 className="admin-kpi-value text-white">₹{courseRevenue.toLocaleString()}</h4>
                    </div>
                    <div className="p-3 bg-white/5 rounded-xl">
                       <Layers className="text-white/60" size={18} />
@@ -65,8 +65,8 @@ export default async function RevenueTracking() {
                 </div>
                 <div className="flex justify-between items-start">
                    <div className="space-y-1">
-                      <p className="text-white/40 text-sm font-medium">Subscription ARR</p>
-                      <h4 className="text-xl font-bold text-white tracking-tight">₹{subRevenue.toLocaleString()}</h4>
+                      <p className="admin-kpi-label text-white/40 text-sm font-medium">Subscription ARR</p>
+                      <h4 className="admin-kpi-value text-white">₹{subRevenue.toLocaleString()}</h4>
                    </div>
                    <div className="p-3 bg-white/5 rounded-xl">
                       <ArrowUpRight className="text-white/60" size={18} />

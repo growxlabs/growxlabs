@@ -322,8 +322,8 @@ export default function MarketingHubPage() {
                         <span className="p-2 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400"><Eye size={18} /></span>
                         <span className="text-[10px] font-black uppercase text-emerald-400 flex items-center"><ArrowUpRight size={12} className="mr-0.5" /> 18.4%</span>
                       </div>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Website Visitors</p>
-                      <h3 className="text-3xl font-black text-white">{(metrics.websiteVisitors ?? 0).toLocaleString()}</h3>
+                      <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Website Visitors</p>
+                      <h3 className="admin-kpi-value text-white">{(metrics.websiteVisitors ?? 0).toLocaleString()}</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-purple-500/30 transition-all p-6">
@@ -331,8 +331,8 @@ export default function MarketingHubPage() {
                         <span className="p-2 bg-purple-500/10 rounded-xl border border-purple-500/20 text-purple-400"><Users size={18} /></span>
                         <span className="text-[10px] font-black uppercase text-purple-400">{metrics.mqlCount ?? 0} MQLs</span>
                       </div>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">New Leads</p>
-                      <h3 className="text-3xl font-black text-white">{(metrics.newLeads ?? 0).toLocaleString()}</h3>
+                      <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">New Leads</p>
+                      <h3 className="admin-kpi-value text-white">{(metrics.newLeads ?? 0).toLocaleString()}</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-emerald-500/30 transition-all p-6">
@@ -340,8 +340,8 @@ export default function MarketingHubPage() {
                         <span className="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400"><TrendingUp size={18} /></span>
                         <span className="text-[10px] font-black uppercase text-emerald-400">Target 4.0%</span>
                       </div>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Funnel Conversion Rate</p>
-                      <h3 className="text-3xl font-black text-white">{metrics.conversionRate ?? 0}%</h3>
+                      <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Funnel Conversion Rate</p>
+                      <h3 className="admin-kpi-value text-white">{metrics.conversionRate ?? 0}%</h3>
                     </Card>
 
                     <Card className="bg-white/[0.02] border-white/10 hover:border-amber-500/30 transition-all p-6">
@@ -349,8 +349,8 @@ export default function MarketingHubPage() {
                         <span className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400"><DollarSign size={18} /></span>
                         <span className="text-[10px] font-black uppercase text-amber-400">ROI: {metrics.campaignROI ?? 0}x</span>
                       </div>
-                      <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Ad Spend (CAC: ${metrics.cac ?? 0})</p>
-                      <h3 className="text-3xl font-black text-white">${(metrics.adSpend ?? 0).toLocaleString()}</h3>
+                      <p className="admin-kpi-label text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Ad Spend (CAC: ${metrics.cac ?? 0})</p>
+                      <h3 className="admin-kpi-value text-white">${(metrics.adSpend ?? 0).toLocaleString()}</h3>
                     </Card>
                   </div>
 

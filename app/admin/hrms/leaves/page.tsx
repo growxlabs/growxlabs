@@ -83,9 +83,9 @@ export default function LeavesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {balanceSummary.map(b => (
               <Card key={b.type} className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">{b.type} Leave</span>
+                <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">{b.type} Leave</span>
                 <div className="flex items-end gap-2 mt-2">
-                  <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{b.remaining}</h3>
+                  <h3 className="admin-kpi-value text-[var(--text-primary)]">{b.remaining}</h3>
                   <p className="text-[10px] text-[var(--text-secondary)] font-medium mb-0.5">/ {b.allocated} remaining</p>
                 </div>
                 <div className="w-full bg-[var(--surface-1)] border border-[var(--border-subtle)] rounded-full h-1.5 mt-2">
