@@ -2,10 +2,16 @@ import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-const openrouter = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
-});
+function getOpenRouterClient() {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENROUTER_API_KEY is not configured.");
+  }
+  return new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey,
+  });
+}
 
 const SYSTEM_PROMPT = `You are the GrowX Labs Lead Strategy Agent. You are a senior business consultant, not a chatbot.
 Your goal is to qualify prospective clients for our high-end engineering and AI services.
@@ -54,6 +60,7 @@ async function handleLeadSubmission(data: any) {
     // 2. GENERATE PERSONALIZED PITCH (Fast)
     let pitch = "Based on your challenges, our team will design a high-performance solution to scale your operations.";
     try {
+      const openrouter = getOpenRouterClient();
       const pitchCompletion = await openrouter.chat.completions.create({
         model: "openai/gpt-4o-mini",
         messages: [
@@ -99,6 +106,7 @@ async function handleLeadSubmission(data: any) {
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
+    const openrouter = getOpenRouterClient();
 
     const completion = await openrouter.chat.completions.create({
       model: "openai/gpt-4o-mini",

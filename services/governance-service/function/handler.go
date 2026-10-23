@@ -328,10 +328,15 @@ func initialise(ctx context.Context) (*repository.Postgres, error) {
 }
 func authorised(request *http.Request) bool {
 	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
-	for _, issuer := range []string{"gxl-web", "tool-service", "execution-worker"} {
-		claims, err := serviceauth.Verify(token, os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), issuer, "internal-api-gateway", os.Getenv("APP_ENV"), time.Now())
-		if err == nil && claims.Service == issuer {
-			return true
+	secret := os.Getenv("EXECUTION_SERVICE_JWT_SECRET")
+	env := os.Getenv("APP_ENV")
+	now := time.Now()
+	for _, issuer := range []string{"gxl-web", "tool-service", "execution-worker", "internal-api-gateway"} {
+		for _, audience := range []string{"internal-api-gateway", "governance-service"} {
+			claims, err := serviceauth.Verify(token, secret, issuer, audience, env, now)
+			if err == nil && claims.Service == issuer {
+				return true
+			}
 		}
 	}
 	return false

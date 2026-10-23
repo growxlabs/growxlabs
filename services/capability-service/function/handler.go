@@ -80,8 +80,18 @@ func Handler(response http.ResponseWriter, request *http.Request) {
 
 func authorised(request *http.Request) bool {
 	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
-	claims, err := serviceauth.Verify(token, os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), "internal-api-gateway", "capability-service", os.Getenv("APP_ENV"), time.Now())
-	return err == nil && claims.Service == "internal-api-gateway"
+	secret := os.Getenv("EXECUTION_SERVICE_JWT_SECRET")
+	env := os.Getenv("APP_ENV")
+	now := time.Now()
+	for _, issuer := range []string{"internal-api-gateway", "gxl-web", "execution-worker", "tool-service"} {
+		for _, audience := range []string{"capability-service", "internal-api-gateway"} {
+			claims, err := serviceauth.Verify(token, secret, issuer, audience, env, now)
+			if err == nil && claims.Service == issuer {
+				return true
+			}
+		}
+	}
+	return false
 }
 func contains(values []string, target string) bool {
 	for _, value := range values {

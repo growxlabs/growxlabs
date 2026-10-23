@@ -38,11 +38,19 @@ func Authenticate(config Config, next http.Handler) http.Handler {
 
 func Authorised(config Config, request *http.Request) bool {
 	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
-	claims, err := serviceauth.Verify(
-		token, config.Secret, "internal-api-gateway",
-		config.ServiceName, config.Environment, time.Now(),
-	)
-	return err == nil && claims.Service == "internal-api-gateway"
+	now := time.Now()
+	for _, issuer := range []string{"internal-api-gateway", "gxl-web", "execution-worker", "tool-service"} {
+		for _, audience := range []string{config.ServiceName, "internal-api-gateway"} {
+			claims, err := serviceauth.Verify(
+				token, config.Secret, issuer,
+				audience, config.Environment, now,
+			)
+			if err == nil && claims.Service == issuer {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func RegisterHealth(mux *http.ServeMux, ready func(context.Context) error) {

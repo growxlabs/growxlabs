@@ -41,6 +41,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import WishAdminDashboardClient from "./WishAdminDashboardClient";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0; // Disable Next.js caching to fetch live data on every load
 
 export default async function WishAdminPage() {

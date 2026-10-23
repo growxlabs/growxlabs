@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -31,6 +32,9 @@ func Open(ctx context.Context, databaseURL string) (*Postgres, error) {
 		config.MaxConns, config.MinConns = 3, 0
 		config.MaxConnLifetime, config.MaxConnIdleTime = 5*time.Minute, 30*time.Second
 	}
+	// Enforce compatibility with Supabase Transaction Pooler (port 6543 / Supavisor / PgBouncer)
+	// by disabling named prepared statements across pooled sessions.
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return nil, fmt.Errorf("open database pool: %w", err)
@@ -95,7 +99,7 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 		runID, request.IdempotencyKey, request.Plan.Version,
 		request.Plan.OrganisationID, request.Plan.WorkspaceID, request.Plan.UserID,
 		request.Plan.ConversationID, request.Plan.RequestID, request.Plan.AgentID,
-		request.Plan.CapabilityID, request.Plan.SkillID, planJSON, now,
+		request.Plan.CapabilityID, request.Plan.SkillID, string(planJSON), now,
 	)
 	if err != nil {
 		return contract.Run{}, false, err
@@ -112,6 +116,10 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 		if marshalErr != nil {
 			return contract.Run{}, false, marshalErr
 		}
+		stepInput := string(step.Input)
+		if strings.TrimSpace(stepInput) == "" {
+			stepInput = "{}"
+		}
 		_, err = tx.Exec(ctx, `
 			INSERT INTO command_execution.steps (
 				id, run_id, organisation_id, workspace_id, step_key, ordinal,
@@ -122,8 +130,8 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 				$8::jsonb, $9::jsonb, $10::jsonb, $11, $12, $12
 			)`,
 			step.ID, runID, request.Plan.OrganisationID, request.Plan.WorkspaceID,
-			step.ID, step.Index, step.Type, step.Input, permissionsJSON,
-			retryJSON, step.TimeoutMS, now,
+			step.ID, step.Index, step.Type, stepInput, string(permissionsJSON),
+			string(retryJSON), step.TimeoutMS, now,
 		)
 		if err != nil {
 			return contract.Run{}, false, err
@@ -154,7 +162,7 @@ func (p *Postgres) CreateRun(ctx context.Context, request contract.CreateRunRequ
 			id, run_id, organisation_id, workspace_id, request_id, event_type, payload
 		) VALUES (gen_random_uuid(), $1::uuid, $2, $3, $4, 'run.created', $5::jsonb)`,
 		runID, request.Plan.OrganisationID, request.Plan.WorkspaceID,
-		request.Plan.RequestID, eventPayload,
+		request.Plan.RequestID, string(eventPayload),
 	)
 	if err != nil {
 		return contract.Run{}, false, err
@@ -273,3 +281,51 @@ func (p *Postgres) ListEvents(ctx context.Context, organisationID, workspaceID, 
 	}
 	return events, rows.Err()
 }
+
+type StepRecord struct {
+	ID         string          `json:"id"`
+	RunID      string          `json:"runId"`
+	StepKey    string          `json:"stepKey"`
+	Ordinal    int             `json:"ordinal"`
+	Type       string          `json:"type"`
+	Status     string          `json:"status"`
+	Input      json.RawMessage `json:"input"`
+	Output     json.RawMessage `json:"output,omitempty"`
+	StartedAt  *time.Time      `json:"startedAt,omitempty"`
+	FinishedAt *time.Time      `json:"finishedAt,omitempty"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	UpdatedAt  time.Time       `json:"updatedAt"`
+}
+
+func (p *Postgres) ListSteps(ctx context.Context, organisationID, workspaceID, runID string) ([]StepRecord, error) {
+	rows, err := p.pool.Query(ctx, `
+		SELECT id::text, run_id::text, step_key, ordinal, step_type,
+		       status, input, COALESCE(output, '{}'::jsonb), started_at, finished_at,
+		       created_at, updated_at
+		FROM command_execution.steps
+		WHERE run_id = $1::uuid AND organisation_id = $2 AND workspace_id = $3
+		ORDER BY ordinal ASC`,
+		runID, organisationID, workspaceID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	steps := make([]StepRecord, 0)
+	for rows.Next() {
+		var s StepRecord
+		var inputBytes, outputBytes []byte
+		if err := rows.Scan(
+			&s.ID, &s.RunID, &s.StepKey, &s.Ordinal, &s.Type,
+			&s.Status, &inputBytes, &outputBytes, &s.StartedAt, &s.FinishedAt,
+			&s.CreatedAt, &s.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		s.Input = json.RawMessage(inputBytes)
+		s.Output = json.RawMessage(outputBytes)
+		steps = append(steps, s)
+	}
+	return steps, rows.Err()
+}
+

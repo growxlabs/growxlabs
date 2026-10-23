@@ -50,6 +50,10 @@
     {
       "source": "/api/private/worker/:path*",
       "destination": "/api/private/gateway"
+    },
+    {
+      "source": "/api/private/governance/:path*",
+      "destination": "/api/private/gateway"
     }
   ],
   "crons": [

@@ -14,15 +14,16 @@ import (
 )
 
 type LegacyNextJS struct {
-	baseURL     string
-	secret      string
-	environment string
-	client      *http.Client
+	baseURL      string
+	bypassSecret string
+	secret       string
+	environment  string
+	client       *http.Client
 }
 
-func NewLegacyNextJS(baseURL, secret, environment string) *LegacyNextJS {
+func NewLegacyNextJS(baseURL, bypassSecret, secret, environment string) *LegacyNextJS {
 	return &LegacyNextJS{
-		baseURL: baseURL, secret: secret, environment: environment,
+		baseURL: baseURL, bypassSecret: bypassSecret, secret: secret, environment: environment,
 		client: &http.Client{Timeout: 35 * time.Second},
 	}
 }
@@ -51,7 +52,7 @@ func (a *LegacyNextJS) Execute(ctx context.Context, request contract.ToolExecuti
 		return nil, err
 	}
 	httpRequest, err := http.NewRequestWithContext(
-		ctx, http.MethodPost, a.baseURL+"/api/private/v1/tool-executions",
+		ctx, http.MethodPost, a.baseURL+"/api/internal/v1/tool-executions",
 		bytes.NewReader(body),
 	)
 	if err != nil {
@@ -59,6 +60,9 @@ func (a *LegacyNextJS) Execute(ctx context.Context, request contract.ToolExecuti
 	}
 	httpRequest.Header.Set("Authorization", "Bearer "+token)
 	httpRequest.Header.Set("Content-Type", "application/json")
+	if a.bypassSecret != "" {
+		httpRequest.Header.Set("x-vercel-protection-bypass", a.bypassSecret)
+	}
 	response, err := a.client.Do(httpRequest)
 	if err != nil {
 		return nil, err

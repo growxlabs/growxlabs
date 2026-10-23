@@ -4,7 +4,7 @@ import { RazorpayService } from "@/lib/services/razorpay.service";
 import { Resend } from "resend";
 import { EmailAction, EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields } from "@/lib/email/growxlabs-layout";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export async function POST(req: Request) {
   try {
@@ -101,6 +101,12 @@ export async function POST(req: Request) {
             }]);
 
           // Trigger Onboarding Email
+          const apiKey = process.env.RESEND_API_KEY;
+          if (!apiKey) {
+            throw new Error("RESEND_API_KEY is not configured.");
+          }
+          const resend = new Resend(apiKey);
+
           await resend.emails.send({
             from: "GrowX Labs <welcome@growxlabs.tech>",
             to: invoice.clients.email,

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Resend } from 'resend';
 import { ensureGrowXLabsEmailLayout } from "@/lib/email/growxlabs-layout";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     }
 
     // Professional outreach template
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { error: emailError } = await resend.emails.send({
       from: 'GrowX Labs <contact@growxlabs.tech>',
       to: [email],

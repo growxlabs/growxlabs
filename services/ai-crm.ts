@@ -1,7 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+function getGenAI(): GoogleGenerativeAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
+  return new GoogleGenerativeAI(apiKey);
+}
 
 export class AiCrmService {
   // --- AI Lead Score ---
@@ -15,7 +19,7 @@ export class AiCrmService {
 
       if (error || !company) throw new Error("Company not found");
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         Analyze the following business profile and return a numeric lead score between 1 and 10 (where 10 is highest conversion probability for custom web applications/automation services) and a short 2-sentence rationale.
         
@@ -52,7 +56,7 @@ export class AiCrmService {
   // --- AI Email Writer ---
   static async generateAiEmail(clientName: string, companyName: string, context: string) {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         Write a highly professional and personalized sales outreach email from GrowX Labs to ${clientName} at ${companyName}.
         Goal: Pitch custom automation workflows, CRM integration, and software engineering.
@@ -72,9 +76,9 @@ export class AiCrmService {
       return JSON.parse(text.replace(/```json/g, "").replace(/```/g, "").trim());
     } catch (e) {
       console.error("AI Email Writer Error:", e);
-      return { 
-        subject: `Partnership proposal for ${companyName}`,
-        body: `Hi ${clientName},\n\nI was reviewing ${companyName}'s digital operations and noticed areas we could automate to save your team 10+ hours a week.\n\nLet's coordinate a 5-minute call.\n\nBest,\nGrowX Labs Team` 
+      return {
+        subject: `Partnership Opportunity: GrowX Labs x ${companyName}`,
+        body: `Hi ${clientName},\n\nI noticed ${companyName}'s growth and wanted to reach out regarding our software engineering and business automation solutions.\n\nBest,\nGrowX Labs Team`
       };
     }
   }
@@ -82,7 +86,7 @@ export class AiCrmService {
   // --- AI Proposal Writer ---
   static async generateAiProposal(companyName: string, requirements: string, value: number) {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         Draft a brief 3-paragraph executive proposal template for custom software services for ${companyName}.
         Requirements: ${requirements}
@@ -105,7 +109,7 @@ export class AiCrmService {
   // --- AI Meeting Summary ---
   static async generateMeetingSummary(meetingId: string, transcript: string) {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         Analyze the following sales call transcript and compile a brief meeting summary.
         Include:
@@ -141,7 +145,7 @@ export class AiCrmService {
 
       if (!deals || deals.length === 0) return { totalForecast: 0, analysis: "No deals in pipeline." };
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = getGenAI().getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         Analyze the following CRM Deals pipeline list and generate a brief 2-sentence sales forecast report.
         What is the realistic expected revenue and where are the bottlenecks?
@@ -156,13 +160,16 @@ export class AiCrmService {
       // Weighted revenue calculation
       const totalForecast = deals.reduce((acc, curr) => {
         const prob = curr.probability || 50;
-        return acc + (Number(curr.value) * (prob / 100));
+        return acc + ((curr.value || 0) * (prob / 100));
       }, 0);
 
-      return { totalForecast, analysis };
+      return {
+        totalForecast: Math.round(totalForecast),
+        analysis
+      };
     } catch (e) {
-      console.error("AI Forecast Error:", e);
-      return { totalForecast: 0, analysis: "Failed to generate AI pipeline forecast." };
+      console.error("AI Pipeline Forecast Error:", e);
+      return { totalForecast: 0, analysis: "Pipeline analysis unavailable." };
     }
   }
 }

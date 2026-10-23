@@ -51,3 +51,32 @@ func TestGatewayFallbackRouteUnauthenticated(t *testing.T) {
 		t.Errorf("expected status 401 or 503 for unauthenticated gateway call, got %d", rec.Code)
 	}
 }
+
+func TestGatewayInternalPathRouting(t *testing.T) {
+	t.Setenv("EXECUTION_SERVICE_JWT_SECRET", "test-secret-at-least-thirty-two-bytes")
+	t.Setenv("APP_ENV", "test")
+
+	internalPaths := []string{
+		"/internal/v1/scheduler/tick",
+		"/internal/v1/runs",
+		"/internal/v1/worker/batch",
+		"/internal/v1/governance/evaluate",
+		"/internal/v1/tools/execute",
+		"/internal/v1/capabilities/resolve",
+		"/internal/v1/skills/resolve",
+	}
+
+	for _, internalPath := range internalPaths {
+		t.Run(internalPath, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodPost, "/api/private/gateway", nil)
+			req.Header.Set("X-GXL-Internal-Path", internalPath)
+			rec := httptest.NewRecorder()
+			Handler(rec, req)
+
+			// All internal services require authorization or DB initialization; unauthenticated calls return 401 or 503
+			if rec.Code != http.StatusUnauthorized && rec.Code != http.StatusServiceUnavailable {
+				t.Errorf("internal path %s: expected status 401 or 503, got %d", internalPath, rec.Code)
+			}
+		})
+	}
+}

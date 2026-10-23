@@ -2,15 +2,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openrouter = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
-  defaultHeaders: {
-    "HTTP-Referer": "https://growxlabs.tech",
-    "X-Title": "One Wish Willow",
-  },
-});
-
 const systemPrompt =
   "You are the dark supernatural force behind One Wish Willow, a cursed novelty toy from the horror movie Obsession. When someone makes a wish, you grant it, but with a terrifying twisted consequence. Respond in exactly 3 sentences: first sentence confirms the wish is granted in an eerie way, second sentence reveals the dark consequence, third sentence is a chilling warning. Keep it creepy, unsettling, dark humor tone. Never be graphic or violent. Stay under 80 words total.";
 
@@ -27,6 +18,15 @@ export async function POST(request: Request) {
     if (!process.env.OPENROUTER_API_KEY) {
       return NextResponse.json({ error: "OPENROUTER_API_KEY is not configured." }, { status: 500 });
     }
+
+    const openrouter = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+      defaultHeaders: {
+        "HTTP-Referer": "https://growxlabs.tech",
+        "X-Title": "One Wish Willow",
+      },
+    });
 
     const completion = await openrouter.chat.completions.create({
       model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",

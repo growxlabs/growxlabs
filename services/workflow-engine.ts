@@ -2,8 +2,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { EnterpriseCrmService } from "./enterprise-crm";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export class WorkflowEngine {
   static async evaluateRules(triggerEvent: string, record: any, contextType: "company" | "contact" | "deal" | "task") {
     try {
@@ -138,6 +136,12 @@ export class WorkflowEngine {
         <strong>GrowX Labs Operations Team</strong>
       </div>
     `;
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not configured for workflow email operations.");
+    }
+    const resend = new Resend(apiKey);
 
     const { data: emailRes, error } = await resend.emails.send({
       from: "GrowX Labs CRM <crm@growxlabs.tech>",

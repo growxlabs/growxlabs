@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"growx/commandcenter/execution-worker/internal/worker"
@@ -69,6 +70,7 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 	}
 	config.MaxConns, config.MinConns = 3, 0
 	config.MaxConnLifetime, config.MaxConnIdleTime = 5*time.Minute, 30*time.Second
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
 	startup, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	pool, err := pgxpool.NewWithConfig(startup, config)
@@ -80,10 +82,23 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 		return nil, err
 	}
 	state.pool = pool
+	webBaseURL := os.Getenv("GXL_WEB_BASE_URL")
+	if webBaseURL == "" && os.Getenv("VERCEL_URL") != "" {
+		webBaseURL = "https://" + os.Getenv("VERCEL_URL")
+	}
+	toolServiceURL := os.Getenv("TOOL_SERVICE_INTERNAL_URL")
+	if toolServiceURL == "" && webBaseURL != "" {
+		toolServiceURL = webBaseURL + "/api/private/gateway"
+	}
+	bypassSecret := os.Getenv("VERCEL_PROTECTION_BYPASS")
+	if bypassSecret == "" {
+		bypassSecret = os.Getenv("VERCEL_AUTOMATION_BYPASS_SECRET")
+	}
 	state.service = worker.New(pool, slog.New(slog.NewJSONHandler(os.Stdout, nil)), worker.Config{
-		WorkerID: "vercel-" + os.Getenv("VERCEL_REGION"), WebBaseURL: os.Getenv("GXL_WEB_BASE_URL"),
-		ToolServiceURL:     os.Getenv("TOOL_SERVICE_INTERNAL_URL"),
-		LegacyToolFallback: os.Getenv("PHASE1_TOOL_COMPATIBILITY_FALLBACK_ENABLED") == "true",
+		WorkerID: "vercel-" + os.Getenv("VERCEL_REGION"), WebBaseURL: webBaseURL,
+		BypassSecret:       bypassSecret,
+		ToolServiceURL:     toolServiceURL,
+		LegacyToolFallback: os.Getenv("PHASE1_TOOL_COMPATIBILITY_FALLBACK_ENABLED") != "false",
 		ServiceSecret:      os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), Environment: os.Getenv("APP_ENV"),
 		LeaseDuration: 45 * time.Second, PollInterval: time.Second,
 	})
@@ -91,13 +106,28 @@ func initialise(ctx context.Context) (*worker.Worker, error) {
 }
 
 func authorised(request *http.Request, audience string) bool {
+	authHeader := request.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		return false
+	}
+	token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+	if token == "" {
+		return false
+	}
+
 	secret, environment := os.Getenv("EXECUTION_SERVICE_JWT_SECRET"), os.Getenv("APP_ENV")
-	token := strings.TrimPrefix(request.Header.Get("Authorization"), "Bearer ")
-	for _, issuer := range []string{"gxl-web", "internal-api-gateway", "task-scheduler"} {
-		claims, err := serviceauth.Verify(token, secret, issuer, audience, environment, time.Now())
-		if err == nil && claims.Service == issuer {
-			return true
+	if secret != "" && environment != "" {
+		for _, issuer := range []string{"gxl-web", "internal-api-gateway", "task-scheduler"} {
+			claims, err := serviceauth.Verify(token, secret, issuer, audience, environment, time.Now())
+			if err == nil && claims.Service == issuer {
+				return true
+			}
 		}
+	}
+
+	cronSecret := strings.TrimSpace(os.Getenv("CRON_SECRET"))
+	if cronSecret != "" && token == cronSecret {
+		return true
 	}
 	return false
 }

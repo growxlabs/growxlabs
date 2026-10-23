@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -22,6 +23,7 @@ import (
 type Config struct {
 	WorkerID           string
 	WebBaseURL         string
+	BypassSecret       string
 	ToolServiceURL     string
 	LegacyToolFallback bool
 	ServiceSecret      string
@@ -271,7 +273,10 @@ func (w *Worker) claim(ctx context.Context) (job, bool, error) {
 	if err != nil || tag.RowsAffected() != 1 {
 		return job{}, false, fmt.Errorf("claim step: %w", err)
 	}
-	inputJSON := item.step.Input
+	inputJSON := string(item.step.Input)
+	if strings.TrimSpace(inputJSON) == "" {
+		inputJSON = "{}"
+	}
 	_, err = tx.Exec(ctx, `
 		INSERT INTO command_execution.attempts (
 			id, run_id, step_id, organisation_id, workspace_id, attempt_number,
@@ -290,7 +295,7 @@ func (w *Worker) claim(ctx context.Context) (job, bool, error) {
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        'step.started', jsonb_build_object('attempt', $6))`,
+		        'step.started', jsonb_build_object('attempt', $6::int))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID, item.requestID, item.attempt,
 	)
 	if err != nil {
@@ -311,9 +316,9 @@ func (w *Worker) execute(ctx context.Context, item job) (json.RawMessage, error)
 		}
 		w.logger.Warn("tool service unavailable; using Phase 1 compatibility adapter",
 			"request_id", item.requestID, "run_id", item.runID, "step_id", item.stepID)
-		return w.callWebAdapter(ctx, item, "/api/private/v1/tool-executions")
+		return w.callWebAdapter(ctx, item, "/api/internal/v1/tool-executions")
 	case "model":
-		return w.callWebAdapter(ctx, item, "/api/private/v1/model-executions")
+		return w.callWebAdapter(ctx, item, "/api/internal/v1/model-executions")
 	case "transform":
 		return executeTransform(item.step.Input)
 	case "decision":
@@ -383,6 +388,9 @@ func (w *Worker) callToolService(ctx context.Context, item job) (json.RawMessage
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Request-ID", item.requestID)
 	request.Header.Set("X-GXL-Internal-Path", "/internal/v1/tool-executions")
+	if w.config.BypassSecret != "" {
+		request.Header.Set("x-vercel-protection-bypass", w.config.BypassSecret)
+	}
 	response, err := w.client.Do(request)
 	if err != nil {
 		return nil, err
@@ -465,6 +473,9 @@ func (w *Worker) callWebAdapter(ctx context.Context, item job, path string) (jso
 	request.Header.Set("Authorization", "Bearer "+token)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("X-Request-ID", item.requestID)
+	if w.config.BypassSecret != "" {
+		request.Header.Set("x-vercel-protection-bypass", w.config.BypassSecret)
+	}
 	response, err := w.client.Do(request)
 	if err != nil {
 		return nil, err
@@ -489,13 +500,17 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	outputStr := string(output)
+	if strings.TrimSpace(outputStr) == "" {
+		outputStr = "{}"
+	}
 	tag, err := tx.Exec(ctx, `
 		UPDATE command_execution.steps
 		SET status = 'succeeded', output = $4::jsonb, finished_at = now(),
 		    lease_owner = NULL, lease_token = NULL, lease_expires_at = NULL, updated_at = now()
 		WHERE id = $1::uuid AND status = 'running' AND lease_owner = $2
 		  AND lease_token = $3::uuid`,
-		item.stepID, w.config.WorkerID, item.leaseToken, output,
+		item.stepID, w.config.WorkerID, item.leaseToken, outputStr,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
 		return fmt.Errorf("stale completion rejected: %w", err)
@@ -504,7 +519,7 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		UPDATE command_execution.attempts
 		SET status = 'succeeded', output = $3::jsonb, finished_at = now()
 		WHERE step_id = $1::uuid AND lease_token = $2::uuid AND status = 'running'`,
-		item.stepID, item.leaseToken, output); err != nil {
+		item.stepID, item.leaseToken, outputStr); err != nil {
 		return err
 	}
 	if _, err = tx.Exec(ctx, `DELETE FROM command_execution.queue WHERE id = $1`, item.queueID); err != nil {
@@ -514,7 +529,7 @@ func (w *Worker) complete(ctx context.Context, item job, output json.RawMessage)
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        'step.succeeded', jsonb_build_object('attempt', $6))`,
+		        'step.succeeded', jsonb_build_object('attempt', $6::int))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID, item.requestID, item.attempt); err != nil {
 		return err
 	}
@@ -644,7 +659,7 @@ func (w *Worker) fail(ctx context.Context, item job, executionErr error, timedOu
 		INSERT INTO command_execution.events
 			(id, run_id, step_id, organisation_id, workspace_id, request_id, event_type, payload)
 		VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5,
-		        $6, jsonb_build_object('attempt', $7, 'errorCode', $8))`,
+		        $6, jsonb_build_object('attempt', $7::int, 'errorCode', $8::text))`,
 		item.runID, item.stepID, item.organisationID, item.workspaceID,
 		item.requestID, eventType, item.attempt, errorCode); err != nil {
 		return err

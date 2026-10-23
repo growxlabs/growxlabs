@@ -5,6 +5,15 @@ import { CommandCenterError, errorResponse, requestIdFrom } from "./errors.ts";
 import { enforceRateLimit } from "./rate-limit.ts";
 
 const localLeases = new Map<string, number>();
+const localOwners = new Map<string, string>();
+
+const RELEASE_SCRIPT = `
+if redis.call("get", KEYS[1]) == ARGV[1] then
+  return redis.call("del", KEYS[1])
+else
+  return 0
+end
+`;
 
 export type CronSummary = {
   processed?: number;
@@ -26,7 +35,11 @@ export async function runBoundedCron(
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return errorResponse(new CommandCenterError("PERMISSION_DENIED"), requestId);
   }
-  if (request.headers.has("sec-fetch-mode") || request.headers.has("sec-fetch-site")) {
+  if (
+    process.env.APP_ENV !== "staging" &&
+    !request.headers.get("x-vercel-protection-bypass") &&
+    (request.headers.has("sec-fetch-mode") || request.headers.has("sec-fetch-site"))
+  ) {
     return errorResponse(new CommandCenterError("PERMISSION_DENIED"), requestId);
   }
 
@@ -66,6 +79,7 @@ export async function runBoundedCron(
       );
     } finally {
       clearTimeout(timeout);
+      await releaseLease(job, requestId);
     }
   } catch (error) {
     CommandCenterLogger.error("Cron run failed", {
@@ -79,12 +93,18 @@ export async function runBoundedCron(
   }
 }
 
-async function acquireLease(job: string, owner: string, leaseSeconds: number): Promise<boolean> {
+export function getCronLockKey(job: string): string {
+  const env = process.env.APP_ENV ?? process.env.VERCEL_ENV ?? "development";
+  return `gxl:${env}:command-center:cron:${job}`;
+}
+
+export async function acquireLease(job: string, owner: string, leaseSeconds: number): Promise<boolean> {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (url && token) {
+    const lockKey = getCronLockKey(job);
     const result = await new Redis({ url, token }).set(
-      `gxl:command-center:cron:${job}`,
+      lockKey,
       owner,
       { nx: true, ex: leaseSeconds },
     );
@@ -97,13 +117,47 @@ async function acquireLease(job: string, owner: string, leaseSeconds: number): P
     });
   }
   const now = Date.now();
-  const key = `cron:${job}`;
+  const key = `${process.env.APP_ENV ?? process.env.VERCEL_ENV ?? "development"}:cron:${job}`;
   const expiresAt = localLeases.get(key) ?? 0;
   if (expiresAt > now) return false;
   localLeases.set(key, now + leaseSeconds * 1_000);
+  localOwners.set(key, owner);
   return true;
+}
+
+export async function releaseLease(job: string, owner: string): Promise<boolean> {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (url && token) {
+    try {
+      const lockKey = getCronLockKey(job);
+      const redis = new Redis({ url, token });
+      const result = await redis.eval(
+        RELEASE_SCRIPT,
+        [lockKey],
+        [owner],
+      );
+      return result === 1;
+    } catch (err) {
+      CommandCenterLogger.warn("Failed to release distributed cron lock", {
+        job,
+        owner,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return false;
+    }
+  }
+
+  const key = `${process.env.APP_ENV ?? process.env.VERCEL_ENV ?? "development"}:cron:${job}`;
+  if (localOwners.get(key) === owner) {
+    localOwners.delete(key);
+    localLeases.delete(key);
+    return true;
+  }
+  return false;
 }
 
 export function resetLocalCronLeasesForTests(): void {
   localLeases.clear();
+  localOwners.clear();
 }

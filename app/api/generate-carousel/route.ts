@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const geminiApiKey = process.env.GEMINI_API_KEY || "";
+const genAI = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
 
 const SYSTEM_PROMPT = `You are a professional social media content creator specializing in high-engagement Instagram carousel posts.
 Your goal is to structure a compelling, value-packed carousel post about the given topic.
@@ -145,6 +146,10 @@ ${searchContext ? `Latest Google Search news/findings on the topic to ground you
 
 Make sure there are exactly ${slideCount} slides. The first slide MUST be 'title-only' (the hook), and the last slide MUST be 'cta' (the call to action).
 `;
+    }
+
+    if (!genAI) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is not configured." }, { status: 500 });
     }
 
     let resultStream;

@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { EmailAction, EmailSection, GrowXLabsEmailLayout, growxlabsEmailFields, escapeGrowXLabsEmailHtml } from "@/lib/email/growxlabs-layout";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export async function POST(req: Request) {
   try {
@@ -22,6 +22,12 @@ export async function POST(req: Request) {
 
     const targetEmail = email || (invoice.users ? invoice.users.email : null);
     if (!targetEmail) throw new Error("No destination email address found");
+
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not configured.");
+    }
+    const resend = new Resend(apiKey);
 
     await resend.emails.send({
       from: "GrowX Labs Billing <billing@growxlabs.tech>",

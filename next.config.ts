@@ -100,4 +100,8 @@ export default withSentryConfig(nextConfig, {
   silent: true,
   org: "grow-x",
   project: "grow-x",
+  sourcemaps: {
+    disable: !process.env.VERCEL && !process.env.CI,
+  },
+  widenClientFileUpload: true,
 });
