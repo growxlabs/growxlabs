@@ -41,12 +41,12 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
 
   if (!job) {
     return (
-      <div className="flex min-h-[60dvh] items-center justify-center px-6">
+      <div className="flex min-h-[60dvh] items-center justify-center px-6 bg-[#A2BECC]">
         <div className="text-center">
-          <h1 className="text-3xl font-black">Role not found</h1>
+          <h1 className="text-3xl font-black text-[#17252D]">Role not found</h1>
           <Link
             href="/careers"
-            className="mt-5 inline-block rounded text-sm font-bold text-[#0075de] outline-none focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2"
+            className="mt-5 inline-block rounded-lg px-4 py-2 text-sm font-bold bg-[#A2BECC] text-[#17252D] hover:bg-[#17252D] hover:text-[#FAFCFD] transition-colors"
           >
             View open roles
           </Link>
@@ -61,19 +61,19 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
 
   const description = typeof job.description === "string" ? job.description : JSON.stringify(job.description);
   return (
-    <div className="bg-slate-50 py-12 text-slate-950 sm:py-16">
+    <div className="bg-[#A2BECC] py-12 text-[#17252D] sm:py-16 min-h-screen">
       <article className="mx-auto max-w-[1240px] px-6 md:px-8 lg:px-10">
         <Link
           href="/careers"
-          className="inline-flex items-center gap-2 rounded text-xs font-bold text-slate-500 outline-none hover:text-slate-950 focus-visible:ring-2 focus-visible:ring-[#0075de] focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-2 rounded text-xs font-bold font-mono tracking-wider uppercase text-[#55788D] hover:text-[#17252D] transition-colors"
         >
           <ArrowLeft aria-hidden="true" size={14} /> All open roles
         </Link>
-        <header className="mt-8 rounded-3xl border border-slate-200 bg-white p-8 sm:p-12">
-          <div className="text-[10px] font-bold uppercase tracking-[.2em] text-[#0075de]">Open position</div>
-          <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">{job.title}</h1>
-          <p className="mt-5 text-lg leading-8 text-slate-600">{job.summary}</p>
-          <div className="mt-6 flex flex-wrap gap-5 text-sm font-semibold text-slate-500">
+        <header className="mt-8 rounded-2xl border border-[#D5E2E9] bg-[#F4F8FA] p-8 sm:p-12 shadow-sm">
+          <div className="text-[10px] font-mono font-bold uppercase tracking-[.2em] text-[#55788D]">Open position</div>
+          <h1 className="mt-3 text-4xl font-bold tracking-tight sm:text-5xl text-[#17252D] font-sans">{job.title}</h1>
+          <p className="mt-5 text-lg leading-8 text-[#17252D]/80 font-sans">{job.summary}</p>
+          <div className="mt-6 flex flex-wrap gap-5 text-sm font-semibold text-[#55788D]">
             <span className="flex items-center gap-2">
               <MapPin aria-hidden="true" size={15} />
               {job.location}{job.isRemote ? " · Remote" : ""}
@@ -85,7 +85,7 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
           <div className="mt-8">
             <button
               onClick={handleApplyClick}
-              className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#0075de] px-6 text-sm font-bold text-white shadow-sm transition hover:bg-[#0062bd] outline-none focus-visible:ring-2 focus-visible:ring-[#0075de]"
+              className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#A2BECC] px-6 text-sm font-bold text-[#17252D] shadow-sm transition hover:bg-[#17252D] hover:text-[#FAFCFD] border border-[#55788D]/30 cursor-pointer"
             >
               Apply for this role <ArrowRight size={16} />
             </button>
@@ -99,7 +99,7 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
             <Section title="Skills">
               <div className="flex flex-wrap gap-2">
                 {job.skills.map((skill) => (
-                  <span key={skill} className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-[#0075de]">{skill}</span>
+                  <span key={skill} className="rounded-full bg-[#E5EFF4] border border-[#D5E2E9] px-3.5 py-1.5 text-xs font-bold text-[#17252D] font-mono">{skill}</span>
                 ))}
               </div>
             </Section>
@@ -130,15 +130,15 @@ export default function JobDetailClient({ job }: { job: Job | null }) {
 
 function Section({ title, items, children }: { title: string; items?: string[]; children?: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-7">
-      <h2 className="text-xl font-black">{title}</h2>
-      <div className="mt-4 text-sm leading-7 text-slate-600">
+    <section className="rounded-2xl border border-[#D5E2E9] bg-[#F4F8FA] p-7 shadow-sm">
+      <h2 className="text-xl font-bold text-[#17252D] font-sans">{title}</h2>
+      <div className="mt-4 text-sm leading-7 text-[#17252D]/85 font-sans">
         {children}
         {items ? (
           <ul className="space-y-2">
             {items.map((item) => (
               <li key={item} className="flex gap-3">
-                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#0075de]" />
+                <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A2BECC]" />
                 {item}
               </li>
             ))}

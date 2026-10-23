@@ -10,7 +10,7 @@ export interface LiquidButtonProps {
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   type?: "button" | "submit" | "reset";
   className?: string;
-  variant?: "cyan" | "dark" | "white";
+  variant?: "cyan" | "dark" | "white" | "airforce";
   size?: "default" | "sm" | "lg";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
@@ -54,6 +54,11 @@ export function LiquidButton({
       border: "border border-white/30 text-white",
       wave: "bg-white",
       hoverText: "group-hover:text-black group-active:text-black",
+    },
+    airforce: {
+      border: "border border-[#55788D]/40 bg-[#E5EFF4] text-[#17252D]",
+      wave: "bg-[#17252D]",
+      hoverText: "group-hover:text-[#FAFCFD] group-active:text-[#FAFCFD]",
     },
   }[variant];
 

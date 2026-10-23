@@ -13,6 +13,7 @@ export function Footer() {
     setIsMounted(true);
   }, []);
   const isBlog = pathname?.includes("/blog");
+  const isLandingPage = pathname === "/" || pathname === "";
 
   const links = {
     legal: [
@@ -24,14 +25,14 @@ export function Footer() {
   };
 
   // Standard site footer tokens everywhere
-  const footerBg = "bg-black border-white/10";
-  const logoColor1 = "text-white";
-  const logoColor2 = "text-white";
-  const textColor = "text-neutral-400";
-  const headingColor = "text-white";
-  const accentColor = "text-neutral-400";
-  const linkHoverColor = "hover:text-white";
-  const socialLinkClass = "text-neutral-400 hover:text-white";
+  const footerBg = "bg-[#A2BECC] border-[#D5E2E9]";
+  const logoColor1 = "text-[#17252D]";
+  const logoColor2 = "text-[#55788D]";
+  const textColor = "text-[#55788D]";
+  const headingColor = "text-[#17252D]";
+  const accentColor = "text-[#55788D]";
+  const linkHoverColor = "hover:text-[#17252D]";
+  const socialLinkClass = "text-[#55788D] hover:text-[#17252D]";
 
   return (
     <footer className={`w-full border-t pt-10 pb-10 px-6 md:px-12 xl:px-20 2xl:px-32 transition-colors duration-500 ${footerBg}`}>
@@ -47,13 +48,13 @@ export function Footer() {
               </div>
             </Link>
 
-            <span className="hidden md:inline text-white/15">|</span>
+            <span className="hidden md:inline text-[#55788D]/30">|</span>
 
-            <a href="mailto:svp@growxlabs.tech" className={`flex items-center gap-2 text-[13px] hover:text-white transition-colors ${textColor}`}>
+            <a href="mailto:svp@growxlabs.tech" className={`flex items-center gap-2 text-[13px] transition-colors ${textColor} ${linkHoverColor}`}>
               <GrowxContact size={14} className={accentColor} aria-hidden="true" /> svp@growxlabs.tech
             </a>
 
-            <span className="hidden md:inline text-white/15">|</span>
+            <span className="hidden md:inline text-[#55788D]/30">|</span>
 
             {/* Horizontal Social Icons */}
             <div className="flex items-center gap-4">
@@ -111,8 +112,8 @@ export function Footer() {
           {/* Right side: Legal links horizontal */}
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
             {links.legal.map((link) => {
-              const resolvedHref = getAbsoluteUrl(link.href);
-              const isExternal = resolvedHref.startsWith("http");
+              const resolvedHref = isMounted ? getAbsoluteUrl(link.href) : link.href;
+              const isExternal = isMounted && resolvedHref.startsWith("http");
 
               if (isExternal) {
                 return (
@@ -140,7 +141,7 @@ export function Footer() {
 
         </div>
 
-        <div className="border-t pt-8 flex items-center justify-center border-white/10">
+        <div className="border-t pt-8 flex items-center justify-center border-[#55788D]/20">
           <p className={`text-[13px] text-center ${textColor}`}>
             Copyright 2026 GrowxLabs. All rights reserved.
           </p>

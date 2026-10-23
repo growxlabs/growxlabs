@@ -417,11 +417,11 @@ export function CareersContent() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 w-full h-full bg-[#0a0a0c] text-white font-sans z-50 flex flex-col justify-between p-8 md:p-16 select-none overflow-hidden cursor-pointer"
+          className="fixed inset-0 w-full h-full bg-[#A2BECC] text-[#17252D] font-sans z-50 flex flex-col justify-between p-8 md:p-16 select-none overflow-hidden cursor-pointer"
           onClick={() => setShowForm(true)}
         >
           {/* Top Row */}
-          <div className="flex justify-between items-center text-[10px] font-mono font-bold tracking-widest text-zinc-500">
+          <div className="flex justify-between items-center text-[10px] font-mono font-bold tracking-widest text-[#55788D]">
             <div>[GrowXLabs]</div>
             <div>// INTRO</div>
             <button
@@ -431,7 +431,7 @@ export function CareersContent() {
                 setShowForm(true);
                 setStep(1);
               }}
-              className="hover:text-white transition-colors cursor-pointer"
+              className="hover:text-[#17252D] transition-colors cursor-pointer"
             >
               START
             </button>
@@ -439,29 +439,29 @@ export function CareersContent() {
 
           {/* Middle Row with columns */}
           <div className="flex justify-end w-full mb-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 text-[9px] font-mono tracking-widest uppercase text-zinc-500 max-w-4xl w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 text-[9px] font-mono tracking-widest uppercase text-[#55788D] max-w-4xl w-full">
               <div>
-                <p className="text-zinc-500 mb-1">We hire for</p>
-                <p className="text-white font-bold">Curiosity, grit,<br />honesty</p>
+                <p className="text-[#55788D] mb-1">We hire for</p>
+                <p className="text-[#17252D] font-bold">Curiosity, grit,<br />honesty</p>
               </div>
               <div>
-                <p className="text-zinc-500 mb-1">Status</p>
-                <p className="text-white font-bold">1 open role<br />4 pipelined</p>
+                <p className="text-[#55788D] mb-1">Status</p>
+                <p className="text-[#17252D] font-bold">1 open role<br />4 pipelined</p>
               </div>
               <div>
-                <p className="text-zinc-500 mb-1">Reply within</p>
-                <p className="text-white font-bold">7 days,<br />always a human</p>
+                <p className="text-[#55788D] mb-1">Reply within</p>
+                <p className="text-[#17252D] font-bold">7 days,<br />always a human</p>
               </div>
               <div>
-                <p className="text-zinc-500 mb-1">© 2026</p>
-                <p className="text-white font-bold">GrowX Labs<br />Pvt Ltd</p>
+                <p className="text-[#55788D] mb-1">© 2026</p>
+                <p className="text-[#17252D] font-bold">GrowX Labs<br />Pvt Ltd</p>
               </div>
             </div>
           </div>
 
           {/* Bottom Row */}
           <div className="w-full flex flex-col items-start">
-            <h1 className="text-[12vw] font-bold tracking-tighter leading-none select-none text-white font-serif">
+            <h1 className="text-[12vw] font-bold tracking-tighter leading-none select-none text-[#17252D] font-serif">
               <FlickerText text="Careers" />
             </h1>
           </div>
@@ -473,17 +473,17 @@ export function CareersContent() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed inset-0 w-full h-full bg-[#0a0a0c] text-white font-sans z-50 flex flex-col justify-between p-6 sm:p-12 md:p-16 select-none overflow-hidden"
+          className="fixed inset-0 w-full h-full bg-[#A2BECC] text-[#17252D] font-sans z-50 flex flex-col justify-between p-6 sm:p-12 md:p-16 select-none overflow-hidden"
         >
           {/* ═══ TOP 360LABS STATUS BAR ═══ */}
-      <header className="flex justify-between items-center text-xs font-mono tracking-widest text-zinc-500 shrink-0">
+      <header className="flex justify-between items-center text-xs font-mono tracking-widest text-[#55788D] shrink-0">
         <div>
-          <span className="text-white font-bold tracking-widest text-xs font-mono uppercase">[GrowXLabs]</span>
+          <span className="text-[#17252D] font-bold tracking-widest text-xs font-mono uppercase">[GrowXLabs]</span>
         </div>
-        <div className="uppercase text-[11px] tracking-[0.25em] text-zinc-400 font-mono font-bold">
+        <div className="uppercase text-[11px] tracking-[0.25em] text-[#55788D] font-mono font-bold">
           {getTopSection()}
         </div>
-        <div className="text-[11px] font-mono tracking-widest text-zinc-400 font-bold">
+        <div className="text-[11px] font-mono tracking-widest text-[#55788D] font-bold">
           {getStepCounter()}
         </div>
       </header>
@@ -503,13 +503,13 @@ export function CareersContent() {
             {/* ═══ SCREEN 0: INTRO (360Labs Image 1 As-Is) ═══ */}
             {step === 0 && (
               <div className="w-full space-y-6">
-                <span className="font-mono text-xs text-zinc-500 tracking-widest uppercase">
+                <span className="font-mono text-xs text-[#55788D] tracking-widest uppercase">
                   // CAREERS · 2026
                 </span>
-                <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-white font-sans leading-none">
+                <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-[#17252D] font-sans leading-none">
                   Apply to GrowX Labs.
                 </h1>
-                <p className="text-base sm:text-lg text-zinc-400 font-sans leading-relaxed">
+                <p className="text-base sm:text-lg text-[#55788D] font-sans leading-relaxed">
                   Curious. Hard-working. Honest. About 10-15 minutes.
                 </p>
 
@@ -517,11 +517,11 @@ export function CareersContent() {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-sm rounded-md transition-all active:scale-95 shadow-md flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-2.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold text-sm rounded-md transition-all active:scale-95 shadow-md flex items-center gap-2 cursor-pointer"
                   >
                     <span>Start</span>
                   </button>
-                  <span className="text-[11px] font-mono tracking-widest text-zinc-500 uppercase">
+                  <span className="text-[11px] font-mono tracking-widest text-[#55788D] uppercase">
                     PRESS ENTER
                   </span>
                 </div>
@@ -531,21 +531,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 1: NAME (360Labs Image 2 As-Is) ═══ */}
             {step === 1 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // NAME
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What's your name?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.name}
                     onChange={(e) => updateField("name", e.target.value)}
                     placeholder="Jane Doe"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -558,21 +558,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 2: EMAIL ═══ */}
             {step === 2 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // EMAIL
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your email address?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="email"
                     value={formData.email}
                     onChange={(e) => updateField("email", e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -585,21 +585,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 3: PHONE ═══ */}
             {step === 3 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // PHONE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your phone number?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -612,21 +612,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 4: LOCATION ═══ */}
             {step === 4 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // LOCATION
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Where are you currently located?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.location}
                     onChange={(e) => updateField("location", e.target.value)}
                     placeholder="Bengaluru, India or Remote"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -639,15 +639,15 @@ export function CareersContent() {
             {/* ═══ SCREEN 5: ROLE SELECTION (360Labs Image 3 As-Is) ═══ */}
             {step === 5 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // ROLE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What are you applying for?
                 </h2>
 
                 {/* 360labs Options List with horizontal divider borders */}
-                <div className="w-full border-t border-b border-zinc-800 divide-y divide-zinc-800/80 my-2">
+                <div className="w-full border-t border-b border-[#D5E2E9] divide-y divide-zinc-800/80 my-2">
                   {ROLES.map((r, idx) => {
                     const isSelected = formData.role === r.title;
                     return (
@@ -656,26 +656,26 @@ export function CareersContent() {
                         onClick={() => selectRole(r.title)}
                         className={cn(
                           "w-full py-3.5 px-2 flex items-center justify-between cursor-pointer transition-colors group",
-                          isSelected ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                          isSelected ? "bg-[#E5EFF4]" : "hover:bg-[#E5EFF4]/60"
                         )}
                       >
                         <div className="flex items-center gap-4">
                           <span className={cn(
                             "w-6 h-6 rounded-full border text-[11px] font-mono flex items-center justify-center transition-colors",
                             isSelected
-                              ? "border-white text-white font-bold bg-white/10"
-                              : "border-zinc-700 text-zinc-500 group-hover:border-zinc-500 group-hover:text-zinc-300"
+                              ? "border-[#17252D] text-[#17252D] font-bold bg-[#E5EFF4]"
+                              : "border-[#D5E2E9] text-[#55788D] group-hover:border-zinc-500 group-hover:text-zinc-300"
                           )}>
                             {idx + 1}
                           </span>
                           <span className={cn(
                             "text-sm sm:text-base font-medium font-sans transition-colors",
-                            isSelected ? "text-white font-bold" : "text-zinc-300 group-hover:text-white"
+                            isSelected ? "text-[#17252D] font-bold" : "text-zinc-300 group-hover:text-[#17252D]"
                           )}>
                             {r.title}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                        <span className="text-[10px] font-mono tracking-widest text-[#55788D] uppercase">
                           {r.tag}
                         </span>
                       </div>
@@ -687,22 +687,22 @@ export function CareersContent() {
                   <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
                 )}
 
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
+                <div className="flex items-center justify-between text-xs font-mono text-[#55788D] pt-2">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
+                      className="px-4 py-1.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
                     >
                       OK ↵
                     </button>
                     <div className="flex items-center gap-1.5 text-[11px]">
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         1 - 6
                       </span>
                       <span>TO PICK</span>
                       <span className="mx-1">·</span>
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         ↵
                       </span>
                       <span>TO CONTINUE</span>
@@ -711,7 +711,7 @@ export function CareersContent() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="hover:text-white transition-colors cursor-pointer text-[11px]"
+                    className="hover:text-[#17252D] transition-colors cursor-pointer text-[11px]"
                   >
                     ← BACK · ESC
                   </button>
@@ -722,13 +722,13 @@ export function CareersContent() {
             {/* ═══ SCREEN 6: SECTION 02 INTERMISSION (360Labs Image 4 As-Is) ═══ */}
             {step === 6 && (
               <div className="w-full space-y-6">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // PROFESSIONAL LINKS
                 </span>
-                <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Professional Links
                 </h2>
-                <p className="text-base sm:text-lg text-zinc-400 leading-relaxed font-sans max-w-xl">
+                <p className="text-base sm:text-lg text-[#55788D] leading-relaxed font-sans max-w-xl">
                   This section helps us understand your background, what you've worked on, and how you think. Share links that best represent your experience so we can review your work in context.
                 </p>
 
@@ -736,19 +736,19 @@ export function CareersContent() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="text-xs font-mono text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                    className="text-xs font-mono text-[#55788D] hover:text-[#17252D] transition-colors cursor-pointer"
                   >
                     ← BACK · ESC
                   </button>
 
                   <div className="flex items-center gap-4">
-                    <span className="text-[11px] font-mono tracking-widest text-zinc-500 uppercase">
+                    <span className="text-[11px] font-mono tracking-widest text-[#55788D] uppercase">
                       PRESS ENTER
                     </span>
                     <button
                       type="button"
                       onClick={() => setStep(7)}
-                      className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-md transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                      className="px-6 py-2.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold text-xs rounded-md transition-all shadow-md flex items-center gap-2 cursor-pointer"
                     >
                       <span>Continue →</span>
                     </button>
@@ -760,21 +760,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 7: LINKEDIN (360Labs Image 5 As-Is) ═══ */}
             {step === 7 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // LINKEDIN
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   LinkedIn profile?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="url"
                     value={formData.linkedin}
                     onChange={(e) => updateField("linkedin", e.target.value)}
                     placeholder="https://linkedin.com/in/..."
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
 
@@ -794,21 +794,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 8: GITHUB / PORTFOLIO ═══ */}
             {step === 8 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // PORTFOLIO & CODE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   GitHub, portfolio, or showreel link?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="url"
                     value={formData.github}
                     onChange={(e) => updateField("github", e.target.value)}
                     placeholder="https://github.com/... or https://yourportfolio.com"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
 
@@ -832,21 +832,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 9: PERSONAL SITE / OTHER WORK ═══ */}
             {step === 9 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // OTHER WORK
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Any other project or case study you'd like us to review?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="url"
                     value={formData.portfolio}
                     onChange={(e) => updateField("portfolio", e.target.value)}
                     placeholder="https://..."
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
 
@@ -874,21 +874,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 10: EXPERIENCE ═══ */}
             {step === 10 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // EXPERIENCE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   How many years of professional experience do you have?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.experience}
                     onChange={(e) => updateField("experience", e.target.value)}
                     placeholder="Years (e.g. 2)"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -901,21 +901,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 11: PRIMARY TOOL / LANGUAGE ═══ */}
             {step === 11 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // PRIMARY STACK
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your primary programming language or creative tool?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.techStack}
                     onChange={(e) => updateField("techStack", e.target.value)}
                     placeholder="e.g. TypeScript / Next.js or Premiere Pro / Figma"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -928,29 +928,29 @@ export function CareersContent() {
             {/* ═══ SCREEN 12: RESUME CV UPLOAD ═══ */}
             {step === 12 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // RESUME
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Upload your resume or CV.
                 </h2>
 
                 {uploading ? (
-                  <div className="p-8 border border-dashed border-zinc-800 rounded-xl bg-white/[0.01] flex flex-col items-center justify-center gap-2">
+                  <div className="p-8 border border-dashed border-[#D5E2E9] rounded-xl bg-[#F4F8FA] flex flex-col items-center justify-center gap-2">
                     <Loader2 className="animate-spin text-white h-6 w-6" />
-                    <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+                    <span className="text-xs font-mono text-[#55788D] uppercase tracking-widest">
                       Uploading to cloud...
                     </span>
                   </div>
                 ) : formData.resume ? (
-                  <div className="p-4 border border-zinc-800 bg-white/[0.02] rounded-xl flex items-center justify-between">
+                  <div className="p-4 border border-[#D5E2E9] bg-[#F4F8FA] rounded-xl flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-7 h-7 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                         <Check size={14} />
                       </div>
                       <div>
                         <p className="font-semibold text-white text-xs">{uploadedFileName || "resume.pdf"}</p>
-                        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Uploaded</span>
+                        <span className="text-[10px] font-mono text-[#55788D] uppercase tracking-wider">Uploaded</span>
                       </div>
                     </div>
                     <button
@@ -959,7 +959,7 @@ export function CareersContent() {
                         setFormData(prev => ({ ...prev, resume: "" }));
                         setUploadedFileName("");
                       }}
-                      className="text-xs font-mono text-zinc-500 hover:text-white px-2 py-1 rounded transition-colors cursor-pointer"
+                      className="text-xs font-mono text-[#55788D] hover:text-[#17252D] px-2 py-1 rounded transition-colors cursor-pointer"
                     >
                       Change
                     </button>
@@ -975,7 +975,7 @@ export function CareersContent() {
                     onClick={() => {
                       document.getElementById("career-resume-file-input")?.click();
                     }}
-                    className="p-8 border border-dashed border-zinc-800 hover:border-zinc-600 rounded-xl bg-white/[0.01] hover:bg-white/[0.03] text-center cursor-pointer transition-all space-y-2"
+                    className="p-8 border border-dashed border-[#D5E2E9] hover:border-zinc-600 rounded-xl bg-[#F4F8FA] hover:bg-[#E5EFF4]/60 text-center cursor-pointer transition-all space-y-2"
                   >
                     <input
                       id="career-resume-file-input"
@@ -987,14 +987,14 @@ export function CareersContent() {
                         if (file) handleFileUpload(file);
                       }}
                     />
-                    <div className="w-8 h-8 rounded-full bg-white/5 text-zinc-400 flex items-center justify-center mx-auto">
+                    <div className="w-8 h-8 rounded-full bg-white/5 text-[#55788D] flex items-center justify-center mx-auto">
                       <FileText size={16} />
                     </div>
                     <div>
                       <p className="font-medium text-white text-xs">
                         Drag and drop your resume here, or <span className="underline text-white">browse</span>
                       </p>
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">
+                      <p className="text-[10px] font-mono text-[#55788D] uppercase tracking-wider mt-1">
                         PDF or DOCX up to 10MB
                       </p>
                     </div>
@@ -1012,21 +1012,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 13: CURRENT / LAST TITLE ═══ */}
             {step === 13 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // TITLE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your current or last job title?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.jobTitle}
                     onChange={(e) => updateField("jobTitle", e.target.value)}
                     placeholder="Software Engineer, Product Designer, or Student"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
                 {error && (
@@ -1039,21 +1039,21 @@ export function CareersContent() {
             {/* ═══ SCREEN 14: CURRENT / LAST COMPANY ═══ */}
             {step === 14 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // COMPANY
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your current or last company or university?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-6 flex items-center gap-3">
-                  <span className="text-zinc-500 font-mono text-xl select-none">&gt;</span>
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-6 flex items-center gap-3">
+                  <span className="text-[#55788D] font-mono text-xl select-none">&gt;</span>
                   <input
                     ref={inputRef as any}
                     type="text"
                     value={formData.company}
                     onChange={(e) => updateField("company", e.target.value)}
                     placeholder="Company or College name"
-                    className="w-full bg-transparent text-xl sm:text-2xl text-white outline-none font-sans placeholder-zinc-700 font-normal"
+                    className="w-full bg-transparent text-xl sm:text-2xl text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 font-normal"
                   />
                 </div>
 
@@ -1072,14 +1072,14 @@ export function CareersContent() {
             {/* ═══ SCREEN 15: EMPLOYMENT PREFERENCE (360Labs Number Pick) ═══ */}
             {step === 15 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // PREFERENCE
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Select your employment preference:
                 </h2>
 
-                <div className="w-full border-t border-b border-zinc-800 divide-y divide-zinc-800/80 my-2">
+                <div className="w-full border-t border-b border-[#D5E2E9] divide-y divide-zinc-800/80 my-2">
                   {EMPLOYMENT_TYPES.map((t, idx) => {
                     const isSelected = formData.employmentType === t.label;
                     return (
@@ -1088,26 +1088,26 @@ export function CareersContent() {
                         onClick={() => selectEmploymentType(t.label)}
                         className={cn(
                           "w-full py-3.5 px-2 flex items-center justify-between cursor-pointer transition-colors group",
-                          isSelected ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                          isSelected ? "bg-[#E5EFF4]" : "hover:bg-[#E5EFF4]/60"
                         )}
                       >
                         <div className="flex items-center gap-4">
                           <span className={cn(
                             "w-6 h-6 rounded-full border text-[11px] font-mono flex items-center justify-center transition-colors",
                             isSelected
-                              ? "border-white text-white font-bold bg-white/10"
-                              : "border-zinc-700 text-zinc-500 group-hover:border-zinc-500 group-hover:text-zinc-300"
+                              ? "border-[#17252D] text-[#17252D] font-bold bg-[#E5EFF4]"
+                              : "border-[#D5E2E9] text-[#55788D] group-hover:border-zinc-500 group-hover:text-zinc-300"
                           )}>
                             {idx + 1}
                           </span>
                           <span className={cn(
                             "text-sm sm:text-base font-medium font-sans transition-colors",
-                            isSelected ? "text-white font-bold" : "text-zinc-300 group-hover:text-white"
+                            isSelected ? "text-[#17252D] font-bold" : "text-zinc-300 group-hover:text-[#17252D]"
                           )}>
                             {t.label}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                        <span className="text-[10px] font-mono tracking-widest text-[#55788D] uppercase">
                           {t.tag}
                         </span>
                       </div>
@@ -1119,22 +1119,22 @@ export function CareersContent() {
                   <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
                 )}
 
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
+                <div className="flex items-center justify-between text-xs font-mono text-[#55788D] pt-2">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
+                      className="px-4 py-1.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
                     >
                       OK ↵
                     </button>
                     <div className="flex items-center gap-1.5 text-[11px]">
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         1 - 3
                       </span>
                       <span>TO PICK</span>
                       <span className="mx-1">·</span>
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         ↵
                       </span>
                       <span>TO CONTINUE</span>
@@ -1143,7 +1143,7 @@ export function CareersContent() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="hover:text-white transition-colors cursor-pointer text-[11px]"
+                    className="hover:text-[#17252D] transition-colors cursor-pointer text-[11px]"
                   >
                     ← BACK · ESC
                   </button>
@@ -1154,14 +1154,14 @@ export function CareersContent() {
             {/* ═══ SCREEN 16: NOTICE PERIOD (360Labs Number Pick) ═══ */}
             {step === 16 && (
               <div className="w-full space-y-5">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // NOTICE PERIOD
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   What is your availability to start?
                 </h2>
 
-                <div className="w-full border-t border-b border-zinc-800 divide-y divide-zinc-800/80 my-2">
+                <div className="w-full border-t border-b border-[#D5E2E9] divide-y divide-zinc-800/80 my-2">
                   {NOTICE_PERIODS.map((p, idx) => {
                     const isSelected = formData.noticePeriod === p.label;
                     return (
@@ -1170,26 +1170,26 @@ export function CareersContent() {
                         onClick={() => selectNoticePeriod(p.label)}
                         className={cn(
                           "w-full py-3.5 px-2 flex items-center justify-between cursor-pointer transition-colors group",
-                          isSelected ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                          isSelected ? "bg-[#E5EFF4]" : "hover:bg-[#E5EFF4]/60"
                         )}
                       >
                         <div className="flex items-center gap-4">
                           <span className={cn(
                             "w-6 h-6 rounded-full border text-[11px] font-mono flex items-center justify-center transition-colors",
                             isSelected
-                              ? "border-white text-white font-bold bg-white/10"
-                              : "border-zinc-700 text-zinc-500 group-hover:border-zinc-500 group-hover:text-zinc-300"
+                              ? "border-[#17252D] text-[#17252D] font-bold bg-[#E5EFF4]"
+                              : "border-[#D5E2E9] text-[#55788D] group-hover:border-zinc-500 group-hover:text-zinc-300"
                           )}>
                             {idx + 1}
                           </span>
                           <span className={cn(
                             "text-sm sm:text-base font-medium font-sans transition-colors",
-                            isSelected ? "text-white font-bold" : "text-zinc-300 group-hover:text-white"
+                            isSelected ? "text-[#17252D] font-bold" : "text-zinc-300 group-hover:text-[#17252D]"
                           )}>
                             {p.label}
                           </span>
                         </div>
-                        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                        <span className="text-[10px] font-mono tracking-widest text-[#55788D] uppercase">
                           {p.tag}
                         </span>
                       </div>
@@ -1201,22 +1201,22 @@ export function CareersContent() {
                   <p className="text-xs font-mono text-rose-400 pt-1">! {error}</p>
                 )}
 
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2">
+                <div className="flex items-center justify-between text-xs font-mono text-[#55788D] pt-2">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
+                      className="px-4 py-1.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold rounded text-xs transition-all shadow-sm cursor-pointer"
                     >
                       OK ↵
                     </button>
                     <div className="flex items-center gap-1.5 text-[11px]">
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         1 - 4
                       </span>
                       <span>TO PICK</span>
                       <span className="mx-1">·</span>
-                      <span className="px-1.5 py-0.5 border border-zinc-700 rounded bg-zinc-900 text-zinc-400">
+                      <span className="px-1.5 py-0.5 border border-[#D5E2E9] rounded bg-[#E5EFF4] text-[#55788D]">
                         ↵
                       </span>
                       <span>TO CONTINUE</span>
@@ -1225,7 +1225,7 @@ export function CareersContent() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="hover:text-white transition-colors cursor-pointer text-[11px]"
+                    className="hover:text-[#17252D] transition-colors cursor-pointer text-[11px]"
                   >
                     ← BACK · ESC
                   </button>
@@ -1236,24 +1236,24 @@ export function CareersContent() {
             {/* ═══ SCREEN 17: MOTIVATION ═══ */}
             {step === 17 && (
               <div className="w-full space-y-4">
-                <span className="font-mono text-xs text-zinc-500 tracking-wider">
+                <span className="font-mono text-xs text-[#55788D] tracking-wider">
                   // MOTIVATION
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white font-sans">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Why do you want to join GrowX Labs?
                 </h2>
-                <div className="w-full border-b border-zinc-700/80 focus-within:border-white transition-colors pb-3 pt-4">
+                <div className="w-full border-b border-[#D5E2E9] focus-within:border-[#17252D] transition-colors pb-3 pt-4">
                   <textarea
                     ref={inputRef as any}
                     rows={4}
                     value={formData.motivation}
                     onChange={(e) => updateField("motivation", e.target.value)}
                     placeholder="Tell us what drives you, projects you're proud of, or why you want to build with us..."
-                    className="w-full bg-transparent text-base sm:text-lg text-white outline-none font-sans placeholder-zinc-700 leading-relaxed resize-none font-normal"
+                    className="w-full bg-transparent text-base sm:text-lg text-[#17252D] outline-none font-sans placeholder-[#55788D]/40 leading-relaxed resize-none font-normal"
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500 pt-1">
+                <div className="flex items-center justify-between text-[11px] font-mono text-[#55788D] pt-1">
                   <span>{formData.motivation.trim().length} characters (min 20)</span>
                   <span>{formData.motivation.trim().split(/\s+/).filter(Boolean).length} words</span>
                 </div>
@@ -1279,14 +1279,14 @@ export function CareersContent() {
                         <span>Submit Application</span>
                       )}
                     </button>
-                    <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+                    <span className="text-[10px] font-mono tracking-widest text-[#55788D] uppercase">
                       PRESS ↵
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="text-xs font-mono text-zinc-500 hover:text-white transition-colors cursor-pointer"
+                    className="text-xs font-mono text-[#55788D] hover:text-[#17252D] transition-colors cursor-pointer"
                   >
                     ← BACK · ESC
                   </button>
@@ -1300,17 +1300,17 @@ export function CareersContent() {
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                   <Check size={24} />
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter text-white font-sans">
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter text-[#17252D] font-sans">
                   Application Submitted.
                 </h1>
-                <p className="text-base sm:text-lg text-zinc-400 font-sans leading-relaxed max-w-lg">
+                <p className="text-base sm:text-lg text-[#55788D] font-sans leading-relaxed max-w-lg">
                   Thank you for applying to GrowX Labs. Our founding team reviews every application directly. We will get back to you at <span className="text-white font-semibold">{formData.email}</span> within 48-72 hours.
                 </p>
                 <div className="pt-4">
                   <button
                     type="button"
                     onClick={() => router.push("/")}
-                    className="px-6 py-2.5 rounded-md border border-zinc-700 hover:border-zinc-500 text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                    className="px-6 py-2.5 rounded-md border border-[#D5E2E9] hover:border-zinc-500 text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Go Back Home
                   </button>
@@ -1322,17 +1322,17 @@ export function CareersContent() {
       </main>
 
       {/* ═══ BOTTOM 360LABS STATUS BAR ═══ */}
-      <footer className="flex justify-between items-center text-xs font-mono tracking-widest text-zinc-500 shrink-0">
+      <footer className="flex justify-between items-center text-xs font-mono tracking-widest text-[#55788D] shrink-0">
         <div className="flex items-center gap-2">
           <span className={cn(
             "w-2 h-2 rounded-full",
             step === 18 ? "bg-emerald-400" : "bg-emerald-400 animate-pulse"
           )} />
-          <span className="text-[11px] tracking-widest text-zinc-400 font-mono">
+          <span className="text-[11px] tracking-widest text-[#55788D] font-mono">
             {getBottomIndicator()}
           </span>
         </div>
-        <div className="text-[11px] tracking-widest font-mono text-zinc-400">
+        <div className="text-[11px] tracking-widest font-mono text-[#55788D]">
           {utcTime}
         </div>
       </footer>
@@ -1350,20 +1350,20 @@ function ActionBar({ onNext, onBack }: { onNext: () => void; onBack: () => void 
         <button
           type="button"
           onClick={onNext}
-          className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-black font-semibold rounded text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-1.5 bg-[#A2BECC] hover:bg-[#17252D] text-[#17252D] hover:text-[#FAFCFD] font-semibold rounded text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
         >
           <span>OK</span>
           <span className="text-[10px] font-mono">↵</span>
         </button>
-        <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase flex items-center gap-1">
+        <span className="text-[10px] font-mono tracking-widest text-[#55788D] uppercase flex items-center gap-1">
           <span>PRESS</span>
-          <span className="px-1 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-[9px]">↵</span>
+          <span className="px-1 py-0.5 rounded bg-[#E5EFF4] border border-[#D5E2E9] text-[#55788D] text-[9px]">↵</span>
         </span>
       </div>
       <button
         type="button"
         onClick={onBack}
-        className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors cursor-pointer"
+        className="text-[11px] font-mono text-[#55788D] hover:text-[#17252D] transition-colors cursor-pointer"
       >
         ← BACK · ESC
       </button>

@@ -187,35 +187,35 @@ export function DiscoveryBookingForm() {
   // ══════════════════════════════════════════════════════════════════
   if (isBooked) {
     return (
-      <div className="w-full max-w-3xl mx-auto py-16 px-6 border border-neutral-800 bg-[#0A0A0D] text-center rounded-none shadow-2xl transition-all">
-        <div className="w-12 h-12 rounded-full border border-emerald-500/40 bg-emerald-950/30 flex items-center justify-center mx-auto mb-6 text-emerald-400">
+      <div className="w-full max-w-3xl mx-auto py-16 px-6 sm:px-10 border border-[#D5E2E9] bg-[#F4F8FA] text-center rounded-2xl shadow-lg transition-all">
+        <div className="w-12 h-12 rounded-full border border-emerald-500/40 bg-emerald-100 flex items-center justify-center mx-auto mb-6 text-emerald-700">
           <GrowxCheck size={24} />
         </div>
 
-        <h2 className="text-3xl sm:text-5xl font-light text-white tracking-tight font-sans leading-tight">
+        <h2 className="text-3xl sm:text-5xl font-bold text-[#17252D] tracking-tight font-sans leading-tight">
           Thanks, your call is booked.
         </h2>
-        <p className="mt-4 text-xs sm:text-sm uppercase tracking-widest text-neutral-400 font-mono">
+        <p className="mt-4 text-xs sm:text-sm uppercase tracking-widest text-[#55788D] font-mono font-bold">
           We&apos;ll see you then
         </p>
 
         {/* Scheduled Brief Summary */}
-        <div className="mt-10 p-6 border border-neutral-800/80 bg-neutral-900/40 text-left space-y-3 font-mono text-xs">
-          <div className="flex justify-between border-b border-neutral-800/60 pb-2">
-            <span className="text-neutral-500 uppercase tracking-wider">Client</span>
-            <span className="text-white font-medium">{formData.name} ({formData.company})</span>
+        <div className="mt-10 p-6 border border-[#D5E2E9] bg-[#E5EFF4] text-left space-y-3 font-mono text-xs rounded-xl">
+          <div className="flex justify-between border-b border-[#D5E2E9] pb-2">
+            <span className="text-[#55788D] uppercase tracking-wider font-semibold">Client</span>
+            <span className="text-[#17252D] font-bold">{formData.name} ({formData.company})</span>
           </div>
-          <div className="flex justify-between border-b border-neutral-800/60 pb-2">
-            <span className="text-neutral-500 uppercase tracking-wider">Work Email</span>
-            <span className="text-white font-medium">{formData.email}</span>
+          <div className="flex justify-between border-b border-[#D5E2E9] pb-2">
+            <span className="text-[#55788D] uppercase tracking-wider font-semibold">Work Email</span>
+            <span className="text-[#17252D] font-bold">{formData.email}</span>
           </div>
-          <div className="flex justify-between border-b border-neutral-800/60 pb-2">
-            <span className="text-neutral-500 uppercase tracking-wider">Scheduled Date</span>
-            <span className="text-white font-medium">{formData.date}</span>
+          <div className="flex justify-between border-b border-[#D5E2E9] pb-2">
+            <span className="text-[#55788D] uppercase tracking-wider font-semibold">Scheduled Date</span>
+            <span className="text-[#17252D] font-bold">{formData.date}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-neutral-500 uppercase tracking-wider">Scheduled Time</span>
-            <span className="text-emerald-400 font-semibold">{formData.time} (IST)</span>
+            <span className="text-[#55788D] uppercase tracking-wider font-semibold">Scheduled Time</span>
+            <span className="text-emerald-700 font-bold">{formData.time} (IST)</span>
           </div>
         </div>
 
@@ -227,7 +227,7 @@ export function DiscoveryBookingForm() {
               setCurrentStep(0);
               setFormData({ name: "", company: "", email: "", message: "", date: "", time: "" });
             }}
-            className="text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-white transition-colors"
+            className="text-xs font-mono uppercase tracking-widest text-[#55788D] hover:text-[#17252D] transition-colors cursor-pointer font-bold"
           >
             ← Book another session
           </button>
@@ -243,7 +243,7 @@ export function DiscoveryBookingForm() {
     <div className="w-full max-w-3xl mx-auto">
       {/* Top Header: Step Counter & Progress Bar */}
       <div className="mb-12 sm:mb-16">
-        <div className="flex items-center justify-between text-xs font-mono uppercase tracking-widest text-neutral-400 select-none">
+        <div className="flex items-center justify-between text-xs font-mono uppercase tracking-widest text-[#55788D] select-none font-bold">
           <span>Book a discovery call</span>
           <span>
             {String(currentStep + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
@@ -251,9 +251,9 @@ export function DiscoveryBookingForm() {
         </div>
 
         {/* Dynamic Progress Bar */}
-        <div className="mt-4 h-0.5 rounded-full bg-neutral-800 overflow-hidden">
+        <div className="mt-4 h-1 rounded-full bg-[#E5EFF4] overflow-hidden">
           <div
-            className="h-full rounded-full bg-white transition-all duration-500 ease-out"
+            className="h-full rounded-full bg-[#17252D] transition-all duration-500 ease-out"
             style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
           />
         </div>
@@ -262,10 +262,10 @@ export function DiscoveryBookingForm() {
       {/* Main Question & Input Block */}
       <form onSubmit={handleSubmit} className="space-y-8">
         <div>
-          <h2 className="text-3xl sm:text-5xl font-light text-white/90 leading-tight font-sans tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#17252D] leading-tight font-sans tracking-tight">
             {step.question}
             {step.optional && (
-              <span className="text-neutral-500 text-lg sm:text-2xl align-middle font-light ml-2">
+              <span className="text-[#55788D] text-lg sm:text-2xl align-middle font-normal ml-2">
                 (optional)
               </span>
             )}
@@ -285,7 +285,7 @@ export function DiscoveryBookingForm() {
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e)}
               placeholder="Your full name"
-              className="w-full bg-transparent border-b border-neutral-700 pb-4 text-2xl sm:text-4xl font-light text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors"
+              className="w-full bg-transparent border-b border-[#D5E2E9] pb-4 text-2xl sm:text-4xl font-normal text-[#17252D] placeholder-[#55788D]/40 focus:outline-none focus:border-[#17252D] transition-colors"
             />
           )}
 
@@ -300,7 +300,7 @@ export function DiscoveryBookingForm() {
               onChange={(e) => setFormData({ ...formData, company: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e)}
               placeholder="Your company"
-              className="w-full bg-transparent border-b border-neutral-700 pb-4 text-2xl sm:text-4xl font-light text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors"
+              className="w-full bg-transparent border-b border-[#D5E2E9] pb-4 text-2xl sm:text-4xl font-normal text-[#17252D] placeholder-[#55788D]/40 focus:outline-none focus:border-[#17252D] transition-colors"
             />
           )}
 
@@ -316,13 +316,13 @@ export function DiscoveryBookingForm() {
                 onChange={(e) => handleEmailChange(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e)}
                 placeholder="you@company.com"
-                className="w-full bg-transparent border-b border-neutral-700 pb-4 text-2xl sm:text-4xl font-light text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors"
+                className="w-full bg-transparent border-b border-[#D5E2E9] pb-4 text-2xl sm:text-4xl font-normal text-[#17252D] placeholder-[#55788D]/40 focus:outline-none focus:border-[#17252D] transition-colors"
               />
-              <p className="mt-3 text-[10px] sm:text-xs uppercase tracking-widest text-neutral-500 font-mono">
+              <p className="mt-3 text-[10px] sm:text-xs uppercase tracking-widest text-[#55788D] font-mono font-bold">
                 work email preferred
               </p>
               {emailWarning && (
-                <p className="mt-2 text-xs font-mono text-amber-400/90 tracking-wide">
+                <p className="mt-2 text-xs font-mono text-amber-700 tracking-wide font-medium">
                   {emailWarning}
                 </p>
               )}
@@ -339,7 +339,7 @@ export function DiscoveryBookingForm() {
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               onKeyDown={(e) => handleKeyDown(e, true)}
               placeholder="Tell us what you're building or how we can help"
-              className="w-full bg-transparent border-b border-neutral-700 pb-4 text-xl sm:text-3xl font-light text-white placeholder-neutral-600 focus:outline-none focus:border-white transition-colors resize-none leading-relaxed"
+              className="w-full bg-transparent border-b border-[#D5E2E9] pb-4 text-xl sm:text-3xl font-normal text-[#17252D] placeholder-[#55788D]/40 focus:outline-none focus:border-[#17252D] transition-colors resize-none leading-relaxed"
             />
           )}
 
@@ -355,9 +355,9 @@ export function DiscoveryBookingForm() {
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 onKeyDown={(e) => handleKeyDown(e)}
-                className="w-full bg-transparent border-b border-neutral-700 pb-4 text-xl sm:text-3xl font-light text-white focus:outline-none focus:border-white transition-colors [color-scheme:dark]"
+                className="w-full bg-transparent border-b border-[#D5E2E9] pb-4 text-xl sm:text-3xl font-normal text-[#17252D] focus:outline-none focus:border-[#17252D] transition-colors [color-scheme:light]"
               />
-              <p className="mt-3 text-[10px] sm:text-xs uppercase tracking-widest text-neutral-500 font-mono">
+              <p className="mt-3 text-[10px] sm:text-xs uppercase tracking-widest text-[#55788D] font-mono font-bold">
                 Select an upcoming business day
               </p>
             </div>
@@ -375,10 +375,10 @@ export function DiscoveryBookingForm() {
                         type="button"
                         onClick={() => setFormData({ ...formData, time: slot })}
                         className={cn(
-                          "px-6 py-3 text-sm sm:text-base border transition-all cursor-pointer text-center font-mono",
+                          "px-6 py-3 text-sm sm:text-base border rounded-xl transition-all cursor-pointer text-center font-mono",
                           isSelected
-                            ? "border-white bg-white text-black font-semibold shadow-lg"
-                            : "border-neutral-800 text-neutral-300 hover:border-neutral-500 bg-[#0C0C10]"
+                            ? "border-[#17252D] bg-[#17252D] text-[#FAFCFD] font-bold shadow-md"
+                            : "border-[#D5E2E9] text-[#17252D] hover:border-[#17252D] bg-[#E5EFF4] font-medium"
                         )}
                       >
                         {slot}
@@ -387,7 +387,7 @@ export function DiscoveryBookingForm() {
                   })}
                 </div>
               ) : (
-                <p className="text-base text-neutral-400 font-mono">
+                <p className="text-base text-[#55788D] font-mono">
                   Please pick a date first.
                 </p>
               )}
@@ -397,7 +397,7 @@ export function DiscoveryBookingForm() {
 
         {/* Error message if API fails */}
         {errorMessage && (
-          <p className="text-xs font-mono text-rose-400 bg-rose-950/30 p-3 border border-rose-800/40">
+          <p className="text-xs font-mono text-rose-700 bg-rose-50 p-4 border border-rose-200 rounded-xl">
             {errorMessage}
           </p>
         )}
@@ -411,7 +411,7 @@ export function DiscoveryBookingForm() {
                 type="button"
                 onClick={handleBack}
                 aria-label="Previous step"
-                className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-white transition-colors cursor-pointer py-2 px-1"
+                className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#55788D] hover:text-[#17252D] transition-colors cursor-pointer py-2 px-1 font-bold"
               >
                 <ArrowLeft size={16} />
                 <span className="hidden sm:inline">Back</span>
@@ -421,7 +421,7 @@ export function DiscoveryBookingForm() {
 
           {/* Right: Enter hint & Action button */}
           <div className="flex items-center gap-5">
-            <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-widest text-neutral-500">
+            <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-widest text-[#55788D]">
               press Enter ↵
             </span>
 
@@ -429,7 +429,7 @@ export function DiscoveryBookingForm() {
               <LiquidButton
                 type="submit"
                 onClick={() => handleSubmit()}
-                variant="white"
+                variant="airforce"
                 size="default"
                 disabled={!isFormFullyValid || isSubmitting}
                 icon={<GrowxArrowRight size={14} className="transition-transform group-hover:translate-x-1" />}
@@ -441,7 +441,7 @@ export function DiscoveryBookingForm() {
               <LiquidButton
                 type="button"
                 onClick={handleNext}
-                variant="white"
+                variant="airforce"
                 size="default"
                 disabled={!isCurrentStepValid()}
                 icon={<GrowxArrowRight size={14} className="transition-transform group-hover:translate-x-1" />}

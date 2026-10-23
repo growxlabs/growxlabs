@@ -148,12 +148,12 @@ export default function CoursesPage() {
       />
 
       {catalogLoading ? (
-        <div className="min-h-[50vh] bg-[#030303] flex flex-col items-center justify-center pt-20">
-          <Loader2 className="w-8 h-8 text-[#C0F0FB] animate-spin mb-4" />
-          <p className="text-zinc-500 font-mono tracking-widest text-[10px] uppercase">Retrieving catalog...</p>
+        <div className="min-h-[50vh] bg-[#A2BECC] flex flex-col items-center justify-center pt-20">
+          <Loader2 className="w-8 h-8 text-[#55788D] animate-spin mb-4" />
+          <p className="text-[#55788D] font-mono tracking-widest text-[10px] uppercase">Retrieving catalog...</p>
         </div>
       ) : (
-        <div className="pb-32 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#030303] font-sans overflow-x-hidden border-t border-zinc-800/40 pt-16">
+        <div className="pb-32 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#A2BECC] font-sans overflow-x-hidden border-t border-[#D5E2E9] pt-16">
           <div className="max-w-[1600px] mx-auto">
 
         {/* Featured Course Track — AI Engineering */}
@@ -161,43 +161,43 @@ export default function CoursesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Detailed Course Card */}
             <div
-              className="lg:col-span-8 group relative rounded-none border border-zinc-800 hover:border-[#C0F0FB]/20 bg-zinc-950 p-8 md:p-10 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+              className="lg:col-span-8 group relative rounded-xl border border-[#D5E2E9] hover:border-[#C0F0FB]/20 bg-[#F4F8FA] p-8 md:p-10 transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
             >
               <div className="relative z-10 mb-8">
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                  <h2 className="text-[#C0F0FB] font-semibold uppercase tracking-wider text-xs flex items-center gap-2">
+                  <h2 className="text-[#55788D] font-semibold uppercase tracking-wider text-xs flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#C0F0FB] animate-pulse" />
                     AI Academy // Core AI Track — Enrollment Open
                   </h2>
-                  <span className="px-3 py-1 rounded-full bg-[#C0F0FB]/5 border border-[#C0F0FB]/20 text-[#C0F0FB] text-[10px] font-semibold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-[#C0F0FB]/5 border border-[#C0F0FB]/20 text-[#55788D] text-[10px] font-semibold uppercase tracking-wider">
                     Flagship Program
                   </span>
                 </div>
-                <h3 className="text-4xl md:text-5xl font-serif font-bold text-white mb-2 tracking-tight leading-tight">AI Engineering</h3>
-                <p className="text-lg md:text-xl text-white/60 font-medium">From Scratch to Production</p>
+                <h3 className="text-4xl md:text-5xl font-serif font-bold text-[#17252D] mb-2 tracking-tight leading-tight">AI Engineering</h3>
+                <p className="text-lg md:text-xl text-[#55788D] font-medium">From Scratch to Production</p>
               </div>
 
               {/* AI Engineering AEO Section */}
-              <div className="mb-10 p-6 rounded-none bg-transparent border border-zinc-800/80">
-                <h4 className="text-white font-semibold text-base mb-6">
+              <div className="mb-10 p-6 rounded-xl bg-transparent border border-[#D5E2E9]">
+                <h4 className="text-[#17252D] font-semibold text-base mb-6">
                   Direct Track Outcome
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                  <div className="p-6 border-b md:border-r border-zinc-800/60 pb-6 md:pb-8 md:pr-8 md:pt-0 pl-0 pt-0">
-                    <p className="text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold mb-1">01 // Target Role</p>
-                    <p className="text-white text-sm leading-relaxed font-medium">{flagshipAEO.become}</p>
+                  <div className="p-6 border-b md:border-r border-[#D5E2E9] pb-6 md:pb-8 md:pr-8 md:pt-0 pl-0 pt-0">
+                    <p className="text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold mb-1">01 // Target Role</p>
+                    <p className="text-[#17252D] text-sm leading-relaxed font-medium">{flagshipAEO.become}</p>
                   </div>
-                  <div className="p-6 border-b border-zinc-800/60 pb-6 md:pb-8 md:pl-8 md:pt-0 pl-0 pt-0">
-                    <p className="text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold mb-1">02 // Problem Solved</p>
-                    <p className="text-white text-sm leading-relaxed font-medium">{flagshipAEO.problemSolved}</p>
+                  <div className="p-6 border-b border-[#D5E2E9] pb-6 md:pb-8 md:pl-8 md:pt-0 pl-0 pt-0">
+                    <p className="text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold mb-1">02 // Problem Solved</p>
+                    <p className="text-[#17252D] text-sm leading-relaxed font-medium">{flagshipAEO.problemSolved}</p>
                   </div>
-                  <div className="p-6 border-b md:border-b-0 md:border-r border-zinc-800/60 pt-6 md:pt-8 md:pr-8 pl-0">
-                    <p className="text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold mb-1">03 // Capstone Project</p>
-                    <p className="text-white text-sm leading-relaxed font-medium">{flagshipAEO.willBuild}</p>
+                  <div className="p-6 border-b md:border-b-0 md:border-r border-[#D5E2E9] pt-6 md:pt-8 md:pr-8 pl-0">
+                    <p className="text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold mb-1">03 // Capstone Project</p>
+                    <p className="text-[#17252D] text-sm leading-relaxed font-medium">{flagshipAEO.willBuild}</p>
                   </div>
                   <div className="p-6 pt-6 md:pt-8 md:pl-8 pl-0">
-                    <p className="text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold mb-1">04 // Who is this for</p>
-                    <p className="text-white text-sm leading-relaxed font-medium">{flagshipAEO.forWho}</p>
+                    <p className="text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold mb-1">04 // Who is this for</p>
+                    <p className="text-[#17252D] text-sm leading-relaxed font-medium">{flagshipAEO.forWho}</p>
                   </div>
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function CoursesPage() {
               <div className="relative z-10">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-10">
                   <div className="space-y-6">
-                    <p className="text-white/40 font-semibold text-xs uppercase tracking-widest">Terminal Skills:</p>
+                    <p className="text-[#55788D] font-semibold text-xs uppercase tracking-widest">Terminal Skills:</p>
                     <ul className="space-y-4">
                       {[
                         "How LLMs and AI models actually work",
@@ -218,34 +218,34 @@ export default function CoursesPage() {
                       ].map((item, i) => (
                         <li key={i} className="flex items-start gap-4 group">
                           <CheckCircle2
-                            className="text-[#C0F0FB] mt-0.5 shrink-0"
+                            className="text-[#55788D] mt-0.5 shrink-0"
                             size={18}
                           />
-                          <span className="text-white/80 font-medium text-base leading-snug">{item}</span>
+                          <span className="text-[#55788D] font-medium text-base leading-snug">{item}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="flex flex-col justify-end gap-6 bg-transparent rounded-none p-6 border border-zinc-800/80">
+                  <div className="flex flex-col justify-end gap-6 bg-transparent rounded-xl p-6 border border-[#D5E2E9]">
                     <div className="space-y-4">
-                      <div className="flex items-center gap-4 text-white/60 text-xs font-semibold uppercase tracking-wider">
-                        <Clock size={16} className="text-white/40" />
+                      <div className="flex items-center gap-4 text-[#55788D] text-xs font-semibold uppercase tracking-wider">
+                        <Clock size={16} className="text-[#55788D]" />
                         12 Weeks Self-paced
                       </div>
-                      <div className="flex items-center gap-4 text-white/60 text-xs font-semibold uppercase tracking-wider">
-                        <GraduationCap size={16} className="text-white/40" />
+                      <div className="flex items-center gap-4 text-[#55788D] text-xs font-semibold uppercase tracking-wider">
+                        <GraduationCap size={16} className="text-[#55788D]" />
                         GrowX Labs Certified
                       </div>
                     </div>
-                    <div className="pt-6 border-t border-zinc-800">
+                    <div className="pt-6 border-t border-[#D5E2E9]">
                       <div className="flex items-end justify-between mb-6">
                         <div>
-                          <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-1">Tuition Fees</p>
-                          <p className="text-4xl font-bold text-white tracking-tight">₹1,999</p>
+                          <p className="text-[#55788D] text-xs font-medium uppercase tracking-widest mb-1">Tuition Fees</p>
+                          <p className="text-4xl font-bold text-[#17252D] tracking-tight">₹1,999</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-1 line-through">
+                          <p className="text-[#55788D] text-xs font-medium uppercase tracking-widest mb-1 line-through">
                             ₹4,999
                           </p>
                           <p className="text-green-500 text-sm font-bold uppercase">60% OFF</p>
@@ -255,7 +255,7 @@ export default function CoursesPage() {
                       <Button
                         onClick={() => handleEnroll("ai-engineering")}
                         disabled={loading === "ai-engineering"}
-                        className="w-full h-14 rounded-none bg-[#161616] border border-zinc-800 text-white hover:bg-zinc-850 hover:text-[#C0F0FB] font-bold uppercase text-xs tracking-widest transition-all duration-200"
+                        className="w-full h-14 rounded-xl bg-[#A2BECC] border border-[#D5E2E9] text-[#17252D] hover:bg-[#17252D] hover:text-[#55788D] font-bold uppercase text-xs tracking-widest transition-all duration-200"
                       >
                         {loading === "ai-engineering" ? "Processing..." : "Enroll Now"}
                       </Button>
@@ -266,27 +266,27 @@ export default function CoursesPage() {
                 {/* Modules Accordion */}
                 <div className="space-y-4 mt-16">
                   <div className="flex items-center gap-6 mb-8">
-                    <h4 className="text-white font-bold text-2xl tracking-tight shrink-0">Detailed Curriculum</h4>
+                    <h4 className="text-[#17252D] font-bold text-2xl tracking-tight shrink-0">Detailed Curriculum</h4>
                     <div className="h-px flex-grow bg-zinc-800" />
                   </div>
                   {MODULES.map((mod) => (
-                    <div key={mod.id} className="border border-zinc-800 rounded-none overflow-hidden bg-zinc-900/20">
+                    <div key={mod.id} className="border border-[#D5E2E9] rounded-xl overflow-hidden bg-[#FAFCFD]">
                       <button
                         onClick={() => setOpenModule(openModule === mod.id ? null : mod.id)}
-                        className="w-full p-6 flex items-center justify-between hover:bg-zinc-900/40 transition-colors group"
+                        className="w-full p-6 flex items-center justify-between hover:bg-[#E5EFF4] transition-colors group"
                       >
-                        <span className="text-white font-medium text-lg text-left tracking-tight group-hover:text-[#C0F0FB] transition-colors">
+                        <span className="text-[#17252D] font-medium text-lg text-left tracking-tight group-hover:text-[#55788D] transition-colors">
                           {mod.title}
                         </span>
                         <ChevronDown
                           className={cn(
-                            "text-white/40 transition-transform",
-                            openModule === mod.id && "rotate-180 text-white"
+                            "text-[#55788D] transition-transform",
+                            openModule === mod.id && "rotate-180 text-[#17252D]"
                           )}
                           size={20}
                         />
                       </button>
-                      <div className={openModule === mod.id ? "block bg-zinc-950 border-t border-zinc-800" : "hidden"}>
+                      <div className={openModule === mod.id ? "block bg-[#F4F8FA] border-t border-[#D5E2E9]" : "hidden"}>
                         <div className="p-6 text-[#A0A0A0] leading-relaxed font-medium text-base">{mod.content}</div>
                       </div>
                     </div>
@@ -298,11 +298,11 @@ export default function CoursesPage() {
             {/* Registration Sidebar */}
             <div className="lg:col-span-4 space-y-8">
               <div
-                className="bg-zinc-950 border border-zinc-800 rounded-none p-8 relative overflow-hidden flex flex-col items-center"
+                className="bg-[#F4F8FA] border border-[#D5E2E9] rounded-xl p-8 relative overflow-hidden flex flex-col items-center"
               >
                 <div className="w-full">
-                  <h4 className="text-white font-bold text-xl mb-8 flex items-center gap-3 tracking-tight self-start">
-                    <ShieldCheck className="text-[#C0F0FB]" size={22} />
+                  <h4 className="text-[#17252D] font-bold text-xl mb-8 flex items-center gap-3 tracking-tight self-start">
+                    <ShieldCheck className="text-[#55788D]" size={22} />
                     Global Credentials
                   </h4>
                 </div>
@@ -310,18 +310,18 @@ export default function CoursesPage() {
                 <CertificatePreview />
 
                 <div className="text-center mt-6">
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-full py-1.5 px-4 inline-flex items-center gap-2 mb-4">
-                    <ShieldCheck size={14} className="text-white/60" />
-                    <span className="text-xs font-semibold text-white/60 uppercase tracking-widest">Institutional Verification</span>
+                  <div className="bg-[#E5EFF4] border border-[#D5E2E9] rounded-full py-1.5 px-4 inline-flex items-center gap-2 mb-4">
+                    <ShieldCheck size={14} className="text-[#55788D]" />
+                    <span className="text-xs font-semibold text-[#55788D] uppercase tracking-widest">Institutional Verification</span>
                   </div>
-                  <p className="text-white/40 text-sm font-medium max-w-[260px] mx-auto leading-relaxed">
+                  <p className="text-[#55788D] text-sm font-medium max-w-[260px] mx-auto leading-relaxed">
                     This certificate is cryptographically signed and globally verifiable via the GrowX Trust Protocol.
                   </p>
                 </div>
               </div>
 
               <div
-                className="bg-white rounded-none p-10 text-black border border-zinc-250 shadow-xl"
+                className="bg-white rounded-xl p-10 text-black border border-zinc-250 shadow-xl"
               >
                 <div className="relative z-10">
                   <h4 className="text-3xl font-bold tracking-tight mb-4">Claim Early Access</h4>
@@ -335,11 +335,11 @@ export default function CoursesPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-black/5 border-none rounded-none h-14 px-6 text-base text-black font-medium placeholder:text-black/40 focus:bg-black/10 transition-all"
+                      className="bg-[#A2BECC]/5 border-none rounded-xl h-14 px-6 text-base text-black font-medium placeholder:text-black/40 focus:bg-[#A2BECC]/10 transition-all"
                     />
                     <Button
                       type="submit"
-                      className="w-full h-14 rounded-none bg-black text-white font-bold uppercase text-xs tracking-widest hover:bg-black/80 transition-all"
+                      className="w-full h-14 rounded-xl bg-[#A2BECC] text-[#17252D] font-bold uppercase text-xs tracking-widest hover:bg-[#17252D] transition-all"
                     >
                       Join the Waitlist — Free
                     </Button>
@@ -353,17 +353,17 @@ export default function CoursesPage() {
         {/* Other Courses Grid */}
         <section className="mb-40">
           <div className="text-center mb-16">
-            <span className="text-[10px] font-mono font-bold tracking-widest text-[#C0F0FB] uppercase">Alternative Tracks</span>
-            <h3 className="text-3xl md:text-4xl font-serif font-bold text-white tracking-tight mt-2">Expand your engineering scope.</h3>
+            <span className="text-[10px] font-mono font-bold tracking-widest text-[#55788D] uppercase">Alternative Tracks</span>
+            <h3 className="text-3xl md:text-4xl font-sans font-bold font-bold text-[#17252D] tracking-tight mt-2">Expand your engineering scope.</h3>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {coursesList.filter((course: any) => course.id !== "ai-engineering").map((course: any) => (
               <div
                 key={course.id}
-                className="group relative bg-zinc-950 border border-zinc-800 rounded-none overflow-hidden hover:border-[#C0F0FB]/20 transition-all duration-300 hover:-translate-y-1 flex flex-col md:flex-row shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+                className="group relative bg-[#F4F8FA] border border-[#D5E2E9] rounded-xl overflow-hidden hover:border-[#C0F0FB]/20 transition-all duration-300 hover:-translate-y-1 flex flex-col md:flex-row shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
               >
                 {/* Horizontal Image Section */}
-                <div className="relative w-full md:w-2/5 h-56 md:h-auto overflow-hidden border-b md:border-b-0 md:border-r border-zinc-800 bg-zinc-950">
+                <div className="relative w-full md:w-2/5 h-56 md:h-auto overflow-hidden border-b md:border-b-0 md:border-r border-[#D5E2E9] bg-[#F4F8FA]">
                   <Image
                     src={`/images/${course.id}.png`}
                     alt={course.title}
@@ -373,7 +373,7 @@ export default function CoursesPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent md:bg-gradient-to-r md:from-transparent md:to-zinc-950 z-10" />
                   {/* Difficulty Badge */}
                   <div className="absolute top-4 left-4 z-20">
-                    <span className="px-3 py-1 bg-zinc-950/85 backdrop-blur-sm rounded-none text-[10px] font-semibold uppercase text-white border border-zinc-800 tracking-wider">
+                    <span className="px-3 py-1 bg-[#F4F8FA]/85 backdrop-blur-sm rounded-xl text-[10px] font-semibold uppercase text-[#17252D] border border-[#D5E2E9] tracking-wider">
                       {course.difficulty}
                     </span>
                   </div>
@@ -383,24 +383,24 @@ export default function CoursesPage() {
                 <div className="flex-1 p-8 flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start mb-2">
-                      <h5 className="text-white font-bold text-xl group-hover:text-[#C0F0FB] transition-colors leading-tight tracking-tight max-w-[75%]">
+                      <h5 className="text-[#17252D] font-bold text-xl group-hover:text-[#55788D] transition-colors leading-tight tracking-tight max-w-[75%]">
                         {course.title}
                       </h5>
                       <div className="text-right">
-                        <span className="text-white font-bold text-lg block">₹{COURSE_PRICES[course.id]?.inr || "???"}</span>
+                        <span className="text-[#17252D] font-bold text-lg block">₹{COURSE_PRICES[course.id]?.inr || "???"}</span>
                       </div>
                     </div>
-                    <p className="text-white/60 text-sm leading-relaxed mb-6 line-clamp-2 font-medium">
+                    <p className="text-[#55788D] text-sm leading-relaxed mb-6 line-clamp-2 font-medium">
                       {course.description}
                     </p>
 
                     <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-8">
-                      <div className="flex items-center gap-2 text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold">
-                        <BookOpen size={13} className="text-white/20" />
+                      <div className="flex items-center gap-2 text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold">
+                        <BookOpen size={13} className="text-[#17252D]/20" />
                         {course.modules.length} Modules
                       </div>
-                      <div className="flex items-center gap-2 text-zinc-500 font-mono tracking-widest text-[9px] uppercase font-bold">
-                        <Clock size={13} className="text-white/20" />
+                      <div className="flex items-center gap-2 text-[#55788D] font-mono tracking-widest text-[9px] uppercase font-bold">
+                        <Clock size={13} className="text-[#17252D]/20" />
                         {course.duration}
                       </div>
                     </div>
@@ -412,28 +412,28 @@ export default function CoursesPage() {
                           e.preventDefault();
                           setOpenAEO(openAEO === course.id ? null : course.id);
                         }}
-                        className="flex items-center gap-2 text-white/40 font-mono text-[10px] uppercase tracking-wider hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-[#55788D] font-mono text-[10px] uppercase tracking-wider hover:text-[#17252D] transition-colors"
                       >
-                        <HelpCircle size={13} className="text-[#C0F0FB]/40" /> 
+                        <HelpCircle size={13} className="text-[#55788D]/40" /> 
                         {openAEO === course.id ? "Hide Summary" : "Show Direct Outcomes"}
-                        <ChevronDown className={cn("transition-transform text-[#C0F0FB]/60", openAEO === course.id && "rotate-180")} size={13} />
+                        <ChevronDown className={cn("transition-transform text-[#55788D]/60", openAEO === course.id && "rotate-180")} size={13} />
                       </button>
                       
-                      <div className={openAEO === course.id ? "block mt-3 pt-4 border-t border-zinc-800 space-y-3" : "hidden"}>
+                      <div className={openAEO === course.id ? "block mt-3 pt-4 border-t border-[#D5E2E9] space-y-3" : "hidden"}>
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest">Outcome</p>
+                          <p className="text-xs font-semibold text-[#55788D] uppercase tracking-widest">Outcome</p>
                           <p className="text-[#A0A0A0] text-sm leading-snug">{course.become}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest">Problem Solved</p>
+                          <p className="text-xs font-semibold text-[#55788D] uppercase tracking-widest">Problem Solved</p>
                           <p className="text-[#A0A0A0] text-sm leading-snug">{course.problem_solved}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest">Project</p>
+                          <p className="text-xs font-semibold text-[#55788D] uppercase tracking-widest">Project</p>
                           <p className="text-[#A0A0A0] text-sm leading-snug">{course.will_build}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest">For Who</p>
+                          <p className="text-xs font-semibold text-[#55788D] uppercase tracking-widest">For Who</p>
                           <p className="text-[#A0A0A0] text-sm leading-snug">{course.for_who}</p>
                         </div>
                       </div>
@@ -444,13 +444,13 @@ export default function CoursesPage() {
                     <Button
                       onClick={() => handleEnroll(course.id)}
                       disabled={loading === course.id}
-                      className="w-full bg-[#161616] border border-zinc-800 text-white hover:bg-zinc-900 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_15px_rgba(192,240,251,0.04)] hover:text-[#C0F0FB] rounded-none h-12 font-bold text-xs uppercase tracking-widest transition-all duration-300"
+                      className="w-full bg-[#A2BECC] border border-[#D5E2E9] text-[#17252D] hover:bg-[#E5EFF4] hover:border-[#C0F0FB]/30 hover:shadow-[0_0_15px_rgba(192,240,251,0.04)] hover:text-[#55788D] rounded-xl h-12 font-bold text-xs uppercase tracking-widest transition-all duration-300"
                     >
                       {loading === course.id ? "Processing..." : "Enroll Now"}
                     </Button>
                     <Link
                       href={`/courses/${course.slug}`}
-                      className="text-center text-white/40 hover:text-white text-xs font-semibold tracking-widest transition-colors mt-2"
+                      className="text-center text-[#55788D] hover:text-[#17252D] text-xs font-semibold tracking-widest transition-colors mt-2"
                     >
                       Explore Curriculum
                     </Link>
@@ -461,17 +461,17 @@ export default function CoursesPage() {
 
             {/* Special Bundle Card */}
             <div
-              className="group relative bg-zinc-950 border border-zinc-800 rounded-none overflow-hidden hover:bg-zinc-900/10 transition-colors flex flex-col md:flex-row lg:col-span-2"
+              className="group relative bg-[#F4F8FA] border border-[#D5E2E9] rounded-xl overflow-hidden hover:bg-[#E5EFF4]/10 transition-colors flex flex-col md:flex-row lg:col-span-2"
             >
-              <div className="relative w-full md:w-1/3 h-56 md:h-auto overflow-hidden border-b md:border-b-0 md:border-r border-zinc-800">
-                <div className="absolute inset-0 bg-zinc-900/40 flex items-center justify-center">
+              <div className="relative w-full md:w-1/3 h-56 md:h-auto overflow-hidden border-b md:border-b-0 md:border-r border-[#D5E2E9]">
+                <div className="absolute inset-0 bg-[#E5EFF4] flex items-center justify-center">
                   <div className="relative w-32 h-32 flex items-center justify-center">
-                    <Star size={100} className="text-white/5 absolute" />
-                    <Award className="text-white/60 relative z-10" size={48} />
+                    <Star size={100} className="text-[#17252D]/5 absolute" />
+                    <Award className="text-[#55788D] relative z-10" size={48} />
                   </div>
                 </div>
                 <div className="absolute top-4 left-4 z-20">
-                  <span className="px-3 py-1 bg-zinc-900 border border-zinc-800 text-white rounded-none text-xs font-semibold uppercase tracking-widest">
+                  <span className="px-3 py-1 bg-[#E5EFF4] border border-[#D5E2E9] text-[#17252D] rounded-xl text-xs font-semibold uppercase tracking-widest">
                     Value Bundle
                   </span>
                 </div>
@@ -480,29 +480,29 @@ export default function CoursesPage() {
               <div className="flex-1 p-8 flex flex-col justify-between">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div>
-                    <h5 className="text-white font-bold text-2xl mb-3 tracking-tight">Double Mastery Bundle</h5>
-                    <p className="text-white/60 text-sm leading-relaxed mb-6 font-medium">
+                    <h5 className="text-[#17252D] font-bold text-2xl mb-3 tracking-tight">Double Mastery Bundle</h5>
+                    <p className="text-[#55788D] text-sm leading-relaxed mb-6 font-medium">
                       Secure both Java and Python tracks at a significant discount. Perfect for engineers aiming for polyglot backend expertise.
                     </p>
                     <div className="flex flex-col gap-3">
-                      <div className="flex items-center gap-3 text-white/80 text-sm font-medium">
+                      <div className="flex items-center gap-3 text-[#55788D] text-sm font-medium">
                         <CheckCircle2 size={16} className="text-green-500" />
                         Java Mastery
                       </div>
-                      <div className="flex items-center gap-3 text-white/80 text-sm font-medium">
+                      <div className="flex items-center gap-3 text-[#55788D] text-sm font-medium">
                         <CheckCircle2 size={16} className="text-green-500" />
                         Python Mastery
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-center items-center md:items-end p-8 bg-zinc-900/40 border border-zinc-800 rounded-none">
-                    <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-1 line-through">₹1,298 Combined</p>
-                    <p className="text-4xl font-bold text-white mb-6 tracking-tight">₹999</p>
+                  <div className="flex flex-col justify-center items-center md:items-end p-8 bg-[#E5EFF4] border border-[#D5E2E9] rounded-xl">
+                    <p className="text-[#55788D] text-xs font-semibold uppercase tracking-widest mb-1 line-through">₹1,298 Combined</p>
+                    <p className="text-4xl font-bold text-[#17252D] mb-6 tracking-tight">₹999</p>
 
                     <Button
                       onClick={() => handleEnroll("java-python-bundle")}
                       disabled={loading === "java-python-bundle"}
-                      className="w-full md:w-56 h-12 rounded-none bg-[#161616] border border-zinc-800 text-white hover:bg-zinc-850 hover:text-[#C0F0FB] font-bold uppercase text-xs tracking-widest transition-all duration-200"
+                      className="w-full md:w-56 h-12 rounded-xl bg-[#A2BECC] border border-[#D5E2E9] text-[#17252D] hover:bg-[#17252D] hover:text-[#55788D] font-bold uppercase text-xs tracking-widest transition-all duration-200"
                     >
                       {loading === "java-python-bundle" ? "Processing..." : "Get Bundle"}
                     </Button>
@@ -520,28 +520,28 @@ export default function CoursesPage() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="h-px w-6 bg-card/10" />
-              <span className="text-white/40 text-xs font-semibold uppercase tracking-widest">Academic Pipeline</span>
+              <span className="text-[#55788D] text-xs font-semibold uppercase tracking-widest">Academic Pipeline</span>
               <div className="h-px w-6 bg-card/10" />
             </div>
-            <h3 className="text-white font-bold text-4xl md:text-5xl tracking-tight">Growth Roadmap</h3>
+            <h3 className="text-[#17252D] font-bold text-4xl md:text-5xl tracking-tight">Growth Roadmap</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {COMING_SOON.map((course, i) => (
               <div
                 key={i}
-                className="group relative bg-zinc-950 border border-zinc-800 rounded-none p-8 min-h-[240px] flex flex-col justify-end overflow-hidden hover:bg-zinc-900/10 transition-colors"
+                className="group relative bg-[#F4F8FA] border border-[#D5E2E9] rounded-xl p-8 min-h-[240px] flex flex-col justify-end overflow-hidden hover:bg-[#E5EFF4]/10 transition-colors"
               >
-                <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center z-20">
-                  <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4">
-                    <Lock className="text-white/40" size={20} />
+                <div className="absolute inset-0 bg-[#A2BECC]/75 flex flex-col items-center justify-center z-20">
+                  <div className="w-12 h-12 rounded-full bg-[#E5EFF4] border border-[#D5E2E9] flex items-center justify-center mb-4">
+                    <Lock className="text-[#55788D]" size={20} />
                   </div>
-                  <span className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-none text-xs font-medium uppercase text-white/60 tracking-wider">
+                  <span className="px-3 py-1 bg-[#E5EFF4] border border-[#D5E2E9] rounded-xl text-xs font-medium uppercase text-[#55788D] tracking-wider">
                     Enrollment Locked
                   </span>
                 </div>
                 <div className="relative pointer-events-none">
-                  <h5 className="text-white font-bold text-xl mb-2 tracking-tight leading-tight">{course.title}</h5>
+                  <h5 className="text-[#17252D] font-bold text-xl mb-2 tracking-tight leading-tight">{course.title}</h5>
                   <p className="text-[#A0A0A0] text-sm leading-relaxed font-medium line-clamp-3">{course.description}</p>
                 </div>
               </div>

@@ -4,20 +4,20 @@ import Link from "next/link";
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col justify-between selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#A2BECC] text-[#17252D] flex flex-col justify-between selection:bg-[#17252D] selection:text-[#FAFCFD]">
       {/* Top Header Bar */}
       <header className="w-full max-w-6xl mx-auto px-6 py-8 flex items-center justify-between">
         <Link 
           href="/"
-          className="text-lg font-semibold tracking-tight text-white hover:text-neutral-300 transition-colors flex items-center gap-1.5"
+          className="text-lg font-bold tracking-tight text-[#17252D] hover:text-[#55788D] transition-colors flex items-center gap-1.5 font-sans"
         >
           <span className="font-serif">GrowX</span>
-          <span className="font-sans font-normal text-neutral-400">Labs</span>
+          <span className="font-normal text-[#55788D]">Labs</span>
         </Link>
 
         <Link
           href="/"
-          className="text-xs text-neutral-400 hover:text-white transition-colors flex items-center gap-1.5 font-medium"
+          className="text-xs text-[#55788D] hover:text-[#17252D] transition-colors flex items-center gap-1.5 font-bold uppercase tracking-wider font-mono"
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
             <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -28,18 +28,18 @@ export default function SignupPage() {
 
       {/* Main Corporate Card */}
       <main className="w-full max-w-md mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
-        <div className="bg-[#09090b] border border-white/10 rounded-xl p-8 sm:p-10 shadow-2xl space-y-6 text-left">
+        <div className="bg-[#F4F8FA] border border-[#D5E2E9] rounded-2xl p-8 sm:p-10 shadow-sm space-y-6 text-left">
           
           <div className="space-y-2">
-            <h1 className="text-2xl font-medium tracking-tight text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-[#17252D] font-sans">
               Account Registration
             </h1>
-            <p className="text-sm text-neutral-400 leading-normal">
+            <p className="text-sm text-[#55788D] leading-normal font-sans">
               Client workspaces are provisioned upon formal project kickoff.
             </p>
           </div>
 
-          <div className="rounded-lg bg-neutral-900/60 border border-white/10 p-4 space-y-2 text-xs text-neutral-300 leading-relaxed">
+          <div className="rounded-xl bg-[#E5EFF4] border border-[#D5E2E9] p-4 space-y-2 text-xs text-[#17252D] leading-relaxed">
             <p>
               If your organization has an active engagement with GrowXLabs, please open the personalized activation link sent to your corporate email.
             </p>
@@ -48,25 +48,25 @@ export default function SignupPage() {
           <div className="space-y-3 pt-2">
             <Link
               href="/login"
-              className="w-full h-11 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors flex items-center justify-center text-center shadow-sm font-sans"
+              className="w-full h-11 rounded-xl bg-[#A2BECC] text-[#17252D] text-sm font-bold hover:bg-[#17252D] hover:text-[#FAFCFD] transition-colors flex items-center justify-center text-center shadow-sm font-sans border border-[#55788D]/30"
             >
               Sign in to existing account
             </Link>
 
             <Link
               href="/contact"
-              className="w-full h-11 rounded-lg border border-white/15 text-neutral-300 hover:text-white hover:bg-white/5 text-sm font-medium transition-colors flex items-center justify-center text-center font-sans"
+              className="w-full h-11 rounded-xl border border-[#D5E2E9] text-[#17252D] hover:bg-[#E5EFF4] text-sm font-bold transition-colors flex items-center justify-center text-center font-sans"
             >
               Contact our team
             </Link>
           </div>
 
-          <div className="pt-4 border-t border-white/10 text-center">
-            <p className="text-xs text-neutral-500">
+          <div className="pt-4 border-t border-[#D5E2E9] text-center">
+            <p className="text-xs text-[#55788D]">
               Need assistance? Email{" "}
               <a 
                 href="mailto:support@growxlabs.tech" 
-                className="text-neutral-400 hover:text-white underline underline-offset-2 transition-colors"
+                className="text-[#17252D] font-bold hover:underline transition-colors"
               >
                 support@growxlabs.tech
               </a>
@@ -77,7 +77,7 @@ export default function SignupPage() {
       </main>
 
       {/* Corporate Footer */}
-      <footer className="w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-neutral-600">
+      <footer className="w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-[#55788D] font-mono">
         <p>© {new Date().getFullYear()} GrowXLabs. All rights reserved.</p>
       </footer>
     </div>

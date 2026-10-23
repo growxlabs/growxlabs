@@ -64,40 +64,40 @@ const LAB_SYSTEMS: LabTool[] = [
 function LabCard({ tool }: { tool: LabTool }) {
   const IconComponent = tool.icon;
   const CardInner = (
-    <div className="h-full min-h-[390px] sm:min-h-[410px] flex flex-col justify-between p-8 sm:p-9">
+    <div className="h-full min-h-[390px] sm:min-h-[410px] flex flex-col justify-between p-8 sm:p-9 bg-[#F4F8FA]">
       {/* Top Header: Category + Status Tag */}
       <div>
-        <div className="flex items-center justify-between pb-6 border-b border-neutral-800/60">
+        <div className="flex items-center justify-between pb-6 border-b border-[#D5E2E9]">
           {tool.category ? (
-            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#C0F0FB] uppercase">
+            <span className="font-mono text-[10px] font-bold tracking-[0.2em] text-[#55788D] uppercase">
               {tool.category}
             </span>
           ) : (
             <span />
           )}
-          <span className="font-mono text-[10px] font-bold tracking-widest text-[#C0F0FB]/70 uppercase">
+          <span className="font-mono text-[10px] font-bold tracking-widest text-[#55788D] uppercase">
             {tool.category ? `· ${tool.status}` : tool.status}
           </span>
         </div>
 
         {/* Icon & Title */}
         <div className="pt-6 flex items-center gap-3.5">
-          <div className="w-10 h-10 border border-neutral-700/80 rounded-lg flex items-center justify-center text-[#C0F0FB] shrink-0">
+          <div className="w-10 h-10 border border-[#D5E2E9] bg-[#E5EFF4] rounded-xl flex items-center justify-center text-[#17252D] shrink-0">
             <IconComponent size={20} />
           </div>
-          <h3 className="font-sans font-black text-xl sm:text-[22px] text-foreground tracking-tight leading-tight">
+          <h3 className="font-sans font-bold text-xl sm:text-[22px] text-[#17252D] tracking-tight leading-tight">
             {tool.name}
           </h3>
         </div>
 
         {/* Description */}
-        <p className="text-neutral-400 text-sm leading-relaxed font-sans pt-4">
+        <p className="text-[#17252D]/80 text-sm leading-relaxed font-sans pt-4">
           {tool.description}
         </p>
       </div>
 
       {/* Bottom Action CTA */}
-      <div className="pt-6 mt-8 border-t border-neutral-800/60 flex items-center gap-2 font-mono text-xs font-bold text-[#C0F0FB] uppercase tracking-wider">
+      <div className="pt-6 mt-8 border-t border-[#D5E2E9] flex items-center gap-2 font-mono text-xs font-bold text-[#17252D] group-hover:text-[#55788D] uppercase tracking-wider transition-colors">
         <span>{tool.cta}</span>
         <GrowxArrowRight
           size={14}
@@ -108,19 +108,21 @@ function LabCard({ tool }: { tool: LabTool }) {
     </div>
   );
 
+  const containerClasses = "block w-full max-w-[440px] border border-[#D5E2E9] rounded-2xl bg-[#F4F8FA] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#A2BECC] shadow-[0_2px_8px_rgba(23,37,45,0.04)] hover:shadow-[0_8px_24px_rgba(23,37,45,0.08)] cursor-pointer group";
+
   return tool.isExternal ? (
     <a
       href={tool.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full max-w-[440px] border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className={containerClasses}
     >
       {CardInner}
     </a>
   ) : (
     <Link
       href={tool.href}
-      className="block w-full max-w-[440px] border border-neutral-800/80 bg-[#0A0A0D] overflow-hidden relative transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C0F0FB]/30 hover:shadow-[0_0_40px_rgba(192,240,251,0.06)] cursor-pointer group"
+      className={containerClasses}
     >
       {CardInner}
     </Link>
@@ -129,7 +131,7 @@ function LabCard({ tool }: { tool: LabTool }) {
 
 export default function AiLabPage() {
   return (
-    <div className="flex flex-col bg-black text-foreground min-h-screen">
+    <div className="flex flex-col bg-[#A2BECC] text-[#17252D] min-h-screen">
       <PageHero
         title="AI Lab"
         viewingText="AI LAB"
@@ -137,27 +139,27 @@ export default function AiLabPage() {
         tagline="MODELS & RESEARCH"
       />
 
-      <div className="w-full bg-black pb-32 pt-8 border-t border-white/10">
+      <div className="w-full bg-[#A2BECC] pb-32 pt-8 border-t border-[#D5E2E9]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 space-y-12">
 
-          {/* Cards Stacked One by One with individual section headers and standard border-white/10 dividers */}
+          {/* Cards Stacked One by One with individual section headers and standard dividers */}
           <div className="flex flex-col">
             {LAB_SYSTEMS.map((tool, index) => (
               <React.Fragment key={tool.name}>
                 {index > 0 && (
                   <div className="py-10 sm:py-12">
-                    <div className="w-full border-t border-white/10" />
+                    <div className="w-full border-t border-[#D5E2E9]" />
                   </div>
                 )}
 
                 {/* Section Header */}
                 <div className={`${index === 0 ? "pt-6" : "pt-2"} pb-8 flex flex-col md:flex-row md:items-start justify-between gap-6`}>
-                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#C0F0FB] block shrink-0 pt-1">
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#55788D] block shrink-0 pt-1">
                     {tool.kicker}
                   </span>
                   {index === 0 && (
                     <div className="max-w-xl">
-                      <h2 className="font-serif font-bold text-lg sm:text-xl md:text-2xl text-foreground tracking-tight leading-snug">
+                      <h2 className="font-sans font-bold text-lg sm:text-xl md:text-2xl text-[#17252D] tracking-tight leading-snug">
                         We research and develop new AI models, methods, and systems in-house.
                       </h2>
                     </div>
@@ -169,14 +171,6 @@ export default function AiLabPage() {
                 </div>
               </React.Fragment>
             ))}
-          </div>
-
-          {/* End of AI Lab Footer */}
-          <div className="mt-20 border-t border-white/10 pt-6">
-            <div className="flex items-center justify-between font-mono text-xs text-white/50 uppercase tracking-widest">
-              <span>// End of AI Lab</span>
-              <span>3 Lab Systems Active · 1 Applied Research</span>
-            </div>
           </div>
 
         </div>

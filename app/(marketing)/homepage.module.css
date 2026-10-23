@@ -1,0 +1,13 @@
+/* Air Force Blue public page canvas */
+.homepage,
+.homepage > section,
+.homepage > div[aria-label="GROWX Interactive Presentation"],
+.homepage :global(.growx-sticky-viewport) {
+  background-color: #A2BECC;
+  background-image: none;
+}
+
+/* Ensure strong contrast for headings and top chrome on Air Force Blue */
+.homepage [class*="text-[#55788D]"]:not(article *):not([class*="font-mono"]) {
+  color: #17252D;
+}

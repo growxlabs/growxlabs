@@ -57,10 +57,10 @@ export function PageHero({
       : "clamp(0.85rem, 2.8vh, 1.5rem)";
 
   return (
-    <div className={cn("w-full bg-black relative overflow-hidden select-none", className)}>
+    <div className={cn("w-full bg-[#A2BECC] relative overflow-hidden select-none", className)}>
       {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
       <section
-        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-6 md:pb-8 min-h-dvh justify-between bg-black select-none"
+        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-6 md:pb-8 min-h-dvh justify-between bg-[#A2BECC] select-none"
       >
         <div className="flex-grow" />
 
@@ -124,7 +124,7 @@ export function PageHero({
 
       {/* ═══ SWISS-EDITORIAL MOBILE HERO (Visible only on mobile) ═══ */}
       <section
-        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-black"
+        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-[#A2BECC]"
       >
         <div className="relative w-full flex flex-row items-center justify-between">
           
@@ -167,7 +167,7 @@ export function PageHero({
             </div>
 
             {/* Bottom Copyright */}
-            <div className="font-mono text-[9px] tracking-[0.15em] text-[#9CA3AF] uppercase leading-relaxed">
+            <div className="font-mono text-[9px] tracking-[0.15em] text-[#55788D] uppercase leading-relaxed">
               © 2026 // GL-X<br />
               ALL RIGHTS RESERVED
             </div>

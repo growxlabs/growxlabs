@@ -37,37 +37,37 @@ export function PrivacyContent() {
   ];
 
   return (
-    <div className="pt-32 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#0d0d0e]">
+    <div className="pt-28 pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#A2BECC] text-[#17252D]">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* Left Column: Sticky Brand Panel (on Desktop) */}
           <div className="lg:col-span-5 flex flex-col justify-between lg:sticky lg:top-32 lg:h-[calc(100vh-200px)]">
             <div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#C0F0FB] mb-4 block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-[#55788D] mb-4 block">
                 // COMPLIANCE & TRUST
               </span>
-              <h1 className="text-[clamp(36px,5vw,64px)] font-sans font-black text-white tracking-tighter mb-6 uppercase leading-none">
+              <h1 className="text-[clamp(36px,5vw,64px)] font-sans font-black text-[#17252D] tracking-tighter mb-6 uppercase leading-none">
                 Privacy Policy
               </h1>
-              <p className="text-base sm:text-lg text-zinc-400 font-sans leading-relaxed mb-12 max-w-md">
+              <p className="text-base sm:text-lg text-[#55788D] font-sans leading-relaxed mb-12 max-w-md font-medium">
                 How we protect your digital identity, database integrity, and proprietary project intelligence within the GrowX Labs Tech ecosystem.
               </p>
 
               {/* Core Promises List */}
-              <div className="border-t border-white/10 pt-8 mt-8 space-y-6">
-                <h3 className="font-mono text-xs text-white/40 uppercase tracking-wider">Our Core Commitments</h3>
+              <div className="border-t border-[#D5E2E9] pt-8 mt-8 space-y-6">
+                <h3 className="font-mono text-xs text-[#55788D] uppercase tracking-wider font-bold">Our Core Commitments</h3>
                 {promises.map((p, i) => (
                   <div key={i} className="flex flex-col gap-1.5">
-                    <h4 className="font-sans font-extrabold text-sm text-white">{p.title}</h4>
-                    <p className="text-xs text-zinc-400 leading-relaxed max-w-sm">{p.desc}</p>
+                    <h4 className="font-sans font-bold text-sm text-[#17252D]">{p.title}</h4>
+                    <p className="text-xs text-[#55788D] leading-relaxed max-w-sm">{p.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Sticky Panel Footer */}
-            <div className="mt-12 lg:mt-0 font-mono text-[10px] text-zinc-600 uppercase tracking-widest">
+            <div className="mt-12 lg:mt-0 font-mono text-[10px] text-[#55788D] uppercase tracking-widest font-bold">
               Last Updated: April 2026 • GL-X
             </div>
           </div>
@@ -80,12 +80,12 @@ export function PrivacyContent() {
               {sections.map((section, index) => (
                 <div
                   key={index}
-                  className="border-t border-white/10 last:border-b border-white/10 py-10 transition-all duration-300"
+                  className="border-t border-[#D5E2E9] last:border-b py-10 transition-all duration-300"
                 >
-                  <h2 className="text-lg sm:text-xl font-sans font-bold text-white tracking-tight mb-4">
+                  <h2 className="text-lg sm:text-xl font-sans font-bold text-[#17252D] tracking-tight mb-4">
                     {section.title}
                   </h2>
-                  <p className="text-zinc-400 font-sans text-sm sm:text-base leading-relaxed">
+                  <p className="text-[#17252D]/85 font-sans text-sm sm:text-base leading-relaxed">
                     {section.content}
                   </p>
                 </div>
@@ -93,30 +93,30 @@ export function PrivacyContent() {
             </div>
 
             {/* Retention Table Section */}
-            <div className="border-t border-white/10 pt-12 mt-16">
-              <h3 className="text-lg font-sans font-bold text-white tracking-tight mb-6 uppercase">
+            <div className="border-t border-[#D5E2E9] pt-12 mt-16">
+              <h3 className="text-lg font-sans font-bold text-[#17252D] tracking-tight mb-6 uppercase">
                 Data Retention Schedule
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                  <span className="text-zinc-400 font-sans text-sm">Project Code & Architecture Details</span>
-                  <span className="text-white font-mono text-xs font-bold bg-white/5 px-2.5 py-1 rounded">3 Years</span>
+                <div className="flex justify-between items-center border-b border-[#D5E2E9] pb-4">
+                  <span className="text-[#55788D] font-sans text-sm font-medium">Project Code & Architecture Details</span>
+                  <span className="text-[#17252D] font-mono text-xs font-bold bg-[#E5EFF4] px-2.5 py-1 rounded-md">3 Years</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                  <span className="text-zinc-400 font-sans text-sm">Enquiry Correspondence & Metadata</span>
-                  <span className="text-white font-mono text-xs font-bold bg-white/5 px-2.5 py-1 rounded">1 Year</span>
+                <div className="flex justify-between items-center border-b border-[#D5E2E9] pb-4">
+                  <span className="text-[#55788D] font-sans text-sm font-medium">Enquiry Correspondence & Metadata</span>
+                  <span className="text-[#17252D] font-mono text-xs font-bold bg-[#E5EFF4] px-2.5 py-1 rounded-md">1 Year</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                  <span className="text-zinc-400 font-sans text-sm">Financial Audits & Payment Logs</span>
-                  <span className="text-white font-mono text-xs font-bold bg-white/5 px-2.5 py-1 rounded">7 Years</span>
+                <div className="flex justify-between items-center border-b border-[#D5E2E9] pb-4">
+                  <span className="text-[#55788D] font-sans text-sm font-medium">Financial Audits & Payment Logs</span>
+                  <span className="text-[#17252D] font-mono text-xs font-bold bg-[#E5EFF4] px-2.5 py-1 rounded-md">7 Years</span>
                 </div>
               </div>
             </div>
 
             {/* Contact CTA */}
-            <div className="border-t border-white/10 pt-12 mt-16 text-left">
-              <p className="text-mono text-xs text-white/40 uppercase tracking-widest mb-3">Questions regarding your data?</p>
-              <a href="mailto:svp@growxlabs.tech" className="text-2xl font-sans font-black text-[#C0F0FB] hover:text-white transition-colors duration-300">
+            <div className="border-t border-[#D5E2E9] pt-12 mt-16 text-left">
+              <p className="font-mono text-xs text-[#55788D] uppercase tracking-widest mb-3 font-bold">Questions regarding your data?</p>
+              <a href="mailto:svp@growxlabs.tech" className="text-2xl font-sans font-bold text-[#17252D] hover:text-[#55788D] transition-colors duration-300">
                 svp@growxlabs.tech
               </a>
             </div>
@@ -128,4 +128,3 @@ export function PrivacyContent() {
     </div>
   );
 }
-

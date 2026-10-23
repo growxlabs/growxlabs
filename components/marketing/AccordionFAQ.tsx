@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "@/navigation-client";
 import { cn } from "@/lib/utils";
 
 interface FAQItem {
@@ -11,16 +10,10 @@ interface FAQItem {
 
 export function AccordionFAQ({ items }: { items: FAQItem[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const pathname = usePathname();
-  const isBlog = pathname?.includes("/blog");
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-
-  // Dynamic theme variables
-  const hoverText = isBlog ? "group-hover:text-[#C0F0FB]" : "group-hover:text-white";
-  const activeText = isBlog ? "text-[#C0F0FB]" : "text-white";
 
   // Build Google-verified FAQPage JSON-LD schema
   const faqSchema = {
@@ -49,27 +42,19 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
         return (
           <div
             key={index}
-            className={cn(
-              "border-b transition-all duration-300",
-              isBlog ? "border-neutral-200" : "border-white/10"
-            )}
+            className="border-b border-[#D5E2E9] transition-all duration-300"
           >
             <button
               onClick={() => toggle(index)}
               className="w-full flex items-center justify-between py-5 sm:py-6 text-left group cursor-pointer"
             >
               <div className="flex gap-4 sm:gap-6 items-start pr-4">
-                <span className={cn(
-                  "font-mono text-xs sm:text-[13px] pt-1 shrink-0 w-8",
-                  isBlog ? "text-neutral-400" : "text-white/40"
-                )}>
+                <span className="font-mono text-xs sm:text-[13px] pt-1 shrink-0 w-8 text-[#55788D] font-bold">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <h4 className={cn(
                   "text-[17px] sm:text-[19px] font-sans font-medium tracking-tight leading-snug transition-colors",
-                  isBlog
-                    ? (isOpen ? "text-neutral-950 font-semibold" : "text-neutral-800 group-hover:text-black")
-                    : (isOpen ? activeText : "text-white/90 group-hover:text-white")
+                  isOpen ? "text-[#17252D] font-bold" : "text-[#17252D] group-hover:text-[#55788D]"
                 )}>
                   {faq.question}
                 </h4>
@@ -84,9 +69,7 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
                 strokeLinejoin="round"
                 className={cn(
                   "w-5 h-5 shrink-0 transition-transform duration-300",
-                  isBlog
-                    ? (isOpen ? "rotate-45 text-black" : "text-neutral-400 group-hover:text-black")
-                    : (isOpen ? "rotate-45 text-white" : "text-white/40 group-hover:text-white")
+                  isOpen ? "rotate-45 text-[#17252D]" : "text-[#55788D] group-hover:text-[#17252D]"
                 )}
                 aria-hidden="true"
               >
@@ -102,10 +85,7 @@ export function AccordionFAQ({ items }: { items: FAQItem[] }) {
               )}
             >
               <div className="pl-12 sm:pl-14 pr-4">
-                <p className={cn(
-                  "font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-3xl",
-                  isBlog ? "text-neutral-700" : "text-white/70"
-                )}>
+                <p className="font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-3xl text-[#17252D]/85">
                   {faq.answer}
                 </p>
               </div>

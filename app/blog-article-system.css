@@ -1,9 +1,9 @@
 /* Shared presentation layer for every public GrowxLabs article. */
 .blog-article-page {
-  --blog-paper: #f7f4ee;
-  --blog-ink: #111111;
-  --blog-muted: #65625d;
-  --blog-rule: rgba(17, 17, 17, 0.14);
+  --blog-paper: #FAFCFD;
+  --blog-ink: #17252D;
+  --blog-muted: #55788D;
+  --blog-rule: #D5E2E9;
   --blog-soft-rule: rgba(17, 17, 17, 0.08);
   background: var(--blog-paper) !important;
   color: var(--blog-ink) !important;

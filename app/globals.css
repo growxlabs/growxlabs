@@ -284,54 +284,64 @@ body:has(.workspace-theme) {
 }
 
 /* ═══════════════════════════════════════════════════ */
-/* DARK THEME (DEFAULT) — Marketing / Public pages    */
+/* AIR FORCE BLUE LIGHT THEME — Marketing / Public pages */
 /* ═══════════════════════════════════════════════════ */
 :root {
-  --background: #070707;
-  --foreground: #FFFFFF;
-  --card: #101010;
-  --card-foreground: #FFFFFF;
-  --popover: #202020;
-  --popover-foreground: #FFFFFF;
-  --primary: #C0F0FB;
-  --primary-foreground: #000000;
-  --secondary: #171717;
-  --secondary-foreground: #FFFFFF;
-  --muted: #121212;
-  --muted-foreground: #9A9A9A;
-  --accent: #C0F0FB;
-  --accent-foreground: #000000;
+  --background: #A2BECC;
+  --foreground: #17252D;
+  --card: #F4F8FA;
+  --card-foreground: #17252D;
+  --popover: #FAFCFD;
+  --popover-foreground: #17252D;
+  --primary: #A2BECC;
+  --primary-foreground: #17252D;
+  --secondary: #E5EFF4;
+  --secondary-foreground: #17252D;
+  --muted: #E5EFF4;
+  --muted-foreground: #55788D;
+  --accent: #A2BECC;
+  --accent-foreground: #17252D;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #262626;
-  --input: #121212;
-  --ring: #C0F0FB;
+  --border: #D5E2E9;
+  --input: #F4F8FA;
+  --ring: #A2BECC;
   --radius: 0.5rem;
+
+  /* ═══ GrowxLabs Air Force Blue Design Palette ═══ */
+  --airforce-primary: #A2BECC;
+  --airforce-bg: #A2BECC;
+  --airforce-card: #F4F8FA;
+  --airforce-surface: #E5EFF4;
+  --airforce-reading: #FAFCFD;
+  --airforce-text: #17252D;
+  --airforce-accent: #55788D;
+  --airforce-border: #D5E2E9;
 }
 
 /* ═══════════════════════════════════════════════════ */
 /* LIGHT THEME — Blog / Reading / Essay pages          */
 /* ═══════════════════════════════════════════════════ */
 .posts-page {
-  --background: #020202;
-  --foreground: #FFFFFF;
-  --card: #0C0C0C;
-  --card-foreground: #FFFFFF;
-  --popover: #0C0C0C;
-  --popover-foreground: #FFFFFF;
-  --primary: #FFFFFF;
-  --primary-foreground: #020202;
-  --secondary: #161616;
-  --secondary-foreground: #FFFFFF;
-  --muted: #161616;
-  --muted-foreground: #8E8E93;
-  --accent: #FFFFFF;
-  --accent-foreground: #020202;
+  --background: #FAFCFD;
+  --foreground: #17252D;
+  --card: #F4F8FA;
+  --card-foreground: #17252D;
+  --popover: #FAFCFD;
+  --popover-foreground: #17252D;
+  --primary: #17252D;
+  --primary-foreground: #FAFCFD;
+  --secondary: #E5EFF4;
+  --secondary-foreground: #17252D;
+  --muted: #E5EFF4;
+  --muted-foreground: #55788D;
+  --accent: #A2BECC;
+  --accent-foreground: #17252D;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #161616;
-  --input: #0C0C0C;
-  --ring: #FFFFFF;
+  --border: #D5E2E9;
+  --input: #F4F8FA;
+  --ring: #A2BECC;
 }
 
 /* ═══════════════════════════════════════════════════ */
@@ -1081,7 +1091,7 @@ html.light .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *
 
 @layer base {
   html, body {
-    overflow-x: hidden;
+    overflow: visible;
     max-width: 100%;
     background-color: var(--background);
     -webkit-font-smoothing: antialiased;
@@ -1145,7 +1155,7 @@ html.light .notion-theme button[class*="border-white/"]:not(.gxl-studio-editor *
 /* ═══════════════════════════════════════════════════ */
 /* SECTION SAFETY                                      */
 /* ═══════════════════════════════════════════════════ */
-section {
+section:not(.growx-sticky-viewport) {
   position: relative !important;
   overflow: hidden !important;
   isolation: isolate !important;

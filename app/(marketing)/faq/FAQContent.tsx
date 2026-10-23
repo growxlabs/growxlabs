@@ -35,16 +35,16 @@ export function FAQContent({ categories }: FAQContentProps) {
         tagline="QUESTIONS"
       />
 
-      <div className="pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-border/20 pt-16">
+      <div className="pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-[#D5E2E9] pt-16 bg-[#A2BECC]">
         <div className="max-w-[1400px] mx-auto">
           {categories.map((category, idx) => (
             <section key={category.id} className="mb-24 last:mb-32">
-              {/* Subtle category header */}
-              <div className="border-b border-border/10 pb-6 mb-12">
-                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#C0F0FB] uppercase block mb-2">
+              {/* Category header */}
+              <div className="border-b border-[#D5E2E9] pb-6 mb-12">
+                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#55788D] uppercase block mb-2">
                   // CATEGORY {String(idx + 1).padStart(2, '0')}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-black text-[#17252D] tracking-tight font-sans">
                   {category.title}
                 </h2>
               </div>
@@ -57,22 +57,22 @@ export function FAQContent({ categories }: FAQContentProps) {
                   return (
                     <div
                       key={itemIdx}
-                      className="border-t border-white/10 last:border-b border-white/10 transition-all duration-300"
+                      className="border-t border-[#D5E2E9] last:border-b transition-all duration-300"
                     >
                       <button
                         onClick={() => toggle(itemId)}
                         className="w-full flex items-center justify-between py-8 text-left group cursor-pointer"
                       >
                         <div className="flex gap-8 items-start pr-4">
-                          <span className="font-mono text-xs text-white/30 pt-1.5 shrink-0">
+                          <span className="font-mono text-xs text-[#55788D] pt-1.5 shrink-0 font-bold">
                             {String(itemIdx + 1).padStart(2, '0')}
                           </span>
-                          <h3 className="text-white text-[16px] sm:text-[18px] font-sans font-bold tracking-tight leading-snug group-hover:text-[#C0F0FB] transition-colors">
+                          <h3 className="text-[#17252D] text-[16px] sm:text-[18px] font-sans font-bold tracking-tight leading-snug group-hover:text-[#55788D] transition-colors">
                             {faq.question}
                           </h3>
                         </div>
                         <Plus 
-                          className={`w-5 h-5 text-white/40 group-hover:text-white shrink-0 transition-transform duration-300 ${isOpen ? "rotate-45 text-white" : ""}`} 
+                          className={`w-5 h-5 text-[#55788D] group-hover:text-[#17252D] shrink-0 transition-transform duration-300 ${isOpen ? "rotate-45 text-[#17252D]" : ""}`} 
                         />
                       </button>
 
@@ -80,7 +80,7 @@ export function FAQContent({ categories }: FAQContentProps) {
                         className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? "max-h-[500px] opacity-100 pb-8" : "max-h-0 opacity-0"}`}
                       >
                         <div className="pl-12 pr-4 sm:pl-14">
-                          <p className="text-white/70 font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-4xl">
+                          <p className="text-[#17252D]/85 font-sans text-[15px] sm:text-[16px] leading-relaxed max-w-4xl font-normal">
                             {faq.answer}
                           </p>
                         </div>

@@ -31,10 +31,10 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("all")}
           className={cn(
-            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "all"
-              ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
-              : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
+              ? "bg-[#A2BECC] text-[#17252D] border border-[#55788D]/30 shadow-sm"
+              : "bg-[#E5EFF4] text-[#55788D] border border-[#D5E2E9] hover:border-[#55788D]/40 hover:text-[#17252D]"
           )}
         >
           <span>Show All</span>
@@ -44,10 +44,10 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("software")}
           className={cn(
-            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-md font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
             activeFilter === "software"
-              ? "bg-[#C0F0FB] text-black border border-[#C0F0FB] shadow-[0_0_25px_rgba(192,240,251,0.25)]"
-              : "bg-[#0A0A0D] text-neutral-400 border border-neutral-800/80 hover:border-neutral-700 hover:text-white"
+              ? "bg-[#A2BECC] text-[#17252D] border border-[#55788D]/30 shadow-sm"
+              : "bg-[#E5EFF4] text-[#55788D] border border-[#D5E2E9] hover:border-[#55788D]/40 hover:text-[#17252D]"
           )}
         >
           <span>Software</span>
@@ -59,11 +59,11 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
         {/* Section 1: Distribution Platform (TRIONYX) */}
         {trionyxProject && (
           <div className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/15">
-              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+            <div className="flex items-center justify-between pb-4 border-b border-[#D5E2E9]">
+              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#17252D] tracking-[0.2em] uppercase">
                 Distribution Platform
               </h2>
-              <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 01 ]</span>
+              <span className="font-mono text-xs text-[#55788D] tracking-widest">[ 01 ]</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
@@ -76,17 +76,17 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
 
         {/* Middle Border Separator */}
         {trionyxProject && crawlProject && (
-          <div className="w-full border-t border-white/10" />
+          <div className="w-full border-t border-[#D5E2E9]" />
         )}
 
         {/* Section 2: Platform and Tools (GrowX Crawl) */}
         {crawlProject && (
           <div className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between pb-4 border-b border-white/15">
-              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#C0F0FB] tracking-[0.2em] uppercase">
+            <div className="flex items-center justify-between pb-4 border-b border-[#D5E2E9]">
+              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#17252D] tracking-[0.2em] uppercase">
                 Platform and Tools
               </h2>
-              <span className="font-mono text-xs text-neutral-500 tracking-widest">[ 02 ]</span>
+              <span className="font-mono text-xs text-[#55788D] tracking-widest">[ 02 ]</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
@@ -99,12 +99,12 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
       </div>
 
       {/* Bottom End of Portfolio Meta Bar */}
-      <div className="pt-10 sm:pt-14 mt-16 sm:mt-20 border-t border-white/15 flex items-center justify-between font-mono text-xs sm:text-sm tracking-[0.18em] uppercase select-none">
-        <span className="text-neutral-500 font-bold">
-          //End of Portfolio
+      <div className="pt-10 sm:pt-14 mt-16 sm:mt-20 border-t border-[#D5E2E9] flex items-center justify-between font-mono text-xs sm:text-sm tracking-[0.18em] uppercase select-none">
+        <span className="text-[#55788D] font-bold">
+          // End of Portfolio
         </span>
-        <span className="text-[#C0F0FB] font-bold">
-          15 projects
+        <span className="text-[#55788D] font-bold">
+          2 Case Studies
         </span>
       </div>
     </div>

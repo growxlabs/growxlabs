@@ -4,17 +4,14 @@ import { projects } from "@/lib/data/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { AEOBlock } from "@/components/marketing/AEOBlock";
 import { HeroSection } from "@/components/marketing/HeroSection";
-import { SectionG } from "@/components/marketing/SectionG";
-import { SectionR } from "@/components/marketing/SectionR";
-import { SectionO } from "@/components/marketing/SectionO";
-import { SectionW } from "@/components/marketing/SectionW";
-import { SectionX } from "@/components/marketing/SectionX";
+import { GrowxScrollSection } from "@/components/marketing/GrowxScrollSection";
 import { PracticeAreasSection } from "@/components/marketing/PracticeAreasSection";
 import { ValuePropositions } from "@/components/marketing/ValuePropositions";
 import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { AnimatedSection } from "@/components/marketing/AnimatedSection";
 import Script from "next/script";
 import { ArrowUpRight } from "@/components/icons";
+import styles from "./homepage.module.css";
 
 export async function generateMetadata() {
   return {
@@ -93,7 +90,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col bg-black text-foreground min-h-screen">
+    <div className={`${styles.homepage} flex flex-col text-[#17252D] min-h-screen`}>
       <Script
         id="faq-schema"
         type="application/ld+json"
@@ -103,39 +100,33 @@ export default function Home() {
       {/* ═══ HERO (studio + brand only) ═══ */}
       <HeroSection />
 
-      {/* ═══ Swiss-Editorial Sections (G, R, O, W, X) ═══ */}
-      <SectionG />
-      <SectionR />
-      <SectionO />
-      <SectionW />
-      <SectionX />
-
-
+      {/* ═══ Continuous Sticky Scroll-Driven Section (G, R, O, W, X) ═══ */}
+      <GrowxScrollSection />
 
       {/* ═══ PRACTICE AREAS & DIVISIONS ═══ */}
       <PracticeAreasSection />
 
       {/* ═══ FAQ — Accordion (360labs.dev Swiss-editorial layout) ═══ */}
-      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-black border-t border-white/10">
+      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-[#A2BECC] border-t border-[#D5E2E9]">
         <div className="max-w-[1400px] mx-auto">
           {/* Eyebrow Bar: { FAQ } — { GROWXLABS } — SUPPORT */}
-          <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-white/40 uppercase mb-12 sm:mb-16 select-none">
+          <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-[#55788D] uppercase mb-12 sm:mb-16 select-none">
             <span>{`{ FAQ }`}</span>
-            <span className="text-white/60 font-semibold">{`{ GROWXLABS }`}</span>
+            <span className="text-[#17252D] font-semibold">{`{ GROWXLABS }`}</span>
             <span>SUPPORT</span>
           </div>
 
           {/* Asymmetric Header: Giant 3-Line Heading + Subtext on Right */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-12 sm:pb-16 border-b border-white/10 mb-2">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-12 sm:pb-16 border-b border-[#55788D]/20 mb-2">
             <div className="lg:col-span-7 xl:col-span-8">
-              <h2 className="font-sans font-bold tracking-tight text-white leading-[0.96] text-[clamp(44px,6.5vw,84px)]">
+              <h2 className="font-sans font-bold tracking-tight text-[#17252D] leading-[0.96] text-[clamp(44px,6.5vw,84px)]">
                 Frequently<br />
                 Asked<br />
                 Questions
               </h2>
             </div>
             <div className="lg:col-span-5 xl:col-span-4 lg:pb-3">
-              <p className="font-sans text-[15px] sm:text-[17px] text-white/60 leading-relaxed max-w-md">
+              <p className="font-sans text-[15px] sm:text-[17px] text-[#55788D] leading-relaxed max-w-md">
                 Got questions? We have got answers. If you do not find what you are looking for, feel free to reach out.
               </p>
             </div>
@@ -148,10 +139,10 @@ export default function Home() {
           <AnimatedSection delay={0.2} className="text-center mt-14 sm:mt-16">
             <Link 
               href="/faq" 
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-white/15 bg-white/5 hover:bg-white/10 text-white text-[12px] font-bold tracking-[0.15em] uppercase transition-all shadow-sm active:scale-95 group font-mono"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-[#55788D]/30 bg-[#E5EFF4] hover:bg-[#A2BECC] text-[#17252D] text-[12px] font-bold tracking-[0.15em] uppercase transition-all shadow-sm active:scale-95 group font-mono"
             >
               <span>View All FAQs</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#55788D] group-hover:text-[#17252D] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
             </Link>
           </AnimatedSection>
         </div>
