@@ -157,7 +157,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className={cn("h-8 w-8 animate-spin", isCommandCenter ? "text-blue-500" : "text-[#0075de]")} />
-          <p className={cn("text-xs font-mono uppercase tracking-widest", isCommandCenter ? "text-zinc-400" : "text-[var(--text-muted)]")}>
+          <p className={cn("text-[13px] font-normal", isCommandCenter ? "text-zinc-400" : "text-[var(--text-muted)]")}>
             Authenticating workspace access...
           </p>
         </div>
@@ -227,13 +227,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ShieldAlert className="text-[#0075de] h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[var(--text-primary)] leading-tight">GrowX Labs</h2>
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-0.5">Agent Workspace</p>
+              <h2 className="text-sm font-semibold text-[var(--text-primary)] leading-tight">GrowX Labs</h2>
+              <p className="text-[12px] font-normal text-[var(--text-secondary)] mt-0.5">Agent Workspace</p>
             </div>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/login?callbackUrl=/admin" })}
-            className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--card)] text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/5 transition-all"
+            className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--card)] text-[12px] font-medium text-[var(--text-secondary)] hover:text-red-500 hover:border-red-500/20 hover:bg-red-500/5 transition-all"
           >
             <LogOut size={12} /> Sign Out
           </button>
@@ -242,7 +242,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Workspace Menu */}
         <div className="flex-1 flex flex-col justify-center max-w-4xl w-full mx-auto my-auto py-8">
           <div className="space-y-2 mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text-primary)] leading-none">
+            <h1 className="text-[22px] font-semibold text-[var(--text-primary)] leading-tight">
               Welcome back, <span className="text-[#0075de]">{session?.user?.name || "Agent"}</span>
             </h1>
             <p className="text-[var(--text-secondary)] text-xs">
@@ -287,7 +287,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Bottom Footer Info */}
-        <div className="max-w-4xl w-full mx-auto text-center shrink-0 pt-8 border-t border-[var(--border-subtle)] text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+        <div className="max-w-4xl w-full mx-auto text-center shrink-0 pt-8 border-t border-[var(--border-subtle)] text-[12px] font-normal text-[var(--text-muted)]">
           GrowX Labs outbound systems • Authorized Personnel Only
         </div>
       </div>
@@ -295,9 +295,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className={cn(adminGeist.variable, "admin-typography contents")}>
     <SettingsModalProvider>
       <div className={cn(
+        adminGeist.variable,
+        "admin-typography",
         !isCommandCenter && !isEditorialStudio && "notion-theme",
         isCommandCenter ? "bg-[#09090b] text-[#f4f4f5]" : isEditorialStudio ? "bg-[#0e0f12] text-white" : "bg-[var(--background)] text-[var(--text-primary)]",
         "min-h-screen w-full max-w-full overflow-x-hidden flex relative print:bg-white print:text-black print:block print:overflow-visible"
@@ -340,6 +341,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {!isCommandCenter && !isEditorialStudio && !currentPath?.includes("/print") && !currentPath?.includes("/preview") && <AdminOperationsDock />}
       </div>
     </SettingsModalProvider>
-    </div>
   );
 }

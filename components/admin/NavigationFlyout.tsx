@@ -123,10 +123,10 @@ export function NavigationFlyout({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white truncate">
+            <h2 className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">
               {title}
             </h2>
-            <span className="px-1.5 py-0.2 text-[9px] font-semibold rounded-md bg-slate-100 dark:bg-[#1B1B1B] text-slate-500 dark:text-neutral-400">
+            <span className="px-1.5 py-0.5 text-[11px] font-medium rounded-md bg-slate-100 dark:bg-[#1B1B1B] text-slate-500 dark:text-neutral-400">
               {items.length}
             </span>
           </div>

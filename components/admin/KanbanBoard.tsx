@@ -85,25 +85,25 @@ export function KanbanBoard({ initialDeals, stages, onStageChange }: KanbanBoard
             {/* Stage Header */}
             <div className="flex items-start justify-between mb-3.5">
               <div>
-                <h3 className="text-sm font-bold text-neutral-900 tracking-tight leading-none mb-1">{stage.name}</h3>
-                <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">{stage.probability}% Probability</span>
+                <h3 className="text-[14px] font-semibold text-neutral-900 leading-none mb-1">{stage.name}</h3>
+                <span className="text-[11px] font-medium text-neutral-500">{stage.probability}% Probability</span>
               </div>
-              <span className="text-[10px] font-bold bg-white text-[#0075de] border border-[#e6e6e6] px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-medium bg-white text-[#0075de] border border-[#e6e6e6] px-2 py-0.5 rounded-full">
                 {count}
               </span>
             </div>
 
             {/* Total Stage Value */}
             <div className="bg-white border border-[#e6e6e6] px-3.5 py-2.5 rounded-md mb-4 flex items-center justify-between shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Total Value</span>
-              <span className="text-xs font-bold text-neutral-900">₹{totalValue.toLocaleString()}</span>
+              <span className="text-[11px] font-medium text-neutral-500">Total Value</span>
+              <span className="text-[13px] font-semibold text-neutral-900 tabular-nums">₹{totalValue.toLocaleString()}</span>
             </div>
 
             {/* Cards List container */}
             <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar pb-6">
               {stageDeals.length === 0 ? (
                 <div className="h-28 border border-dashed border-[#e6e6e6] rounded-md flex items-center justify-center text-center p-4">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Drag deals here</span>
+                  <span className="text-[12px] font-normal text-neutral-400">Drag deals here</span>
                 </div>
               ) : (
                 stageDeals.map((deal) => {
@@ -121,18 +121,18 @@ export function KanbanBoard({ initialDeals, stages, onStageChange }: KanbanBoard
                         draggedId === deal.id && "opacity-40"
                       )}
                     >
-                      <h4 className="text-xs font-bold text-neutral-900 leading-snug mb-1 group-hover:text-[#0075de] transition-colors">{deal.name}</h4>
+                      <h4 className="text-[13px] font-semibold text-neutral-900 leading-snug mb-1 group-hover:text-[#0075de] transition-colors">{deal.name}</h4>
                       
                       {deal.company && (
-                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2.5">{deal.company.name}</p>
+                        <p className="text-[12px] font-normal text-neutral-500 mb-2.5">{deal.company.name}</p>
                       )}
 
-                      <div className="border-t border-[#e6e6e6]/60 pt-2.5 flex items-center justify-between text-[10px] font-medium text-neutral-500">
+                      <div className="border-t border-[#e6e6e6]/60 pt-2.5 flex items-center justify-between text-[12px] font-normal text-neutral-500">
                         <div className="flex items-center gap-1">
                           <TrendingUp size={11} className="text-[#1aae39]" />
-                          <span className="font-bold text-neutral-900">₹{Number(deal.value).toLocaleString()}</span>
+                          <span className="font-semibold text-neutral-900 tabular-nums">₹{Number(deal.value).toLocaleString()}</span>
                         </div>
-                        <div className="flex items-center gap-1 font-mono text-[9px]">
+                        <div className="flex items-center gap-1 text-[11px] tabular-nums">
                           <Calendar size={11} className="text-neutral-400" />
                           <span>{dateStr}</span>
                         </div>

@@ -1,6 +1,6 @@
 /* Admin-only foundation. Public pages and document/canvas content are excluded. */
 .admin-typography {
-  --admin-font: var(--font-admin-geist), Arial, sans-serif;
+  --admin-font: var(--font-admin-geist), "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --admin-text-primary: #18181b;
   --admin-text-secondary: #71717a;
   --admin-text-muted: #a1a1aa;
@@ -20,6 +20,7 @@
 }
 
 .dark .admin-typography,
+.admin-typography.dark,
 .admin-typography [data-admin-tone="dark"] {
   --admin-text-primary: #f4f4f5;
   --admin-text-secondary: #a1a1aa;
@@ -30,13 +31,121 @@
   --text-tertiary: var(--admin-text-secondary);
 }
 
+/* Base cascading rules across entire admin tree */
+.admin-typography,
+.admin-typography.notion-theme,
+.admin-typography .notion-theme {
+  --text-primary: var(--admin-text-primary);
+  --text-secondary: var(--admin-text-secondary);
+  --text-muted: var(--admin-text-secondary);
+  --text-tertiary: var(--admin-text-secondary);
+  font-family: var(--admin-font) !important;
+}
+
+.admin-typography :is(h1, h2, h3, h4, h5, h6, button, input, select, textarea, table, th, td, p, span, a, label, .font-sans, .font-serif, .font-mono) {
+  font-family: var(--admin-font);
+  letter-spacing: normal;
+}
+
+/* Headings */
+.admin-typography :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  overflow-wrap: break-word;
+}
+.admin-typography h1 { font-size: var(--admin-title-size) !important; }
+.admin-typography h2 { font-size: var(--admin-section-size) !important; }
+.admin-typography :is(h3, h4, h5, h6) { font-size: var(--admin-card-size) !important; }
+
+.admin-typography :is(h1 + p, .admin-description) {
+  font-size: var(--admin-body-size) !important;
+  font-weight: 400 !important;
+  color: var(--admin-text-secondary) !important;
+  line-height: 1.5;
+}
+
+/* Tables */
+.admin-typography table {
+  font-size: var(--admin-body-size);
+  font-variant-numeric: tabular-nums;
+}
+.admin-typography th {
+  font-size: var(--admin-label-size) !important;
+  font-weight: 500 !important;
+  color: var(--admin-text-secondary) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+.admin-typography td {
+  font-size: var(--admin-body-size);
+  line-height: 1.4;
+  vertical-align: middle;
+}
+.admin-typography :is(.admin-record-name, td .font-medium, td .font-semibold, td .font-bold) {
+  font-size: var(--admin-body-size) !important;
+  font-weight: 500 !important;
+}
+.admin-typography .admin-record-name {
+  color: var(--admin-text-primary) !important;
+  font-weight: 600 !important;
+}
+.admin-typography :is(.admin-metadata, td .font-normal) {
+  font-size: var(--admin-meta-size) !important;
+  font-weight: 400 !important;
+  color: var(--admin-text-secondary) !important;
+}
+
+/* KPI Cards */
+.admin-typography .admin-kpi-value {
+  font-family: var(--admin-font) !important;
+  font-size: var(--admin-kpi-size) !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  line-height: 1.2 !important;
+  font-variant-numeric: tabular-nums;
+}
+.admin-typography .admin-kpi-label {
+  font-size: var(--admin-label-size) !important;
+  font-weight: 500 !important;
+  color: var(--admin-text-secondary) !important;
+  line-height: 1.4;
+}
+
+/* Forms & Buttons */
+.admin-typography :is(label, .admin-form-label) {
+  font-size: var(--admin-meta-size) !important;
+  font-weight: 500 !important;
+  line-height: 1.4;
+}
+.admin-typography :is(input, select, textarea) {
+  font-size: var(--admin-body-size) !important;
+  font-weight: 400 !important;
+  line-height: 1.5;
+}
+.admin-typography :is(button, [role="button"], .admin-button) {
+  font-size: var(--admin-body-size) !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+}
+
+/* Navigation */
+.admin-typography :is(nav, aside) :is(a, button),
+.admin-typography .admin-nav-label {
+  font-size: var(--admin-body-size) !important;
+  font-weight: 500 !important;
+}
+.admin-typography :is([aria-current="page"], .admin-nav-active) {
+  font-weight: 600 !important;
+}
+
 /* Limit the migration to application chrome, never an exported document. */
 @scope (.admin-typography) to ([data-admin-typography="preserve"], .document-shell, .document-container, .assessment-document, .ai-solution-document, .solution-architecture-document, .print-container, article:has(h1.font-serif), .editor-canvas, [contenteditable="true"], pre, code, svg) {
   :scope:scope,
   :scope:scope .notion-theme {
     --text-primary: var(--admin-text-primary);
     --text-secondary: var(--admin-text-secondary);
-    /* Existing muted utilities contain essential labels, so retain readable contrast. */
     --text-muted: var(--admin-text-secondary);
     --text-tertiary: var(--admin-text-secondary);
     font-family: var(--admin-font) !important;
@@ -47,7 +156,6 @@
     letter-spacing: normal !important;
   }
 
-  /* Compatibility for the audited legacy utilities; semantic roles below win. */
   :scope:scope :is(.font-bold, .font-extrabold, .font-black, b, strong) { font-weight: 600 !important; }
   :scope:scope :is(.font-light, .font-extralight, .font-thin) { font-weight: 400 !important; }
   :scope:scope [class*="tracking-"] { letter-spacing: normal !important; }

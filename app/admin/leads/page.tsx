@@ -664,7 +664,7 @@ export default function LeadsAdminPage() {
         {/* --- MAIN DATA TABLE --- */}
         <div className="bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1608px] text-left text-[13px] whitespace-nowrap table-fixed">
+            <table className="w-full min-w-[1720px] text-left text-[13px] leading-5 whitespace-nowrap table-fixed">
               <thead className="bg-[var(--surface-2)]/30 border-b border-[var(--border-subtle)] text-[var(--text-secondary)] font-semibold sticky top-0 z-10">
                 <tr>
                   <th className="px-4 py-3 w-10 text-center">
@@ -681,17 +681,17 @@ export default function LeadsAdminPage() {
                       className="rounded border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--primary)] focus:ring-[var(--primary)] h-3.5 w-3.5"
                     />
                   </th>
-                  <th className="px-5 py-3 w-64 font-bold uppercase tracking-wider text-[10px]">Company</th>
-                  <th className="px-4 py-3 w-28 font-bold uppercase tracking-wider text-[10px]">Status</th>
-                  <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Location</th>
-                  <th className="px-4 py-3 w-28 font-bold uppercase tracking-wider text-[10px]">Industry</th>
-                  <th className="px-4 py-3 w-36 font-bold uppercase tracking-wider text-[10px]">Website</th>
-                  <th className="px-4 py-3 w-52 font-bold uppercase tracking-wider text-[10px]">Email</th>
-                  <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Phone</th>
-                  <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Lead Score</th>
-                  <th className="px-4 py-3 w-40 font-bold uppercase tracking-wider text-[10px]">Assigned</th>
-                  <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Date Added</th>
-                  <th className="px-4 py-3 w-16 text-center font-bold uppercase tracking-wider text-[10px]"></th>
+                  <th className="px-5 py-3 w-[360px] min-w-[320px] font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Company</th>
+                  <th className="px-4 py-3 w-28 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Status</th>
+                  <th className="px-4 py-3 w-32 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Location</th>
+                  <th className="px-4 py-3 w-28 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Industry</th>
+                  <th className="px-4 py-3 w-36 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Website</th>
+                  <th className="px-4 py-3 w-52 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Email</th>
+                  <th className="px-4 py-3 w-32 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Phone</th>
+                  <th className="px-4 py-3 w-32 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Lead Score</th>
+                  <th className="px-4 py-3 w-40 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Assigned</th>
+                  <th className="px-4 py-3 w-32 font-medium text-[11px] text-[var(--text-secondary)] tracking-normal">Date Added</th>
+                  <th className="px-4 py-3 w-16 text-center font-medium text-[11px] text-[var(--text-secondary)] tracking-normal"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)] bg-[var(--card)]">

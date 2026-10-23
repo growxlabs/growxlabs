@@ -723,7 +723,7 @@ export default function AdminCRMPage() {
 
         {/* --- CRM LEADS DATA TABLE --- */}
         <div className="overflow-x-auto relative">
-          <table className="w-full min-w-[1328px] text-left text-[13px] leading-4 whitespace-nowrap table-fixed">
+          <table className="w-full min-w-[1540px] text-left text-[13px] leading-5 whitespace-nowrap table-fixed">
             <thead className="bg-[#f6f5f4]/45 border-b border-[#e6e6e6] sticky top-0 z-10">
               <tr className="divide-x divide-[#e6e6e6]/60">
                 <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-12 text-center">
@@ -734,14 +734,14 @@ export default function AdminCRMPage() {
                     className="rounded border-neutral-300 bg-white text-[#0075de] focus:ring-[#0075de]" 
                   />
                 </th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-64">Company</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-52">Contact</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-24">Lead Score</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-[380px] min-w-[340px]">Company</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-[280px] min-w-[240px]">Contact</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-28">Lead Score</th>
                 <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Status</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-40">Owner</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Last Activity</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Next Follow-up</th>
-                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-28">Source</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-44">Owner</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-36">Last Activity</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-36">Next Follow-up</th>
+                <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-32">Source</th>
                 <th className="px-4 py-3 font-medium text-[11px] tracking-normal text-[var(--text-secondary)] w-16 text-center">Actions</th>
               </tr>
             </thead>
@@ -805,7 +805,7 @@ export default function AdminCRMPage() {
                         className="rounded border-neutral-300 bg-white text-[#0075de] focus:ring-[#0075de]" 
                       />
                     </td>
-                    <td className="px-4 py-3 font-semibold text-[var(--text-primary)] truncate">
+                    <td className="admin-record-name px-4 py-3 font-semibold text-[13px] text-[var(--text-primary)]">
                       <div className="flex items-center gap-1">
                         <span className="truncate" title={lead.business_name}>{lead.business_name}</span>
                         {lead.website_url && (
@@ -816,7 +816,7 @@ export default function AdminCRMPage() {
                       </div>
                       <div className="text-xs font-normal text-[var(--text-secondary)] truncate mt-0.5" title={lead.city}>{lead.city || "No location"}</div>
                     </td>
-                    <td className="px-4 py-3 text-xs font-normal text-[var(--text-secondary)] truncate">
+                    <td className="px-4 py-3 text-[13px]">
                       <div className="truncate" title={lead.contact_name || lead.name}>{lead.contact_name || lead.name || "—"}</div>
                       <div className="text-xs font-normal text-[var(--text-secondary)] truncate mt-0.5" title={lead.email || lead.phone}>{lead.email || lead.phone || "—"}</div>
                     </td>
