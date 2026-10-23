@@ -34,15 +34,13 @@ export function Navbar() {
   const isAirForceTheme = !isDarkBlog && !isLightThemePage;
 
   // Dynamic Theme Colors
-  const navBg = isScrolled
-    ? (isAirForceTheme
-        ? "bg-[#A2BECC]/90 backdrop-blur-md border-b border-[#55788D]/20 shadow-sm"
-        : isLightThemePage
+  const navBg = isAirForceTheme
+    ? "bg-transparent border-b-0 shadow-none"
+    : isScrolled
+    ? (isLightThemePage
         ? "bg-[#FBF9F5] border-b border-[#E5E2DC] shadow-sm"
         : "bg-black md:bg-black/90 border-b border-white/10 shadow-sm")
-    : (isAirForceTheme
-        ? "bg-[#A2BECC] border-b border-transparent"
-        : isLightThemePage
+    : (isLightThemePage
         ? "bg-[#FBF9F5] border-b border-transparent"
         : "bg-black/80 border-b border-transparent");
 
@@ -152,14 +150,24 @@ export function Navbar() {
               })()}
             </div>
 
-            {/* Right: Bordered Contact Button with Liquid Water Fill Effect */}
+            {/* Right: Contact Button */}
             <div className="flex items-center justify-end z-10">
               {(() => {
                 const resolvedHref = "/contact";
+                if (isAirForceTheme) {
+                  return (
+                    <Link
+                      href={resolvedHref}
+                      className="inline-flex items-center justify-center font-bold rounded-md transition-all duration-200 cursor-pointer select-none active:scale-[0.98] h-8 sm:h-9 md:h-10 px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm bg-[#17252D] text-[#FFFFFF] hover:bg-[#233844] shadow-sm"
+                    >
+                      Contact
+                    </Link>
+                  );
+                }
                 return (
                   <LiquidButton
                     href={resolvedHref}
-                    variant={isAirForceTheme ? "airforce" : (isLightThemePage ? "dark" : "cyan")}
+                    variant={isLightThemePage ? "dark" : "cyan"}
                     size="default"
                   >
                     Contact
@@ -188,7 +196,7 @@ export function Navbar() {
         <div
           className={cn(
             "absolute top-0 bottom-0 left-0 w-80 max-w-[85vw] border-r flex flex-col justify-between py-6 transition-transform duration-500 ease-out z-10 shadow-2xl",
-            isAirForceTheme ? "bg-[#F4F8FA] border-[#D5E2E9] text-[#17252D]" : (isLightThemePage ? "bg-[#F7F4EE] border-[#111111]/15 text-[#111111]" : "bg-[#020202] border-neutral-800 text-white"),
+            isAirForceTheme ? "bg-[#DCE8EE] border-[#9CB5C1] text-[#17252D]" : (isLightThemePage ? "bg-[#F7F4EE] border-[#111111]/15 text-[#111111]" : "bg-[#020202] border-neutral-800 text-white"),
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
@@ -200,8 +208,8 @@ export function Navbar() {
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={cn(
-                  "transition-colors cursor-pointer bg-transparent border-0 p-1.5 -ml-1.5 rounded-md hover:bg-[#E5EFF4]",
-                  isAirForceTheme ? "text-[#17252D] hover:text-[#55788D]" : (isLightThemePage ? "text-[#1A1A1A] hover:text-[#111111]" : "text-neutral-400 hover:text-white")
+                  "transition-colors cursor-pointer bg-transparent border-0 p-1.5 -ml-1.5 rounded-md",
+                  isAirForceTheme ? "text-[#17252D] hover:text-[#385568] hover:bg-[#C8DCE5]" : (isLightThemePage ? "text-[#1A1A1A] hover:text-[#111111] hover:bg-neutral-100" : "text-neutral-400 hover:text-white hover:bg-white/5")
                 )}
                 aria-label="Close menu"
               >
@@ -219,8 +227,8 @@ export function Navbar() {
                 const linkClasses = cn(
                   "text-[15px] font-medium transition-all text-left block w-full px-4 py-2.5 rounded-lg",
                   isCurrent
-                    ? (isAirForceTheme ? "bg-[#E5EFF4] text-[#17252D] font-semibold" : "bg-neutral-200/60 dark:bg-neutral-800 font-semibold")
-                    : (isAirForceTheme ? "text-[#17252D] hover:text-[#55788D] hover:bg-[#E5EFF4]/60" : (isLightThemePage ? "text-[#34312D] hover:text-[#111111] hover:bg-black/[0.04]" : "text-neutral-300 hover:text-white hover:bg-white/[0.04]"))
+                    ? (isAirForceTheme ? "bg-[#A2BECC] text-[#17252D] font-semibold" : "bg-neutral-200/60 dark:bg-neutral-800 font-semibold")
+                    : (isAirForceTheme ? "text-[#17252D] hover:text-[#17252D] hover:bg-[#C8DCE5]" : (isLightThemePage ? "text-[#34312D] hover:text-[#111111] hover:bg-black/[0.04]" : "text-neutral-300 hover:text-white hover:bg-white/[0.04]"))
                 );
 
                 if (isExternal) {
@@ -248,13 +256,16 @@ export function Navbar() {
               })}
 
               {isLoggedIn && (
-                <div className="pt-2 mt-2 border-t border-[#55788D]/15 flex flex-col gap-1">
+                <div className={cn(
+                  "pt-2 mt-2 border-t flex flex-col gap-1",
+                  isAirForceTheme ? "border-[#9CB5C1]" : "border-neutral-800"
+                )}>
                   {(() => {
                     const resolvedHref = isMounted ? getAbsoluteUrl(dashboardPath) : dashboardPath;
                     const isExternal = isMounted && resolvedHref.startsWith("http");
                     const linkClasses = cn(
                       "text-[15px] font-medium transition-all text-left block w-full px-4 py-2.5 rounded-lg",
-                      isAirForceTheme ? "text-[#17252D] hover:text-[#55788D] hover:bg-[#E5EFF4]/60" : (isLightThemePage ? "text-[#34312D] hover:text-[#111111] hover:bg-black/[0.04]" : "text-neutral-300 hover:text-white hover:bg-white/[0.04]")
+                      isAirForceTheme ? "text-[#17252D] hover:bg-[#C8DCE5]" : (isLightThemePage ? "text-[#34312D] hover:text-[#111111] hover:bg-black/[0.04]" : "text-neutral-300 hover:text-white hover:bg-white/[0.04]")
                     );
 
                     if (isExternal) {
@@ -284,7 +295,10 @@ export function Navbar() {
                       signOut({ callbackUrl: "/" });
                       setIsMobileMenuOpen(false);
                     }}
-                    className="text-[14px] font-medium text-[#55788D] hover:text-red-500 transition-colors text-left block w-full px-4 py-2 rounded-lg bg-transparent border-0 cursor-pointer"
+                    className={cn(
+                      "text-[14px] font-medium transition-colors text-left block w-full px-4 py-2 rounded-lg bg-transparent border-0 cursor-pointer",
+                      isAirForceTheme ? "text-[#385568] hover:text-red-500" : "text-neutral-400 hover:text-red-400"
+                    )}
                   >
                     Sign Out
                   </button>
@@ -296,7 +310,7 @@ export function Navbar() {
           {/* Bottom Section: Careers + Direct Contact Details */}
           <div className={cn(
             "border-t flex flex-col mt-auto pt-4 px-4 gap-3 shrink-0",
-            isAirForceTheme ? "border-[#55788D]/15" : (isLightThemePage ? "border-[#111111]/15" : "border-neutral-800")
+            isAirForceTheme ? "border-[#9CB5C1]" : (isLightThemePage ? "border-[#111111]/15" : "border-neutral-800")
           )}>
             {/* Careers Link */}
             {(() => {
@@ -308,7 +322,7 @@ export function Navbar() {
                   <span className={cn(
                     "text-[10px] font-mono font-medium px-2 py-0.5 rounded border tracking-normal",
                     isAirForceTheme
-                      ? "text-[#55788D] border-[#55788D]/30 bg-[#E5EFF4]"
+                      ? "text-[#385568] border-[#9CB5C1] bg-[#A2BECC]/30"
                       : isLightThemePage 
                       ? "text-[#111111]/70 border-[#111111]/20 bg-black/[0.03]" 
                       : "text-neutral-400 border-neutral-700 bg-white/[0.04]"
@@ -320,7 +334,7 @@ export function Navbar() {
 
               const careersClasses = cn(
                 "transition-all text-left block w-full px-4 py-2.5 rounded-lg",
-                isAirForceTheme ? "hover:bg-[#E5EFF4]/60" : (isLightThemePage ? "hover:bg-black/[0.04]" : "hover:bg-white/[0.04]")
+                isAirForceTheme ? "hover:bg-[#C8DCE5]" : (isLightThemePage ? "hover:bg-black/[0.04]" : "hover:bg-white/[0.04]")
               );
 
               if (isExternal) {
@@ -353,7 +367,7 @@ export function Navbar() {
                 className={cn(
                   "text-xs font-mono tracking-tight truncate py-1 transition-colors block",
                   isAirForceTheme
-                    ? "text-[#55788D] hover:text-[#17252D]"
+                    ? "text-[#385568] hover:text-[#17252D]"
                     : isLightThemePage
                     ? "text-[#65625D] hover:text-[#111111]"
                     : "text-neutral-400 hover:text-white"
@@ -370,7 +384,7 @@ export function Navbar() {
                   className={cn(
                     "text-xs font-mono tracking-tight transition-colors truncate flex-1",
                     isAirForceTheme
-                      ? "text-[#55788D] hover:text-[#17252D]"
+                      ? "text-[#385568] hover:text-[#17252D]"
                       : isLightThemePage
                       ? "text-[#65625D] hover:text-[#111111]"
                       : "text-neutral-400 hover:text-white"

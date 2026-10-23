@@ -3,8 +3,17 @@ import { locales, Link } from "@/navigation";
 import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 import { PageHero } from "@/components/marketing/PageHero";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
-function PixelGrid({ type }: { type: string }) {
+function PixelGrid({ 
+  type, 
+  fill = "#4A4330", 
+  pulseFill = "#6E6246" 
+}: { 
+  type: string; 
+  fill?: string; 
+  pulseFill?: string; 
+}) {
   // grids of 16 columns by 10 rows
   let cells: number[][] = [];
   
@@ -62,6 +71,8 @@ function PixelGrid({ type }: { type: string }) {
     ];
   }
 
+  const animName = `px-pulse-${type}`;
+
   return (
     <div className="flex justify-center my-2 h-32">
       <svg
@@ -71,12 +82,12 @@ function PixelGrid({ type }: { type: string }) {
         aria-hidden="true"
       >
         <style>{`
-          @keyframes px-pulse {
-            0%, 100% { fill: #416174; opacity: 0.95; }
-            50% { fill: #55788D; opacity: 0.72; }
+          @keyframes ${animName} {
+            0%, 100% { fill: ${fill}; opacity: 0.95; }
+            50% { fill: ${pulseFill}; opacity: 0.72; }
           }
-          .px-active {
-            animation: px-pulse 3s infinite ease-in-out;
+          .${animName}-active {
+            animation: ${animName} 3s infinite ease-in-out;
           }
         `}</style>
         {cells.map((row, rIdx) =>
@@ -90,7 +101,7 @@ function PixelGrid({ type }: { type: string }) {
                 y={rIdx * 10}
                 width={8}
                 height={8}
-                className="px-active"
+                className={`${animName}-active`}
                 style={{ animationDelay: delay }}
               />
             );
@@ -111,6 +122,16 @@ const services = [
     dimensions: "Architecture to production delivery",
     buttonText: "GET IN TOUCH",
     buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Custom%20Software%20Build%20at%20GrowxLabs.",
+    // Earth #E9E7E1 + Midnight #22282C palette
+    cardBg: "bg-[#E9E7E1]",
+    borderBg: "bg-[#C2BFB7] hover:bg-[#93979B] focus-within:bg-[#93979B]",
+    titleColor: "text-[#22282C]",
+    labelColor: "text-[#4D5860]",
+    bodyColor: "text-[#22282C]",
+    dividerColor: "border-[#D0CDC5]",
+    buttonClass: "bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] border border-[#22282C]",
+    pixelFill: "#455057",
+    pixelPulse: "#687680",
   },
   {
     title: "Labs & Platforms",
@@ -121,6 +142,16 @@ const services = [
     dimensions: "Configurable / production-ready",
     buttonText: "EXPLORE LABS",
     buttonHref: "/products",
+    // Earth #E9E7E1 + Midnight #22282C palette
+    cardBg: "bg-[#E9E7E1]",
+    borderBg: "bg-[#C2BFB7] hover:bg-[#93979B] focus-within:bg-[#93979B]",
+    titleColor: "text-[#22282C]",
+    labelColor: "text-[#4D5860]",
+    bodyColor: "text-[#22282C]",
+    dividerColor: "border-[#D0CDC5]",
+    buttonClass: "bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] border border-[#22282C]",
+    pixelFill: "#455057",
+    pixelPulse: "#687680",
   },
   {
     title: "Fractional CTO",
@@ -131,6 +162,16 @@ const services = [
     dimensions: "Architecture & technical leadership",
     buttonText: "GET IN TOUCH",
     buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20Fractional%20CTO%20services%20at%20GrowxLabs.",
+    // Earth #E9E7E1 + Midnight #22282C palette
+    cardBg: "bg-[#E9E7E1]",
+    borderBg: "bg-[#C2BFB7] hover:bg-[#93979B] focus-within:bg-[#93979B]",
+    titleColor: "text-[#22282C]",
+    labelColor: "text-[#4D5860]",
+    bodyColor: "text-[#22282C]",
+    dividerColor: "border-[#D0CDC5]",
+    buttonClass: "bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] border border-[#22282C]",
+    pixelFill: "#455057",
+    pixelPulse: "#687680",
   },
   {
     title: "Technical Co-founders",
@@ -141,6 +182,16 @@ const services = [
     dimensions: "Long-term aligned engineering",
     buttonText: "GET IN TOUCH",
     buttonHref: "https://wa.me/918790907144?text=Hi%2C%20I%27m%20interested%20in%20a%20Technical%20Co-founder%20partnership%20at%20GrowxLabs.",
+    // Earth #E9E7E1 + Midnight #22282C palette
+    cardBg: "bg-[#E9E7E1]",
+    borderBg: "bg-[#C2BFB7] hover:bg-[#93979B] focus-within:bg-[#93979B]",
+    titleColor: "text-[#22282C]",
+    labelColor: "text-[#4D5860]",
+    bodyColor: "text-[#22282C]",
+    dividerColor: "border-[#D0CDC5]",
+    buttonClass: "bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] border border-[#22282C]",
+    pixelFill: "#455057",
+    pixelPulse: "#687680",
   },
 ];
 
@@ -156,7 +207,7 @@ export async function generateMetadata() {
 
 export default function ServicesPage() {
   return (
-    <div className="flex flex-col bg-[#A2BECC] text-[#17252D] min-h-screen">
+    <div className="flex flex-col bg-[#A2BECC] text-[#22282C] min-h-screen">
       <DynamicSchema
         graph={[
           {
@@ -185,7 +236,7 @@ export default function ServicesPage() {
         tagline="SOFTWARE & PRODUCT ENGINEERING"
       />
 
-      <div className="pb-16 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-[#D5E2E9] pt-16 bg-[#A2BECC]">
+      <div className="pb-16 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-[#9DB7C4] pt-20 sm:pt-24 bg-[#A2BECC]">
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
 
           {/* Services Cards Grid */}
@@ -194,29 +245,46 @@ export default function ServicesPage() {
               {services.map((service) => (
                 <div
                   key={service.title}
-                  className="relative p-[1px] transition-all duration-300 hover:scale-[1.01] bg-[#D5E2E9] hover:bg-[#A2BECC] focus-within:bg-[#A2BECC] shadow-[0_2px_8px_rgba(23,37,45,0.04)] hover:shadow-[0_8px_24px_rgba(23,37,45,0.08)]"
+                  className={cn(
+                    "relative p-[1px] transition-all duration-300 hover:scale-[1.01] shadow-[0_2px_8px_rgba(23,37,45,0.04)] hover:shadow-[0_8px_24px_rgba(23,37,45,0.08)]",
+                    service.borderBg
+                  )}
                   style={{
                     clipPath: "polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 0 100%)",
                   }}
                 >
                   <div
-                    className="bg-[#F4F8FA] py-6 px-7 sm:px-8 sm:py-9 flex flex-col h-full justify-between min-h-[500px]"
+                    className={cn(
+                      "py-6 px-7 sm:px-8 sm:py-9 flex flex-col h-full justify-between min-h-[500px]",
+                      service.cardBg
+                    )}
                     style={{
                       clipPath: "polygon(0 0, calc(100% - 41px) 0, 100% 41px, 100% 100%, 0 100%)",
                     }}
                   >
+                    {/* Top Region: Title + Graphic + Divider */}
                     <div>
-                      <h3 className="text-[22px] font-extrabold text-[#17252D] leading-[1.25] tracking-tight mt-3 min-h-[56px] flex items-center font-sans">
-                        {service.title}
-                      </h3>
+                      <div className="h-[58px] flex items-center mt-3">
+                        <h3 className={cn("text-[22px] font-semibold leading-[1.25] tracking-tight font-sans", service.titleColor)}>
+                          {service.title}
+                        </h3>
+                      </div>
                       
                       {/* Pixel Art Graphic */}
-                      <PixelGrid type={service.type} />
+                      <PixelGrid 
+                        type={service.type} 
+                        fill={service.pixelFill} 
+                        pulseFill={service.pixelPulse} 
+                      />
+
+                      {/* Horizontally Aligned Divider */}
+                      <div className={cn("w-full border-t mt-2 mb-6", service.dividerColor)} />
                     </div>
 
-                    <div>
+                    {/* Bottom Region: Metadata + CTA Button */}
+                    <div className="flex flex-col flex-1 justify-between">
                       {/* Metadata fields list */}
-                      <div className="flex flex-col gap-4 mt-2 pt-6 border-t border-[#D5E2E9]">
+                      <div className="flex flex-col gap-4">
                         {[
                           { k: "MISSIONS", v: service.mission },
                           { k: "USE CASES", v: service.useCases },
@@ -224,10 +292,10 @@ export default function ServicesPage() {
                           { k: "DIMENSIONS", v: service.dimensions },
                         ].map((row) => (
                           <div key={row.k} className="flex flex-col gap-1">
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#55788D] font-mono select-none">
+                            <span className={cn("text-[11px] font-medium uppercase tracking-[0.16em] font-mono select-none", service.labelColor)}>
                               {row.k}
                             </span>
-                            <span className="text-[13.5px] font-medium text-[#17252D] leading-relaxed font-sans">
+                            <span className={cn("text-[15px] font-medium leading-relaxed font-sans", service.bodyColor)}>
                               {row.v}
                             </span>
                           </div>
@@ -235,28 +303,34 @@ export default function ServicesPage() {
                       </div>
 
                       {/* Action Button */}
-                      {service.buttonHref.startsWith("http") ? (
-                        <a 
-                          href={service.buttonHref} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="w-full block mt-6"
-                        >
-                          <Button
-                            className="w-full uppercase font-bold text-[11.5px] tracking-[0.12em] py-4.5 bg-[#A2BECC] text-[#17252D] hover:bg-[#17252D] hover:text-[#FAFCFD] border border-[#55788D]/35 transition-all duration-300 shadow-sm rounded-xl cursor-pointer"
+                      <div className="pt-6 mt-auto">
+                        {service.buttonHref.startsWith("http") ? (
+                          <a 
+                            href={service.buttonHref} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="w-full block"
                           >
-                            {service.buttonText}
-                          </Button>
-                        </a>
-                      ) : (
-                        <Link href={service.buttonHref} className="w-full block mt-6">
-                          <Button
-                            className="w-full uppercase font-bold text-[11.5px] tracking-[0.12em] py-4.5 bg-[#A2BECC] text-[#17252D] hover:bg-[#17252D] hover:text-[#FAFCFD] border border-[#55788D]/35 transition-all duration-300 shadow-sm rounded-xl cursor-pointer"
-                          >
-                            {service.buttonText}
-                          </Button>
-                        </Link>
-                      )}
+                            <Button
+                              className={cn(
+                                "w-full uppercase font-semibold text-[12px] tracking-[0.04em] py-3.5 sm:py-4 transition-all duration-200 shadow-sm !rounded-none rounded-none cursor-pointer border border-[#22282C] bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] active:scale-[0.99]"
+                              )}
+                            >
+                              {service.buttonText}
+                            </Button>
+                          </a>
+                        ) : (
+                          <Link href={service.buttonHref} className="w-full block">
+                            <Button
+                              className={cn(
+                                "w-full uppercase font-semibold text-[12px] tracking-[0.04em] py-3.5 sm:py-4 transition-all duration-200 shadow-sm !rounded-none rounded-none cursor-pointer border border-[#22282C] bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] active:scale-[0.99]"
+                              )}
+                            >
+                              {service.buttonText}
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
