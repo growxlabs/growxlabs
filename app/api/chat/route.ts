@@ -3,12 +3,6 @@ import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const openrouter = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
-});
-
 const CONFIRMATION_MESSAGE = "Our team will contact you shortly";
 
 const SYSTEM_PROMPT = `You are the GrowX Labs AI Agent. You are a high-performance specialist representing a premium engineering agency.
@@ -74,6 +68,7 @@ export async function POST(req: Request) {
     // 1. PRIMARY: GEMINI (Using generateContent as requested)
     if (process.env.GEMINI_API_KEY) {
       try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({
           model: "gemini-2.5-flash",
           tools: [{ functionDeclarations: [LEAD_TOOL] }] as any,
@@ -113,6 +108,10 @@ export async function POST(req: Request) {
     // 2. FALLBACK: OPENROUTER
     if (process.env.OPENROUTER_API_KEY) {
       try {
+        const openrouter = new OpenAI({
+          baseURL: "https://openrouter.ai/api/v1",
+          apiKey: process.env.OPENROUTER_API_KEY,
+        });
         const completion = await openrouter.chat.completions.create({
           model: "openai/gpt-4o-mini",
           messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],

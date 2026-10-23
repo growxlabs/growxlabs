@@ -2,11 +2,6 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
-
 export async function POST(request: NextRequest) {
   try {
     const { leadId } = await request.json();
@@ -65,6 +60,15 @@ Has Website: ${lead.has_website}
 Key Insight: ${insight}`;
 
     // 3. Call AI
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENROUTER_API_KEY is not configured.");
+    }
+    const openai = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey,
+    });
+
     const completion = await openai.chat.completions.create({
       model: "google/gemini-2.5-flash", // Use a reliable model
       messages: [

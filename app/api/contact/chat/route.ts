@@ -2,13 +2,6 @@ import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
-});
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
 const SYSTEM_INSTRUCTION = `You are the GrowX Labs Project Architect AI. Your job is to consult with prospective clients, refine their ideas, classify their project, and live-generate a development roadmap.
 
 Keep your response friendly, professional, and consultative. Do not be overly verbose. Ask 1 clarifying question at a time to keep the conversation focused.
@@ -161,6 +154,10 @@ ${historyText}`;
     ];
 
     if (process.env.OPENROUTER_API_KEY) {
+      const openai = new OpenAI({
+        baseURL: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      });
       for (const model of FREE_MODELS) {
         try {
           console.log(`Attempting OpenRouter free model: ${model}...`);
@@ -190,6 +187,7 @@ ${historyText}`;
     if (!jsonText && process.env.GEMINI_API_KEY) {
       try {
         console.log("Attempting direct Google Gemini API fallback...");
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({
           model: "gemini-2.5-flash",
           generationConfig: {
