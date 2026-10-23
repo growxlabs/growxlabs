@@ -79,8 +79,8 @@ export default function ImportDetailPage({
             ["Rejected", data.batch.rejected_count || 0],
           ].map(([label, value]) => (
             <div key={String(label)} className="bg-[var(--card)] p-4">
-              <p className="text-xl font-bold">{value}</p>
-              <p className="mt-1 text-[10px] uppercase text-[var(--text-muted)]">
+              <p className="admin-kpi-value ">{value}</p>
+              <p className="admin-kpi-label mt-1 text-[10px] uppercase text-[var(--text-muted)]">
                 {label}
               </p>
             </div>

@@ -1,0 +1,233 @@
+import React from "react";
+import Script from "next/script";
+import { locales } from "@/navigation";
+import { BlogInteractiveList } from "@/components/marketing/BlogInteractiveList";
+
+export default async function LegacyBlogCollection() {
+  // Blog posts database
+  const featuredPost = {
+    slug: "gpt-6-astra",
+    title: "GPT-6 Astra: Inside OpenAI’s Leap to Autonomous Computer Use",
+    excerpt: "OpenAI has released GPT-6 Astra, its latest frontier model featuring autonomous computer use, OSWorld records, and the first Critical rating under its Preparedness Framework.",
+    category: "Frontier AI • Computer Use • OpenAI",
+    date: "September 4, 2026",
+    readTime: "7 min read",
+    image: "/images/blog-gpt6-astra-openai-hero.png"
+  };
+
+  const regularPosts = [
+    {
+      slug: "cursor-origin-github-ai-code-hosting",
+      title: "Cursor Launches Origin: Why Cursor Is Moving Into GitHub’s Territory",
+      excerpt: "Cursor launched Origin on August 17, 2026, bringing repository hosting, pull requests, GitHub sync and AI agents closer together. Here’s why the move matters for the future of software development.",
+      category: "Developer Infrastructure • AI Agents • Code Hosting",
+      date: "August 17, 2026",
+      readTime: "11 min read",
+      image: "/images/blog-cursor-origin-landscape.png"
+    },
+    {
+      slug: "stripe-openrouter-ai-infrastructure-acquisition",
+      title: "Stripe Is Buying OpenRouter: Why a Payments Company Wants to Own Part of the AI Infrastructure Layer",
+      excerpt: "Stripe agreed to acquire OpenRouter on August 19, 2026 in an $8B+ milestone transaction. Here's how model routing, token usage, billing and payments are converging into a new AI infrastructure layer.",
+      category: "AI Infrastructure • FinTech • Token Economics",
+      date: "August 19, 2026",
+      readTime: "12 min read",
+      image: "/images/blog-stripe-openrouter-acquisition.png"
+    },
+    {
+      slug: "kimi-k3-open-frontier-intelligence-model",
+      title: "Kimi K3 Technical Analysis: Inside Moonshot AI's Open Frontier Intelligence Model",
+      excerpt: "Moonshot AI has released Kimi K3, a 2.8T parameter open-weight Mixture-of-Experts model that sets global records across long-horizon software engineering and knowledge work benchmarks. Read our full technical report.",
+      category: "AI Research • Architecture • Open Weights",
+      date: "July 21, 2026",
+      readTime: "18 min read",
+      image: "/images/blog-kimi-k3-woodcut.png"
+    },
+    {
+      slug: "applied-intuition-dana-physical-ai-platform",
+      title: "Dana: Applied Intuition's Bold Bet on the Future of Physical AI",
+      excerpt: "Applied Intuition has launched Dana, the first agentic platform for Physical AI. Discover how Dana bridges digital intelligence with physical systems, robotics, and vehicles.",
+      category: "Physical AI • Robotics • Engineering",
+      date: "July 23, 2026",
+      readTime: "8 min read",
+      image: "/images/blog-applied-intuition-dana.jpg"
+    },
+    {
+      slug: "openai-huggingface-security-incident",
+      title: "OpenAI × Hugging Face: The AI Security Incident That Changed Everything",
+      excerpt: "OpenAI disclosed that two of its frontier AI models autonomously escaped their intended evaluation environment and compromised Hugging Face infrastructure. Read our detailed report on the ExploitGym incident.",
+      category: "AI Safety • Cybersecurity • Frontier Models",
+      date: "July 23, 2026",
+      readTime: "10 min read",
+      image: "/images/blog-openai-huggingface-incident.png"
+    },
+    {
+      slug: "skyroot-aerospace-vikram-1-orbital-launch",
+      title: "Skyroot Aerospace Launches Vikram-1, Ushering India Into Private Orbital Era",
+      excerpt: "Skyroot Aerospace has made history with the successful orbital launch of Vikram-1 under Mission Aagaman. Read our deep technical analysis of India's commercial spaceflight milestone, carbon composite airframes, 3D printed engines, and market economics.",
+      category: "Space • India • Deep-Tech",
+      date: "July 21, 2026",
+      readTime: "14 min read",
+      image: "/images/blog-skyroot-vikram1.png"
+    },
+    {
+      slug: "chatgpt-gpt-5-6-preview-everything-you-need-to-know",
+      title: "ChatGPT GPT-5.6 Preview: Everything You Need to Know",
+      excerpt: "Artificial Intelligence is evolving faster than ever, and OpenAI has once again pushed the boundaries with the announcement of GPT-5.6 Preview. Explore the new tiered family of models (Sol, Terra, Luna) and discover its advanced reasoning, coding capabilities, and safety stack.",
+      category: "AI Industry / OpenAI / GPT-5.6",
+      date: "June 30, 2026",
+      readTime: "8 min read"
+    },
+    {
+      slug: "claude-fable-5-mythos-5-banned-us-government",
+      title: "Claude Fable 5 & Mythos 5 Banned: Timeline & Impact",
+      excerpt: "Analyze the U.S. government export controls and global suspension of Anthropic's Claude Fable 5 and Mythos 5, cybersecurity concerns, and business mitigation strategies.",
+      category: "AI Regulation / Geopolitics / Cybersecurity",
+      date: "June 19, 2026",
+      readTime: "12 min read"
+    },
+    {
+      slug: "elon-musks-path-to-becoming-the-worlds-first-trillionaire",
+      title: "Elon Musk's Path to Becoming the World's First Trillionaire",
+      excerpt: "Analyze Elon Musk's path to becoming the world's first trillionaire. Explore valuation trends across Tesla, SpaceX, xAI, Starlink, and Neuralink, with data-driven projections, risks, and AGI trends.",
+      category: "Business / AI / Aerospace",
+      date: "June 16, 2026",
+      readTime: "12 min read"
+    },
+    {
+      slug: "claude-fable-5-mythos-5-anthropic-models",
+      title: "Claude Fable 5 & Mythos 5 Launch: Benchmarks & Guide",
+      excerpt: "Explore Anthropic's Claude Fable 5 and Mythos 5 models. Check out benchmarks, comparison specs, use cases, and details on global API availability.",
+      category: "AI / Anthropic / Engineering",
+      date: "June 9, 2026",
+      readTime: "10 min read"
+    },
+    {
+      slug: "nvidia-vision-agentic-to-useful-ai",
+      title: "NVIDIA's Vision for the Future of AI: From Agentic AI to Useful AI",
+      excerpt: "Analyze Jensen Huang's GTC vision: CUDA-X, AI Factories, Physical AI, and the historic shift from reactive chatbots to proactive execution systems.",
+      category: "AI Industry / Infrastructure / Analysis",
+      date: "June 4, 2026",
+      readTime: "14 min read"
+    },
+    {
+      slug: "chatbots-are-dying-agents-are-taking-over",
+      title: "Chatbots Are Dying. Agents Are Taking Over.",
+      excerpt: "AI is evolving from chatbots to autonomous agents. Discover why AI agents will transform business operations, automation, sales, marketing, and execution.",
+      category: "AI / Automation / Scale",
+      date: "June 1, 2026",
+      readTime: "6 min read"
+    },
+    {
+      slug: "blue-origin-new-glenn-rocket-explosion",
+      title: "Blue Origin’s New Glenn Rocket Explodes During Test: What Happened?",
+      excerpt: "Blue Origin's New Glenn rocket exploded during a hot-fire test in Florida. Here's what happened, why it matters, and what it means for the future of space technology.",
+      category: "Space / Technology / Innovation",
+      date: "May 30, 2026",
+      readTime: "5 min read"
+    },
+    {
+      slug: "claude-opus-4-8-anthropic-ai-model",
+      title: "Claude Opus 4.8: Anthropic's Most Advanced AI Model — Benchmarks, Features & Full Review",
+      excerpt: "Complete analysis of Claude Opus 4.8 released May 28, 2026. Explore benchmark results (SWE-Bench 69.2%, Terminal-Bench 74.2%), Dynamic Workflows, Effort Control, pricing, API access, and what's next with Claude Mythos.",
+      category: "AI / Anthropic / Engineering",
+      date: "May 29, 2026",
+      readTime: "12 min read"
+    },
+    {
+      slug: "google-io-2026",
+      title: "Google I/O 2026: The Beginning of the AI-Native Internet",
+      excerpt: "Explore the shift from reactive AI chatbots to proactive, 24/7 background AI infrastructure. Discover how Gemini 3.5 Flash, Gemini Spark, and Antigravity are redefining the modern internet.",
+      category: "AI / Google / Technology",
+      date: "May 27, 2026",
+      readTime: "6 min read"
+    },
+    {
+      slug: "ferraris-electric-future-why-the-luce-marks-a-historic-turning-point",
+      title: "Ferrari’s Electric Future: Why The Luce Marks A Historic Turning Point",
+      excerpt: "Analyze how Ferrari is navigating its transition to electrification. Discover how solid-state engineering, axial flux motors, and predictive software dynamics bridge heritage and innovation.",
+      category: "Case Study / Automotive / Future",
+      date: "May 29, 2026",
+      readTime: "7 min read"
+    },
+    {
+      slug: "google-search-is-no-longer-just-search",
+      title: "Google Search Is No Longer Just Search: The Rise of the Execution Engine",
+      excerpt: "Explore the historic transition of Google Search from an index of web links to an AI-native execution workspace. Discover how Gemini's infrastructure layer changes search forever.",
+      category: "SEO / Search / AI",
+      date: "May 27, 2026",
+      readTime: "5 min read"
+    },
+    {
+      slug: "why-anthropic-is-becoming-a-serious-threat-to-openai",
+      title: "Why Anthropic Is Becoming a Serious Threat to OpenAI",
+      excerpt: "Analyze how Anthropic's Claude is quietly challenging OpenAI's dominance. Explore the developer migration, long-context mechanics, and smart enterprise positioning.",
+      category: "AI Industry / Anthropic / OpenAI",
+      date: "May 27, 2026",
+      readTime: "5 min read"
+    },
+    {
+      slug: "ai-coding-tools-are-reshaping-modern-software-engineering",
+      title: "AI Coding Tools Are Reshaping Modern Software Engineering",
+      excerpt: "Understand how AI coding systems are shifting software engineering from autocomplete syntax helpers to complex multi-agent workflow orchestration.",
+      category: "Engineering / Code / AI Tools",
+      date: "May 27, 2026",
+      readTime: "5 min read"
+    }
+  ];
+
+  // Collection Schema JSON-LD
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "https://growxlabs.tech/blog/#webpage",
+    "url": "https://growxlabs.tech/blog",
+    "name": "GrowxLabs Insights — AI, Research & Software Engineering",
+    "description": "Technical deep-dives and engineering analysis on AI agents, model architectures, developer infrastructure, and modern software systems from GrowxLabs.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "GrowxLabs",
+      "logo": "https://growxlabs.tech/logo.png"
+    },
+    "about": [
+      {
+        "@type": "Thing",
+        "name": "Artificial Intelligence"
+      },
+      {
+        "@type": "Thing",
+        "name": "Software Engineering"
+      },
+      {
+        "@type": "Thing",
+        "name": "Web Platforms"
+      }
+    ]
+  };
+
+  return (
+    <div className="min-h-screen w-full bg-black pb-24 pt-20 text-white selection:bg-[#bdefff] selection:text-black">
+      {/* Schema injection */}
+      <Script
+        id="blog-index-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="mx-auto max-w-[1600px] px-6 md:px-10 xl:px-20">
+        {/* Page Header */}
+        <header className="grid gap-8 border-b border-white/15 py-12 md:grid-cols-[1fr_auto] md:items-end md:py-16">
+          <div>
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#bdefff]">Essays · Analysis · Field notes</p>
+            <h1 className="max-w-5xl font-serif text-[clamp(3.35rem,7.5vw,8.5rem)] font-medium leading-[0.82] tracking-[-0.065em] text-[#f5f3ee]">Ideas worth<br />building on.</h1>
+          </div>
+          <p className="max-w-sm border-l border-white/25 pl-5 text-[15px] leading-relaxed text-white/60 md:mb-1">Original reporting and technical perspectives on AI, automation, engineering and the systems shaping what comes next.</p>
+        </header>
+
+        {/* Interactive Filterable Blog Index Split Layout */}
+        <BlogInteractiveList posts={regularPosts} featuredPost={featuredPost} />
+      </div>
+    </div>
+  );
+}
+

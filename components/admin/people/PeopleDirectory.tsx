@@ -51,7 +51,7 @@ export default function PeopleDirectory() {
   const visible = employees;
   const departments = ["All departments", ...new Set(employees.map((item) => item.department))];
   const columns = useMemo<ColumnDef<Employee>[]>(()=>[
-    {id:"employee",header:"Employee",cell:({row})=><div className="flex items-center gap-3"><div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0075de]/10 text-[10px] font-extrabold text-[#0075de]">{initials(row.original.name)}</div><div><div className="font-bold">{row.original.name}</div><div className="text-[10px] text-[var(--text-muted)]">{row.original.employeeNumber} · {row.original.email}</div></div></div>},
+    {id:"employee",header:"Employee",cell:({row})=><div className="flex items-center gap-3"><div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0075de]/10 text-[10px] font-extrabold text-[#0075de]">{initials(row.original.name)}</div><div><div className="admin-record-name">{row.original.name}</div><div className="admin-metadata">{row.original.employeeNumber} · {row.original.email}</div></div></div>},
     {accessorKey:"department",header:"Department"},
     {accessorKey:"designation",header:"Designation"},
     {accessorKey:"manager",header:"Manager",cell:({getValue})=><span className="text-[var(--text-secondary)]">{String(getValue())}</span>},
@@ -111,8 +111,8 @@ export default function PeopleDirectory() {
         ].map(([Icon,label,value,caption]) => {
           const I = Icon as typeof Users;
           return <div key={String(label)} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--card)] p-4 shadow-sm">
-            <div className="flex items-center justify-between"><span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{String(label)}</span><I size={15} className="text-[#0075de]"/></div>
-            <div className="mt-3 text-2xl font-extrabold">{String(value)}</div><div className="mt-1 text-[10px] text-[var(--text-muted)]">{String(caption)}</div>
+            <div className="flex items-center justify-between"><span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{String(label)}</span><I size={15} className="text-[#0075de]"/></div>
+            <div className="admin-kpi-value mt-3">{String(value)}</div><div className="mt-1 text-[10px] text-[var(--text-muted)]">{String(caption)}</div>
           </div>;
         })}
       </section>

@@ -29,19 +29,19 @@ export function HrmsDashboard({ stats, departments, recentActivity }: HrmsDashbo
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Total Employees</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Total Employees</span>
             <Users className="h-4 w-4 text-[#0075de]" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.totalEmployees}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.totalEmployees}</h3>
           <p className="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Across all departments</p>
         </Card>
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Active Employees</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Active Employees</span>
             <UserCheck className="h-4 w-4 text-emerald-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.activeEmployees}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.activeEmployees}</h3>
           <span className="text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 text-[9px] font-bold inline-block mt-1">
             {stats.totalEmployees > 0 ? Math.round((stats.activeEmployees / stats.totalEmployees) * 100) : 0}% Active
           </span>
@@ -49,19 +49,19 @@ export function HrmsDashboard({ stats, departments, recentActivity }: HrmsDashbo
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">New Hires</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">New Hires</span>
             <UserPlus className="h-4 w-4 text-indigo-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.newHires}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.newHires}</h3>
           <p className="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">This month</p>
         </Card>
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">On Leave Today</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">On Leave Today</span>
             <CalendarOff className="h-4 w-4 text-amber-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.onLeave}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.onLeave}</h3>
           <span className="text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 text-[9px] font-bold inline-block mt-1">Absent</span>
         </Card>
       </div>
@@ -70,10 +70,10 @@ export function HrmsDashboard({ stats, departments, recentActivity }: HrmsDashbo
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Attendance Today</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Attendance Today</span>
             <CalendarCheck className="h-4 w-4 text-teal-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.attendancePercent}%</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.attendancePercent}%</h3>
           <div className="w-full bg-[var(--surface-1)] rounded-full h-1.5 mt-2 border border-[var(--border-subtle)]">
             <div className="bg-teal-500 h-1.5 rounded-full transition-all" style={{ width: `${stats.attendancePercent}%` }} />
           </div>
@@ -81,28 +81,28 @@ export function HrmsDashboard({ stats, departments, recentActivity }: HrmsDashbo
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Pending Approvals</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Pending Approvals</span>
             <AlertCircle className="h-4 w-4 text-orange-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.pendingApprovals}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.pendingApprovals}</h3>
           <span className="text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20 text-[9px] font-bold inline-block mt-1">Action Needed</span>
         </Card>
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Open Positions</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Open Positions</span>
             <Briefcase className="h-4 w-4 text-violet-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">{stats.openPositions}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">{stats.openPositions}</h3>
           <p className="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Active job listings</p>
         </Card>
 
         <Card className="p-5 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm">
           <div className="flex justify-between items-start mb-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Payroll This Month</span>
+            <span className="admin-kpi-label text-[10px] font-extrabold uppercase tracking-wider text-[var(--text-muted)]">Payroll This Month</span>
             <DollarSign className="h-4 w-4 text-emerald-500" />
           </div>
-          <h3 className="text-2xl font-black text-[var(--text-primary)] font-mono">₹{stats.payrollAmount.toLocaleString()}</h3>
+          <h3 className="admin-kpi-value text-[var(--text-primary)]">₹{stats.payrollAmount.toLocaleString()}</h3>
           <p className="text-[10px] text-[var(--text-secondary)] mt-1 font-medium">Gross salary outflow</p>
         </Card>
       </div>

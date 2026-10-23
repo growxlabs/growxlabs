@@ -73,26 +73,26 @@ export default function ReportsPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Total Pipeline</span>
-              <h3 className="text-xl font-black text-neutral-900 font-mono">₹{totalValue.toLocaleString()}</h3>
+              <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Total Pipeline</span>
+              <h3 className="admin-kpi-value text-neutral-900">₹{totalValue.toLocaleString()}</h3>
               <p className="text-[9px] text-neutral-400 mt-1 font-medium">{deals.length} deals total</p>
             </Card>
 
             <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Weighted Forecast</span>
-              <h3 className="text-xl font-black text-[#0075de] font-mono">₹{forecastWeighted.toLocaleString()}</h3>
+              <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Weighted Forecast</span>
+              <h3 className="admin-kpi-value text-[#0075de]">₹{forecastWeighted.toLocaleString()}</h3>
               <p className="text-[9px] text-neutral-400 mt-1 font-medium">Expected revenue yield</p>
             </Card>
 
             <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Average Deal Size</span>
-              <h3 className="text-xl font-black text-neutral-900 font-mono">₹{averageDealSize.toLocaleString()}</h3>
+              <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Average Deal Size</span>
+              <h3 className="admin-kpi-value text-neutral-900">₹{averageDealSize.toLocaleString()}</h3>
               <p className="text-[9px] text-neutral-400 mt-1 font-medium">Mean contract value</p>
             </Card>
 
             <Card className="p-5 border border-[#e6e6e6] bg-white rounded-lg shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Win Rate %</span>
-              <h3 className="text-xl font-black text-[#1aae39] font-mono">{winRate}%</h3>
+              <span className="admin-kpi-label text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1">Win Rate %</span>
+              <h3 className="admin-kpi-value text-[#1aae39]">{winRate}%</h3>
               <p className="text-[9px] text-neutral-400 mt-1 font-medium">{wonCount} won vs {lostCount} lost</p>
             </Card>
           </div>

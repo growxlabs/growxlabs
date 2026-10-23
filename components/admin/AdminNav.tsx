@@ -451,7 +451,7 @@ export function AdminNav({
             openSettings();
           }}
           className={cn(
-            "w-full flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer text-left",
+            "w-full flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[13px] font-medium select-none cursor-pointer text-left",
             "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-[#171717]",
             isCollapsed && !isMobile && "lg:justify-center lg:px-0",
             isFlyout && "h-8 rounded-lg px-2.5 hover:bg-slate-100/90 dark:hover:bg-[#171717]"
@@ -482,9 +482,9 @@ export function AdminNav({
           if (isMobileOpen) onMobileToggle();
         }}
         className={cn(
-          "flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[12px] font-medium select-none cursor-pointer",
+          "flex items-center h-8.5 px-3 rounded-xl transition-all duration-150 group relative text-[13px] font-medium select-none cursor-pointer",
           isActive
-            ? "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold"
+            ? "bg-[#0075de]/10 text-[#0075de] dark:bg-blue-500/15 dark:text-blue-400 font-semibold admin-nav-active"
             : "text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-[#171717]",
           isCollapsed && !isMobile && "lg:justify-center lg:px-0",
           isFlyout &&
@@ -505,7 +505,7 @@ export function AdminNav({
 
         <span
           className={cn(
-            "whitespace-nowrap truncate",
+            "admin-nav-label whitespace-nowrap truncate",
             isCollapsed && !isMobile ? "lg:hidden" : "block",
           )}
         >

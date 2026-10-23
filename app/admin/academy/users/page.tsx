@@ -41,8 +41,8 @@ export default async function StudentManagement() {
          ].map((stat, i) => (
            <div key={i} className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl flex items-center justify-between">
               <div>
-                 <p className="text-white/40 text-sm font-medium mb-1">{stat.label}</p>
-                 <h3 className="text-2xl font-bold text-white tracking-tight">{stat.value}</h3>
+                 <p className="admin-kpi-label text-white/40 text-sm font-medium mb-1">{stat.label}</p>
+                 <h3 className="admin-kpi-value text-white">{stat.value}</h3>
               </div>
               <div className="p-3 bg-white/5 rounded-xl text-white/40">
                  <stat.icon size={20} />

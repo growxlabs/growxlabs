@@ -1,0 +1,5046 @@
+{
+  "routes": [
+    {
+      "route": "/admin/academy/assessments",
+      "file": "app/admin/academy/assessments/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/academy/certificates",
+      "file": "app/admin/academy/certificates/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/academy/courses",
+      "file": "app/admin/academy/courses/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/academy/payments",
+      "file": "app/admin/academy/payments/page.tsx",
+      "bold": 5,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/academy/users",
+      "file": "app/admin/academy/users/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/activity",
+      "file": "app/admin/activity/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/agreements/[id]",
+      "file": "app/admin/agreements/[id]/page.tsx",
+      "bold": 4,
+      "tiny": 4,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/commercial/MasterServiceAgreementDocument.tsx"
+      ],
+      "dependencies": [
+        "components/commercial/MasterServiceAgreementDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/agreements",
+      "file": "app/admin/agreements/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/agreements/preview",
+      "file": "app/admin/agreements/preview/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/ai-platform",
+      "file": "app/admin/ai-platform/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/ai-solution-reports/[reportId]",
+      "file": "app/admin/ai-solution-reports/[reportId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/consulting/ConsultingWorkspace.tsx",
+        "components/consulting/AiSolutionReportDocument.tsx",
+        "components/consulting/SolutionArchitectureDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/ai-solution-reports",
+      "file": "app/admin/ai-solution-reports/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ],
+      "dependencies": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ]
+    },
+    {
+      "route": "/admin/assessments/[assessmentId]",
+      "file": "app/admin/assessments/[assessmentId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/assessments/AdminDocumentActions.tsx",
+        "components/assessment/AssessmentDocumentPage.tsx"
+      ],
+      "dependencies": [
+        "components/admin/assessments/AdminDocumentActions.tsx",
+        "components/assessment/AssessmentDocument.tsx",
+        "components/assessment/AssessmentDocumentPage.tsx",
+        "components/assessment/AssessmentDocumentRenderer.tsx",
+        "components/document/DocumentShell.tsx"
+      ]
+    },
+    {
+      "route": "/admin/assessments/[assessmentId]/pdf-render",
+      "file": "app/admin/assessments/[assessmentId]/pdf-render/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/assessment/AssessmentDocument.tsx"
+      ],
+      "dependencies": [
+        "components/assessment/AssessmentDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/assessments",
+      "file": "app/admin/assessments/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/assessments/AssessmentAdminList.tsx"
+      ],
+      "dependencies": [
+        "components/admin/assessments/AssessmentAdminList.tsx"
+      ]
+    },
+    {
+      "route": "/admin/attendance-leave",
+      "file": "app/admin/attendance-leave/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/hrms/AttendanceLeaveConsole.tsx"
+      ],
+      "dependencies": [
+        "components/admin/hrms/AttendanceLeaveConsole.tsx"
+      ]
+    },
+    {
+      "route": "/admin/audit-logs",
+      "file": "app/admin/audit-logs/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/audits/[auditId]",
+      "file": "app/admin/audits/[auditId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/audits/AuditWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/audits/AuditWorkspace.tsx",
+        "components/audit/AuditDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/audits/new",
+      "file": "app/admin/audits/new/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/audits",
+      "file": "app/admin/audits/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/audits/AuditList.tsx"
+      ],
+      "dependencies": [
+        "components/admin/audits/AuditList.tsx"
+      ]
+    },
+    {
+      "route": "/admin/career-portal",
+      "file": "app/admin/career-portal/page.tsx",
+      "bold": 63,
+      "tiny": 50,
+      "uppercase": 54,
+      "tracking": 55,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "route": "/admin/career-portal/playbook",
+      "file": "app/admin/career-portal/playbook/page.tsx",
+      "bold": 19,
+      "tiny": 11,
+      "uppercase": 13,
+      "tracking": 17,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "route": "/admin/certificates/new",
+      "file": "app/admin/certificates/new/page.tsx",
+      "bold": 7,
+      "tiny": 0,
+      "uppercase": 6,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/change-requests",
+      "file": "app/admin/change-requests/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/clients",
+      "file": "app/admin/clients/page.tsx",
+      "bold": 12,
+      "tiny": 20,
+      "uppercase": 7,
+      "tracking": 8,
+      "truncation": 17,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/command-center/governance/approvals",
+      "file": "app/admin/command-center/governance/approvals/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/approvals/approval-inbox.tsx"
+      ],
+      "dependencies": [
+        "app/admin/command-center/governance/approvals/approval-inbox.tsx"
+      ]
+    },
+    {
+      "route": "/admin/command-center/governance/audit",
+      "file": "app/admin/command-center/governance/audit/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/audit/audit-viewer.tsx"
+      ],
+      "dependencies": [
+        "app/admin/command-center/governance/audit/audit-viewer.tsx"
+      ]
+    },
+    {
+      "route": "/admin/command-center/governance",
+      "file": "app/admin/command-center/governance/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/command-center/governance/policies",
+      "file": "app/admin/command-center/governance/policies/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/policies/policy-console.tsx"
+      ],
+      "dependencies": [
+        "app/admin/command-center/governance/policies/policy-console.tsx"
+      ]
+    },
+    {
+      "route": "/admin/command-center",
+      "file": "app/admin/command-center/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/InteractiveWorkspace.tsx"
+      ],
+      "dependencies": [
+        "app/admin/command-center/InteractiveWorkspace.tsx",
+        "components/admin/command-center/AgentPresence.tsx",
+        "components/admin/command-center/CommandCenterWorkspace.tsx",
+        "components/admin/command-center/CommandComposer.tsx",
+        "components/admin/command-center/CommandSidebar.tsx",
+        "components/admin/command-center/ContextFlyout.tsx",
+        "components/admin/command-center/MentionMenu.tsx",
+        "components/admin/command-center/MessageThread.tsx",
+        "components/admin/command-center/StructuredResponseFormatter.tsx",
+        "components/admin/command-center/command-center.types.ts",
+        "components/admin/command-center/composer-logic.ts",
+        "components/admin/command-center/sse.ts",
+        "components/admin/command-center/useDialogFocus.ts"
+      ]
+    },
+    {
+      "route": "/admin/communications",
+      "file": "app/admin/communications/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/communications/CommunicationWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/communications/CommunicationWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/companies",
+      "file": "app/admin/companies/page.tsx",
+      "bold": 16,
+      "tiny": 12,
+      "uppercase": 13,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/admin/Customer360.tsx"
+      ],
+      "dependencies": [
+        "components/admin/ActivityTimeline.tsx",
+        "components/admin/Customer360.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/consulting-finance",
+      "file": "app/admin/consulting-finance/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/contacts",
+      "file": "app/admin/contacts/page.tsx",
+      "bold": 19,
+      "tiny": 13,
+      "uppercase": 14,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/contractor-agreements/[id]",
+      "file": "app/admin/contractor-agreements/[id]/page.tsx",
+      "bold": 4,
+      "tiny": 1,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/contractors/ContractorAgreementDocument.tsx"
+      ],
+      "dependencies": [
+        "components/contractors/ContractorAgreementDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/contractor-agreements",
+      "file": "app/admin/contractor-agreements/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/crm",
+      "file": "app/admin/crm/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 13,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/crm/sources",
+      "file": "app/admin/crm/sources/page.tsx",
+      "bold": 15,
+      "tiny": 13,
+      "uppercase": 13,
+      "tracking": 13,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/crm/team",
+      "file": "app/admin/crm/team/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/crm/AdminSalesTeam.tsx"
+      ],
+      "dependencies": [
+        "components/admin/crm/AdminSalesTeam.tsx"
+      ]
+    },
+    {
+      "route": "/admin/deals",
+      "file": "app/admin/deals/page.tsx",
+      "bold": 13,
+      "tiny": 11,
+      "uppercase": 12,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/KanbanBoard.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/admin/KanbanBoard.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/discovery-meetings/[meetingId]",
+      "file": "app/admin/discovery-meetings/[meetingId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/discovery/DiscoveryMeetingWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/discovery/DiscoveryMeetingWorkspace.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/discovery-meetings/new",
+      "file": "app/admin/discovery-meetings/new/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/discovery-meetings",
+      "file": "app/admin/discovery-meetings/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/discovery/DiscoveryMeetingsClient.tsx"
+      ],
+      "dependencies": [
+        "components/admin/discovery/DiscoveryMeetingsClient.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/dispatch",
+      "file": "app/admin/dispatch/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/dispatch/DispatchAdminClient.tsx"
+      ],
+      "dependencies": [
+        "app/admin/dispatch/DispatchAdminClient.tsx"
+      ]
+    },
+    {
+      "route": "/admin/editorial-carousel",
+      "file": "app/admin/editorial-carousel/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/EditorialCarouselClient.tsx"
+      ],
+      "dependencies": [
+        "components/editor/canvas/CanvasContextMenu.tsx",
+        "components/editor/canvas/FigmaTransformGizmo.tsx",
+        "components/editor/canvas/InlineCanvasTextEditor.tsx",
+        "components/editor/canvas/SmartSnapEngine.ts",
+        "components/editor/canvas/StudioLeftPanel.tsx",
+        "components/editor/canvas/StudioVerticalToolDock.tsx",
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/inspector/StudioDropdown.tsx",
+        "components/editor/inspector/StudioInspector.tsx",
+        "components/editor/inspector/inspectorTypes.ts",
+        "components/shared/EditorialCarouselClient.tsx"
+      ]
+    },
+    {
+      "route": "/admin/employee-onboarding",
+      "file": "app/admin/employee-onboarding/page.tsx",
+      "bold": 42,
+      "tiny": 18,
+      "uppercase": 18,
+      "tracking": 11,
+      "truncation": 29,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/finance/accounts",
+      "file": "app/admin/finance/accounts/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/finance/GeneralLedger.tsx"
+      ],
+      "dependencies": [
+        "components/admin/finance/GeneralLedger.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/finance/ai-helper",
+      "file": "app/admin/finance/ai-helper/page.tsx",
+      "bold": 11,
+      "tiny": 6,
+      "uppercase": 6,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/finance/dashboard",
+      "file": "app/admin/finance/dashboard/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/finance/FinanceDashboard.tsx"
+      ],
+      "dependencies": [
+        "components/admin/finance/FinanceDashboard.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/finance/expenses",
+      "file": "app/admin/finance/expenses/page.tsx",
+      "bold": 14,
+      "tiny": 8,
+      "uppercase": 9,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/finance/invoices",
+      "file": "app/admin/finance/invoices/page.tsx",
+      "bold": 15,
+      "tiny": 8,
+      "uppercase": 10,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/admin/finance/InvoiceBuilder.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/admin/finance/InvoiceBuilder.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/finance/reports",
+      "file": "app/admin/finance/reports/page.tsx",
+      "bold": 26,
+      "tiny": 10,
+      "uppercase": 13,
+      "tracking": 15,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/growx-email",
+      "file": "app/admin/growx-email/page.tsx",
+      "bold": 19,
+      "tiny": 15,
+      "uppercase": 13,
+      "tracking": 12,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hr-onboarding/manager",
+      "file": "app/admin/hr-onboarding/manager/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hr-onboarding",
+      "file": "app/admin/hr-onboarding/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/ai-recruiter",
+      "file": "app/admin/hrms/ai-recruiter/page.tsx",
+      "bold": 22,
+      "tiny": 16,
+      "uppercase": 14,
+      "tracking": 14,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/attendance",
+      "file": "app/admin/hrms/attendance/page.tsx",
+      "bold": 10,
+      "tiny": 6,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/admin/hrms/AttendanceTracker.tsx"
+      ],
+      "dependencies": [
+        "components/admin/hrms/AttendanceTracker.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/dashboard",
+      "file": "app/admin/hrms/dashboard/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/hrms/HrmsDashboard.tsx"
+      ],
+      "dependencies": [
+        "components/admin/hrms/HrmsDashboard.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/employees",
+      "file": "app/admin/hrms/employees/page.tsx",
+      "bold": 13,
+      "tiny": 10,
+      "uppercase": 9,
+      "tracking": 9,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/learning",
+      "file": "app/admin/hrms/learning/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/learning/LMSCourseLibrary.tsx",
+        "components/learning/InternalMobilityPortal.tsx",
+        "components/learning/AILearningAssistant.tsx"
+      ],
+      "dependencies": [
+        "components/learning/AILearningAssistant.tsx",
+        "components/learning/InternalMobilityPortal.tsx",
+        "components/learning/LMSCourseLibrary.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/leaves",
+      "file": "app/admin/hrms/leaves/page.tsx",
+      "bold": 19,
+      "tiny": 17,
+      "uppercase": 15,
+      "tracking": 15,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/payroll",
+      "file": "app/admin/hrms/payroll/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/payroll/PayrollProcessingStudio.tsx",
+        "components/payroll/ReimbursementConsole.tsx",
+        "components/payroll/AIPayrollAssistant.tsx"
+      ],
+      "dependencies": [
+        "components/payroll/AIPayrollAssistant.tsx",
+        "components/payroll/PayrollProcessingStudio.tsx",
+        "components/payroll/ReimbursementConsole.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/performance",
+      "file": "app/admin/hrms/performance/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/performance/GoalManagementConsole.tsx",
+        "components/performance/ReviewCycleConsole.tsx",
+        "components/performance/CalibrationStudio.tsx",
+        "components/performance/AIPerformanceAssistant.tsx"
+      ],
+      "dependencies": [
+        "components/performance/AIPerformanceAssistant.tsx",
+        "components/performance/CalibrationStudio.tsx",
+        "components/performance/GoalManagementConsole.tsx",
+        "components/performance/ReviewCycleConsole.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/platform",
+      "file": "app/admin/hrms/platform/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/platform/WorkflowBuilderConsole.tsx",
+        "components/platform/IntegrationHubConsole.tsx",
+        "components/platform/ExecutiveCommandCenter.tsx"
+      ],
+      "dependencies": [
+        "components/platform/ExecutiveCommandCenter.tsx",
+        "components/platform/IntegrationHubConsole.tsx",
+        "components/platform/WorkflowBuilderConsole.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/recruitment/email-settings",
+      "file": "app/admin/hrms/recruitment/email-settings/page.tsx",
+      "bold": 16,
+      "tiny": 7,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/hrms/recruitment/email-templates",
+      "file": "app/admin/hrms/recruitment/email-templates/page.tsx",
+      "bold": 11,
+      "tiny": 7,
+      "uppercase": 5,
+      "tracking": 3,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/hrms/recruitment/emails",
+      "file": "app/admin/hrms/recruitment/emails/page.tsx",
+      "bold": 14,
+      "tiny": 11,
+      "uppercase": 4,
+      "tracking": 3,
+      "truncation": 4,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/hrms/recruitment/interviews/[interviewId]/access",
+      "file": "app/admin/hrms/recruitment/interviews/[interviewId]/access/page.tsx",
+      "bold": 23,
+      "tiny": 19,
+      "uppercase": 20,
+      "tracking": 16,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/recruitment/interviews/[interviewId]",
+      "file": "app/admin/hrms/recruitment/interviews/[interviewId]/page.tsx",
+      "bold": 16,
+      "tiny": 8,
+      "uppercase": 10,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/recruitment/interviews",
+      "file": "app/admin/hrms/recruitment/interviews/page.tsx",
+      "bold": 27,
+      "tiny": 24,
+      "uppercase": 23,
+      "tracking": 15,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/recruitment",
+      "file": "app/admin/hrms/recruitment/page.tsx",
+      "bold": 13,
+      "tiny": 11,
+      "uppercase": 8,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/admin/hrms/RecruitmentPipeline.tsx"
+      ],
+      "dependencies": [
+        "components/admin/hrms/RecruitmentPipeline.tsx",
+        "components/admin/recruitment/CandidateEmailTimeline.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/hrms/workforce",
+      "file": "app/admin/hrms/workforce/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/workforce/HelpdeskPortalConsole.tsx",
+        "components/workforce/TravelManagementConsole.tsx",
+        "components/workforce/AIWorkforceAssistant.tsx"
+      ],
+      "dependencies": [
+        "components/workforce/AIWorkforceAssistant.tsx",
+        "components/workforce/HelpdeskPortalConsole.tsx",
+        "components/workforce/TravelManagementConsole.tsx"
+      ]
+    },
+    {
+      "route": "/admin/instagram-carousel",
+      "file": "app/admin/instagram-carousel/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/CarouselGeneratorClient.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/shared/CarouselGeneratorClient.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/invoices/[id]",
+      "file": "app/admin/invoices/[id]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/InvoiceTemplate.tsx"
+      ],
+      "dependencies": [
+        "components/admin/InvoiceTemplate.tsx"
+      ]
+    },
+    {
+      "route": "/admin/invoices",
+      "file": "app/admin/invoices/page.tsx",
+      "bold": 27,
+      "tiny": 9,
+      "uppercase": 10,
+      "tracking": 10,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/invoices/preview",
+      "file": "app/admin/invoices/preview/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/InvoiceTemplate.tsx"
+      ],
+      "dependencies": [
+        "components/admin/InvoiceTemplate.tsx"
+      ]
+    },
+    {
+      "route": "/admin/leads/[id]",
+      "file": "app/admin/leads/[id]/page.tsx",
+      "bold": 15,
+      "tiny": 12,
+      "uppercase": 16,
+      "tracking": 15,
+      "truncation": 11,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/admin/crm/AdminLeadAssignment.tsx",
+        "components/admin/crm/AdminLeadSalesContext.tsx"
+      ],
+      "dependencies": [
+        "components/admin/crm/AdminLeadAssignment.tsx",
+        "components/admin/crm/AdminLeadSalesContext.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/leads/imports/[batchId]",
+      "file": "app/admin/leads/imports/[batchId]/page.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 3,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/leads/imports",
+      "file": "app/admin/leads/imports/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/leads",
+      "file": "app/admin/leads/page.tsx",
+      "bold": 41,
+      "tiny": 43,
+      "uppercase": 35,
+      "tracking": 39,
+      "truncation": 7,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Textarea.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Textarea.tsx"
+      ]
+    },
+    {
+      "route": "/admin/leads/scrape",
+      "file": "app/admin/leads/scrape/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/marketing",
+      "file": "app/admin/marketing/page.tsx",
+      "bold": 77,
+      "tiny": 29,
+      "uppercase": 34,
+      "tracking": 28,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/monetization/coupons",
+      "file": "app/admin/monetization/coupons/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/CouponManagementClient.tsx"
+      ],
+      "dependencies": [
+        "components/admin/CouponManagementClient.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/monetization/orders",
+      "file": "app/admin/monetization/orders/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/offers",
+      "file": "app/admin/offers/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OfferWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/onboarding/OfferWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/onboarding/[onboardingId]",
+      "file": "app/admin/onboarding/[onboardingId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/onboarding",
+      "file": "app/admin/onboarding/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/onboarding/preview",
+      "file": "app/admin/onboarding/preview/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/onboarding/OnboardingFlow.tsx"
+      ],
+      "dependencies": [
+        "components/document/DocumentActionBar.tsx",
+        "components/document/DocumentFooter.tsx",
+        "components/document/DocumentHeader.tsx",
+        "components/document/DocumentShell.tsx",
+        "components/onboarding/OnboardingFlow.tsx"
+      ]
+    },
+    {
+      "route": "/admin/outreach",
+      "file": "app/admin/outreach/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin",
+      "file": "app/admin/page.tsx",
+      "bold": 22,
+      "tiny": 17,
+      "uppercase": 12,
+      "tracking": 12,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "route": "/admin/people/access",
+      "file": "app/admin/people/access/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/AccessWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/people/AccessWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/people/departments",
+      "file": "app/admin/people/departments/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/people/designations",
+      "file": "app/admin/people/designations/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/people",
+      "file": "app/admin/people/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/PeopleDirectory.tsx"
+      ],
+      "dependencies": [
+        "components/admin/people/PeopleDirectory.tsx"
+      ]
+    },
+    {
+      "route": "/admin/people/team",
+      "file": "app/admin/people/team/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/TeamWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/people/TeamWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pitch-deck",
+      "file": "app/admin/pitch-deck/page.tsx",
+      "bold": 33,
+      "tiny": 41,
+      "uppercase": 42,
+      "tracking": 28,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/ai-copilot",
+      "file": "app/admin/pm/ai-copilot/page.tsx",
+      "bold": 9,
+      "tiny": 5,
+      "uppercase": 5,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/bugs",
+      "file": "app/admin/pm/bugs/page.tsx",
+      "bold": 14,
+      "tiny": 9,
+      "uppercase": 10,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/projects/[id]",
+      "file": "app/admin/pm/projects/[id]/page.tsx",
+      "bold": 12,
+      "tiny": 8,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/AgileKanban.tsx",
+        "components/admin/pm/PMIcons.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/admin/pm/AgileKanban.tsx",
+        "components/admin/pm/PMIcons.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/projects",
+      "file": "app/admin/pm/projects/page.tsx",
+      "bold": 14,
+      "tiny": 9,
+      "uppercase": 9,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/sprints",
+      "file": "app/admin/pm/sprints/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/SprintManager.tsx"
+      ],
+      "dependencies": [
+        "components/admin/pm/SprintManager.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/timesheets",
+      "file": "app/admin/pm/timesheets/page.tsx",
+      "bold": 6,
+      "tiny": 1,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/TimeTracker.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/admin/pm/TimeTracker.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/pm/workload",
+      "file": "app/admin/pm/workload/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/WorkloadBalancer.tsx"
+      ],
+      "dependencies": [
+        "components/admin/pm/WorkloadBalancer.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/products",
+      "file": "app/admin/products/page.tsx",
+      "bold": 16,
+      "tiny": 12,
+      "uppercase": 12,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/projects/[projectId]",
+      "file": "app/admin/projects/[projectId]/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/delivery/ProjectWorkspaceDetail.tsx"
+      ],
+      "dependencies": [
+        "components/admin/GrowXIcons.tsx",
+        "components/admin/delivery/MilestoneDetailDrawer.tsx",
+        "components/admin/delivery/ProjectWorkspaceDetail.tsx"
+      ]
+    },
+    {
+      "route": "/admin/projects",
+      "file": "app/admin/projects/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/delivery/ProjectWorkspaceList.tsx"
+      ],
+      "dependencies": [
+        "components/admin/GrowXIcons.tsx",
+        "components/admin/delivery/ProjectWorkspaceList.tsx"
+      ]
+    },
+    {
+      "route": "/admin/proposals/[proposalId]",
+      "file": "app/admin/proposals/[proposalId]/page.tsx",
+      "bold": 13,
+      "tiny": 1,
+      "uppercase": 3,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/proposal/ProposalDocument.tsx"
+      ],
+      "dependencies": [
+        "components/proposal/ProposalDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/proposals",
+      "file": "app/admin/proposals/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/quotations",
+      "file": "app/admin/quotations/page.tsx",
+      "bold": 9,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/admin/QuoteGenerator.tsx"
+      ],
+      "dependencies": [
+        "components/admin/QuoteGenerator.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/recruitment/manager",
+      "file": "app/admin/recruitment/manager/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/HiringManagerWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/recruitment/HiringManagerWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/recruitment/operations",
+      "file": "app/admin/recruitment/operations/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/HiringOperations.tsx"
+      ],
+      "dependencies": [
+        "components/admin/recruitment/HiringOperations.tsx"
+      ]
+    },
+    {
+      "route": "/admin/recruitment",
+      "file": "app/admin/recruitment/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/RecruiterWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/recruitment/RecruiterWorkspace.tsx"
+      ]
+    },
+    {
+      "route": "/admin/reels-creator",
+      "file": "app/admin/reels-creator/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/ReelsGeneratorClient.tsx"
+      ],
+      "dependencies": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/reels/ReelsDistributionModal.tsx",
+        "components/editor/reels/SelfRecordedVideoStudio.tsx",
+        "components/editor/reels/WebcamRecorderModal.tsx",
+        "components/shared/ReelsGeneratorClient.tsx"
+      ]
+    },
+    {
+      "route": "/admin/reports",
+      "file": "app/admin/reports/page.tsx",
+      "bold": 11,
+      "tiny": 9,
+      "uppercase": 6,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "route": "/admin/resumeforge",
+      "file": "app/admin/resumeforge/page.tsx",
+      "bold": 9,
+      "tiny": 8,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/admin/AdminSkeletons.tsx",
+        "components/ui/Skeleton.tsx"
+      ],
+      "dependencies": [
+        "components/admin/AdminSkeletons.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Skeleton.tsx"
+      ]
+    },
+    {
+      "route": "/admin/scopes/[scopeId]",
+      "file": "app/admin/scopes/[scopeId]/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/consulting/ScopeOfWorkDocument.tsx"
+      ],
+      "dependencies": [
+        "components/consulting/ScopeOfWorkDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/scopes",
+      "file": "app/admin/scopes/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/search",
+      "file": "app/admin/search/page.tsx",
+      "bold": 16,
+      "tiny": 8,
+      "uppercase": 11,
+      "tracking": 11,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/settings",
+      "file": "app/admin/settings/page.tsx",
+      "bold": 22,
+      "tiny": 14,
+      "uppercase": 7,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/providers/AccentColorProvider.tsx",
+        "components/ui/Button.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/providers/AccentColorProvider.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/settings/terms",
+      "file": "app/admin/settings/terms/page.tsx",
+      "bold": 5,
+      "tiny": 4,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "route": "/admin/solution-architectures/[architectureId]",
+      "file": "app/admin/solution-architectures/[architectureId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingWorkspace.tsx"
+      ],
+      "dependencies": [
+        "components/admin/consulting/ConsultingWorkspace.tsx",
+        "components/consulting/AiSolutionReportDocument.tsx",
+        "components/consulting/SolutionArchitectureDocument.tsx"
+      ]
+    },
+    {
+      "route": "/admin/solution-architectures",
+      "file": "app/admin/solution-architectures/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ],
+      "dependencies": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ]
+    },
+    {
+      "route": "/admin/support",
+      "file": "app/admin/support/page.tsx",
+      "bold": 68,
+      "tiny": 33,
+      "uppercase": 31,
+      "tracking": 21,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ],
+      "dependencies": [
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "route": "/admin/system/errors",
+      "file": "app/admin/system/errors/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [],
+      "dependencies": []
+    },
+    {
+      "route": "/admin/wish-game",
+      "file": "app/admin/wish-game/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/wish-game/WishAdminDashboardClient.tsx"
+      ],
+      "dependencies": [
+        "app/admin/wish-game/WishAdminDashboardClient.tsx"
+      ]
+    },
+    {
+      "route": "/admin/workflows",
+      "file": "app/admin/workflows/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/AutomationBuilder.tsx"
+      ],
+      "dependencies": [
+        "components/admin/AutomationBuilder.tsx",
+        "components/icons/index.ts",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "app/admin/academy/assessments/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "components/ui/Button.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/icons/index.ts"
+      ]
+    },
+    {
+      "file": "components/icons/index.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/academy/certificates/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/academy/courses/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/academy/payments/page.tsx",
+      "bold": 5,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/academy/users/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/activity/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/agreements/[id]/page.tsx",
+      "bold": 4,
+      "tiny": 4,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/commercial/MasterServiceAgreementDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/commercial/MasterServiceAgreementDocument.tsx",
+      "bold": 8,
+      "tiny": 3,
+      "uppercase": 7,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/agreements/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/agreements/preview/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/ai-platform/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/ai-solution-reports/[reportId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/consulting/ConsultingWorkspace.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/consulting/AiSolutionReportDocument.tsx",
+        "components/consulting/SolutionArchitectureDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/consulting/AiSolutionReportDocument.tsx",
+      "bold": 5,
+      "tiny": 3,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/consulting/SolutionArchitectureDocument.tsx",
+      "bold": 5,
+      "tiny": 3,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/ai-solution-reports/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/consulting/ConsultingList.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/assessments/[assessmentId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/assessments/AdminDocumentActions.tsx",
+        "components/assessment/AssessmentDocumentPage.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/assessments/AdminDocumentActions.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/assessment/AssessmentDocumentPage.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/assessment/AssessmentDocumentRenderer.tsx"
+      ]
+    },
+    {
+      "file": "components/assessment/AssessmentDocumentRenderer.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/document/DocumentShell.tsx",
+        "components/assessment/AssessmentDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/document/DocumentShell.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/assessment/AssessmentDocument.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/assessments/[assessmentId]/pdf-render/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/assessment/AssessmentDocument.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/assessments/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/assessments/AssessmentAdminList.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/assessments/AssessmentAdminList.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/attendance-leave/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/hrms/AttendanceLeaveConsole.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/hrms/AttendanceLeaveConsole.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/audit-logs/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/audits/[auditId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/audits/AuditWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/audits/AuditWorkspace.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/audit/AuditDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/audit/AuditDocument.tsx",
+      "bold": 12,
+      "tiny": 4,
+      "uppercase": 11,
+      "tracking": 11,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/audits/new/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/audits/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/audits/AuditList.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/audits/AuditList.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/career-portal/page.tsx",
+      "bold": 63,
+      "tiny": 50,
+      "uppercase": 54,
+      "tracking": 55,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "components/marketing/Reveal.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/career-portal/playbook/page.tsx",
+      "bold": 19,
+      "tiny": 11,
+      "uppercase": 13,
+      "tracking": 17,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/certificates/new/page.tsx",
+      "bold": 7,
+      "tiny": 0,
+      "uppercase": 6,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "components/ui/Input.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/ui/Card.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/change-requests/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/clients/page.tsx",
+      "bold": 12,
+      "tiny": 20,
+      "uppercase": 7,
+      "tracking": 8,
+      "truncation": 17,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/command-center/governance/approvals/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/approvals/approval-inbox.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/command-center/governance/approvals/approval-inbox.tsx",
+      "bold": 4,
+      "tiny": 4,
+      "uppercase": 4,
+      "tracking": 3,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/command-center/governance/audit/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/audit/audit-viewer.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/command-center/governance/audit/audit-viewer.tsx",
+      "bold": 0,
+      "tiny": 3,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/command-center/governance/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/command-center/governance/policies/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/governance/policies/policy-console.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/command-center/governance/policies/policy-console.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 5,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/command-center/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/command-center/InteractiveWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/command-center/InteractiveWorkspace.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/CommandCenterWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/CommandCenterWorkspace.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/AgentPresence.tsx",
+        "components/admin/command-center/CommandComposer.tsx",
+        "components/admin/command-center/CommandSidebar.tsx",
+        "components/admin/command-center/ContextFlyout.tsx",
+        "components/admin/command-center/MessageThread.tsx",
+        "components/admin/command-center/command-center.types.ts",
+        "components/admin/command-center/sse.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/AgentPresence.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/command-center.types.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/admin/command-center/CommandComposer.tsx",
+      "bold": 0,
+      "tiny": 1,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/MentionMenu.tsx",
+        "components/admin/command-center/command-center.types.ts",
+        "components/admin/command-center/composer-logic.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/MentionMenu.tsx",
+      "bold": 0,
+      "tiny": 1,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/composer-logic.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/CommandSidebar.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 4,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/ContextFlyout.tsx",
+      "bold": 2,
+      "tiny": 3,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts",
+        "components/admin/command-center/sse.ts",
+        "components/admin/command-center/useDialogFocus.ts"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/sse.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/admin/command-center/useDialogFocus.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/admin/command-center/MessageThread.tsx",
+      "bold": 3,
+      "tiny": 3,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/command-center/command-center.types.ts",
+        "components/admin/command-center/StructuredResponseFormatter.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/command-center/StructuredResponseFormatter.tsx",
+      "bold": 2,
+      "tiny": 4,
+      "uppercase": 3,
+      "tracking": 3,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/communications/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/communications/CommunicationWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/communications/CommunicationWorkspace.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/companies/page.tsx",
+      "bold": 16,
+      "tiny": 12,
+      "uppercase": 13,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/admin/Customer360.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/Customer360.tsx",
+      "bold": 34,
+      "tiny": 19,
+      "uppercase": 24,
+      "tracking": 24,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/ActivityTimeline.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/ActivityTimeline.tsx",
+      "bold": 3,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/consulting-finance/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/contacts/page.tsx",
+      "bold": 19,
+      "tiny": 13,
+      "uppercase": 14,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/contractor-agreements/[id]/page.tsx",
+      "bold": 4,
+      "tiny": 1,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/contractors/ContractorAgreementDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/contractors/ContractorAgreementDocument.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 6,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/contractor-agreements/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/crm/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 13,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/crm/sources/page.tsx",
+      "bold": 15,
+      "tiny": 13,
+      "uppercase": 13,
+      "tracking": 13,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/crm/team/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/crm/AdminSalesTeam.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/crm/AdminSalesTeam.tsx",
+      "bold": 15,
+      "tiny": 8,
+      "uppercase": 6,
+      "tracking": 3,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/deals/page.tsx",
+      "bold": 13,
+      "tiny": 11,
+      "uppercase": 12,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/KanbanBoard.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/KanbanBoard.tsx",
+      "bold": 8,
+      "tiny": 7,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/discovery-meetings/[meetingId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/discovery/DiscoveryMeetingWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/discovery/DiscoveryMeetingWorkspace.tsx",
+      "bold": 18,
+      "tiny": 9,
+      "uppercase": 13,
+      "tracking": 13,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/discovery-meetings/new/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/discovery-meetings/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/discovery/DiscoveryMeetingsClient.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/discovery/DiscoveryMeetingsClient.tsx",
+      "bold": 3,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/dispatch/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/dispatch/DispatchAdminClient.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/dispatch/DispatchAdminClient.tsx",
+      "bold": 18,
+      "tiny": 13,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 8,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/editorial-carousel/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/EditorialCarouselClient.tsx"
+      ]
+    },
+    {
+      "file": "components/shared/EditorialCarouselClient.tsx",
+      "bold": 17,
+      "tiny": 16,
+      "uppercase": 31,
+      "tracking": 10,
+      "truncation": 4,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/inspector/StudioInspector.tsx",
+        "components/editor/canvas/StudioLeftPanel.tsx",
+        "components/editor/canvas/StudioVerticalToolDock.tsx",
+        "components/editor/canvas/SmartSnapEngine.ts",
+        "components/editor/canvas/FigmaTransformGizmo.tsx",
+        "components/editor/canvas/InlineCanvasTextEditor.tsx",
+        "components/editor/canvas/CanvasContextMenu.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/icons/StudioIcons.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/editor/inspector/StudioInspector.tsx",
+      "bold": 4,
+      "tiny": 57,
+      "uppercase": 11,
+      "tracking": 6,
+      "truncation": 7,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/inspector/inspectorTypes.ts",
+        "components/editor/inspector/StudioDropdown.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/inspector/inspectorTypes.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/editor/inspector/StudioDropdown.tsx",
+      "bold": 0,
+      "tiny": 1,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 4,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/canvas/StudioLeftPanel.tsx",
+      "bold": 2,
+      "tiny": 26,
+      "uppercase": 6,
+      "tracking": 5,
+      "truncation": 11,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/inspector/inspectorTypes.ts",
+        "components/editor/inspector/StudioInspector.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/canvas/StudioVerticalToolDock.tsx",
+      "bold": 0,
+      "tiny": 16,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/canvas/SmartSnapEngine.ts",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/editor/canvas/FigmaTransformGizmo.tsx",
+      "bold": 1,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/canvas/InlineCanvasTextEditor.tsx",
+      "bold": 1,
+      "tiny": 1,
+      "uppercase": 4,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/editor/canvas/CanvasContextMenu.tsx",
+      "bold": 1,
+      "tiny": 7,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/employee-onboarding/page.tsx",
+      "bold": 42,
+      "tiny": 18,
+      "uppercase": 18,
+      "tracking": 11,
+      "truncation": 29,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/finance/accounts/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/finance/GeneralLedger.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/finance/GeneralLedger.tsx",
+      "bold": 19,
+      "tiny": 11,
+      "uppercase": 12,
+      "tracking": 9,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/finance/ai-helper/page.tsx",
+      "bold": 11,
+      "tiny": 6,
+      "uppercase": 6,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/finance/dashboard/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/finance/FinanceDashboard.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/finance/FinanceDashboard.tsx",
+      "bold": 15,
+      "tiny": 15,
+      "uppercase": 7,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/finance/expenses/page.tsx",
+      "bold": 14,
+      "tiny": 8,
+      "uppercase": 9,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/finance/invoices/page.tsx",
+      "bold": 15,
+      "tiny": 8,
+      "uppercase": 10,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/admin/finance/InvoiceBuilder.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/finance/InvoiceBuilder.tsx",
+      "bold": 13,
+      "tiny": 11,
+      "uppercase": 12,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/finance/reports/page.tsx",
+      "bold": 26,
+      "tiny": 10,
+      "uppercase": 13,
+      "tracking": 15,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/growx-email/page.tsx",
+      "bold": 19,
+      "tiny": 15,
+      "uppercase": 13,
+      "tracking": 12,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hr-onboarding/manager/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/onboarding/OnboardingWorkspace.tsx",
+      "bold": 7,
+      "tiny": 6,
+      "uppercase": 2,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hr-onboarding/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/ai-recruiter/page.tsx",
+      "bold": 22,
+      "tiny": 16,
+      "uppercase": 14,
+      "tracking": 14,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/attendance/page.tsx",
+      "bold": 10,
+      "tiny": 6,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/admin/hrms/AttendanceTracker.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/hrms/AttendanceTracker.tsx",
+      "bold": 12,
+      "tiny": 8,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/dashboard/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/hrms/HrmsDashboard.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/hrms/HrmsDashboard.tsx",
+      "bold": 24,
+      "tiny": 18,
+      "uppercase": 10,
+      "tracking": 10,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/employees/page.tsx",
+      "bold": 13,
+      "tiny": 10,
+      "uppercase": 9,
+      "tracking": 9,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/learning/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/learning/LMSCourseLibrary.tsx",
+        "components/learning/InternalMobilityPortal.tsx",
+        "components/learning/AILearningAssistant.tsx"
+      ]
+    },
+    {
+      "file": "components/learning/LMSCourseLibrary.tsx",
+      "bold": 5,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/learning/InternalMobilityPortal.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/learning/AILearningAssistant.tsx",
+      "bold": 5,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/leaves/page.tsx",
+      "bold": 19,
+      "tiny": 17,
+      "uppercase": 15,
+      "tracking": 15,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/payroll/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/payroll/PayrollProcessingStudio.tsx",
+        "components/payroll/ReimbursementConsole.tsx",
+        "components/payroll/AIPayrollAssistant.tsx"
+      ]
+    },
+    {
+      "file": "components/payroll/PayrollProcessingStudio.tsx",
+      "bold": 9,
+      "tiny": 3,
+      "uppercase": 3,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/payroll/ReimbursementConsole.tsx",
+      "bold": 6,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/payroll/AIPayrollAssistant.tsx",
+      "bold": 4,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/performance/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/performance/GoalManagementConsole.tsx",
+        "components/performance/ReviewCycleConsole.tsx",
+        "components/performance/CalibrationStudio.tsx",
+        "components/performance/AIPerformanceAssistant.tsx"
+      ]
+    },
+    {
+      "file": "components/performance/GoalManagementConsole.tsx",
+      "bold": 5,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/performance/ReviewCycleConsole.tsx",
+      "bold": 5,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/performance/CalibrationStudio.tsx",
+      "bold": 6,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/performance/AIPerformanceAssistant.tsx",
+      "bold": 6,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/platform/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/platform/WorkflowBuilderConsole.tsx",
+        "components/platform/IntegrationHubConsole.tsx",
+        "components/platform/ExecutiveCommandCenter.tsx"
+      ]
+    },
+    {
+      "file": "components/platform/WorkflowBuilderConsole.tsx",
+      "bold": 4,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/platform/IntegrationHubConsole.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/platform/ExecutiveCommandCenter.tsx",
+      "bold": 8,
+      "tiny": 3,
+      "uppercase": 4,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/recruitment/email-settings/page.tsx",
+      "bold": 16,
+      "tiny": 7,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/recruitment/email-templates/page.tsx",
+      "bold": 11,
+      "tiny": 7,
+      "uppercase": 5,
+      "tracking": 3,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/recruitment/emails/page.tsx",
+      "bold": 14,
+      "tiny": 11,
+      "uppercase": 4,
+      "tracking": 3,
+      "truncation": 4,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/recruitment/interviews/[interviewId]/access/page.tsx",
+      "bold": 23,
+      "tiny": 19,
+      "uppercase": 20,
+      "tracking": 16,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/recruitment/interviews/[interviewId]/page.tsx",
+      "bold": 16,
+      "tiny": 8,
+      "uppercase": 10,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/recruitment/interviews/page.tsx",
+      "bold": 27,
+      "tiny": 24,
+      "uppercase": 23,
+      "tracking": 15,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/hrms/recruitment/page.tsx",
+      "bold": 13,
+      "tiny": 11,
+      "uppercase": 8,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/admin/hrms/RecruitmentPipeline.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/hrms/RecruitmentPipeline.tsx",
+      "bold": 45,
+      "tiny": 34,
+      "uppercase": 27,
+      "tracking": 10,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/CandidateEmailTimeline.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/recruitment/CandidateEmailTimeline.tsx",
+      "bold": 8,
+      "tiny": 10,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/hrms/workforce/page.tsx",
+      "bold": 3,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/workforce/HelpdeskPortalConsole.tsx",
+        "components/workforce/TravelManagementConsole.tsx",
+        "components/workforce/AIWorkforceAssistant.tsx"
+      ]
+    },
+    {
+      "file": "components/workforce/HelpdeskPortalConsole.tsx",
+      "bold": 5,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/workforce/TravelManagementConsole.tsx",
+      "bold": 6,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/workforce/AIWorkforceAssistant.tsx",
+      "bold": 4,
+      "tiny": 1,
+      "uppercase": 3,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/instagram-carousel/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/CarouselGeneratorClient.tsx"
+      ]
+    },
+    {
+      "file": "components/shared/CarouselGeneratorClient.tsx",
+      "bold": 89,
+      "tiny": 66,
+      "uppercase": 63,
+      "tracking": 50,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/invoices/[id]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/InvoiceTemplate.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/InvoiceTemplate.tsx",
+      "bold": 30,
+      "tiny": 16,
+      "uppercase": 20,
+      "tracking": 20,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/invoices/page.tsx",
+      "bold": 27,
+      "tiny": 9,
+      "uppercase": 10,
+      "tracking": 10,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/invoices/preview/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/InvoiceTemplate.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/leads/[id]/page.tsx",
+      "bold": 15,
+      "tiny": 12,
+      "uppercase": 16,
+      "tracking": 15,
+      "truncation": 11,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/admin/crm/AdminLeadAssignment.tsx",
+        "components/admin/crm/AdminLeadSalesContext.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/crm/AdminLeadAssignment.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/admin/crm/AdminLeadSalesContext.tsx",
+      "bold": 0,
+      "tiny": 1,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/leads/imports/[batchId]/page.tsx",
+      "bold": 4,
+      "tiny": 2,
+      "uppercase": 3,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/leads/imports/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/leads/page.tsx",
+      "bold": 41,
+      "tiny": 43,
+      "uppercase": 35,
+      "tracking": 39,
+      "truncation": 7,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Textarea.tsx"
+      ]
+    },
+    {
+      "file": "components/ui/Textarea.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/leads/scrape/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/marketing/page.tsx",
+      "bold": 77,
+      "tiny": 29,
+      "uppercase": 34,
+      "tracking": 28,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/monetization/coupons/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/CouponManagementClient.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/CouponManagementClient.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/monetization/orders/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/offers/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OfferWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/onboarding/OfferWorkspace.tsx",
+      "bold": 20,
+      "tiny": 8,
+      "uppercase": 6,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/onboarding/[onboardingId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/onboarding/OnboardingAdminWorkspace.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/onboarding/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/onboarding/OnboardingAdminWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/onboarding/preview/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/onboarding/OnboardingFlow.tsx"
+      ]
+    },
+    {
+      "file": "components/onboarding/OnboardingFlow.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 6,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/document/DocumentActionBar.tsx",
+        "components/document/DocumentFooter.tsx",
+        "components/document/DocumentHeader.tsx",
+        "components/document/DocumentShell.tsx"
+      ]
+    },
+    {
+      "file": "components/document/DocumentActionBar.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/document/DocumentShell.tsx"
+      ]
+    },
+    {
+      "file": "components/document/DocumentFooter.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/document/DocumentShell.tsx"
+      ]
+    },
+    {
+      "file": "components/document/DocumentHeader.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/document/DocumentShell.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/outreach/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/page.tsx",
+      "bold": 22,
+      "tiny": 17,
+      "uppercase": 12,
+      "tracking": 12,
+      "truncation": 3,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/icons/index.ts",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/people/access/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/AccessWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/people/AccessWorkspace.tsx",
+      "bold": 10,
+      "tiny": 6,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/people/departments/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/people/StructureWorkspace.tsx",
+      "bold": 12,
+      "tiny": 7,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/people/designations/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/StructureWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/people/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/PeopleDirectory.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/people/PeopleDirectory.tsx",
+      "bold": 23,
+      "tiny": 18,
+      "uppercase": 8,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/people/team/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/people/TeamWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/people/TeamWorkspace.tsx",
+      "bold": 2,
+      "tiny": 2,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/pitch-deck/page.tsx",
+      "bold": 33,
+      "tiny": 41,
+      "uppercase": 42,
+      "tracking": 28,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/ai-copilot/page.tsx",
+      "bold": 9,
+      "tiny": 5,
+      "uppercase": 5,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/bugs/page.tsx",
+      "bold": 14,
+      "tiny": 9,
+      "uppercase": 10,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/projects/[id]/page.tsx",
+      "bold": 12,
+      "tiny": 8,
+      "uppercase": 5,
+      "tracking": 5,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/AgileKanban.tsx",
+        "components/admin/pm/PMIcons.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/pm/AgileKanban.tsx",
+      "bold": 15,
+      "tiny": 14,
+      "uppercase": 4,
+      "tracking": 1,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/PMIcons.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/pm/PMIcons.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/pm/projects/page.tsx",
+      "bold": 14,
+      "tiny": 9,
+      "uppercase": 9,
+      "tracking": 8,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/sprints/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/SprintManager.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/pm/SprintManager.tsx",
+      "bold": 9,
+      "tiny": 8,
+      "uppercase": 7,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/timesheets/page.tsx",
+      "bold": 6,
+      "tiny": 1,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/TimeTracker.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/pm/TimeTracker.tsx",
+      "bold": 12,
+      "tiny": 9,
+      "uppercase": 11,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/pm/workload/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/pm/WorkloadBalancer.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/pm/WorkloadBalancer.tsx",
+      "bold": 6,
+      "tiny": 4,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/products/page.tsx",
+      "bold": 16,
+      "tiny": 12,
+      "uppercase": 12,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/projects/[projectId]/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/delivery/ProjectWorkspaceDetail.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/delivery/ProjectWorkspaceDetail.tsx",
+      "bold": 4,
+      "tiny": 6,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/GrowXIcons.tsx",
+        "components/admin/delivery/MilestoneDetailDrawer.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/GrowXIcons.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "components/admin/delivery/MilestoneDetailDrawer.tsx",
+      "bold": 9,
+      "tiny": 4,
+      "uppercase": 8,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/GrowXIcons.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/projects/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/delivery/ProjectWorkspaceList.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/delivery/ProjectWorkspaceList.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/GrowXIcons.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/proposals/[proposalId]/page.tsx",
+      "bold": 13,
+      "tiny": 1,
+      "uppercase": 3,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/proposal/ProposalDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/proposal/ProposalDocument.tsx",
+      "bold": 3,
+      "tiny": 2,
+      "uppercase": 3,
+      "tracking": 3,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/proposals/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/quotations/page.tsx",
+      "bold": 9,
+      "tiny": 2,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/admin/QuoteGenerator.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/QuoteGenerator.tsx",
+      "bold": 15,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/recruitment/manager/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/HiringManagerWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/recruitment/HiringManagerWorkspace.tsx",
+      "bold": 7,
+      "tiny": 5,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/recruitment/operations/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/HiringOperations.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/recruitment/HiringOperations.tsx",
+      "bold": 19,
+      "tiny": 5,
+      "uppercase": 7,
+      "tracking": 7,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/recruitment/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/recruitment/RecruiterWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/recruitment/RecruiterWorkspace.tsx",
+      "bold": 18,
+      "tiny": 14,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/reels-creator/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/shared/ReelsGeneratorClient.tsx"
+      ]
+    },
+    {
+      "file": "components/shared/ReelsGeneratorClient.tsx",
+      "bold": 30,
+      "tiny": 22,
+      "uppercase": 26,
+      "tracking": 21,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/reels/SelfRecordedVideoStudio.tsx",
+        "components/editor/reels/ReelsDistributionModal.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/reels/SelfRecordedVideoStudio.tsx",
+      "bold": 21,
+      "tiny": 9,
+      "uppercase": 6,
+      "tracking": 4,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx",
+        "components/editor/reels/WebcamRecorderModal.tsx",
+        "components/editor/reels/ReelsDistributionModal.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/reels/WebcamRecorderModal.tsx",
+      "bold": 7,
+      "tiny": 3,
+      "uppercase": 1,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "components/editor/reels/ReelsDistributionModal.tsx",
+      "bold": 8,
+      "tiny": 5,
+      "uppercase": 5,
+      "tracking": 4,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/editor/icons/StudioIcons.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/reports/page.tsx",
+      "bold": 11,
+      "tiny": 9,
+      "uppercase": 6,
+      "tracking": 6,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/resumeforge/page.tsx",
+      "bold": 9,
+      "tiny": 8,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/admin/AdminSkeletons.tsx",
+        "components/ui/Skeleton.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/AdminSkeletons.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Skeleton.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "components/ui/Skeleton.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/scopes/[scopeId]/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/consulting/ScopeOfWorkDocument.tsx"
+      ]
+    },
+    {
+      "file": "components/consulting/ScopeOfWorkDocument.tsx",
+      "bold": 5,
+      "tiny": 2,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/scopes/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/search/page.tsx",
+      "bold": 16,
+      "tiny": 8,
+      "uppercase": 11,
+      "tracking": 11,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/settings/page.tsx",
+      "bold": 22,
+      "tiny": 14,
+      "uppercase": 7,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/providers/AccentColorProvider.tsx",
+        "components/ui/Button.tsx"
+      ]
+    },
+    {
+      "file": "components/providers/AccentColorProvider.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/settings/terms/page.tsx",
+      "bold": 5,
+      "tiny": 4,
+      "uppercase": 4,
+      "tracking": 4,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/marketing/Reveal.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/solution-architectures/[architectureId]/page.tsx",
+      "bold": 0,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingWorkspace.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/solution-architectures/page.tsx",
+      "bold": 2,
+      "tiny": 0,
+      "uppercase": 1,
+      "tracking": 1,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/consulting/ConsultingList.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/support/page.tsx",
+      "bold": 68,
+      "tiny": 33,
+      "uppercase": 31,
+      "tracking": 21,
+      "truncation": 1,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx",
+        "components/ui/Card.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/system/errors/page.tsx",
+      "bold": 3,
+      "tiny": 0,
+      "uppercase": 2,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/wish-game/page.tsx",
+      "bold": 2,
+      "tiny": 1,
+      "uppercase": 1,
+      "tracking": 2,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "app/admin/wish-game/WishAdminDashboardClient.tsx"
+      ]
+    },
+    {
+      "file": "app/admin/wish-game/WishAdminDashboardClient.tsx",
+      "bold": 27,
+      "tiny": 15,
+      "uppercase": 15,
+      "tracking": 14,
+      "truncation": 2,
+      "syntaxErrors": 0,
+      "imports": []
+    },
+    {
+      "file": "app/admin/workflows/page.tsx",
+      "bold": 1,
+      "tiny": 0,
+      "uppercase": 0,
+      "tracking": 0,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/admin/AutomationBuilder.tsx"
+      ]
+    },
+    {
+      "file": "components/admin/AutomationBuilder.tsx",
+      "bold": 17,
+      "tiny": 11,
+      "uppercase": 13,
+      "tracking": 10,
+      "truncation": 0,
+      "syntaxErrors": 0,
+      "imports": [
+        "components/ui/Card.tsx",
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx"
+      ]
+    }
+  ]
+}

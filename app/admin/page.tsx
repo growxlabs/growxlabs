@@ -166,10 +166,10 @@ export default async function AdminDashboard() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400 mb-1">
+                  <p className="admin-kpi-label text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)] dark:text-neutral-400 mb-1">
                     {vital.label}
                   </p>
-                  <h3 className="text-2xl font-bold text-[var(--text-primary)] dark:text-white tracking-tight mb-1">
+                  <h3 className="admin-kpi-value text-[var(--text-primary)] dark:text-white mb-1">
                     {vital.value}
                   </h3>
                   <p className="text-xs text-[var(--text-tertiary)] dark:text-neutral-400 truncate">

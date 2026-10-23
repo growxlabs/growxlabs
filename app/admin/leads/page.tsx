@@ -540,7 +540,7 @@ export default function LeadsAdminPage() {
                 <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight leading-none">Leads</h1>
                 <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse mt-0.5" />
               </div>
-              <p className="text-[var(--text-muted)] text-xs mt-1">Sales Pipeline & CRM Hub</p>
+              <p className="admin-description text-[var(--text-muted)] text-xs mt-1">Sales Pipeline & CRM Hub</p>
             </div>
             
             <div className="flex flex-wrap items-center gap-2 md:gap-3">
@@ -655,8 +655,8 @@ export default function LeadsAdminPage() {
             { label: "Revenue", value: `₹${(revenueValue / 100000).toFixed(1)}L` },
           ].map((widget, i) => (
             <div key={i} className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm flex flex-col justify-between h-20 hover:border-[var(--border-hover)] transition-colors">
-              <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider leading-none">{widget.label}</p>
-              <p className="text-xl font-bold text-[var(--text-primary)] leading-none">{widget.value}</p>
+              <p className="admin-kpi-label text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider leading-none">{widget.label}</p>
+              <p className="admin-kpi-value text-[var(--text-primary)] leading-none">{widget.value}</p>
             </div>
           ))}
         </div>
@@ -664,7 +664,7 @@ export default function LeadsAdminPage() {
         {/* --- MAIN DATA TABLE --- */}
         <div className="bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs whitespace-nowrap table-fixed">
+            <table className="w-full min-w-[1608px] text-left text-[13px] whitespace-nowrap table-fixed">
               <thead className="bg-[var(--surface-2)]/30 border-b border-[var(--border-subtle)] text-[var(--text-secondary)] font-semibold sticky top-0 z-10">
                 <tr>
                   <th className="px-4 py-3 w-10 text-center">
@@ -681,15 +681,15 @@ export default function LeadsAdminPage() {
                       className="rounded border-[var(--border-subtle)] bg-[var(--surface-1)] text-[var(--primary)] focus:ring-[var(--primary)] h-3.5 w-3.5"
                     />
                   </th>
-                  <th className="px-5 py-3 w-48 font-bold uppercase tracking-wider text-[10px]">Company</th>
+                  <th className="px-5 py-3 w-64 font-bold uppercase tracking-wider text-[10px]">Company</th>
                   <th className="px-4 py-3 w-28 font-bold uppercase tracking-wider text-[10px]">Status</th>
                   <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Location</th>
                   <th className="px-4 py-3 w-28 font-bold uppercase tracking-wider text-[10px]">Industry</th>
                   <th className="px-4 py-3 w-36 font-bold uppercase tracking-wider text-[10px]">Website</th>
-                  <th className="px-4 py-3 w-40 font-bold uppercase tracking-wider text-[10px]">Email</th>
+                  <th className="px-4 py-3 w-52 font-bold uppercase tracking-wider text-[10px]">Email</th>
                   <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Phone</th>
                   <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Lead Score</th>
-                  <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Assigned</th>
+                  <th className="px-4 py-3 w-40 font-bold uppercase tracking-wider text-[10px]">Assigned</th>
                   <th className="px-4 py-3 w-32 font-bold uppercase tracking-wider text-[10px]">Date Added</th>
                   <th className="px-4 py-3 w-16 text-center font-bold uppercase tracking-wider text-[10px]"></th>
                 </tr>
@@ -747,7 +747,7 @@ export default function LeadsAdminPage() {
                         />
                       </td>
                       <td className="px-5 py-3 font-semibold text-[var(--text-primary)]">
-                        <div className="truncate flex items-center gap-1.5" title={lead.business_name}>
+                        <div className="admin-record-name truncate flex items-center gap-1.5" title={lead.business_name}>
                           <span>{lead.business_name}</span>
                           {lead.source === "Book a Discovery Call" && (
                             <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-mono font-normal uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">
@@ -788,7 +788,7 @@ export default function LeadsAdminPage() {
                           <span className="text-[var(--text-muted)] font-normal italic">No website</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-[var(--text-secondary)] font-medium truncate" title={lead.email}>
+                      <td className="px-4 py-3 text-[var(--text-secondary)] font-normal truncate" title={lead.email}>
                         {lead.email || "—"}
                       </td>
                       <td className="px-4 py-3 text-[var(--text-secondary)] font-medium">
@@ -904,9 +904,9 @@ export default function LeadsAdminPage() {
                 
                 {/* Section 1: Lead Score Widget */}
                 <div className="bg-[var(--card)] border border-[var(--border-subtle)] p-4 rounded-xl shadow-sm">
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Opportunity Score</p>
+                  <p className="admin-kpi-label text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">Opportunity Score</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-extrabold text-[var(--text-primary)] leading-none">{(selectedLead.lead_score || 0).toFixed(1)}</span>
+                    <span className="admin-kpi-value text-[var(--text-primary)] leading-none">{(selectedLead.lead_score || 0).toFixed(1)}</span>
                     <span className="text-xs font-semibold text-[var(--text-muted)]">/ 10.0 Calculated Quality</span>
                   </div>
                   <div className="w-full bg-[var(--border-subtle)] h-1.5 rounded-full mt-3 overflow-hidden">

@@ -344,13 +344,13 @@ export default function InvoicesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 no-print">
         <Card className="p-4 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
-            <span className="text-[11px] font-medium uppercase tracking-wider">Total Invoiced</span>
+            <span className="admin-kpi-label text-[11px] font-medium uppercase tracking-wider">Total Invoiced</span>
             <div className="p-1.5 rounded-md bg-[var(--surface-2)] text-[var(--text-secondary)]">
               <FileText size={14} />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+            <div className="admin-kpi-value text-[var(--text-primary)]">
               ₹{metrics.totalBilled.toLocaleString("en-IN")}
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
@@ -361,13 +361,13 @@ export default function InvoicesPage() {
 
         <Card className="p-4 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
-            <span className="text-[11px] font-medium uppercase tracking-wider">Collected Revenue</span>
+            <span className="admin-kpi-label text-[11px] font-medium uppercase tracking-wider">Collected Revenue</span>
             <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-500">
               <CheckCircle2 size={14} />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-bold tracking-tight text-emerald-500">
+            <div className="admin-kpi-value text-emerald-500">
               ₹{metrics.totalPaid.toLocaleString("en-IN")}
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
@@ -378,13 +378,13 @@ export default function InvoicesPage() {
 
         <Card className="p-4 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
-            <span className="text-[11px] font-medium uppercase tracking-wider">Outstanding Balance</span>
+            <span className="admin-kpi-label text-[11px] font-medium uppercase tracking-wider">Outstanding Balance</span>
             <div className="p-1.5 rounded-md bg-amber-500/10 text-amber-500">
               <Clock size={14} />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+            <div className="admin-kpi-value text-[var(--text-primary)]">
               ₹{metrics.totalDue.toLocaleString("en-IN")}
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
@@ -395,13 +395,13 @@ export default function InvoicesPage() {
 
         <Card className="p-4 bg-[var(--card)] border border-[var(--border-subtle)] rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-[var(--text-muted)]">
-            <span className="text-[11px] font-medium uppercase tracking-wider">Overdue Alerts</span>
+            <span className="admin-kpi-label text-[11px] font-medium uppercase tracking-wider">Overdue Alerts</span>
             <div className="p-1.5 rounded-md bg-rose-500/10 text-rose-500">
               <AlertCircle size={14} />
             </div>
           </div>
           <div className="mt-2.5">
-            <div className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+            <div className="admin-kpi-value text-[var(--text-primary)]">
               {metrics.overdueCount}
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">

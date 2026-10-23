@@ -64,7 +64,7 @@ function PixelGrid({ type }: { type: string }) {
   }
 
   return (
-    <div className="flex justify-center my-4 h-32">
+    <div className="flex justify-center my-2 h-32">
       <svg
         viewBox="0 0 160 100"
         className="h-full w-full max-w-[200px]"
@@ -195,7 +195,7 @@ export default function ServicesPage() {
               {services.map((service, index) => (
                 <div
                   key={service.title}
-                  className="relative p-[1px] transition-all duration-300 hover:scale-[1.01] bg-white/10 hover:bg-[#C0F0FB]/60"
+                  className="relative p-[1px] transition-all duration-300 hover:scale-[1.01] bg-white/20 hover:bg-[#C0F0FB]/60 focus-within:bg-[#C0F0FB]/60"
                   style={{
                     clipPath: "polygon(0 0, calc(100% - 42px) 0, 100% 42px, 100% 100%, 0 100%)",
                   }}
@@ -217,7 +217,7 @@ export default function ServicesPage() {
 
                     <div>
                       {/* Metadata fields list */}
-                      <div className="flex flex-col gap-4 mt-4 pt-6 border-t border-white/10">
+                      <div className="flex flex-col gap-4 mt-2 pt-6 border-t border-white/10">
                         {[
                           { k: "MISSIONS", v: service.mission },
                           { k: "USE CASES", v: service.useCases },

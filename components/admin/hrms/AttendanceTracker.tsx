@@ -47,7 +47,7 @@ export function AttendanceTracker({ attendance, onClockIn, onClockOut, isChecked
         {/* Digital Clock */}
         <Card className="p-6 border border-[var(--border-subtle)] bg-[var(--card)] rounded-xl shadow-sm col-span-1 lg:col-span-2 flex flex-col items-center justify-center">
           <Clock className="h-6 w-6 text-[#0075de] mb-2" />
-          <h2 className="text-4xl font-black text-[var(--text-primary)] font-mono tracking-wider">
+          <h2 className="admin-kpi-value text-[var(--text-primary)]">
             {formatTime(currentTime)}
           </h2>
           <p className="text-xs text-[var(--text-secondary)] mt-1 font-medium">{formatDate(currentTime)}</p>

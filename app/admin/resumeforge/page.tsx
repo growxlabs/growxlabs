@@ -337,13 +337,13 @@ export default function ResumeForgeHubPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-[#141416] border-neutral-800 p-4 relative overflow-hidden">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-neutral-400 font-medium">Total Invoiced</span>
+            <span className="admin-kpi-label text-xs text-neutral-400 font-medium">Total Invoiced</span>
             <div className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-400">
               <FileText size={15} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-white tracking-tight">
+            <div className="admin-kpi-value text-white">
               {summary ? `₹${summary.totalRevenueInr.toLocaleString("en-IN")}` : "₹0"}
             </div>
             <p className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1">
@@ -355,13 +355,13 @@ export default function ResumeForgeHubPage() {
 
         <Card className="bg-[#141416] border-neutral-800 p-4 relative overflow-hidden">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-neutral-400 font-medium">Captured Payments</span>
+            <span className="admin-kpi-label text-xs text-neutral-400 font-medium">Captured Payments</span>
             <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400">
               <CreditCard size={15} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-white tracking-tight">
+            <div className="admin-kpi-value text-white">
               {summary ? summary.totalTransactions : 0}
             </div>
             <p className="text-[11px] text-neutral-400 mt-1">Via Razorpay Gateway</p>
@@ -370,13 +370,13 @@ export default function ResumeForgeHubPage() {
 
         <Card className="bg-[#141416] border-neutral-800 p-4 relative overflow-hidden">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-neutral-400 font-medium">Registered Users</span>
+            <span className="admin-kpi-label text-xs text-neutral-400 font-medium">Registered Users</span>
             <div className="p-1.5 rounded-md bg-purple-500/10 text-purple-400">
               <Users size={15} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-white tracking-tight">
+            <div className="admin-kpi-value text-white">
               {summary ? summary.totalUsers.toLocaleString() : 0}
             </div>
             <p className="text-[11px] text-neutral-400 mt-1">Total candidate accounts</p>
@@ -385,13 +385,13 @@ export default function ResumeForgeHubPage() {
 
         <Card className="bg-[#141416] border-neutral-800 p-4 relative overflow-hidden">
           <div className="flex justify-between items-start">
-            <span className="text-xs text-neutral-400 font-medium">PRO Subscribers</span>
+            <span className="admin-kpi-label text-xs text-neutral-400 font-medium">PRO Subscribers</span>
             <div className="p-1.5 rounded-md bg-amber-500/10 text-amber-400">
               <Sparkles size={15} />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-white tracking-tight">
+            <div className="admin-kpi-value text-white">
               {summary ? summary.proUsersCount : 0}
             </div>
             <p className="text-[11px] text-neutral-400 mt-1">Active PRO tier accounts</p>

@@ -106,7 +106,7 @@ export default function OnboardingPreview() {
       )}
 
       {/* Document */}
-      <div className="max-w-[850px] mx-auto bg-white shadow-2xl print:shadow-none min-h-[1100px] flex flex-col font-sans border border-neutral-200 print:border-none">
+      <div data-admin-typography="preserve" className="max-w-[850px] mx-auto bg-white shadow-2xl print:shadow-none min-h-[1100px] flex flex-col font-sans border border-neutral-200 print:border-none">
         
         {/* HEADER */}
         <div className="flex justify-between items-start border-b-2 border-[#00b894] p-12 mb-8 bg-[#0D1B4B] text-white">
