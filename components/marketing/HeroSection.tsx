@@ -26,114 +26,174 @@ export function HeroSection() {
 
   return (
     <>
-      {/* ═══ DESKTOP HERO (Hidden on mobile) ═══ */}
-      <section
-        className="hidden sm:flex sm:flex-col w-full relative overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 pt-28 pb-0 min-h-dvh justify-between bg-[#A2BECC]"
-        aria-labelledby="hero-studio-heading-desktop"
-      >
-
-        {/* Empty flex spacer at top to push content down */}
-        <div className="flex-grow z-10" />
-
-        {/* Middle part: Swiss Grid columns aligned to the right */}
-        <div className="w-full flex flex-col items-end mb-36 z-10 select-none">
-          {/* Subtle horizontal grid line for Swiss architectural framing */}
-          <div className="w-full max-w-4xl pr-8 mb-6">
-            <div className="w-full h-[1px] bg-[#55788D]/25" />
-          </div>
-
-          <div className="flex flex-row justify-between w-full max-w-4xl gap-8 font-mono text-[10px] md:text-[11px] tracking-[0.2em] text-[#55788D] leading-[1.65] uppercase text-left pr-8">
-            <div>
-              YOU ARE<br />
-              NOW<br />
-              ENTERING
-            </div>
-            <div>
-              SCROLL<br />
-              TO<br />
-              EXPLORE
-            </div>
-            <div className="text-[#17252D] font-bold">
-              AI-NATIVE<br />
-              PRODUCT STUDIO &<br />
-              ENGINEERING LAB
-            </div>
-            <div>
-              © 2026 // GL-X<br />
-              ALL RIGHTS RESERVED
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom part: Massive Brand Title touching the bottom */}
-        <div className="w-full flex justify-center items-end select-none pointer-events-none z-10 translate-y-[3%] overflow-visible">
-          <h1
-            id="hero-studio-heading-desktop"
-            className="font-sans font-black select-none tracking-[-0.05em] text-[#17252D] leading-[0.8] whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
-            style={{ fontSize: "14.2vw" }}
-          >
-            <FlickerText text={brandName} delays={flickerDelays} />
-          </h1>
-        </div>
-      </section>
-
-      {/* ═══ SWISS-EDITORIAL MOBILE HERO (Visible only on mobile) ═══ */}
-      <section
-        className="flex sm:hidden w-full relative overflow-hidden px-6 pt-28 pb-10 min-h-dvh items-center bg-[#A2BECC]"
-        aria-labelledby="hero-studio-heading-mobile"
-      >
-
-        <div className="relative w-full flex flex-row items-center justify-between z-10">
-          
-          {/* Left Column: Swiss Editorial Stack */}
-          <div className="flex flex-col justify-between h-[62dvh] text-left pr-4 select-none z-10">
-            {/* Top Indicator */}
-            <div className="font-mono text-[10px] tracking-[0.22em] font-extrabold text-[#17252D] uppercase">
-              [ GROWXLABS ]
-            </div>
-
-            {/* Middle Editorial Block */}
-            <div className="flex flex-col gap-5 font-mono text-[9px] tracking-[0.18em] text-[#55788D] leading-[1.65] uppercase">
-              <div>
-                YOU ARE<br />
-                NOW<br />
-                ENTERING
+      {/* ═══ DESKTOP HERO CARD (Hidden on mobile) ═══ */}
+      {/* Outer canvas wrapper: hero card extends under the header (pt-3 md:pt-4, 24px side gutters) */}
+      <div className="hidden sm:block w-full pt-3 md:pt-4 px-4 md:px-6 pb-4 md:pb-6 select-none">
+        <section
+          className="w-full relative overflow-hidden z-20 pt-0 pb-0 min-h-[calc(100dvh-32px)] flex flex-col justify-between bg-[#A2BECC] rounded-[16px]"
+          aria-labelledby="hero-studio-heading-desktop"
+        >
+          {/* Asymmetric Editorial Metadata Container (pt-28 md:pt-32 ensures content starts safely below floating header) */}
+          <div className="w-full flex flex-col justify-between flex-grow pt-28 md:pt-32 px-[6.5%] pb-4 z-10">
+            {/* ═══ UPPER ZONE: Introduction (Left) + Company Description (Right) ═══ */}
+            <div className="w-full flex flex-row justify-between items-start gap-8">
+              {/* TOP LEFT — Introduction */}
+              <div 
+                className="font-sans font-[780] text-[#22282C] leading-[1.03] tracking-[-0.045em] select-none"
+                style={{ fontSize: "clamp(26px, 3.4vw, 46px)" }}
+              >
+                <div>YOU ARE</div>
+                <div>NOW</div>
+                <div className="pl-3 sm:pl-4 md:pl-5">ENTERING.</div>
               </div>
-              <div>
-                GROWXLABS<br />
-                TO<br />
-                EXPLORE
-              </div>
-              <div className="w-5 h-[1px] bg-[#55788D]/25" />
-              <div className="text-[#17252D] font-bold">
-                AI-NATIVE<br />
-                PRODUCT STUDIO &<br />
-                ENGINEERING LAB
+
+              {/* TOP RIGHT — Company Description */}
+              <div className="flex flex-col text-left select-none max-w-md pt-0.5 sm:pt-1">
+                <span className="font-mono text-[11px] uppercase text-[#55788D] tracking-[0.2em] mb-3.5 font-medium block">
+                  WHAT WE ARE
+                </span>
+                <h2 className="font-sans text-[20px] sm:text-[23px] md:text-[25px] lg:text-[27px] xl:text-[28px] font-semibold text-[#22282C] leading-[1.2] tracking-[-0.025em]">
+                  AI-NATIVE<br />
+                  PRODUCT STUDIO &<br />
+                  ENGINEERING LAB
+                </h2>
               </div>
             </div>
 
-            {/* Bottom Copyright */}
-            <div className="font-mono text-[9px] tracking-[0.15em] text-[#55788D] uppercase leading-relaxed">
-              © 2026 // GL-X<br />
-              ALL RIGHTS RESERVED
+            {/* ═══ LOWER ZONE: Scroll Direction (Left) + Copyright (Right) ═══ */}
+            <div className="w-full flex flex-row justify-between items-end mb-4 sm:mb-6 lg:mb-8">
+              {/* LOWER LEFT — Scroll Direction (Thin outlined vertical pill + label) */}
+              <div className="flex items-center gap-3.5 select-none">
+                <div 
+                  className="w-[37px] h-[54px] rounded-full border border-[#22282C]/55 bg-transparent flex items-center justify-center flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  <svg 
+                    width="13" 
+                    height="17" 
+                    viewBox="0 0 14 18" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="stroke-[#22282C]"
+                  >
+                    <path 
+                      d="M7 1V16M7 16L1.5 10.5M7 16L12.5 10.5" 
+                      stroke="currentColor" 
+                      strokeWidth="1.5" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="font-mono text-[11px] font-semibold text-[#22282C] leading-[1.35] tracking-[0.15em] uppercase">
+                  SCROLL TO<br />
+                  EXPLORE
+                </div>
+              </div>
+
+              {/* LOWER RIGHT — Copyright */}
+              <div className="font-mono text-[11px] text-[#353A3E] uppercase tracking-[0.16em] text-right leading-[1.55] select-none">
+                © 2026 // GX-L<br />
+                ALL RIGHTS RESERVED
+              </div>
             </div>
           </div>
 
-          {/* Right Column: Rotated Vertical Brand Title pinned perfectly to the right */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[90px] h-[75dvh] flex items-center justify-center pointer-events-none z-10 overflow-hidden">
+          {/* Bottom part: Monumental Brand Title spanning ~94–96% of card width */}
+          <div className="w-full px-2 sm:px-3 md:px-4 flex justify-center items-end select-none pointer-events-none z-10 translate-y-[3%] overflow-visible">
             <h1
-              id="hero-studio-heading-mobile"
-              className="font-sans rotate-[-90deg] whitespace-nowrap text-[#17252D] font-black select-none tracking-[-0.04em] leading-none"
-              style={{
-                fontSize: "clamp(2.2rem, 8vh, 4.2rem)",
-              }}
+              id="hero-studio-heading-desktop"
+              className="font-sans font-black select-none tracking-[-0.05em] text-[#22282C] leading-[0.8] whitespace-nowrap inline-block origin-bottom scale-y-[1.35]"
+              style={{ fontSize: "17.0vw" }}
             >
               <FlickerText text={brandName} delays={flickerDelays} />
             </h1>
           </div>
+        </section>
+      </div>
 
-        </div>
-      </section>
+      {/* ═══ SWISS-EDITORIAL MOBILE HERO CARD (Visible only on mobile) ═══ */}
+      {/* Outer canvas wrapper: hero card extends under the mobile header (pt-3, 12px side gutters) */}
+      <div className="block sm:hidden w-full pt-3 px-3 pb-3 select-none">
+        <section
+          className="w-full relative overflow-hidden px-5 pt-24 pb-6 min-h-[calc(100dvh-24px)] flex items-center bg-[#A2BECC] rounded-[16px]"
+          aria-labelledby="hero-studio-heading-mobile"
+        >
+          <div className="relative w-full flex flex-row items-center justify-between z-10">
+            
+            {/* Left Column: Asymmetric Editorial Stack */}
+            <div className="flex flex-col justify-between h-[64dvh] text-left pr-4 max-w-[calc(100%-90px)] select-none z-10">
+              {/* TOP LEFT — Introduction */}
+              <div className="font-sans font-[780] text-[#22282C] leading-[1.04] tracking-[-0.04em] text-[25px]">
+                <div>YOU ARE</div>
+                <div>NOW</div>
+                <div className="pl-3">ENTERING.</div>
+              </div>
+
+              {/* TOP RIGHT / MIDDLE — Company Description */}
+              <div className="flex flex-col text-left">
+                <span className="font-mono text-[10px] uppercase text-[#55788D] tracking-[0.2em] mb-2 font-medium">
+                  WHAT WE ARE
+                </span>
+                <h2 className="font-sans text-[16px] font-semibold text-[#22282C] leading-[1.22] tracking-tight">
+                  AI-NATIVE<br />
+                  PRODUCT STUDIO &<br />
+                  ENGINEERING LAB
+                </h2>
+              </div>
+
+              {/* LOWER LEFT — Scroll Direction (Pill + Text) */}
+              <div className="flex items-center gap-2.5">
+                <div 
+                  className="w-[32px] h-[48px] rounded-full border border-[#22282C]/55 bg-transparent flex items-center justify-center flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  <svg 
+                    width="11" 
+                    height="15" 
+                    viewBox="0 0 14 18" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="stroke-[#22282C]"
+                  >
+                    <path 
+                      d="M7 1V16M7 16L1.5 10.5M7 16L12.5 10.5" 
+                      stroke="currentColor" 
+                      strokeWidth="1.5" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div className="font-mono text-[10px] font-semibold text-[#22282C] leading-tight tracking-[0.14em] uppercase">
+                  SCROLL TO<br />
+                  EXPLORE
+                </div>
+              </div>
+
+              {/* LOWER RIGHT / BOTTOM — Copyright */}
+              <div className="font-mono text-[10px] text-[#353A3E] uppercase tracking-[0.15em] leading-relaxed">
+                © 2026 // GX-L<br />
+                ALL RIGHTS RESERVED
+              </div>
+            </div>
+
+            {/* Right Column: Rotated Vertical Brand Title pinned to the right */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[86px] h-[72dvh] flex items-center justify-center pointer-events-none z-10 overflow-hidden">
+              <h1
+                id="hero-studio-heading-mobile"
+                className="font-sans rotate-[-90deg] whitespace-nowrap text-[#22282C] font-black select-none tracking-[-0.04em] leading-none"
+                style={{
+                  fontSize: "clamp(2.3rem, 7.8vh, 4.2rem)",
+                }}
+              >
+                <FlickerText text={brandName} delays={flickerDelays} />
+              </h1>
+            </div>
+
+          </div>
+        </section>
+      </div>
     </>
   );
 }

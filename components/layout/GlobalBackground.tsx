@@ -7,7 +7,7 @@ import { isEmployeeWorkspaceRoute } from "@/lib/routes/application-shell";
 /**
  * GlobalBackground Component
  * 
- * Primary background: #A2BECC (Air Force Blue) for all public marketing routes.
+ * Outer canvas: #F5F4F0 (Warm Neutral) for public marketing routes.
  * Dark background for authenticated /admin and /client dashboards.
  */
 export function GlobalBackground() {
@@ -21,8 +21,8 @@ export function GlobalBackground() {
     return <div className="fixed inset-0 -z-50 bg-[#050810] pointer-events-none" />;
   }
 
-  // Air Force Blue primary canvas for all public marketing pages
+  // Warm Neutral #F5F4F0 outer canvas for public marketing pages
   return (
-    <div className="fixed inset-0 -z-50 pointer-events-none bg-[#A2BECC] overflow-hidden" />
+    <div className="fixed inset-0 -z-50 pointer-events-none bg-[#F5F4F0] overflow-hidden" />
   );
 }

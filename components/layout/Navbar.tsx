@@ -12,8 +12,6 @@ import { getAbsoluteUrl } from "@/lib/subdomains";
 import { getEditorialArticle } from "@/components/marketing/editorialArticleData";
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isWordmarkHidden, setIsWordmarkHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -27,32 +25,11 @@ export function Navbar() {
   const pathname = usePathname();
   const isDemoRoute = Boolean(pathname?.includes("/demos"));
   const isBlog = Boolean(pathname?.includes("/blog"));
-  const isContact = Boolean(pathname?.includes("/contact"));
   const blogSlug = pathname?.split("/").filter(Boolean).at(-1) || "";
   const editorialArticle = getEditorialArticle(blogSlug);
   const isLightThemePage = Boolean(isBlog && editorialArticle?.theme === "light");
   const isDarkBlog = Boolean(isBlog && editorialArticle?.theme === "dark");
   const isAirForceTheme = !isDarkBlog && !isLightThemePage;
-
-  // Dynamic Theme Colors
-  const navBg = isAirForceTheme
-    ? "bg-transparent border-b-0 shadow-none"
-    : isScrolled
-    ? (isLightThemePage
-        ? "bg-[#FBF9F5] border-b border-[#E5E2DC] shadow-sm"
-        : "bg-black md:bg-black/90 border-b border-white/10 shadow-sm")
-    : (isLightThemePage
-        ? "bg-[#FBF9F5] border-b border-transparent"
-        : "bg-black/80 border-b border-transparent");
-
-  const logoColor1 = isAirForceTheme ? "text-[#17252D]" : (isLightThemePage ? "text-[#1A1A1A]" : "text-white");
-  const logoColor2 = isAirForceTheme ? "text-[#55788D]" : (isLightThemePage ? "text-[#111111]" : (isBlog ? "text-white" : "text-[#C0F0FB]"));
-
-  const buttonOverrideClass = isAirForceTheme
-    ? "border-[#55788D]/40 text-[#17252D] hover:bg-[#E5EFF4]"
-    : isLightThemePage
-    ? "border-[#E5E2DC] text-[#1A1A1A] hover:bg-neutral-100"
-    : "border-white/10 text-white hover:bg-white/5 bg-transparent";
 
   const topLinks = [
     { name: "Home", href: "/" },
@@ -65,43 +42,14 @@ export function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
+  const centerNavLinks = [
+    { name: "Portfolio", href: "/portfolio" },
+    { name: "R&D", href: "/research" },
+    { name: "FAQ", href: "/faq" },
+  ];
+
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    let ticking = false;
-    let prevScrolled = typeof window !== "undefined" ? window.scrollY > 20 : false;
-    let prevHidden = typeof window !== "undefined" ? window.scrollY > 120 : false;
-
-    if (prevScrolled) setIsScrolled(true);
-    if (prevHidden) setIsWordmarkHidden(true);
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          const nextScrolled = scrollY > 20;
-          const nextHidden = scrollY > 120;
-
-          if (nextScrolled !== prevScrolled) {
-            setIsScrolled(nextScrolled);
-            prevScrolled = nextScrolled;
-          }
-          if (nextHidden !== prevHidden) {
-            setIsWordmarkHidden(nextHidden);
-            prevHidden = nextHidden;
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, []);
 
   useEffect(() => {
@@ -119,89 +67,117 @@ export function Navbar() {
 
   return (
     <>
-      <nav
+      {/* ═══ GROWXLABS PUBLIC FLOATING INSET HEADER (EARTH OPAQUE SURFACE) ═══ */}
+      <header
+        role="banner"
         className={cn(
-          "fixed top-0 w-full z-50 transition-all duration-500 py-3.5 sm:py-5",
-          navBg
+          "fixed z-50 select-none",
+          "top-3 left-3 right-3 md:top-4 md:left-6 md:right-6",
+          "h-[68px] sm:h-[70px] md:h-[80px]",
+          "bg-[#E9E7E1] rounded-[16px]",
+          "border border-[#22282C]/[0.08]",
+          "shadow-none"
         )}
       >
-        <div className="w-full px-4 sm:px-6 md:px-10">
-          <div className="flex justify-between items-center relative h-9 sm:h-10">
-            {/* Left Hamburger Button (Standard on Desktop & Mobile) */}
-            <div className="flex items-center z-10">
+        <div className="w-full h-full px-3.5 sm:px-5 md:px-6 lg:px-10">
+          <div className="flex justify-between items-center relative w-full h-full">
+            
+            {/* ═══ ZONE 1: LEFT — Hamburger Icon → Brand Wordmark ═══ */}
+            <div className="flex items-center gap-3 sm:gap-4 md:gap-4 lg:gap-6 z-10">
+              {/* Hamburger Menu Button (Minimum 44x44px clickable touch target) */}
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
-                className={cn(
-                  "transition-colors p-1.5 -ml-1.5 cursor-pointer bg-transparent border-0 rounded-md",
-                  isAirForceTheme ? "text-[#17252D] hover:text-[#55788D]" : (isLightThemePage ? "text-[#1A1A1A] hover:text-[#111111]" : "text-zinc-400 hover:text-white")
-                )}
+                className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] -ml-2 p-2 cursor-pointer bg-transparent border-0 rounded-none text-[#22282C] hover:text-[#353A3E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22282C]"
                 aria-label="Open menu"
               >
-                <GrowxMenu size={22} className="sm:w-6 sm:h-6" />
+                <GrowxMenu size={24} className="w-5 h-5 sm:w-6 sm:h-6 stroke-[#22282C]" />
               </button>
-            </div>
 
-            {/* Centered Serif Logo (True absolute mathematical center on all devices; smoothly fades out on scroll >120px to prevent overlapping content) */}
-            <div 
-              className={cn(
-                "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center transition-[opacity,visibility] duration-[250ms] ease-out motion-reduce:transition-none",
-                isWordmarkHidden 
-                  ? "opacity-0 pointer-events-none invisible" 
-                  : "opacity-100 pointer-events-auto visible"
-              )}
-              aria-hidden={isWordmarkHidden ? "true" : undefined}
-            >
+              {/* Brand Wordmark */}
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/");
                 const isExternal = resolvedHref.startsWith("http") && isMounted;
+                const linkContent = (
+                  <div className="flex items-center text-[17px] sm:text-[18px] md:text-[19px] lg:text-[23px] font-serif font-bold tracking-tight whitespace-nowrap">
+                    <span className="text-[#22282C]">GrowxLabs</span>
+                    <span className="text-[#353A3E]">.tech</span>
+                  </div>
+                );
+
                 if (isExternal) {
                   return (
                     <a 
                       href={resolvedHref} 
-                      className="flex items-center group notranslate" 
+                      className="flex items-center group notranslate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22282C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#E9E7E1]" 
                       translate="no" 
                       aria-label="GrowxLabs home"
-                      tabIndex={isWordmarkHidden ? -1 : 0}
                     >
-                      <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
-                        <span className={logoColor1}>GrowxLabs</span>
-                        <span className={logoColor2}>.tech</span>
-                      </div>
+                      {linkContent}
                     </a>
                   );
                 }
                 return (
                   <Link 
                     href="/" 
-                    className="flex items-center group notranslate" 
+                    className="flex items-center group notranslate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22282C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#E9E7E1]" 
                     translate="no" 
                     aria-label="GrowxLabs home"
-                    tabIndex={isWordmarkHidden ? -1 : 0}
                   >
-                    <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
-                      <span className={logoColor1}>GrowxLabs</span>
-                      <span className={logoColor2}>.tech</span>
-                    </div>
+                    {linkContent}
                   </Link>
                 );
               })()}
             </div>
 
-            {/* Right: Contact Button */}
-            <div className="flex items-center justify-end z-10">
+            {/* ═══ ZONE 2: CENTER — Navigation (Portfolio · R&D · FAQ) ═══ */}
+            <nav 
+              aria-label="Primary Navigation"
+              className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-4 lg:gap-8 z-10"
+            >
+              {centerNavLinks.map((link) => {
+                const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
+                const resolvedHref = isMounted ? getAbsoluteUrl(link.href) : link.href;
+                const isExternal = isMounted && resolvedHref.startsWith("http");
+                
+                const linkClasses = cn(
+                  "relative py-1 text-[13px] lg:text-[14px] font-sans transition-colors duration-200 select-none",
+                  isActive
+                    ? "text-[#22282C] font-semibold after:scale-x-100"
+                    : "text-[#22282C]/85 hover:text-[#22282C] font-medium after:scale-x-0 hover:after:scale-x-100",
+                  "after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1.5px] after:bg-[#22282C] after:origin-left after:transition-transform after:duration-200 after:ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22282C] focus-visible:ring-offset-2 focus-visible:ring-offset-[#E9E7E1]"
+                );
+
+                if (isExternal) {
+                  return (
+                    <a key={link.href} href={resolvedHref} className={linkClasses}>
+                      {link.name}
+                    </a>
+                  );
+                }
+                return (
+                  <Link key={link.href} href={link.href} className={linkClasses}>
+                    {link.name}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* ═══ ZONE 3: RIGHT — Contact Button ═══ */}
+            <div className="flex items-center z-10">
               <LiquidButton
                 href="/contact"
                 variant="primary"
                 size="default"
-                className="h-8 sm:h-9 md:h-[44px] px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm"
+                className="h-[36px] sm:h-[42px] md:h-[46px] px-3.5 sm:px-5 md:px-6 min-w-0 text-xs md:text-[13px] font-semibold !rounded-none rounded-none"
               >
                 Contact
               </LiquidButton>
             </div>
+
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Menu Drawer Overlay (slides in from left) */}
       <div
