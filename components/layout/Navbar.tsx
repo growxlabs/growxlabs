@@ -13,6 +13,7 @@ import { getEditorialArticle } from "@/components/marketing/editorialArticleData
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isWordmarkHidden, setIsWordmarkHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -70,10 +71,27 @@ export function Navbar() {
 
   useEffect(() => {
     let ticking = false;
+    let prevScrolled = typeof window !== "undefined" ? window.scrollY > 20 : false;
+    let prevHidden = typeof window !== "undefined" ? window.scrollY > 120 : false;
+
+    if (prevScrolled) setIsScrolled(true);
+    if (prevHidden) setIsWordmarkHidden(true);
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 20);
+          const scrollY = window.scrollY;
+          const nextScrolled = scrollY > 20;
+          const nextHidden = scrollY > 120;
+
+          if (nextScrolled !== prevScrolled) {
+            setIsScrolled(nextScrolled);
+            prevScrolled = nextScrolled;
+          }
+          if (nextHidden !== prevHidden) {
+            setIsWordmarkHidden(nextHidden);
+            prevHidden = nextHidden;
+          }
           ticking = false;
         });
         ticking = true;
@@ -124,14 +142,28 @@ export function Navbar() {
               </button>
             </div>
 
-            {/* Centered Serif Logo (True absolute mathematical center on all devices) */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-auto flex items-center justify-center">
+            {/* Centered Serif Logo (True absolute mathematical center on all devices; smoothly fades out on scroll >120px to prevent overlapping content) */}
+            <div 
+              className={cn(
+                "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center transition-[opacity,visibility] duration-[250ms] ease-out motion-reduce:transition-none",
+                isWordmarkHidden 
+                  ? "opacity-0 pointer-events-none invisible" 
+                  : "opacity-100 pointer-events-auto visible"
+              )}
+              aria-hidden={isWordmarkHidden ? "true" : undefined}
+            >
               {(() => {
                 const resolvedHref = getAbsoluteUrl("/");
                 const isExternal = resolvedHref.startsWith("http") && isMounted;
                 if (isExternal) {
                   return (
-                    <a href={resolvedHref} className="flex items-center group notranslate" translate="no" aria-label="GrowxLabs home">
+                    <a 
+                      href={resolvedHref} 
+                      className="flex items-center group notranslate" 
+                      translate="no" 
+                      aria-label="GrowxLabs home"
+                      tabIndex={isWordmarkHidden ? -1 : 0}
+                    >
                       <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
                         <span className={logoColor1}>GrowxLabs</span>
                         <span className={logoColor2}>.tech</span>
@@ -140,7 +172,13 @@ export function Navbar() {
                   );
                 }
                 return (
-                  <Link href="/" className="flex items-center group notranslate" translate="no" aria-label="GrowxLabs home">
+                  <Link 
+                    href="/" 
+                    className="flex items-center group notranslate" 
+                    translate="no" 
+                    aria-label="GrowxLabs home"
+                    tabIndex={isWordmarkHidden ? -1 : 0}
+                  >
                     <div className="flex items-center text-base sm:text-xl md:text-2xl font-serif font-bold tracking-tight transition-transform group-hover:scale-[1.02] duration-300 whitespace-nowrap">
                       <span className={logoColor1}>GrowxLabs</span>
                       <span className={logoColor2}>.tech</span>
