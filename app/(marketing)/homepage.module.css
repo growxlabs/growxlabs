@@ -6,8 +6,34 @@
 
 .homepage > div[aria-label="GROWX Interactive Presentation"],
 .homepage :global(.growx-sticky-viewport) {
-  background-color: #A2BECC;
+  background-color: #F5F4F0;
   background-image: none;
+}
+
+/* GROWX canvas trial: inset only the paint, preserving all content geometry. */
+.homepage :global(.growx-sticky-viewport) {
+  isolation: isolate;
+  border-bottom-color: transparent;
+}
+
+.homepage :global(.growx-sticky-viewport)::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  z-index: -1;
+  border-radius: 16px;
+  background: #D8E5D2;
+  pointer-events: none;
+}
+
+.homepage :global(.growx-sticky-viewport) h2 {
+  color: #22282C;
+}
+
+@media (min-width: 768px) {
+  .homepage :global(.growx-sticky-viewport)::before {
+    inset: 24px;
+  }
 }
 
 /* Ensure strong contrast for headings and top chrome */

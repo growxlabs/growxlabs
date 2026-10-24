@@ -3,6 +3,65 @@
 import { FlickerText } from "@/components/marketing/FlickerText";
 
 /**
+ * Refined hand-drawn sketched scroll indicator icon.
+ * Features a subtle engineering sketch vertical oval with a single confident pen stroke,
+ * housing a hand-sketched downward arrow with balanced proportions and crisp stroke clarity.
+ */
+function SketchedScrollIcon({
+  width = 37,
+  height = 54,
+  className = ""
+}: {
+  width?: number;
+  height?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 39 57"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Hand-sketched engineering oval: single confident pen stroke with subtle natural overlap at top-left */}
+      <path
+        d="M 17.5 3.2 C 28 2.5, 36.2 10.2, 36 21 C 35.8 31.5, 36.2 39.2, 34 46.5 C 31.2 53.5, 24 55, 18.8 54.8 C 10.5 54.5, 2.8 48.8, 3 37.2 C 3.2 25, 2.5 16.5, 5.2 10.2 C 8 3.8, 15.5 2.6, 20.5 3"
+        stroke="#22282C"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Downward arrow shaft: crisp vertical line with subtle organic draw */}
+      <path
+        d="M 19.2 16.2 C 19.1 23.5, 19.4 31.5, 19.3 40"
+        stroke="#22282C"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Sketched arrowhead: left barb */}
+      <path
+        d="M 13.5 33.8 C 15.2 36, 17.2 38.2, 19.3 40"
+        stroke="#22282C"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Sketched arrowhead: right barb */}
+      <path
+        d="M 19.3 40 C 21.2 38, 23.4 35.8, 25 34.2"
+        stroke="#22282C"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
  * Minimal home hero: features standard desktop view and the vertical
  * Swiss-design editorial mobile view inspired by 360labs.dev.
  * Includes individual letter neon flicker-in animation delays with
@@ -62,29 +121,37 @@ export function HeroSection() {
 
             {/* ═══ LOWER ZONE: Scroll Direction (Left) + Copyright (Right) ═══ */}
             <div className="w-full flex flex-row justify-between items-end mb-4 sm:mb-6 lg:mb-8">
-              {/* LOWER LEFT — Scroll Direction (Thin outlined vertical pill + label) */}
-              <div className="flex items-center gap-3.5 select-none">
-                <div 
-                  className="w-[37px] h-[54px] rounded-full border border-[#22282C]/55 bg-transparent flex items-center justify-center flex-shrink-0"
-                  aria-hidden="true"
-                >
-                  <svg 
-                    width="13" 
-                    height="17" 
-                    viewBox="0 0 14 18" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="stroke-[#22282C]"
-                  >
-                    <path 
-                      d="M7 1V16M7 16L1.5 10.5M7 16L12.5 10.5" 
-                      stroke="currentColor" 
-                      strokeWidth="1.5" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+              {/* LOWER LEFT — Scroll Direction (Sketched vertical pill + label) */}
+              <div 
+                className="flex items-center gap-3.5 select-none cursor-pointer group"
+                onClick={() => {
+                  const target = document.getElementById("ai-platforms-label");
+                  if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.scrollBy({ top: window.innerHeight * 0.9, behavior: "smooth" });
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    const target = document.getElementById("ai-platforms-label");
+                    if (target) {
+                      target.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.scrollBy({ top: window.innerHeight * 0.9, behavior: "smooth" });
+                    }
+                  }
+                }}
+                aria-label="Scroll to explore"
+              >
+                <SketchedScrollIcon
+                  width={37}
+                  height={54}
+                  className="flex-shrink-0 transition-opacity duration-200 group-hover:opacity-75 motion-reduce:transition-none"
+                />
                 <div className="font-mono text-[11px] font-semibold text-[#22282C] leading-[1.35] tracking-[0.15em] uppercase">
                   SCROLL TO<br />
                   EXPLORE
@@ -142,29 +209,37 @@ export function HeroSection() {
                 </h2>
               </div>
 
-              {/* LOWER LEFT — Scroll Direction (Pill + Text) */}
-              <div className="flex items-center gap-2.5">
-                <div 
-                  className="w-[32px] h-[48px] rounded-full border border-[#22282C]/55 bg-transparent flex items-center justify-center flex-shrink-0"
-                  aria-hidden="true"
-                >
-                  <svg 
-                    width="11" 
-                    height="15" 
-                    viewBox="0 0 14 18" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="stroke-[#22282C]"
-                  >
-                    <path 
-                      d="M7 1V16M7 16L1.5 10.5M7 16L12.5 10.5" 
-                      stroke="currentColor" 
-                      strokeWidth="1.5" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+              {/* LOWER LEFT — Scroll Direction (Sketched vertical pill + label) */}
+              <div 
+                className="flex items-center gap-2.5 cursor-pointer group"
+                onClick={() => {
+                  const target = document.getElementById("ai-platforms-label");
+                  if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" });
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    const target = document.getElementById("ai-platforms-label");
+                    if (target) {
+                      target.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" });
+                    }
+                  }
+                }}
+                aria-label="Scroll to explore"
+              >
+                <SketchedScrollIcon
+                  width={32}
+                  height={48}
+                  className="flex-shrink-0 transition-opacity duration-200 group-hover:opacity-75 motion-reduce:transition-none"
+                />
                 <div className="font-mono text-[10px] font-semibold text-[#22282C] leading-tight tracking-[0.14em] uppercase">
                   SCROLL TO<br />
                   EXPLORE

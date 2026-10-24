@@ -4,6 +4,7 @@ import { projects } from "@/lib/data/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { AEOBlock } from "@/components/marketing/AEOBlock";
 import { HeroSection } from "@/components/marketing/HeroSection";
+import { AiTechnologyStrip } from "@/components/marketing/AiTechnologyStrip";
 import { GrowxScrollSection } from "@/components/marketing/GrowxScrollSection";
 import { PracticeAreasSection } from "@/components/marketing/PracticeAreasSection";
 import { ValuePropositions } from "@/components/marketing/ValuePropositions";
@@ -100,6 +101,8 @@ export default function Home() {
 
       {/* ═══ HERO (studio + brand only) ═══ */}
       <HeroSection />
+
+      <AiTechnologyStrip />
 
       {/* ═══ Continuous Sticky Scroll-Driven Section (G, R, O, W, X) ═══ */}
       <GrowxScrollSection />

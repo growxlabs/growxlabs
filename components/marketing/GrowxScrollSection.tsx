@@ -9,6 +9,144 @@ interface ContentState {
   statement: React.ReactNode;
 }
 
+/**
+ * Editorial Engineering Sketch Geometry — Upper-Right Frame
+ * 
+ * Open right-angle frame with technical drafting overshoot, 
+ * secondary 1px construction margin guide, and precision alignment ticks.
+ * Subtle human draftsperson's stroke curvature.
+ */
+function GrowxUpperRightSketch({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 144 144"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+      role="presentation"
+      className={className}
+    >
+      {/* Primary corner strokes (2px, open right-angle frame with drafting overshoot) */}
+      <path
+        d="M 14 22.3 C 50 21.8, 88 22.2, 134 22.1"
+        stroke="#31453E"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeOpacity="0.72"
+      />
+      <path
+        d="M 122.2 8 C 121.8 44, 122.3 84, 121.9 128"
+        stroke="#31453E"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeOpacity="0.72"
+      />
+
+      {/* Secondary construction guidelines (1px, subtle drafting margin offset) */}
+      <path
+        d="M 46 30.2 C 72 30.0, 96 30.1, 114 30.0"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.36"
+      />
+      <path
+        d="M 114 30.0 C 114.1 48, 113.9 74, 114.1 98"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.36"
+      />
+
+      {/* Engineering precision registration / drafting ticks (1px) */}
+      <path
+        d="M 118 72.1 L 126.4 71.9"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.42"
+      />
+      <path
+        d="M 72 18 L 72.2 26.4"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.42"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Editorial Engineering Sketch Geometry — Lower-Left Frame
+ * 
+ * Inverted complementary right-angle frame with technical drafting overshoot, 
+ * secondary 1px construction margin guide, and precision alignment ticks.
+ * Sits in the lower-left negative space without encroaching on text or navigation.
+ */
+function GrowxLowerLeftSketch({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 144 144"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+      role="presentation"
+      className={className}
+    >
+      {/* Primary corner strokes (2px, inverted complementary corner with drafting overshoot) */}
+      <path
+        d="M 10 121.9 C 48 122.2, 88 121.8, 130 122.1"
+        stroke="#31453E"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeOpacity="0.72"
+      />
+      <path
+        d="M 21.8 136 C 22.2 98, 21.8 58, 22.1 16"
+        stroke="#31453E"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeOpacity="0.72"
+      />
+
+      {/* Secondary construction guidelines (1px, subtle drafting margin offset) */}
+      <path
+        d="M 30 114.0 C 50 114.1, 74 113.9, 98 114.0"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.36"
+      />
+      <path
+        d="M 30 114.0 C 29.9 96, 30.1 68, 29.9 46"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.36"
+      />
+
+      {/* Engineering precision registration / drafting ticks (1px) */}
+      <path
+        d="M 17.6 72.1 L 26 71.9"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.42"
+      />
+      <path
+        d="M 72 117.6 L 72.2 126"
+        stroke="#31453E"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeOpacity="0.42"
+      />
+    </svg>
+  );
+}
+
 const CONTENT_STATES: ContentState[] = [
   {
     letter: "G",
@@ -154,6 +292,12 @@ export function GrowxScrollSection() {
           height: "100dvh",
         }}
       >
+        {/* ═══ Editorial Engineering Sketch Geometry: Upper-Right Frame ═══ */}
+        <GrowxUpperRightSketch className="absolute pointer-events-none select-none z-10 top-24 right-5 sm:top-28 sm:right-8 md:top-32 md:right-12 xl:top-36 xl:right-16 2xl:right-24 w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 xl:w-28 xl:h-28" />
+
+        {/* ═══ Editorial Engineering Sketch Geometry: Lower-Left Complementary Frame ═══ */}
+        {/* On mobile (< 640px), hidden to preserve generous breathing room above mobile footer navigation */}
+        <GrowxLowerLeftSketch className="hidden sm:block absolute pointer-events-none select-none z-10 bottom-20 left-8 md:bottom-20 md:left-12 xl:bottom-24 xl:left-16 2xl:left-24 sm:w-16 sm:h-16 md:w-24 md:h-24 xl:w-28 xl:h-28" />
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto w-full relative flex items-center justify-center min-h-[300px]">
           
           {/* ═══ Left Vertical Indicators (Desktop) ═══ */}
@@ -163,43 +307,20 @@ export function GrowxScrollSection() {
           >
             {CONTENT_STATES.map((item, idx) => {
               const isActive = activeIndex === idx;
-              const isX = item.letter === "X";
-
-              if (isActive) {
-                if (isX) {
-                  return (
-                    <button
-                      key={item.letter}
-                      type="button"
-                      onClick={() => scrollToState(idx)}
-                      aria-current="step"
-                      className="px-1.5 py-0.5 rounded bg-[#E5EFF4]/50 text-[#17252D] border border-[#55788D]/30 font-bold transition-all duration-300 cursor-pointer"
-                    >
-                      [X]
-                    </button>
-                  );
-                }
-                return (
-                  <button
-                    key={item.letter}
-                    type="button"
-                    onClick={() => scrollToState(idx)}
-                    aria-current="step"
-                    className="text-[#17252D] font-bold transition-all duration-300 cursor-pointer"
-                  >
-                    [{item.letter}]
-                  </button>
-                );
-              }
-
               return (
                 <button
                   key={item.letter}
                   type="button"
                   onClick={() => scrollToState(idx)}
-                  className="text-[#304956] transition-colors duration-200 hover:text-[#17252D] cursor-pointer"
+                  aria-current={isActive ? "step" : undefined}
+                  className={cn(
+                    "grid h-7 w-7 shrink-0 place-items-center border leading-none transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4",
+                    isActive
+                      ? "border-[#22282C] text-[#22282C] font-bold"
+                      : "border-transparent text-[#466778] hover:text-[#22282C]"
+                  )}
                 >
-                  {item.letter}
+                  {isActive ? `[${item.letter}]` : item.letter}
                 </button>
               );
             })}
