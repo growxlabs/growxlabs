@@ -50,10 +50,10 @@ export function LiquidButton({
   }[size];
 
   const variantStyles = {
-    // Primary dark button: Midnight #22282C -> Earth #E9E7E1 fill rising from bottom
+    // Primary dark button: Midnight #22282C -> Air Force Blue #A2BECC fill rising from bottom
     primary: {
       container: "bg-[#22282C] text-[#FFFFFF] border border-[#22282C]",
-      fill: "bg-[#E9E7E1]",
+      fill: "bg-[#A2BECC]",
       hoverText: "group-hover:text-[#22282C] group-focus-visible:text-[#22282C] group-active:text-[#22282C]",
     },
     // Secondary light button: Earth #E9E7E1 -> Midnight #22282C fill rising from bottom
@@ -69,7 +69,7 @@ export function LiquidButton({
     },
     ghost: {
       container: "bg-transparent text-[#22282C] border border-transparent",
-      fill: "bg-[#E9E7E1]",
+      fill: "bg-[#A2BECC]",
       hoverText: "group-hover:text-[#22282C] group-focus-visible:text-[#22282C] group-active:text-[#22282C]",
     },
   }[normalizedVariant];
