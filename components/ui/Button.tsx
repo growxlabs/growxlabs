@@ -58,4 +58,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
-export { LiquidButton } from "./LiquidButton";
+export { LiquidButton, FluidButton } from "./LiquidButton";

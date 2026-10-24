@@ -2,7 +2,7 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { locales, Link } from "@/navigation";
 import { DynamicSchema } from "@/components/marketing/DynamicSchema";
 import { PageHero } from "@/components/marketing/PageHero";
-import { Button } from "@/components/ui/Button";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import { cn } from "@/lib/utils";
 
 function PixelGrid({ 
@@ -302,34 +302,17 @@ export default function ServicesPage() {
                         ))}
                       </div>
 
-                      {/* Action Button */}
+                      {/* Action Button with Fluid Fill Hover */}
                       <div className="pt-6 mt-auto">
-                        {service.buttonHref.startsWith("http") ? (
-                          <a 
-                            href={service.buttonHref} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="w-full block"
-                          >
-                            <Button
-                              className={cn(
-                                "w-full uppercase font-semibold text-[12px] tracking-[0.04em] py-3.5 sm:py-4 transition-all duration-200 shadow-sm !rounded-none rounded-none cursor-pointer border border-[#22282C] bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] active:scale-[0.99]"
-                              )}
-                            >
-                              {service.buttonText}
-                            </Button>
-                          </a>
-                        ) : (
-                          <Link href={service.buttonHref} className="w-full block">
-                            <Button
-                              className={cn(
-                                "w-full uppercase font-semibold text-[12px] tracking-[0.04em] py-3.5 sm:py-4 transition-all duration-200 shadow-sm !rounded-none rounded-none cursor-pointer border border-[#22282C] bg-[#22282C] text-[#FFFFFF] hover:bg-[#343D43] active:scale-[0.99]"
-                              )}
-                            >
-                              {service.buttonText}
-                            </Button>
-                          </Link>
-                        )}
+                        <LiquidButton
+                          href={service.buttonHref}
+                          target={service.buttonHref.startsWith("http") ? "_blank" : undefined}
+                          rel={service.buttonHref.startsWith("http") ? "noopener noreferrer" : undefined}
+                          className="w-full"
+                          size="default"
+                        >
+                          {service.buttonText}
+                        </LiquidButton>
                       </div>
                     </div>
                   </div>

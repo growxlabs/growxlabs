@@ -72,81 +72,26 @@ export interface ProductCatalogTemplateProps {
 // ══════════════════════════════════════════════════════════════════
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const isExternal = product.isExternal ?? (product.href.startsWith("http://") || product.href.startsWith("https://"));
-
-  const displayCategory = product.categoryTag?.startsWith("//")
-    ? product.categoryTag
-    : product.categoryTag
-    ? `// ${product.categoryTag.toUpperCase()}`
-    : "// AI-NATIVE PLATFORM";
-
-  const cardBody = (
-    <>
-      {/* Left Column: Clean Platform Surface Screenshot */}
-      <div className="w-full flex items-center justify-center p-4 sm:p-6 md:p-8">
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#FAFCFD] border border-[#D5E2E9] shadow-sm">
-          {product.image && (
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Right Column: Editorial Product Details (Full Right Side) */}
-      <div className="w-full flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 space-y-4">
-        <div>
-          <span className="font-mono text-xs font-bold text-[#55788D] tracking-[0.2em] uppercase block mb-3">
-            {displayCategory}
-          </span>
-          <h3 className="text-3xl sm:text-4xl font-black text-[#17252D] leading-tight font-sans tracking-tight">
-            {product.name}
-          </h3>
-        </div>
-        <p className="text-base text-[#17252D]/85 leading-relaxed font-sans font-medium">
-          {product.description}
-        </p>
-        <div className="pt-4 border-t border-[#D5E2E9] flex items-center justify-between">
-          <span className="inline-flex items-center gap-2 font-mono text-xs font-bold text-[#17252D] group-hover:text-[#55788D] transition-colors uppercase tracking-wider">
-            <span>{product.ctaText ?? (isExternal ? "Launch Platform" : "Explore Platform")}</span>
-            <GrowxArrowRight size={14} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-          </span>
-          {product.status && (
-            <span className="font-mono text-[11px] font-bold text-[#55788D] tracking-wider uppercase">
-              {product.status}
-            </span>
-          )}
-        </div>
-      </div>
-    </>
-  );
-
-  const containerClasses = cn(
-    "group grid grid-cols-1 md:grid-cols-2 items-center overflow-hidden border border-[#D5E2E9] rounded-2xl bg-[#F4F8FA] text-[#17252D] shadow-[0_2px_8px_rgba(23,37,45,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(23,37,45,0.08)] cursor-pointer no-underline w-full",
-    className
-  );
-
-  if (isExternal) {
-    return (
-      <a
-        href={product.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={containerClasses}
-      >
-        {cardBody}
-      </a>
-    );
-  }
-
+  const isExternal = product.isExternal ?? /^https?:/.test(product.href);
   return (
-    <Link href={product.href} className={containerClasses}>
-      {cardBody}
-    </Link>
+    <article className={cn("flex h-full min-w-0 flex-col rounded-[6px] border border-[#17252D]/10 bg-[#B5CBD6] p-4 sm:p-5 text-[#17252D]", className)}>
+      <Link href={product.href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} className="block rounded-[4px] bg-[#8EAAB9] p-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#17252D]">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-[3px] bg-[#0B1013]">
+          {product.image && <Image src={product.image} alt={product.name} fill sizes="(max-width: 767px) 100vw, 50vw" className="object-cover object-top" />}
+        </div>
+      </Link>
+      <div className="mt-6">
+        {product.categoryTag && <p className="mb-2 font-mono text-[10px] tracking-wider uppercase text-[#3E5B6B]">{product.categoryTag}</p>}
+        <h3 className="font-sans text-[18px] sm:text-[20px] font-medium leading-7 tracking-[-0.015em]">{product.name}</h3>
+        <p className="mt-1 font-sans text-[15px] sm:text-[16px] leading-6 text-[#3E5B6B]">{product.description}</p>
+      </div>
+      <div className="mt-auto pt-10 sm:pt-12 flex flex-wrap items-center gap-4">
+        <LiquidButton href={product.href} target={isExternal ? "_blank" : undefined} rel={isExternal ? "noopener noreferrer" : undefined} variant="primary" size="default">
+          {product.ctaText ?? (isExternal ? "Launch Platform" : "Explore Platform")}
+        </LiquidButton>
+        {product.status && <span className="font-mono text-[10px] tracking-wider text-[#3E5B6B] uppercase">{product.status}</span>}
+      </div>
+    </article>
   );
 }
 
@@ -223,7 +168,7 @@ export function ProductCatalogTemplate({
 
           {/* Product Cards Stack */}
           {items.length > 0 ? (
-            <div className="space-y-8 sm:space-y-10 lg:space-y-12 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
               {items.map((product) => (
                 <ProductCard key={product.name} product={product} />
               ))}

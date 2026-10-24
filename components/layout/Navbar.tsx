@@ -152,28 +152,14 @@ export function Navbar() {
 
             {/* Right: Contact Button */}
             <div className="flex items-center justify-end z-10">
-              {(() => {
-                const resolvedHref = "/contact";
-                if (isAirForceTheme) {
-                  return (
-                    <Link
-                      href={resolvedHref}
-                      className="inline-flex items-center justify-center font-bold rounded-md transition-all duration-200 cursor-pointer select-none active:scale-[0.98] h-8 sm:h-9 md:h-10 px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm bg-[#17252D] text-[#FFFFFF] hover:bg-[#233844] shadow-sm"
-                    >
-                      Contact
-                    </Link>
-                  );
-                }
-                return (
-                  <LiquidButton
-                    href={resolvedHref}
-                    variant={isLightThemePage ? "dark" : "cyan"}
-                    size="default"
-                  >
-                    Contact
-                  </LiquidButton>
-                );
-              })()}
+              <LiquidButton
+                href="/contact"
+                variant="primary"
+                size="default"
+                className="h-8 sm:h-9 md:h-[44px] px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm"
+              >
+                Contact
+              </LiquidButton>
             </div>
           </div>
         </div>

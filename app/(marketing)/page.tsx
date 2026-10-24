@@ -11,6 +11,7 @@ import { AccordionFAQ } from "@/components/marketing/AccordionFAQ";
 import { AnimatedSection } from "@/components/marketing/AnimatedSection";
 import Script from "next/script";
 import { ArrowUpRight } from "@/components/icons";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import styles from "./homepage.module.css";
 
 export async function generateMetadata() {
@@ -137,13 +138,15 @@ export default function Home() {
           </AnimatedSection>
 
           <AnimatedSection delay={0.2} className="text-center mt-14 sm:mt-16">
-            <Link 
+            <LiquidButton 
               href="/faq" 
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md border border-[#55788D]/30 bg-[#E5EFF4] hover:bg-[#A2BECC] text-[#17252D] text-[12px] font-bold tracking-[0.15em] uppercase transition-all shadow-sm active:scale-95 group font-mono"
+              variant="primary"
+              size="default"
+              icon={<ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+              iconPosition="right"
             >
-              <span>View All FAQs</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-[#55788D] group-hover:text-[#17252D] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </Link>
+              View All FAQs
+            </LiquidButton>
           </AnimatedSection>
         </div>
       </section>

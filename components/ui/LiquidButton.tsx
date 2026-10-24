@@ -10,8 +10,8 @@ export interface LiquidButtonProps {
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   type?: "button" | "submit" | "reset";
   className?: string;
-  variant?: "cyan" | "dark" | "white" | "airforce";
-  size?: "default" | "sm" | "lg";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "cyan" | "dark" | "white" | "airforce";
+  size?: "default" | "sm" | "lg" | "full";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
   target?: string;
@@ -25,7 +25,7 @@ export function LiquidButton({
   onClick,
   type = "button",
   className,
-  variant = "cyan",
+  variant = "primary",
   size = "default",
   icon,
   iconPosition = "left",
@@ -33,60 +33,83 @@ export function LiquidButton({
   rel,
   disabled = false,
 }: LiquidButtonProps) {
+  // Normalize variants: primary (default) or secondary
+  const normalizedVariant = (() => {
+    if (variant === "secondary" || variant === "white") return "secondary";
+    if (variant === "outline") return "outline";
+    if (variant === "ghost") return "ghost";
+    // "primary", "airforce", "dark", "cyan" map to primary dark button
+    return "primary";
+  })();
+
   const sizeClasses = {
-    sm: "h-7 sm:h-8 px-3 sm:px-4 text-[11px] sm:text-xs",
-    default: "h-8 sm:h-9 md:h-10 px-3.5 sm:px-5 md:px-6 min-w-0 sm:min-w-[96px] md:min-w-[108px] text-xs sm:text-xs md:text-sm",
-    lg: "h-10 sm:h-11 md:h-12 min-w-0 sm:min-w-[120px] px-5 sm:px-7 md:px-8 text-xs sm:text-sm md:text-base",
+    sm: "h-[36px] px-4 text-xs",
+    default: "h-[44px] px-6 text-[13px]",
+    lg: "h-[48px] px-8 text-sm",
+    full: "w-full h-[44px] px-6 text-[13px]",
   }[size];
 
   const variantStyles = {
-    cyan: {
-      border: "border border-[#C0F0FB] text-[#C0F0FB]",
-      wave: "bg-[#C0F0FB]",
-      hoverText: "group-hover:text-black group-active:text-black",
+    // Primary dark button: Midnight #22282C -> Earth #E9E7E1 fill rising from bottom
+    primary: {
+      container: "bg-[#22282C] text-[#FFFFFF] border border-[#22282C]",
+      fill: "bg-[#E9E7E1]",
+      hoverText: "group-hover:text-[#22282C] group-focus-visible:text-[#22282C] group-active:text-[#22282C]",
     },
-    dark: {
-      border: "border border-[#111111]/25 text-[#111111]",
-      wave: "bg-[#111111]",
-      hoverText: "group-hover:text-[#F7F4EE] group-active:text-[#F7F4EE]",
+    // Secondary light button: Earth #E9E7E1 -> Midnight #22282C fill rising from bottom
+    secondary: {
+      container: "bg-[#E9E7E1] text-[#22282C] border border-[#22282C]",
+      fill: "bg-[#22282C]",
+      hoverText: "group-hover:text-[#FFFFFF] group-focus-visible:text-[#FFFFFF] group-active:text-[#FFFFFF]",
     },
-    white: {
-      border: "border border-white/30 text-white",
-      wave: "bg-white",
-      hoverText: "group-hover:text-black group-active:text-black",
+    outline: {
+      container: "bg-transparent text-[#22282C] border border-[#22282C]",
+      fill: "bg-[#22282C]",
+      hoverText: "group-hover:text-[#FFFFFF] group-focus-visible:text-[#FFFFFF] group-active:text-[#FFFFFF]",
     },
-    airforce: {
-      border: "border border-[#55788D]/40 bg-[#E5EFF4] text-[#17252D]",
-      wave: "bg-[#17252D]",
-      hoverText: "group-hover:text-[#FAFCFD] group-active:text-[#FAFCFD]",
+    ghost: {
+      container: "bg-transparent text-[#22282C] border border-transparent",
+      fill: "bg-[#E9E7E1]",
+      hoverText: "group-hover:text-[#22282C] group-focus-visible:text-[#22282C] group-active:text-[#22282C]",
     },
-  }[variant];
+  }[normalizedVariant];
 
   const innerContent = (
     <span
       className={cn(
-        "group relative inline-flex items-center justify-center font-bold rounded-md overflow-hidden transition-all duration-300 shadow-sm cursor-pointer select-none active:scale-[0.98]",
+        "group relative inline-flex items-center justify-center font-sans font-semibold tracking-[0.04em] uppercase overflow-hidden select-none cursor-pointer box-border !rounded-none rounded-none transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22282C] focus-visible:ring-offset-2",
         sizeClasses,
-        variantStyles.border,
+        variantStyles.container,
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none",
         className
       )}
     >
-      {/* Liquid / Water Wave Fill Layer */}
+      {/* 
+        Exact Motion Specification:
+        - Direction: Bottom -> Top
+        - Duration: 700ms
+        - Easing: cubic-bezier(0.22, 1, 0.36, 1)
+        - Fill technique: CSS transform translateY(100%) -> translateY(0)
+        - Reverse: Smooth downward retreat
+        - Border radius: 0px (sharp rectangular)
+      */}
       <span
+        aria-hidden="true"
         className={cn(
-          "absolute -bottom-[20%] -left-[15%] -right-[15%] h-[140%] translate-y-[120%] group-hover:translate-y-0 group-active:translate-y-0 transition-transform duration-500 rounded-t-[100%] pointer-events-none",
-          variantStyles.wave
+          "pointer-events-none absolute inset-0 w-full h-full translate-y-full transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-focus-visible:translate-y-0 group-active:translate-y-0 motion-reduce:transition-none",
+          variantStyles.fill
         )}
-        style={{ transitionTimingFunction: "cubic-bezier(0.33, 1, 0.68, 1)" }}
       />
+
+      {/* Button Text & Icons Layer */}
       <span
         className={cn(
-          "relative z-10 inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-colors duration-300 font-bold",
+          "relative z-10 inline-flex items-center justify-center gap-2 transition-colors duration-[500ms] ease-out font-sans font-semibold",
           variantStyles.hoverText
         )}
       >
         {icon && iconPosition === "left" && <span className="inline-flex shrink-0">{icon}</span>}
-        <span>{children}</span>
+        <span className="whitespace-nowrap">{children}</span>
         {icon && iconPosition === "right" && <span className="inline-flex shrink-0">{icon}</span>}
       </span>
     </span>
@@ -101,7 +124,7 @@ export function LiquidButton({
           onClick={onClick}
           target={target}
           rel={rel}
-          className="inline-block no-underline"
+          className={cn("inline-block no-underline select-none", className?.includes("w-full") && "w-full block")}
         >
           {innerContent}
         </a>
@@ -111,7 +134,7 @@ export function LiquidButton({
       <Link
         href={href}
         onClick={onClick}
-        className="inline-block no-underline"
+        className={cn("inline-block no-underline select-none", className?.includes("w-full") && "w-full block")}
       >
         {innerContent}
       </Link>
@@ -124,11 +147,14 @@ export function LiquidButton({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={cn(
-        "inline-block bg-transparent border-0 p-0",
-        disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : "cursor-pointer"
+        "inline-block bg-transparent border-0 p-0 select-none",
+        className?.includes("w-full") && "w-full block",
+        disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"
       )}
     >
       {innerContent}
     </button>
   );
 }
+
+export { LiquidButton as FluidButton };

@@ -1,4 +1,4 @@
-import { GrowxArrowRight } from "@/components/icons";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 import { CaseStudy } from "@/lib/data/projects";
 import Image from "next/image";
 import { Link } from "@/navigation";
@@ -22,73 +22,24 @@ export function ProjectCard({ slug, title, description, image, tag, category, su
     : null;
 
   return (
-    <div className="group h-full relative">
-      <div className="h-full flex flex-col bg-[#F4F8FA] text-[#17252D] border border-[#D5E2E9] rounded-2xl shadow-[0_2px_8px_rgba(23,37,45,0.04)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_8px_24px_rgba(23,37,45,0.08)] will-change-transform overflow-hidden">
-        
-        {/* Clickable Image Preview */}
-        <div className="p-4 sm:p-5">
-          <Link
-            href={`/portfolio/${slug}`}
-            className="relative aspect-[16/10] w-full overflow-hidden block rounded-xl bg-[#FAFCFD] border border-[#D5E2E9] shadow-sm"
-          >
-            {image ? (
-              <Image
-                src={image}
-                alt={`${title} project preview`}
-                fill
-                className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full bg-[#E5EFF4]" />
-            )}
-          </Link>
+    <article className="h-full min-w-0 flex flex-col rounded-[6px] border border-[#17252D]/10 bg-[#B5CBD6] p-4 sm:p-5 text-[#17252D]">
+      <Link href={`/portfolio/${slug}`} className="block rounded-[4px] bg-[#8EAAB9] p-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#17252D]">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-[3px] bg-[#0B1013]">
+          {image && <Image src={image} alt={`${title} project preview`} fill className="object-cover object-top" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />}
         </div>
-
-        {/* Card Body */}
-        <div className="px-6 pb-6 pt-1 md:px-8 md:pb-8 md:pt-1 flex flex-col flex-1 justify-between space-y-5">
-          <div className="space-y-2">
-            {displayCategory && (
-              <span className="font-mono text-[11px] font-bold text-[#55788D] tracking-wider uppercase block">
-                {displayCategory}
-              </span>
-            )}
-            <Link href={`/portfolio/${slug}`} className="block">
-              <h3 className="text-2xl md:text-[26px] font-black text-[#17252D] tracking-tight leading-tight">
-                {title}
-              </h3>
-            </Link>
-            {subtitle && (
-              <p className="font-mono text-xs font-bold text-[#55788D]">
-                {subtitle}
-              </p>
-            )}
-            {client && (
-              <p className="font-mono text-[11px] text-[#55788D]">
-                {client}
-              </p>
-            )}
-            
-            {description ? (
-              <p className="text-[#17252D]/85 text-sm md:text-[15px] leading-relaxed pt-1 font-medium font-sans">
-                {description}
-              </p>
-            ) : null}
-          </div>
-
-          {/* Action Link: View Project → */}
-          <div className="pt-4 border-t border-[#D5E2E9]">
-            <Link
-              href={`/portfolio/${slug}`}
-              className="inline-flex items-center gap-2 text-sm font-bold text-[#17252D] hover:text-[#55788D] transition-colors"
-            >
-              <span>View Project</span>
-              <GrowxArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+      </Link>
+      <div className="mt-6">
+        {displayCategory && <p className="mb-2 font-mono text-[10px] tracking-wider uppercase text-[#3E5B6B]">{displayCategory}</p>}
+        <Link href={`/portfolio/${slug}`} className="block">
+          <h3 className="font-sans text-[18px] sm:text-[20px] font-medium leading-7 tracking-[-0.015em]">{title}</h3>
+        </Link>
+        {subtitle && <p className="mt-1 text-sm font-sans text-[#3E5B6B]">{subtitle}</p>}
+        {client && <p className="mt-1 text-xs font-sans text-[#3E5B6B]">{client}</p>}
+        {description && <p className="mt-3 text-[15px] sm:text-[16px] leading-6 font-sans text-[#3E5B6B]">{description}</p>}
       </div>
-    </div>
+      <div className="mt-auto pt-10 sm:pt-12">
+        <LiquidButton href={`/portfolio/${slug}`} variant="primary" size="default">View Project</LiquidButton>
+      </div>
+    </article>
   );
 }

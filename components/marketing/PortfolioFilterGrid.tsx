@@ -31,10 +31,10 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("all")}
           className={cn(
-            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "h-[40px] px-5 sm:px-6 rounded-none font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-semibold transition-all duration-300 cursor-pointer select-none border border-[#22282C]",
             activeFilter === "all"
-              ? "bg-[#A2BECC] text-[#17252D] border border-[#55788D]/30 shadow-sm"
-              : "bg-[#E5EFF4] text-[#55788D] border border-[#D5E2E9] hover:border-[#55788D]/40 hover:text-[#17252D]"
+              ? "bg-[#22282C] text-[#FFFFFF] shadow-sm"
+              : "bg-[#E9E7E1] text-[#22282C] hover:bg-[#22282C] hover:text-[#FFFFFF]"
           )}
         >
           <span>Show All</span>
@@ -44,10 +44,10 @@ export function PortfolioFilterGrid({ projects }: PortfolioFilterGridProps) {
           type="button"
           onClick={() => setActiveFilter("software")}
           className={cn(
-            "px-5 py-2 sm:px-6 sm:py-2.5 rounded-lg font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-bold transition-all duration-300 cursor-pointer select-none",
+            "h-[40px] px-5 sm:px-6 rounded-none font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase font-semibold transition-all duration-300 cursor-pointer select-none border border-[#22282C]",
             activeFilter === "software"
-              ? "bg-[#A2BECC] text-[#17252D] border border-[#55788D]/30 shadow-sm"
-              : "bg-[#E5EFF4] text-[#55788D] border border-[#D5E2E9] hover:border-[#55788D]/40 hover:text-[#17252D]"
+              ? "bg-[#22282C] text-[#FFFFFF] shadow-sm"
+              : "bg-[#E9E7E1] text-[#22282C] hover:bg-[#22282C] hover:text-[#FFFFFF]"
           )}
         >
           <span>Software</span>
