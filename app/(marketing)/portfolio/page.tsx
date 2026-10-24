@@ -15,7 +15,7 @@ export async function generateMetadata() {
 
 export default function PortfolioPage() {
   return (
-    <div className="flex flex-col bg-[#A2BECC] text-[#17252D] min-h-screen">
+    <div className="flex flex-col bg-[#F5F4F0] text-[#17252D] min-h-screen">
       <DynamicSchema
         graph={[
           {
@@ -38,10 +38,12 @@ export default function PortfolioPage() {
         tagline="REAL SYSTEMS"
       />
 
-      <div className="w-full bg-[#A2BECC] px-6 md:px-10 xl:px-16 2xl:px-24 pb-32 border-t border-[#D5E2E9] pt-12">
-        <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
-          <PortfolioFilterGrid projects={projects} />
-        </div>
+      <div className="w-full px-3 sm:px-4 md:px-6 pb-8">
+        <section className="w-full bg-[#A2BECC] rounded-[16px] px-6 md:px-10 xl:px-16 2xl:px-24 py-16">
+          <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
+            <PortfolioFilterGrid projects={projects} />
+          </div>
+        </section>
       </div>
     </div>
   );

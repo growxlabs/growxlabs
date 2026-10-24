@@ -93,7 +93,7 @@ export function CaseStudyTemplate({
   const overviewParagraphs = Array.isArray(overview) ? overview : [overview];
 
   return (
-    <div className="w-full bg-[#A2BECC] text-[#17252D] min-h-screen">
+    <div className="w-full bg-[#F5F4F0] text-[#17252D] min-h-screen">
       {/* ═══ PAGE HERO (Full Viewport Swiss Architectural Cover) ═══ */}
       <PageHero
         title={title}

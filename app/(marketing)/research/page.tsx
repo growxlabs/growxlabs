@@ -217,7 +217,7 @@ function RoboticsLabCard() {
 
 export default function ResearchPage() {
   return (
-    <div className="flex flex-col bg-[#A2BECC] text-[#17252D] min-h-screen">
+    <div className="flex flex-col bg-[#F5F4F0] text-[#17252D] min-h-screen">
       <PageHero
         title="Research"
         viewingText="R&D"
@@ -225,25 +225,27 @@ export default function ResearchPage() {
         tagline="AI & ROBOTICS LABS"
       />
 
-      <div className="w-full bg-[#A2BECC] px-6 md:px-10 xl:px-16 2xl:px-24 pb-36 border-t border-[#D5E2E9] pt-12">
-        <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto space-y-12">
+      <div className="w-full px-3 sm:px-4 md:px-6 pb-8">
+        <section className="w-full bg-[#A2BECC] rounded-[16px] px-6 md:px-10 xl:px-16 2xl:px-24 py-16">
+          <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto space-y-12">
 
-          {/* Research & Development Cards Section (Matching Portfolio Frame) */}
-          <div className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between pb-4 border-b border-[#D5E2E9]">
-              <h2 className="font-mono text-xs sm:text-sm font-bold text-[#17252D] tracking-[0.2em] uppercase">
-                Research & Development
-              </h2>
-              <span className="font-mono text-xs text-[#55788D] tracking-widest">[ 01 ]</span>
+            {/* Research & Development Cards Section (Matching Portfolio Frame) */}
+            <div className="space-y-6 sm:space-y-8">
+              <div className="flex items-center justify-between pb-4 border-b border-[#D5E2E9]">
+                <h2 className="font-mono text-xs sm:text-sm font-bold text-[#17252D] tracking-[0.2em] uppercase">
+                  Research & Development
+                </h2>
+                <span className="font-mono text-xs text-[#55788D] tracking-widest">[ 01 ]</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
+                <AiLabCard />
+                <RoboticsLabCard />
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 max-w-5xl">
-              <AiLabCard />
-              <RoboticsLabCard />
-            </div>
           </div>
-
-        </div>
+        </section>
       </div>
     </div>
   );

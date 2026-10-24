@@ -136,8 +136,7 @@ export default function CoursesPage() {
   };
 
   return (
-    <>
-
+    <div className="flex flex-col bg-[#F5F4F0] min-h-screen">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       
       <PageHero
@@ -148,13 +147,14 @@ export default function CoursesPage() {
       />
 
       {catalogLoading ? (
-        <div className="min-h-[50vh] bg-[#A2BECC] flex flex-col items-center justify-center pt-20">
+        <div className="min-h-[50vh] bg-[#F5F4F0] flex flex-col items-center justify-center pt-20">
           <Loader2 className="w-8 h-8 text-[#55788D] animate-spin mb-4" />
           <p className="text-[#55788D] font-mono tracking-widest text-[10px] uppercase">Retrieving catalog...</p>
         </div>
       ) : (
-        <div className="pb-32 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#A2BECC] font-sans overflow-x-hidden border-t border-[#D5E2E9] pt-16">
-          <div className="max-w-[1600px] mx-auto">
+        <div className="w-full px-3 sm:px-4 md:px-6 pb-8">
+          <div className="pb-32 px-6 md:px-10 xl:px-16 2xl:px-24 w-full bg-[#A2BECC] rounded-[16px] font-sans overflow-x-hidden pt-16">
+            <div className="max-w-[1600px] mx-auto">
 
         {/* Featured Course Track — AI Engineering */}
         <section className="mb-24">
@@ -548,10 +548,11 @@ export default function CoursesPage() {
             ))}
           </div>
         </section>
+          </div>
         </div>
       </div>
     )}
-  </>
-);
+    </div>
+  );
 }
 

@@ -207,7 +207,7 @@ export async function generateMetadata() {
 
 export default function ServicesPage() {
   return (
-    <div className="flex flex-col bg-[#A2BECC] text-[#22282C] min-h-screen">
+    <div className="flex flex-col bg-[#F5F4F0] text-[#22282C] min-h-screen">
       <DynamicSchema
         graph={[
           {
@@ -236,12 +236,13 @@ export default function ServicesPage() {
         tagline="SOFTWARE & PRODUCT ENGINEERING"
       />
 
-      <div className="pb-16 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-[#9DB7C4] pt-20 sm:pt-24 bg-[#A2BECC]">
-        <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
+      <div className="w-full px-3 sm:px-4 md:px-6 pb-6 md:pb-8">
+        <section className="w-full bg-[#F5F5F5] rounded-[16px] p-6 sm:p-8 md:p-12">
+          <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto">
 
-          {/* Services Cards Grid */}
-          <Reveal y={40}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-0">
+            {/* Services Cards Grid */}
+            <Reveal y={40}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-0">
               {services.map((service) => (
                 <div
                   key={service.title}
@@ -321,7 +322,8 @@ export default function ServicesPage() {
             </div>
           </Reveal>
         </div>
-      </div>
+      </section>
     </div>
-  );
+  </div>
+);
 }

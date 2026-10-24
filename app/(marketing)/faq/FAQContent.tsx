@@ -27,7 +27,7 @@ export function FAQContent({ categories }: FAQContentProps) {
   };
 
   return (
-    <>
+    <div className="flex flex-col bg-[#F5F4F0] min-h-screen">
       <PageHero
         title="FAQ'S"
         viewingText="FAQ'S"
@@ -35,10 +35,11 @@ export function FAQContent({ categories }: FAQContentProps) {
         tagline="QUESTIONS"
       />
 
-      <div className="pb-24 px-6 md:px-10 xl:px-16 2xl:px-24 w-full border-t border-[#D5E2E9] pt-16 bg-[#A2BECC]">
-        <div className="max-w-[1400px] mx-auto">
-          {categories.map((category, idx) => (
-            <section key={category.id} className="mb-24 last:mb-32">
+      <div className="w-full bg-[#F5F4F0] px-3 sm:px-4 md:px-6 pb-8">
+        <div className="w-full bg-[#A2BECC] rounded-[16px] px-6 md:px-10 xl:px-16 2xl:px-24 py-16">
+          <div className="max-w-[1400px] mx-auto">
+            {categories.map((category, idx) => (
+              <section key={category.id} className="mb-24 last:mb-32">
               {/* Category header */}
               <div className="border-b border-[#D5E2E9] pb-6 mb-12">
                 <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#55788D] uppercase block mb-2">
@@ -93,6 +94,7 @@ export function FAQContent({ categories }: FAQContentProps) {
           ))}
         </div>
       </div>
-    </>
-  );
+    </div>
+  </div>
+);
 }

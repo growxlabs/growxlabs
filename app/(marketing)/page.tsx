@@ -111,7 +111,8 @@ export default function Home() {
       <PracticeAreasSection />
 
       {/* ═══ FAQ — Accordion (Cohesive Dark Charcoal Surface: #30373B) ═══ */}
-      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-[#30373B] border-t border-[#566166]">
+      <div className="w-full bg-[#F5F4F0] px-3 sm:px-4 md:px-[26px] select-none">
+        <section aria-labelledby="faq-title" className="w-full rounded-t-[16px] rounded-b-none bg-[#30373B] overflow-hidden py-20 sm:py-28 px-6 md:px-10 xl:px-16 2xl:px-24">
         <div className="max-w-[1400px] mx-auto">
           {/* Eyebrow Bar: { FAQ } — { GROWXLABS } — SUPPORT */}
           <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-[#B6C2C7] uppercase mb-12 sm:mb-16 select-none">
@@ -153,6 +154,7 @@ export default function Home() {
           </AnimatedSection>
         </div>
       </section>
+      </div>
 
       {/* ═══ AEO — Hidden, SEO only ═══ */}
       <section className="sr-only" aria-hidden="true">

@@ -170,7 +170,7 @@ export function ProductCatalogTemplate({
   const displayMetaRight = metaRight || `${items.length} PROPRIETARY PLATFORMS ACTIVE`;
 
   return (
-    <div className="flex flex-col bg-[#A2BECC] text-[#17252D] min-h-screen">
+    <div className="flex flex-col bg-[#F5F4F0] text-[#17252D] min-h-screen">
       {/* ═══ PAGE HERO (Full Viewport Architectural Cover) ═══ */}
       <PageHero
         title={title}
