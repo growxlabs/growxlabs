@@ -57,7 +57,7 @@ function ProjectPreview({ slides, label }: { slides: Preview[]; label: string })
       className="overflow-hidden rounded-[14px] bg-[#B9CFDA] p-2 sm:p-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#17252D]"
     >
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[10px] bg-[#0B1013]">
-        <div className="work-card-image relative w-full h-full">
+        <div className="work-image-frame relative w-full h-full">
           {slides.map((slide, slideIndex) => (
             <div
               key={slide.src}
@@ -84,16 +84,16 @@ export function PracticeAreasSection() {
     <div className="w-full px-3 sm:px-4 md:px-6 mb-4 sm:mb-6 select-none">
       <section
         aria-labelledby="practice-areas-title"
-        className="w-full rounded-[16px] bg-[#F5F5F5] px-5 py-12 sm:px-8 sm:py-16 lg:px-12"
+        className="w-full rounded-[16px] bg-[#F5F5F5] px-4 py-8 sm:px-6 sm:py-12 md:px-8 md:py-16 lg:px-12"
       >
         <div className="mx-auto max-w-7xl">
           <h2
             id="practice-areas-title"
-            className="mb-7 font-sans text-2xl font-medium tracking-[-0.035em] text-[#17252D] sm:mb-9 sm:text-3xl"
+            className="mb-5 sm:mb-7 font-sans text-xl sm:text-2xl font-medium tracking-[-0.035em] text-[#17252D] md:mb-9 md:text-3xl"
           >
             Our work
           </h2>
-          <div className="grid grid-cols-1 gap-8 sm:gap-10 md:grid-cols-2 md:gap-5 items-stretch">
+          <div className="grid grid-cols-1 gap-7 sm:gap-9 md:grid-cols-2 md:gap-5 items-stretch">
             {[
               {
                 title: "Portfolio",
@@ -114,24 +114,24 @@ export function PracticeAreasSection() {
             ].map(({ title, description, href, action, slides }) => (
               <article
                 key={title}
-                className="work-card group flex min-w-0 flex-col h-full cursor-default"
+                className="work-item group flex min-w-0 flex-col h-full cursor-default"
               >
                 {/* 1. Large 16:9 Image Surface with Powder-Blue #B9CFDA Framing */}
                 <div className="w-full">
                   <ProjectPreview slides={slides} label={title} />
                 </div>
 
-                {/* 2. Overlapping White Information Panel (Equal height, 28px desktop padding, bottom-aligned CTA, soft elevation on hover) */}
-                <div className="work-card-panel relative z-10 -mt-5 sm:-mt-6 md:-mt-8 w-[92%] mx-auto flex-1 flex flex-col justify-between rounded-[12px] border border-[#E6E6E6] bg-white p-6 sm:p-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+                {/* 2. Overlapping White Information Panel (Balanced mobile overlap, equal heights, refined padding) */}
+                <div className="work-info-panel relative z-10 -mt-4 sm:-mt-6 md:-mt-8 w-[94%] sm:w-[92%] mx-auto flex-1 flex flex-col justify-between rounded-[12px] border border-[#E6E6E6] bg-white p-5 sm:p-6 md:p-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
                   <div className="flex flex-col">
-                    <h3 className="font-sans text-[21px] sm:text-[24px] font-semibold leading-[1.2] tracking-[-0.025em] text-[#22282C]">
+                    <h3 className="font-sans text-[20px] sm:text-[22px] md:text-[24px] font-semibold leading-[1.2] tracking-[-0.025em] text-[#22282C]">
                       {title}
                     </h3>
-                    <p className="mt-3 font-sans text-[15px] sm:text-[16px] font-normal leading-[1.55] tracking-normal text-[#4B555A]">
+                    <p className="mt-2.5 sm:mt-3 font-sans text-[14px] sm:text-[15px] md:text-[16px] font-normal leading-[1.5] sm:leading-[1.55] tracking-normal text-[#4B555A]">
                       {description}
                     </p>
                   </div>
-                  <div className="mt-auto pt-7">
+                  <div className="mt-auto pt-5 sm:pt-6 md:pt-7">
                     <LiquidButton href={href} variant="primary" size="default">
                       {action}
                     </LiquidButton>

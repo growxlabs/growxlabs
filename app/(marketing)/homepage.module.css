@@ -1,7 +1,7 @@
 /* Warm Neutral public page canvas */
 .homepage {
-  background-color: #F5F4F0;
-  background-image: none;
+  background-color: #F5F4F0 !important;
+  background-image: none !important;
 }
 
 .homepage :global(.growx-sticky-viewport) {
@@ -24,36 +24,44 @@
 }
 
 /* ═══ Portfolio & Research Work Card Hover Interaction ═══ */
-.homepage :global(.work-card) {
+.homepage :global(.work-item) {
   overflow: visible !important;
   transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-.homepage :global(.work-card-image) {
+.homepage :global(.work-image-frame) {
   transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
-.homepage :global(.work-card-panel) {
+.homepage :global(.work-info-panel) {
+  background-color: #FFFFFF !important;
   transition: box-shadow 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .homepage :global(.work-card:hover) {
+  .homepage :global(.work-item:hover) {
     transform: translateY(-8px) !important;
   }
 
-  .homepage :global(.work-card:hover .work-card-image) {
+  .homepage :global(.work-item:hover .work-image-frame) {
     transform: scale(1.015) !important;
   }
 
-  .homepage :global(.work-card:hover .work-card-panel) {
+  .homepage :global(.work-item:hover .work-info-panel) {
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.07) !important;
   }
 }
 
+@media (max-width: 768px) {
+  .homepage :global(.work-info-panel) {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E6E6E6 !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .homepage :global(.work-card),
-  .homepage :global(.work-card-image) {
+  .homepage :global(.work-item),
+  .homepage :global(.work-image-frame) {
     transition: none !important;
     transform: none !important;
   }
