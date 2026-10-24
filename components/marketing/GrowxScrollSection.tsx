@@ -10,16 +10,16 @@ interface ContentState {
 }
 
 /**
- * Editorial Engineering Sketch Geometry — Upper-Right Frame
+ * Single Editorial Sketch L-Shape Accent (Top-Right Only)
  * 
- * Open right-angle frame with technical drafting overshoot, 
- * secondary 1px construction margin guide, and precision alignment ticks.
- * Subtle human draftsperson's stroke curvature.
+ * Clean hand-drawn editorial marker in dark charcoal (#22282C).
+ * Minimalist L-form with two primary strokes (horizontal and vertical)
+ * and a single subtle sketch overdraw line. No clutter, no technical diagram lines.
  */
-function GrowxUpperRightSketch({ className }: { className?: string }) {
+function GrowxEditorialCorner({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 144 144"
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -27,121 +27,29 @@ function GrowxUpperRightSketch({ className }: { className?: string }) {
       role="presentation"
       className={className}
     >
-      {/* Primary corner strokes (2px, open right-angle frame with drafting overshoot) */}
+      {/* Primary Horizontal Stroke (Dark Charcoal, 2.5px, subtle organic hand-drafted path) */}
       <path
-        d="M 14 22.3 C 50 21.8, 88 22.2, 134 22.1"
-        stroke="#31453E"
-        strokeWidth="2"
+        d="M 14 20 C 38 19.6, 62 20.3, 86 19.8"
+        stroke="#22282C"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeOpacity="0.72"
       />
+      {/* Primary Vertical Stroke (Dark Charcoal, 2.5px, natural drafting overshoot at corner) */}
       <path
-        d="M 122.2 8 C 121.8 44, 122.3 84, 121.9 128"
-        stroke="#31453E"
-        strokeWidth="2"
+        d="M 82 14 C 81.8 38, 82.2 62, 81.9 86"
+        stroke="#22282C"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeOpacity="0.72"
       />
-
-      {/* Secondary construction guidelines (1px, subtle drafting margin offset) */}
+      {/* Subtle Sketch Imperfection: single light companion overdraw trace */}
       <path
-        d="M 46 30.2 C 72 30.0, 96 30.1, 114 30.0"
-        stroke="#31453E"
-        strokeWidth="1"
+        d="M 44 24 C 60 23.8, 74 24.1, 84 24.0"
+        stroke="#22282C"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeOpacity="0.36"
-      />
-      <path
-        d="M 114 30.0 C 114.1 48, 113.9 74, 114.1 98"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.36"
-      />
-
-      {/* Engineering precision registration / drafting ticks (1px) */}
-      <path
-        d="M 118 72.1 L 126.4 71.9"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.42"
-      />
-      <path
-        d="M 72 18 L 72.2 26.4"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.42"
-      />
-    </svg>
-  );
-}
-
-/**
- * Editorial Engineering Sketch Geometry — Lower-Left Frame
- * 
- * Inverted complementary right-angle frame with technical drafting overshoot, 
- * secondary 1px construction margin guide, and precision alignment ticks.
- * Sits in the lower-left negative space without encroaching on text or navigation.
- */
-function GrowxLowerLeftSketch({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 144 144"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      role="presentation"
-      className={className}
-    >
-      {/* Primary corner strokes (2px, inverted complementary corner with drafting overshoot) */}
-      <path
-        d="M 10 121.9 C 48 122.2, 88 121.8, 130 122.1"
-        stroke="#31453E"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeOpacity="0.72"
-      />
-      <path
-        d="M 21.8 136 C 22.2 98, 21.8 58, 22.1 16"
-        stroke="#31453E"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeOpacity="0.72"
-      />
-
-      {/* Secondary construction guidelines (1px, subtle drafting margin offset) */}
-      <path
-        d="M 30 114.0 C 50 114.1, 74 113.9, 98 114.0"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.36"
-      />
-      <path
-        d="M 30 114.0 C 29.9 96, 30.1 68, 29.9 46"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.36"
-      />
-
-      {/* Engineering precision registration / drafting ticks (1px) */}
-      <path
-        d="M 17.6 72.1 L 26 71.9"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.42"
-      />
-      <path
-        d="M 72 117.6 L 72.2 126"
-        stroke="#31453E"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeOpacity="0.42"
       />
     </svg>
   );
@@ -199,52 +107,52 @@ const CONTENT_STATES: ContentState[] = [
 /**
  * GrowxScrollSection
  * 
- * Replaces the 5 individual full-screen G/R/O/W/X sections with one
- * continuous, sticky, scroll-driven viewport having five distinct content states.
+ * One stable, pinned Sage Green card. Five editorial statements. One continuous scroll interaction.
  * 
- * Features directional optical crossfading (Apple-style cubic-bezier easing),
- * zero layout shift, seamless bi-directional scroll momentum, and buttery transitions.
+ * The card stays visually stationary beneath the floating site header while
+ * scrolling through G → R → O → W → X. Outgoing and incoming text crossfade
+ * cleanly with zero layout shift and release naturally at the end of the sequence.
  */
 export function GrowxScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const updateScrollState = useCallback(() => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const totalScrollDistance = containerRef.current.offsetHeight - window.innerHeight;
+    if (!containerRef.current || !cardRef.current) return;
+    const container = containerRef.current;
+    const card = cardRef.current;
+    const rect = container.getBoundingClientRect();
 
-    if (totalScrollDistance <= 0) return;
+    // Read computed sticky top directly from CSS (dynamic & breakpoint-aware)
+    const computedTop = parseFloat(window.getComputedStyle(card).top) || 116;
+    const pinDistance = container.offsetHeight - card.offsetHeight;
 
-    if (rect.top > 0) {
-      setActiveIndex(0);
-      return;
-    }
+    if (pinDistance <= 0) return;
 
-    const scrolled = -rect.top;
-    const progress = Math.min(Math.max(scrolled / totalScrollDistance, 0), 1);
+    const scrolledInPin = computedTop - rect.top;
+    const progress = Math.min(Math.max(scrolledInPin / pinDistance, 0), 1);
 
-    // 5 equidistant states with balanced thresholds for smooth pacing:
+    // 5 clean equidistant slices across the pinned scroll track
     let nextIndex = 0;
-    if (progress < 0.18) nextIndex = 0;
-    else if (progress < 0.38) nextIndex = 1;
-    else if (progress < 0.58) nextIndex = 2;
-    else if (progress < 0.78) nextIndex = 3;
+    if (progress < 0.20) nextIndex = 0;
+    else if (progress < 0.40) nextIndex = 1;
+    else if (progress < 0.60) nextIndex = 2;
+    else if (progress < 0.80) nextIndex = 3;
     else nextIndex = 4;
 
-    setActiveIndex(nextIndex);
+    setActiveIndex((prev) => (prev === nextIndex ? prev : nextIndex));
   }, []);
 
   useEffect(() => {
-    let ticking = false;
+    let rafId: number | null = null;
 
     const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(() => {
           updateScrollState();
-          ticking = false;
+          rafId = null;
         });
-        ticking = true;
       }
     };
 
@@ -252,55 +160,52 @@ export function GrowxScrollSection() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll, { passive: true });
-    window.addEventListener("wheel", handleScroll, { passive: true });
-    window.addEventListener("touchmove", handleScroll, { passive: true });
 
     return () => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
-      window.removeEventListener("wheel", handleScroll);
-      window.removeEventListener("touchmove", handleScroll);
     };
   }, [updateScrollState]);
 
   const scrollToState = (index: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
+    if (!containerRef.current || !cardRef.current) return;
+    const container = containerRef.current;
+    const card = cardRef.current;
+    const rect = container.getBoundingClientRect();
     const scrollTop = window.scrollY || window.pageYOffset;
     const containerTop = scrollTop + rect.top;
-    const totalDistance = containerRef.current.offsetHeight - window.innerHeight;
-    const targetOffset = containerTop + (totalDistance * (index + 0.5)) / 5;
+    const computedTop = parseFloat(window.getComputedStyle(card).top) || 116;
+    const pinDistance = container.offsetHeight - card.offsetHeight;
+    if (pinDistance <= 0) return;
+
+    const pinStartScroll = containerTop - computedTop;
+    const targetOffset = pinStartScroll + (pinDistance * (index + 0.5)) / 5;
     window.scrollTo({ top: targetOffset, behavior: "smooth" });
   };
 
   const currentState = CONTENT_STATES[activeIndex] || CONTENT_STATES[0];
 
   return (
-    <div
+    <section
       ref={containerRef}
-      className="relative w-full h-[450vh] sm:h-[500vh]"
+      className="relative w-full h-[350vh] sm:h-[420vh] md:h-[450vh] px-3 sm:px-4 md:px-6 mb-4 sm:mb-6 select-none growx-sticky-viewport !overflow-visible"
       aria-label="GROWX Interactive Presentation"
     >
-      {/* ═══ Single Sticky Viewport (100dvh, pinned while scrolling through G-R-O-W-X) ═══ */}
+      {/* ═══ One Stable Pinned Warm Stone Card (Beneath Site Header, Released after X) ═══ */}
       <div
+        ref={cardRef}
         role="region"
-        aria-label="GROWX Presentation Viewport"
-        className="sticky top-0 h-dvh w-full overflow-hidden flex flex-col justify-center px-6 md:px-10 xl:px-16 2xl:px-24 pt-20 sm:pt-28 pb-8 bg-[#A2BECC] border-b border-[#55788D]/20 select-none z-20 growx-sticky-viewport"
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "100dvh",
-        }}
+        aria-label="GROWX Presentation Stage"
+        style={{ position: "sticky" }}
+        className="sticky top-[92px] sm:top-[98px] md:top-[116px] lg:top-[120px] w-full h-[calc(100dvh-104px)] sm:h-[calc(100dvh-114px)] md:h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)] min-h-[460px] sm:min-h-[500px] rounded-[16px] bg-[#E8DDD0] growx-editorial-stage flex flex-col justify-center overflow-hidden z-20 px-6 md:px-10 xl:px-16 2xl:px-24 py-8"
       >
-        {/* ═══ Editorial Engineering Sketch Geometry: Upper-Right Frame ═══ */}
-        <GrowxUpperRightSketch className="absolute pointer-events-none select-none z-10 top-24 right-5 sm:top-28 sm:right-8 md:top-32 md:right-12 xl:top-36 xl:right-16 2xl:right-24 w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 xl:w-28 xl:h-28" />
+        {/* ═══ Single Editorial Sketch L-Shape Accent (Top-Right Only, 70-110px Presence) ═══ */}
+        <GrowxEditorialCorner className="absolute pointer-events-none select-none z-10 top-5 right-5 sm:top-7 sm:right-7 md:top-8 md:right-8 w-16 h-16 sm:w-20 sm:h-20 md:w-[88px] md:h-[88px] lg:w-24 lg:h-24" />
 
-        {/* ═══ Editorial Engineering Sketch Geometry: Lower-Left Complementary Frame ═══ */}
-        {/* On mobile (< 640px), hidden to preserve generous breathing room above mobile footer navigation */}
-        <GrowxLowerLeftSketch className="hidden sm:block absolute pointer-events-none select-none z-10 bottom-20 left-8 md:bottom-20 md:left-12 xl:bottom-24 xl:left-16 2xl:left-24 sm:w-16 sm:h-16 md:w-24 md:h-24 xl:w-28 xl:h-28" />
         <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto w-full relative flex items-center justify-center min-h-[300px]">
           
-          {/* ═══ Left Vertical Indicators (Desktop) ═══ */}
+          {/* ═══ ZONE 1: LEFT — GROWX Navigation Rail (Desktop) ═══ */}
           <nav
             aria-label="GROWX Navigation"
             className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 flex-col items-center gap-4 font-mono text-xs select-none z-30"
@@ -314,7 +219,7 @@ export function GrowxScrollSection() {
                   onClick={() => scrollToState(idx)}
                   aria-current={isActive ? "step" : undefined}
                   className={cn(
-                    "grid h-7 w-7 shrink-0 place-items-center border leading-none transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4",
+                    "grid h-7 w-7 shrink-0 place-items-center border leading-none transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#22282C]",
                     isActive
                       ? "border-[#22282C] text-[#22282C] font-bold"
                       : "border-transparent text-[#466778] hover:text-[#22282C]"
@@ -326,29 +231,27 @@ export function GrowxScrollSection() {
             })}
           </nav>
 
-          {/* ═══ Centered Statements (Stacked in a single grid cell: zero layout shifts) ═══ */}
-          <div className="grid grid-cols-1 grid-rows-1 place-items-center w-full max-w-4xl px-8 z-10">
+          {/* ═══ ZONE 2: CENTER — Editorial Statement (Stable single grid cell: zero layout shifts) ═══ */}
+          <div className="grid grid-cols-1 grid-rows-1 place-items-center w-full max-w-4xl px-4 sm:px-12 z-10">
             {CONTENT_STATES.map((item, idx) => {
               const isCurrent = activeIndex === idx;
               const isPreceding = idx < activeIndex;
 
-              // Directional optical depth: preceding items drift upwards, following rise from below
-              const translateY = isCurrent ? "0px" : isPreceding ? "-22px" : "22px";
+              // Subtle 10px vertical drift (within 8-12px editorial specification)
+              const translateY = isCurrent ? "0px" : isPreceding ? "-10px" : "10px";
               const opacity = isCurrent ? 1 : 0;
-              const blur = isCurrent ? "0px" : "3px";
 
               return (
                 <div
                   key={item.letter}
-                  className="col-start-1 row-start-1 w-full text-center motion-reduce:transition-none"
+                  className="col-start-1 row-start-1 w-full text-center motion-reduce:transition-none motion-reduce:transform-none select-text"
                   style={{
                     opacity,
                     transform: `translate3d(0, ${translateY}, 0)`,
-                    filter: `blur(${blur})`,
-                    transition:
-                      "opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    transition: isCurrent
+                      ? "opacity 260ms cubic-bezier(0.16, 1, 0.3, 1) 80ms, transform 260ms cubic-bezier(0.16, 1, 0.3, 1) 80ms"
+                      : "opacity 140ms ease-in, transform 140ms ease-in",
                     pointerEvents: isCurrent ? "auto" : "none",
-                    visibility: isCurrent ? "visible" : "hidden",
                   }}
                   aria-hidden={!isCurrent}
                 >
@@ -358,10 +261,10 @@ export function GrowxScrollSection() {
             })}
           </div>
 
-          {/* ═══ Right Vertical Indicators (Desktop: R, O, W, X labels) ═══ */}
+          {/* ═══ ZONE 3: RIGHT — Section Label (Desktop: WHO WE ARE, OUR VISION, OUR PHILOSOPHY, GET IN TOUCH) ═══ */}
           <div
             className={cn(
-              "hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 flex-col gap-4 font-mono text-[10px] tracking-[0.22em] text-[#304956] uppercase select-none items-end leading-relaxed z-30 transition-all duration-400 ease-out",
+              "hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 flex-col gap-4 font-mono text-[10px] tracking-[0.22em] text-[#304956] uppercase select-none items-end leading-relaxed z-30 transition-all duration-300 ease-out",
               currentState.rightLabel
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-2 pointer-events-none"
@@ -376,7 +279,7 @@ export function GrowxScrollSection() {
         {/* ═══ Bottom Footer (Desktop: Visible on State G) ═══ */}
         <div
           className={cn(
-            "hidden sm:flex absolute bottom-8 left-6 right-6 md:left-10 md:right-10 xl:left-16 xl:right-16 2xl:left-24 2xl:right-24 items-center justify-between font-mono text-[9px] sm:text-[10px] tracking-[0.22em] text-[#304956] uppercase select-none transition-opacity duration-400 ease-out",
+            "hidden sm:flex absolute bottom-6 md:bottom-8 left-8 right-8 md:left-12 md:right-12 xl:left-16 xl:right-16 items-center justify-between font-mono text-[9px] sm:text-[10px] tracking-[0.22em] text-[#304956] uppercase select-none transition-opacity duration-300 ease-out",
             activeIndex === 0 ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
         >
@@ -388,7 +291,7 @@ export function GrowxScrollSection() {
         {/* ═══ Mobile Footer (State G: Studio / GrowxLabs / AI Lab) ═══ */}
         <div
           className={cn(
-            "flex sm:hidden absolute bottom-8 left-6 right-6 items-center justify-between font-mono text-[9px] tracking-[0.22em] text-[#304956] uppercase select-none transition-opacity duration-400 ease-out",
+            "flex sm:hidden absolute bottom-5 left-5 right-5 items-center justify-between font-mono text-[9px] tracking-[0.22em] text-[#304956] uppercase select-none transition-opacity duration-300 ease-out",
             activeIndex === 0 ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
         >
@@ -400,7 +303,7 @@ export function GrowxScrollSection() {
         {/* ═══ Mobile Footer (States R, O, W, X: Label on Left, Letters on Right) ═══ */}
         <div
           className={cn(
-            "flex sm:hidden absolute bottom-8 left-6 right-6 items-center justify-between font-mono text-[9px] tracking-[0.18em] text-[#304956] uppercase select-none transition-opacity duration-400 ease-out",
+            "flex sm:hidden absolute bottom-5 left-5 right-5 items-center justify-between font-mono text-[9px] tracking-[0.18em] text-[#304956] uppercase select-none transition-opacity duration-300 ease-out",
             activeIndex > 0 ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
         >
@@ -416,7 +319,7 @@ export function GrowxScrollSection() {
                     <span
                       key={item.letter}
                       onClick={() => scrollToState(idx)}
-                      className="px-1.5 py-0.5 rounded bg-[#A2BECC]/25 text-[#17252D] border border-[#55788D]/30 font-bold transition-all duration-300"
+                      className="px-1.5 py-0.5 rounded bg-[#31453E]/15 text-[#17252D] border border-[#31453E]/30 font-bold transition-all duration-300"
                     >
                       [X]
                     </span>
@@ -447,6 +350,6 @@ export function GrowxScrollSection() {
         </div>
 
       </div>
-    </div>
+    </section>
   );
 }

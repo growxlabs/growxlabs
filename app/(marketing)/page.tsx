@@ -110,27 +110,27 @@ export default function Home() {
       {/* ═══ PRACTICE AREAS & DIVISIONS ═══ */}
       <PracticeAreasSection />
 
-      {/* ═══ FAQ — Accordion (360labs.dev Swiss-editorial layout) ═══ */}
-      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-[#A2BECC] border-t border-[#D5E2E9]">
+      {/* ═══ FAQ — Accordion (Cohesive Dark Charcoal Surface: #30373B) ═══ */}
+      <section className="w-full py-24 sm:py-32 px-6 md:px-10 xl:px-16 2xl:px-24 bg-[#30373B] border-t border-[#566166]">
         <div className="max-w-[1400px] mx-auto">
           {/* Eyebrow Bar: { FAQ } — { GROWXLABS } — SUPPORT */}
-          <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-[#55788D] uppercase mb-12 sm:mb-16 select-none">
+          <div className="flex items-center justify-between font-mono text-[11px] sm:text-xs tracking-[0.22em] text-[#B6C2C7] uppercase mb-12 sm:mb-16 select-none">
             <span>{`{ FAQ }`}</span>
-            <span className="text-[#17252D] font-semibold">{`{ GROWXLABS }`}</span>
+            <span className="text-[#F5F4F0] font-semibold">{`{ GROWXLABS }`}</span>
             <span>SUPPORT</span>
           </div>
 
           {/* Asymmetric Header: Giant 3-Line Heading + Subtext on Right */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-12 sm:pb-16 border-b border-[#55788D]/20 mb-2">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pb-12 sm:pb-16 border-b border-[#566166] mb-2">
             <div className="lg:col-span-7 xl:col-span-8">
-              <h2 className="font-sans font-bold tracking-tight text-[#17252D] leading-[0.96] text-[clamp(44px,6.5vw,84px)]">
+              <h2 className="font-sans font-bold tracking-tight text-[#F5F4F0] leading-[0.96] text-[clamp(44px,6.5vw,84px)]">
                 Frequently<br />
                 Asked<br />
                 Questions
               </h2>
             </div>
             <div className="lg:col-span-5 xl:col-span-4 lg:pb-3">
-              <p className="font-sans text-[15px] sm:text-[17px] text-[#55788D] leading-relaxed max-w-md">
+              <p className="font-sans text-[15px] sm:text-[17px] text-[#B6C2C7] leading-relaxed max-w-md">
                 Got questions? We have got answers. If you do not find what you are looking for, feel free to reach out.
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function Home() {
           <AnimatedSection delay={0.2} className="text-center mt-14 sm:mt-16">
             <LiquidButton 
               href="/faq" 
-              variant="primary"
+              variant="inverted"
               size="default"
               icon={<ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
               iconPosition="right"

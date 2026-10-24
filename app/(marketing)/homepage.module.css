@@ -4,39 +4,57 @@
   background-image: none;
 }
 
-.homepage > div[aria-label="GROWX Interactive Presentation"],
 .homepage :global(.growx-sticky-viewport) {
-  background-color: #F5F4F0;
-  background-image: none;
+  overflow: visible !important;
 }
 
-/* GROWX canvas trial: inset only the paint, preserving all content geometry. */
-.homepage :global(.growx-sticky-viewport) {
-  isolation: isolate;
-  border-bottom-color: transparent;
-}
-
-.homepage :global(.growx-sticky-viewport)::before {
-  content: "";
-  position: absolute;
-  inset: 12px;
-  z-index: -1;
+.homepage :global(.growx-editorial-stage) {
+  position: sticky !important;
+  background-color: #E8DDD0;
   border-radius: 16px;
-  background: #D8E5D2;
-  pointer-events: none;
 }
 
-.homepage :global(.growx-sticky-viewport) h2 {
+.homepage :global(.growx-editorial-stage) h2 {
   color: #22282C;
-}
-
-@media (min-width: 768px) {
-  .homepage :global(.growx-sticky-viewport)::before {
-    inset: 24px;
-  }
 }
 
 /* Ensure strong contrast for headings and top chrome */
 .homepage [class*="text-[#55788D]"]:not(article *):not([class*="font-mono"]) {
   color: #22282C;
+}
+
+/* ═══ Portfolio & Research Work Card Hover Interaction ═══ */
+.homepage :global(.work-card) {
+  overflow: visible !important;
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.homepage :global(.work-card-image) {
+  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.homepage :global(.work-card-panel) {
+  transition: box-shadow 400ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .homepage :global(.work-card:hover) {
+    transform: translateY(-8px) !important;
+  }
+
+  .homepage :global(.work-card:hover .work-card-image) {
+    transform: scale(1.015) !important;
+  }
+
+  .homepage :global(.work-card:hover .work-card-panel) {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.07) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage :global(.work-card),
+  .homepage :global(.work-card-image) {
+    transition: none !important;
+    transform: none !important;
+  }
 }

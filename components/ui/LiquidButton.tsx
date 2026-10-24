@@ -10,7 +10,7 @@ export interface LiquidButtonProps {
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   type?: "button" | "submit" | "reset";
   className?: string;
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "cyan" | "dark" | "white" | "airforce";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "cyan" | "dark" | "white" | "airforce" | "inverted";
   size?: "default" | "sm" | "lg" | "full";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
@@ -35,6 +35,7 @@ export function LiquidButton({
 }: LiquidButtonProps) {
   // Normalize variants: primary (default) or secondary
   const normalizedVariant = (() => {
+    if (variant === "inverted") return "inverted";
     if (variant === "secondary" || variant === "white") return "secondary";
     if (variant === "outline") return "outline";
     if (variant === "ghost") return "ghost";
@@ -50,6 +51,12 @@ export function LiquidButton({
   }[size];
 
   const variantStyles = {
+    // Inverted light button on dark surface: Off-white #F5F4F0 -> Midnight #22282C fill rising from bottom
+    inverted: {
+      container: "bg-[#F5F4F0] text-[#22282C] border border-[#F5F4F0]",
+      fill: "bg-[#22282C]",
+      hoverText: "group-hover:text-[#F5F4F0] group-focus-visible:text-[#F5F4F0] group-active:text-[#F5F4F0]",
+    },
     // Primary dark button: Midnight #22282C -> Air Force Blue #A2BECC fill rising from bottom
     primary: {
       container: "bg-[#22282C] text-[#FFFFFF] border border-[#22282C]",

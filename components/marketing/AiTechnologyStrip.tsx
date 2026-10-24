@@ -56,7 +56,7 @@ function SarvamAILogo({ className }: { className?: string }) {
 export function AiTechnologyStrip() {
   return (
     <section
-      className="w-full px-3 sm:px-4 md:px-6 select-none"
+      className="w-full px-3 sm:px-4 md:px-6 mb-4 sm:mb-6 select-none"
       aria-labelledby="ai-platforms-label"
     >
       <div className="w-full h-[130px] sm:h-[132px] md:h-[134px] rounded-[16px] bg-[#22282C] text-[#F5F4F0] px-3 sm:px-6 md:px-12 flex flex-col items-center justify-center overflow-hidden">

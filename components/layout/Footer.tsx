@@ -24,15 +24,15 @@ export function Footer() {
     ],
   };
 
-  // Standard site footer tokens everywhere
-  const footerBg = "bg-[#A2BECC] border-[#D5E2E9]";
-  const logoColor1 = "text-[#17252D]";
-  const logoColor2 = "text-[#55788D]";
-  const textColor = "text-[#55788D]";
-  const headingColor = "text-[#17252D]";
-  const accentColor = "text-[#55788D]";
-  const linkHoverColor = "hover:text-[#17252D]";
-  const socialLinkClass = "text-[#55788D] hover:text-[#17252D]";
+  // Dark closing surface: Midnight #22282C with #4C575B dividers
+  const footerBg = "bg-[#22282C] border-[#4C575B]";
+  const logoColor1 = "text-[#F5F4F0]";
+  const logoColor2 = "text-[#B6C2C7]";
+  const textColor = "text-[#B6C2C7]";
+  const mainLinkColor = "text-[#F5F4F0] hover:text-[#B6C2C7]";
+  const linkHoverColor = "hover:text-[#F5F4F0]";
+  const accentColor = "text-[#B6C2C7]";
+  const socialLinkClass = "text-[#B6C2C7] hover:text-[#F5F4F0]";
 
   return (
     <footer className={`w-full border-t pt-10 pb-10 px-6 md:px-12 xl:px-20 2xl:px-32 transition-colors duration-500 ${footerBg}`}>
@@ -48,13 +48,13 @@ export function Footer() {
               </div>
             </Link>
 
-            <span className="hidden md:inline text-[#55788D]/30">|</span>
+            <span className="hidden md:inline text-[#4C575B]">|</span>
 
             <a href="mailto:svp@growxlabs.tech" className={`flex items-center gap-2 text-[13px] transition-colors ${textColor} ${linkHoverColor}`}>
               <GrowxContact size={14} className={accentColor} aria-hidden="true" /> svp@growxlabs.tech
             </a>
 
-            <span className="hidden md:inline text-[#55788D]/30">|</span>
+            <span className="hidden md:inline text-[#4C575B]">|</span>
 
             {/* Horizontal Social Icons */}
             <div className="flex items-center gap-4">
@@ -120,7 +120,7 @@ export function Footer() {
                   <a
                     key={link.name}
                     href={resolvedHref}
-                    className={`text-[13px] transition-colors ${textColor} ${linkHoverColor}`}
+                    className={`text-[13px] transition-colors ${mainLinkColor}`}
                   >
                     {link.name}
                   </a>
@@ -131,7 +131,7 @@ export function Footer() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`text-[13px] transition-colors ${textColor} ${linkHoverColor}`}
+                  className={`text-[13px] transition-colors ${mainLinkColor}`}
                 >
                   {link.name}
                 </Link>
@@ -141,7 +141,7 @@ export function Footer() {
 
         </div>
 
-        <div className="border-t pt-8 flex items-center justify-center border-[#55788D]/20">
+        <div className="border-t pt-8 flex items-center justify-center border-[#4C575B]">
           <p className={`text-[13px] text-center ${textColor}`}>
             Copyright 2026 GrowxLabs. All rights reserved.
           </p>
@@ -150,4 +150,3 @@ export function Footer() {
     </footer>
   );
 }
-

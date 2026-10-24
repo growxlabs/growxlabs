@@ -54,12 +54,16 @@ function ProjectPreview({ slides, label }: { slides: Preview[]; label: string })
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="overflow-hidden rounded-[4px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#17252D]"
+      className="overflow-hidden rounded-[14px] bg-[#B9CFDA] p-2 sm:p-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#17252D]"
     >
-      <div className={`relative aspect-[16/9] overflow-hidden p-2 ${label === "Portfolio" ? "bg-[#8EAAB9]" : "bg-[#7893A2]"}`}>
-        <div className="relative h-full w-full overflow-hidden rounded-[3px] bg-[#0B1013]">
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[10px] bg-[#0B1013]">
+        <div className="work-card-image relative w-full h-full">
           {slides.map((slide, slideIndex) => (
-            <div key={slide.src} aria-hidden={slideIndex !== index} className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${slideIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+            <div
+              key={slide.src}
+              aria-hidden={slideIndex !== index}
+              className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${slideIndex === index ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            >
               <Image
                 src={slide.src}
                 alt={slide.alt}
@@ -77,29 +81,67 @@ function ProjectPreview({ slides, label }: { slides: Preview[]; label: string })
 
 export function PracticeAreasSection() {
   return (
-    <section aria-labelledby="practice-areas-title" className="border-t border-[#17252D]/10 bg-[#A2BECC] px-5 py-16 sm:px-8 sm:py-20 lg:px-12">
-      <div className="mx-auto max-w-7xl">
-        <h2 id="practice-areas-title" className="mb-7 font-sans text-2xl font-medium tracking-[-0.035em] text-[#17252D] sm:mb-9 sm:text-3xl">Our work</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {[
-            { title: "Portfolio", description: "Software, AI agents, and integrations built for clients.", href: "/portfolio", action: "View projects", slides: PORTFOLIO_SLIDES },
-            { title: "Research", description: "Experiments in AI, robotics, and developer tools.", href: "/research", action: "Explore research", slides: LABS_SLIDES },
-          ].map(({ title, description, href, action, slides }) => (
-            <article key={title} className="flex min-w-0 flex-col rounded-[6px] border border-[#17252D]/10 bg-[#B5CBD6] p-4 sm:p-5">
-              <ProjectPreview slides={slides} label={title} />
-              <div className="mt-6">
-                <h3 className="font-sans text-[18px] font-medium leading-7 tracking-[-0.015em] text-[#17252D] sm:text-[20px]">{title}</h3>
-                <p className="mt-1 max-w-[48ch] font-sans text-[15px] leading-6 sm:text-[16px] text-[#3E5B6B]">{description}</p>
-              </div>
-              <div className="mt-auto pt-10 sm:pt-12">
-                <LiquidButton href={href} variant="primary" size="default">
-                  {action}
-                </LiquidButton>
-              </div>
-            </article>
-          ))}
+    <div className="w-full px-3 sm:px-4 md:px-6 mb-4 sm:mb-6 select-none">
+      <section
+        aria-labelledby="practice-areas-title"
+        className="w-full rounded-[16px] bg-[#F5F5F5] px-5 py-12 sm:px-8 sm:py-16 lg:px-12"
+      >
+        <div className="mx-auto max-w-7xl">
+          <h2
+            id="practice-areas-title"
+            className="mb-7 font-sans text-2xl font-medium tracking-[-0.035em] text-[#17252D] sm:mb-9 sm:text-3xl"
+          >
+            Our work
+          </h2>
+          <div className="grid grid-cols-1 gap-8 sm:gap-10 md:grid-cols-2 md:gap-5 items-stretch">
+            {[
+              {
+                title: "Portfolio",
+                description:
+                  "We design and build custom software, AI agents, and integrated platforms for companies across automotive, manufacturing, logistics, and other industries.",
+                href: "/portfolio",
+                action: "VIEW PROJECTS",
+                slides: PORTFOLIO_SLIDES,
+              },
+              {
+                title: "Research",
+                description:
+                  "We research and explore foundation AI models, robotics, and intelligent systems, designing and engineering technologies for real-world applications.",
+                href: "/research",
+                action: "EXPLORE RESEARCH",
+                slides: LABS_SLIDES,
+              },
+            ].map(({ title, description, href, action, slides }) => (
+              <article
+                key={title}
+                className="work-card group flex min-w-0 flex-col h-full cursor-default"
+              >
+                {/* 1. Large 16:9 Image Surface with Powder-Blue #B9CFDA Framing */}
+                <div className="w-full">
+                  <ProjectPreview slides={slides} label={title} />
+                </div>
+
+                {/* 2. Overlapping White Information Panel (Equal height, 28px desktop padding, bottom-aligned CTA, soft elevation on hover) */}
+                <div className="work-card-panel relative z-10 -mt-5 sm:-mt-6 md:-mt-8 w-[92%] mx-auto flex-1 flex flex-col justify-between rounded-[12px] border border-[#E6E6E6] bg-white p-6 sm:p-[28px] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+                  <div className="flex flex-col">
+                    <h3 className="font-sans text-[21px] sm:text-[24px] font-semibold leading-[1.2] tracking-[-0.025em] text-[#22282C]">
+                      {title}
+                    </h3>
+                    <p className="mt-3 font-sans text-[15px] sm:text-[16px] font-normal leading-[1.55] tracking-normal text-[#4B555A]">
+                      {description}
+                    </p>
+                  </div>
+                  <div className="mt-auto pt-7">
+                    <LiquidButton href={href} variant="primary" size="default">
+                      {action}
+                    </LiquidButton>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
